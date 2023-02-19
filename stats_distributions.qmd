@@ -1,0 +1,224 @@
+# Verteilungen 
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+source('_common.R')
+```
+
+# Die Normalverteilung
+
+## Normalverteilung - $f(x|\mu,\sigma^2) = \frac{1}{\sqrt{2 \pi \sigma^2}}e^{\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)}$
+
+```{r}
+#| fig.cap="Dichtefunktion der Normalverteilung mit\nParametern $\\mu$ und $\\sigma$."
+
+x <- seq(-3, 3, 0.01)
+p <- dnorm(x)
+df <- data.frame(x, p) 
+ggplot(df, aes(x,p)) +
+  geom_ribbon(aes(ymin = 0, ymax = p), fill = 'red', alpha=.3) +
+  geom_line(size=2, col='red') + 
+  labs(x = 'Werte', y = 'Dichte') 
+```
+
+## Zentraler Grenzwertsatz oder *Warum die Normalverteilung überall auftaucht*.
+
+Seien $X_1, X_2, \ldots, X_n$ n unabhängige, gleichverteilte Zufallsvariablen mit $E(X_i)=\mu$ und $Var(X_i)=\sigma^2$. 
+$$
+ \lim_{n\to\infty}\frac{\bar{x} - \mu}{\frac{\sigma}{\sqrt{n}}}\ \rightarrow\ \mathcal{N}(\mu=0,\sigma^2=1)
+$$
+
+## Normalverteilung und Standardabweichung
+
+```{r}
+#| fig.cap="Dichtefunktion von $\\mathcal{N}(\\mu,\\sigma^2)$"
+
+x <- seq(-4, 4, 0.01)
+sigma <- 1.3
+mu <- 0
+p <- dnorm(x, mean = mu, sd = sigma)
+df <- data.frame(x, p) 
+lab_dat <- tibble(x = c(-3,-2,-1,1,2,3)*sigma, p = 0.05, 
+                  labels = c(bquote(-3~sigma),bquote(-2~sigma), bquote(-sigma),
+                             'sigma',bquote(2~sigma),bquote(3~sigma)))
+ggplot(df, aes(x,p, ymin = 0, ymax = p)) +
+#  geom_ribbon(aes(ymin = 0, ymax = p), fill = 'red', alpha=.3) +
+  geom_ribbon(data = tibble(x = seq(-1*sigma,1*sigma,0.01), p = dnorm(x, mu, sigma)), fill = 'green', alpha = .3) +
+  geom_ribbon(data = tibble(x = seq(-2*sigma,-1*sigma,0.01), p = dnorm(x, mu, sigma)), fill = 'magenta', alpha = .3) +
+  geom_ribbon(data = tibble(x = seq(1*sigma,2*sigma,0.01), p = dnorm(x, mu, sigma)), fill = 'magenta', alpha = .3) +
+  geom_ribbon(data = tibble(x = seq(2*sigma,3*sigma,0.01), p = dnorm(x, mu, sigma)), fill = 'blue', alpha = .3) +
+  geom_ribbon(data = tibble(x = seq(-3*sigma,-2*sigma,0.01), p = dnorm(x, mu, sigma)), fill = 'blue', alpha = .3) +
+  geom_line() + 
+  geom_label(data = lab_dat, aes(x = x, label = labels), parse = T) +
+  scale_x_continuous(breaks=0, labels = expression(mu)) +
+  labs(x = 'Werte', y = 'Dichte') 
+```
+
+## Normalverteilung und Standardabweichung
+
+\begin{table}[]
+  \caption{Wahrscheinlichkeiten P für verschiedene Bereiche der Normalverteilung.}
+  \centering
+  \begin{tabular}{ll}
+   \toprule
+   Bereich & P \\
+   \midrule
+    $[\mu -\sigma ,\mu + \sigma]$  & 0.682  \\
+    $[\mu -2\sigma,\mu + 2\sigma]$ & 0.955 \\
+    $[\mu -3\sigma,\mu + 3\sigma]$ & 0.997 \\
+    \bottomrule
+  \end{tabular}
+  \label{tab:zscore}
+\end{table}
+
+$$P(x\in[\mu-1.96\sigma, \mu+1.96\sigma]) = 0.95$$
+
+
+
+## Standardnormalverteilung $\phi(x)$
+
+```{r}
+#| fig.cap: "Dichtefunktion der Standardnormalverteilung $\\phi(x)$ mit $\\mu=0$ und $\\sigma^2=1$"
+
+x <- seq(-3, 3, 0.01)
+sigma <- 1
+mu <- 0
+p <- dnorm(x, mean = mu, sd = sigma)
+df <- data.frame(x, p) 
+lab_dat <- tibble(x = c(-3,-2,-1,1,2,3)*sigma, p = 0.05, 
+                  labels = c(bquote(-3~sigma),bquote(-2~sigma), bquote(-sigma),
+                             'sigma',bquote(2~sigma),bquote(3~sigma)))
+ggplot(df, aes(x,p, ymin = 0, ymax = p)) +
+#  geom_ribbon(aes(ymin = 0, ymax = p), fill = 'red', alpha=.3) +
+  geom_ribbon(data = tibble(x = seq(-1*sigma,1*sigma,0.01), p = dnorm(x, mu, sigma)), fill = 'green', alpha = .3) +
+  geom_ribbon(data = tibble(x = seq(-2*sigma,-1*sigma,0.01), p = dnorm(x, mu, sigma)), fill = 'magenta', alpha = .3) +
+  geom_ribbon(data = tibble(x = seq(1*sigma,2*sigma,0.01), p = dnorm(x, mu, sigma)), fill = 'magenta', alpha = .3) +
+  geom_ribbon(data = tibble(x = seq(2*sigma,3*sigma,0.01), p = dnorm(x, mu, sigma)), fill = 'blue', alpha = .3) +
+  geom_ribbon(data = tibble(x = seq(-3*sigma,-2*sigma,0.01), p = dnorm(x, mu, sigma)), fill = 'blue', alpha = .3) +
+  geom_line(size=2) + 
+  geom_label(data = lab_dat, aes(x = x, label = labels), parse = T) +
+  scale_x_continuous(breaks = -3:3) +
+  labs(x = 'Werte', y = 'Dichte') 
+```
+
+
+## Abbildung N($\mu$,$\sigma$) auf N($0$,$1$) 
+
+```{r}
+#| fig.cap: "Standardnormalverteilung mit $\\mu=12, \\sigma^2=2$"
+
+x <- seq(6, 18, 0.01)
+p <- dnorm(x, 12, 2)
+df <- data.frame(x, p) 
+ggplot(df, aes(x,p)) +
+  geom_ribbon(aes(ymin = 0, ymax = p), fill = 'red', alpha=.3) +
+  geom_line(size=2, col='red') + 
+  labs(x = 'Werte', y = 'Dichte') +
+  lims(y = c(0,.5)) 
+```
+
+```{r}
+#| fig.cap: "Normalverteilung mit $\\mu=0, \\sigma=1$"
+
+x <- seq(-6, 6, 0.01)
+p <- dnorm(x)
+df <- data.frame(x, p) 
+ggplot(df, aes(x,p)) +
+  geom_ribbon(aes(ymin = 0, ymax = p), fill = 'red', alpha=.3) +
+  geom_line(size=2, col='red') + 
+  labs(x = 'Werte', y = 'Dichte') +
+  lims(y = c(0,.5)) 
+```
+
+## z-Transformation allgemein bzw. Standardisierung 
+
+\begin{table}[]
+    \caption{z-Transformation}
+    \centering
+    \begin{tabular}{ll}
+     \toprule
+     Population & Stichprobe \\
+     \midrule
+     $z = \frac{x - \mu}{\sigma}$ & $z = \frac{x - \bar{x}}{s}$ \\
+     \bottomrule
+    \end{tabular}
+    \label{tab:zscore}
+\end{table}
+\vspace{2cm}
+
+
+
+# Verteilungszoo
+
+## t-Verteilung
+
+```{r}
+#| fig.cap: "Beispiel für verschiedene Dichtefunktionen der t-Verteilung"
+
+n_fig_pts <- 130
+t_dist <- tibble(
+  x = seq(-5,5,length.out=n_fig_pts),
+  t1 = dt(x,1),
+  t3 = dt(x,3),
+  t10 = dt(x,10)
+) %>% tidyr::pivot_longer(-x, names_to='dist', values_to='v')
+ggplot(t_dist, aes(x,v,fill=dist, ymin=0, ymax=v)) +
+  geom_ribbon(alpha=0.3) +
+  geom_line() + 
+  scale_fill_discrete("Verteilungen",
+                      breaks = c('t1', 't3', 't10'),
+                      labels = c(expression(df==1),
+                                 expression(df==3),
+                                 expression(df==10))) +
+  labs(x = 'Werte', y = 'Dichte') 
+```
+
+
+## $\chi^2$-Verteilung
+
+```{r}
+#| fig.cap: "Beispiele für verschiedene Dichtefunktion der $\\chi^2$-Verteilung."
+
+chi_dist <- tibble(
+  x = seq(0, 10, length.out=n_fig_pts),
+  d1 = dchisq(x,1),
+  d2 = dchisq(x,3),
+  d3 = dchisq(x,5)
+) %>% tidyr::pivot_longer(-x, names_to='dist', values_to='v')
+ggplot(chi_dist, aes(x,v,fill=dist, ymin=0, ymax=v)) +
+  geom_ribbon(alpha=0.3) +
+  geom_line() + 
+  scale_fill_discrete("Verteilungen",
+                      breaks = c('d1', 'd2', 'd3'),
+                      labels = c(expression(df==1),
+                                 expression(df==3),
+                                 expression(df==5))) +
+  labs(x = 'Werte', y = 'Dichte') 
+```
+
+## F-Verteilung
+
+```{r}
+#| fig.cap: "Beispiele für verschiedene Dichtefunktion der F-Verteilung."
+
+chi_dist <- tibble(
+  x = seq(0, 10, length.out=n_fig_pts),
+  d1 = df(x,1,1),
+  d2 = df(x,3,5),
+  d3 = df(x,10,10)
+) %>% tidyr::pivot_longer(-x, names_to='dist', values_to='v')
+ggplot(chi_dist, aes(x,v,fill=dist, ymin=0, ymax=v)) +
+  geom_ribbon(alpha=0.3) +
+  geom_line() + 
+  scale_fill_discrete("Verteilungen",
+                      breaks = c('d1', 'd2', 'd3'),
+                      labels = c(expression(paste(df[1],"=1,",df[2],"=1")),
+                                 expression(paste(df[1],"=3,",df[2],"=5")),
+                                 expression(paste(df[1],"=10,",df[2],"=10")))) +
+  labs(x = 'Werte', y = 'Dichte') 
+```
+
+
+

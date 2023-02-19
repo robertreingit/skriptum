@@ -1,0 +1,401 @@
+# Eine kleine Welt 
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+source('_common.R')
+```
+
+
+```{r}
+n <- 20
+set.seed(123)
+world <- tibble(ID = paste0('P',stringr::str_pad(1:n, width=2, pad="0")),
+                Kraft = sample(2000:2500, n))
+world$Kraft[13] <- 1800
+world$Kraft[17] <- 3200
+d_gr <- 100
+d_x <- 2
+```
+
+Beginnen wir mit eine einfachen Modell. Dazu nehmen wir eine kleine Welt die nur aus 20 Personen besteht. In @fig-small-world können wir alle Personen einzeln sehen. Die Gesamtheit aller Personen (allgmeine Objekte) über die wir eine Aussage treffen woll bezeichnen wir als eine Population\index{Population}.
+
+```{r}
+#| fig.cap: "Eine kleine Welt"
+#| label: fig-small-world
+#| fig.height: 4
+
+include_graphics('pics/small_world.png')
+
+```
+
+
+::: {#def-population}
+
+## Population
+
+Eine Population oder auch die Grundgesamtheit ist Gesamtheit aller Objekte/Dinge/Personen über die eine Aussage getroffen werden soll.
+
+:::
+
+Wir wollen nun eine Krafttrainingsstudie durchführen um die Beinkraft zu erhöhen. Wir haben allerdings nur sehr wenige Ressourcen (bzw. wir sind faul) und können insgesamt nur sechs Messungen durchführen. Aus einem kürzlich durchgeführten Census haben wir aber die Kraftwerte der ganzen Population. Wir stellen die Kraftwerte zunächst mittels einer Tabelle dar (siehe @tbl-sts-basics-world)
+
+```{r}
+#| tbl-cap: "Kraftwerte (in Newton) der Lummerländer an der einbeinigen Beinpresse"
+#| label: tbl-sts-basics-world
+
+world_wide <- cbind(world[1:10,],world[11:20,]) 
+world_wide |> 
+  kable(
+    booktabs=TRUE, 
+    col.names = c('ID', 'Kraft[N]','ID','Kraft[N]')) 
+```
+
+Selbst bei 20 Werten ist diese Darstellung wenig übersichtlich. Wir könnten zwar Zeile für Zeile durchgehen und nach etwas notieren und suchen würden wir sehen das der Maximalwert bei $3200$N für P17 und der Minimalwert von Person P13 bei $1800$N liegt. Aber wirklich einfach ist diese Darstellung nicht. Für solche univariaten Daten (uni = eins) kann eine übersichtlichere Darstellung mittels eines sogenannten Dotplots erreicht werden (siehe @fig-sts-basics-lummer-dotplot).
+
+```{r}
+#| fig.cap: "Dotplot der Lummerlandkraftdaten"
+#| label: fig-sts-basics-lummer-dotplot
+#| fig.height: 1.5
+
+ggplot(world,
+       aes(Kraft, 1)) +
+  geom_point(size=3) +
+  scale_x_continuous('Kraftwerte[N]', breaks = seq(1800, 3200, 200)) +
+  scale_y_continuous('', breaks = NULL)
+```
+
+Hier kann deutlich schneller abgelesen werden was das Minimum und das Maximum der Daten ist, sowie es kann auch direkt abgeschätzt werden in welchem Bereich sich der Großteil der Daten befindet. Allerdings wird durch diese Art der Darstellung die Information über welche Person die jeweiligen Werte besitzt nicht mehr dargestellt. Dies stellt in den meisten Fällen allerdings kein Problem dar, da wir in den meisten Fällen aussagen über die Gruppe und weniger über einzelne Personen machen wollen.
+
+Gehen wir jetzt von der folgenden Fragestellung aus. Wir wollen den Gesundheitsstatus unserer Lummerländer verbessern und wollen dazu ein Krafttraining durchführen. Da evidenzbasiert arbeiten wollen, möchten wir überprüfen ob wirklich ein Verbesserung der Kraft durch das Training stattgefunden hat. Da es sich aber gleichzeitig um unsere selbst geschaffene Welt handelt führen wir natürlich ein perfektes Krafttraining, eine perfekte Intervention, durch. D.h wir stellen uns immer wieder als unwissend da und geben vor das wir gar nicht wissen, das das Training perfekt effektiv ist.
+
+D.h. wir führen gleichzeitig ein Gedankenexperiment durch. Wir führen ein Krafttraining für die Beine durch. Das Training ist perfekt und verbessert die Kraftleistung um genau $+`r d_gr`$N. Dieser Kraftzuwachs unabhängig davon welche Person aus unserer Population das Training durchführt (Warum ist das keine realistische Annahme?). Wir wollen zwei Gruppen miteinander vergleichen eine Interventionsgruppe und eine Kontrollgruppe. In beiden Gruppen sollen jeweils $n_{\text{TRT}} = n_{\text{CON}} = 3$ TeilnehmerInnen bzw. Teilnehmer einbezogen werden da wir nicht mehr Ressourcen für mehr ProbandInnen haben.
+
+Die erste Frage die sich nun stellt ist wie wählen wir die sechs Personen aus unserer Population aus und wie teilen wir die sechs Personen in die beiden Gruppen? Nach etwas überlegen kommen wir darauf, dass wir am besten eine zufällige Stichprobe ziehen sollten (Warum?).
+
+::: {#def-sample}
+## Stichprobe
+
+Eine Stichprobe\index{Stichprobe} ist eine Teilmenge der Objekte aus der Population.
+:::
+
+::: {#def-random-sample}
+## Zufallsstichprobe
+
+Eine Zufallsstichprobe\index{Zufallsstichprobe} ist eine Teilmenge der Objekte aus der Population die *zufällig* ausgewählt wurde.
+:::
+
+Diese sechs Personen, unsere Stichprobe, wird dann wiederum zufällig auf die beiden Gruppen aufgeteilt.
+
+```{r}
+id_s <- c(8, 9, 3, 7, 10, 20)
+```
+
+Ein Zufallszahlengenerator hat die Zahlen $i = \{`r paste(sort(id_s), collapse=',')`\}$ gezogen. Die entsprechenden Personen werden aus der Population ausgewählt und wiederum zufällig in die beiden Gruppen aufgeteilt (siehe @tbl-sts-basics-experiment-1).
+
+```{r}
+#| tbl-cap: "Zufällig ausgewählte Stichprobe der Kontrollgruppe (CON) und der Interventionsgruppe (TRT)."
+#| label: tbl-sts-basics-experiment-1
+
+world_ex_1 <- world[id_s,] |> mutate(Gruppe=rep(c('CON','TRT'),each=3))
+world_ex_1 |> 
+  kable(
+    booktabs=TRUE, 
+    col.names = c('ID', 'Kraft[N]','Gruppe'))
+```
+
+Mit diesen sechs Personen führen wir jetzt unser Experiment durch. Die drei Personen aus der Kontrollgruppe, unterlaufen im Interventionszeitraum nur ein Stretchtraining während die Interventionsgruppe zweimal die Woche für 12 Wochen unser perfektes Krafttraining durchführt. Nach diesem Zeitraum messen wir alle Personen aus beiden Gruppen und erhalten das folgende Ergebnis (siehe @tbl-sts-basics-sample-1).
+
+```{r}
+#| label: tbl-sts-basics-sample-1
+#| tbl-cap: "Ergebnis der Intervention in Experiment 1 für die Kontroll- und die Interventionsgruppe."
+#| tbl-subcap:
+#|   - "Kontrollgruppe"
+#|   - "Interventionsgruppe"
+#| layout-ncol: 2
+
+world_ex_1 <- world_ex_1 |>
+  rows_update(world_ex_1 |> filter(Gruppe == 'TRT') |>
+                mutate(Kraft = Kraft + d_gr),
+              by = 'ID')
+
+dat_kon <- world[id_s[1:3],]
+dat_int <- world[id_s[4:6],] |> 
+  mutate(Kraft = Kraft + d_gr)
+
+add_mean <- function(tib) {
+  if (dim(tib)[2] == 2) {
+    tib |> add_row(
+      tibble(ID = '$\\bar{K}$', Kraft = round(mean(tib$Kraft)))
+    )
+  }
+  else {
+    tib |> add_row(
+      tibble(ID = '$\\bar{K}$', Kraft = NA, Kraft_2 = round(mean(tib$Kraft_2)))
+    )
+  }
+}
+
+kable(dat_kon |> add_mean(),
+  booktabs=T,
+  col.names=c('ID','Kraft[N]'))
+
+kable(dat_int |> add_mean(),
+  booktabs=T,
+  col.names=c('ID','Kraft[N]'))
+```
+
+Für beide Gruppen ist jeweils der Mittelwert\index{Mittelwert} berechnet worden, um die Wert miteinander vergleichen zu können. Später werden wir noch weitere Maße kennenlernen die es ermöglichen zwei Mengen von Werten miteinander zu vergleichen.
+
+::: {#def-Mittelwert}
+## Mittelwert
+
+Der Mittelwert über $n$ Werte berechnet sich nach der Formel:
+
+$$
+\bar{x} = \frac{\sum_{i=1}^n x_i}{n}
+$$ {#eq-mean}
+
+Der Mittelwert wird mit einem Strich über der Variable dargestellt.
+
+:::
+
+Damit lernen wir direkt auch ein neues Konzept kennen. Nämlich das der Statistik\index{Statistik}. Ein Wert der auf der erhobenen Stichprobe berechnet wird, wird als Statistik bezeichnet.
+
+::: {#def-Statistik}
+## Statistik
+
+Ein auf einer Stichprobe berechnet Wert, wird als Statistik bezeichnet.
+
+:::
+
+Um jetzt Unterschied zwischen den beiden Gruppen zu untersuchen berechnen wir die Differenz D zwischen den beiden Mittelwerten $D = \bar{K}_{\text{TRT}} - \bar{K}_{\text{CON}}$. Die Differenz kann natürlich auch in die andere Richtung berechnet werden und es würde sich das Vorzeichen ändern. Hier gibt es keine Vorgaben, sondern die Richtung kann frei bestimmt werden. Wenn bekannt ist in welcher Richtung der Unterschied berechnet wird, dann stellt dies keine Problem dar. Im vorliegenden Fall ziehen wir die Interventionsgruppe von der Kontrollgruppe ab, da wir davon ausgehen, dass die Intervention zu einer Krafterhöhung führt und wir dadurch einen positiven Unterschied erhalten (vgl. @eq-sts-basics-ex1-d)
+
+```{r}
+world_ex_1_hat <- world_ex_1 |> group_by(Gruppe) |> summarize(Kraft = round(mean(Kraft)))
+D <- (world_ex_1_hat |> summarize(D = diff(Kraft)))$D
+```
+
+$$
+D = `r world_ex_1_hat$Kraft[2]`N - `r world_ex_1_hat$Kraft[1]`N = `r D` N
+$$ {#eq-sts-basics-ex1-d}
+
+Da der Wert D, wiederum auf den Daten der Stichprobe berechnet wird, handelt es sich ebenfalls um eine Statistik.
+
+```{r}
+#| fig.cap: "Dotplot der beiden Stichproben. Senkrechte Striche zeigen die jeweiligen Mittelwerte an."
+#| label: fig-sts-basics-ex-1-dotplot
+#| fig.height: 1.5
+
+ggplot(world_ex_1,
+       aes(Kraft, 1, color = Gruppe)) +
+  geom_point(size=3) +
+  geom_segment(data = world_ex_1_hat, aes(xend = Kraft, y=0.99, yend=1.01), size=1.3) +
+  annotate("segment",
+           x = world_ex_1_hat$Kraft[1],
+           xend = world_ex_1_hat$Kraft[2],
+           y = 1.01,
+           yend = 1.01,
+           arrow = arrow(ends = "both", angle = 45, length = unit(.2,"cm"))) +
+  annotate("text",
+           x = mean(world_ex_1_hat$Kraft), y = 1.01, label = 'D', vjust=-.5) +
+  scale_x_continuous('Kraftwerte[N]', breaks = seq(1800, 3200, 200), limits=c(1800, 3200)) +
+  scale_y_continuous('', breaks = NULL, limits=c(0.975, 1.025))
+
+```
+
+## Intervention erhöht Kraftfähigkeit um `r d_gr` N
+
+```{r}
+s_1 <- c(12,2,19)
+s_2 <- c(4,8,16)
+dat_kon <- world[s_1,]
+dat_int <- world[s_2,] |> 
+  dplyr::mutate(Kraft = Kraft + d_gr)
+```
+
+### Stichprobe 2
+Kontrollgruppe 
+
+```{r}
+dat_kon |> knitr::kable(booktabs=T,
+                         col.names=c('ID','Kraft[N]'))
+```
+
+Mittelwert: `r round(mean(dat_kon$Kraft))` N
+
+Interventionsgruppe
+
+```{r}
+dat_int |> knitr::kable(booktabs=T,
+                         col.names=c('ID','Kraft[N]'))
+```
+
+Mittelwert: `r round(mean(dat_int$Kraft))` N
+
+Differenz: $d = `r round(round(mean(dat_int$Kraft)) - mean(round(dat_kon$Kraft)))`$ N
+
+## Intervention erhöht Kraftfähigkeit um `r d_gr` N
+
+```{r}
+s_1 <- c(6,5,7)
+s_2 <- c(20,14,16)
+dat_kon <- world[s_1,]
+dat_int <- world[s_2,] |> 
+  dplyr::mutate(Kraft = Kraft + d_gr)
+```
+
+### Stichprobe 3
+
+Kontrollgruppe 
+
+```{r}
+dat_kon |> knitr::kable(booktabs=T,
+                         col.names=c('ID','Kraft[N]'))
+```
+
+Mittelwert: `r round(mean(dat_kon$Kraft))` N
+
+Interventionsgruppe
+
+```{r}
+dat_int |> knitr::kable(booktabs=T,
+                         col.names=c('ID','Kraft[N]'))
+```
+
+Mittelwert: `r round(mean(dat_int$Kraft))` N
+
+Differenz: $d = `r round(round(mean(dat_int$Kraft)) - mean(round(dat_kon$Kraft)))`$ N
+
+
+
+## Verschiedene Möglichkeiten Stichproben zu ziehen
+
+```{r}
+# combination graphic
+foo <- function(id, n=20, k=3) {
+  x <- 1:n
+  y <- rep(id,n)
+  t <- rep('ungezogen',n)
+  id <- sample(20, 2*k)
+  t[id[1:k]] <- 'Kontrol'
+  t[id[(k+1):(2*k)]] <- 'Intervention'
+  tibble(x,y,t)
+}
+n_rep <- 15
+dat <- purrr::map_dfr(1:n_rep,foo)
+ggplot(dat, aes(x,y,color=t,pch=t)) +
+  geom_hline(yintercept = 1:n_rep) +
+  geom_point(size=4) +
+  scale_x_continuous('Probanden ID', breaks=1:20) +
+  scale_y_continuous('Multiverse-Experiment[#]', breaks=1:n_rep) +
+  scale_color_discrete('Kategorie') +
+  guides(pch = "none") +
+  theme_minimal()
+```
+
+Insgesamt sind 775200 verschiedene Kombination möglich.
+
+## Alle Möglichkeiten wenn $\delta=`r d_gr`$
+
+```{r}
+#| fig.cap: "Verteilung aller möglichen Differenzen zwischen Kontroll- und Interventionsgruppe"
+
+differences <- readr::read_csv('../data/combinations_differences.csv')
+ggplot(differences |> dplyr::mutate(d = d + d_gr), aes(d)) +
+  geom_histogram(aes(y=..density..), bins=50) +
+  geom_vline(xintercept = d_gr, color='red', linetype='dashed') +
+  labs(x = 'Differenzen d[N]', y = 'relative Häufigkeit') +
+  lims(x = c(-800, 800)) 
+```
+
+Die Verteilung der d's wird als **Stichprobenverteilung** bezeichnet.
+
+## Alle Möglichkeiten wenn $\delta=0$
+
+```{r}
+#| fig.cap: "Verteilung aller möglichen Differenzen zwischen Kontroll- und Interventionsgruppe"
+
+ggplot(differences, aes(d)) +
+  geom_histogram(aes(y=..density..), bins=50) +
+  geom_vline(xintercept = 0, color='red', linetype='dashed') +
+  labs(x = 'Differenzen d[N]', y = 'relative Häufigkeit') +
+  lims(x = c(-800, 800)) 
+```
+
+
+## Alle Möglichkeiten wenn $\delta=0$ oder $\delta=`r d_gr`$
+
+```{r}
+#| fig.cap: "Verteilung aller möglichen Differenzen zwischen Kontroll- und Interventionsgruppe"
+
+n_sim <- dim(differences)[1]
+dat <- tibble(
+  di = c(differences$d + d_gr, differences$d),
+  hypo = rep(c('H100','H0'), c(n_sim,n_sim))
+)
+ggplot(dat, aes(di, fill=hypo)) +
+  geom_density(alpha=0.5) +
+  labs(x = 'Differenzen d[N]', y = 'relative Häufigkeit') +
+  scale_fill_discrete("Hypothese") 
+```
+
+
+## Ungewissheit
+
+Die Anwendung von statistischen Methoden bietet die Möglichkeiten unter Ungewissheit in möglichst vielen Fällen korrekte Entscheidungen zu treffen. Die getroffene Aussage bezieht sich immer nur auf die vorliegenden Daten und ist keine Aussage über die zugrundeliegende Theorie. 
+
+
+
+## Wie kann ich anhand eines Datenpunktes etwas sagen? 
+
+```{r}
+#| fig.cap: "Verteilung aller möglichen Differenzen zwischen Kontroll- und Interventionsgruppe mit Stichproben der Größen k = 3"
+
+differences <- readr::read_csv('data/combinations_differences.csv')
+n_sim <- dim(differences)[1]
+dat <- tibble(
+  di = c(differences$d, differences$d + d_gr),
+  hypo = rep(c('H0','H100'), c(n_sim,n_sim))
+)
+ggplot(dat, aes(di, fill=hypo)) +
+  geom_density(alpha=0.5) +
+  labs(x = 'Differenzen[N]', y = 'relative Häufigkeit') +
+  scale_fill_discrete("Hypothese")
+```
+
+# Entscheiden
+
+## Entscheidungsmöglichkeiten
+
+\begin{table}[]
+    \caption{Entscheidungsm\"oglichkeiten wenn entweder $H_0$ oder $H_{100}$ zutrifft. $H_0$: keine Unterschied, $H_{100}$: Training erhöht Kraft um 100N}
+    \centering
+    \begin{tabular}{crcc}\toprule
+    & & \multicolumn{2}{c}{Realit\"at} \\
+    & & $H_0$ & $H_{100}$ \\ \midrule
+    \multirow{2}{*}{Entscheidung} & $H_{100}$ & $\alpha$-Fehler & Korrekt \\
+         & $H_0$ & Korrekt & $\beta$-Fehler \\ \bottomrule
+    \end{tabular}
+    \label{tab:my_label}
+\end{table}^[Auch: $\alpha$-Fehler: Fehler 1. Art, $\beta$-Fehler: Fehler 2. Art]
+
+
+## Nehmen wir einen einfacheren Fall mit $\delta = 500$N
+
+```{r}
+#| fig.cap: "Verteilungen wenn $\\delta$=500 und $\\delta$=0"
+
+dat <- tibble(
+  di = c(differences$d + 500, differences$d),
+  hypo = rep(c('H500','H0'), c(n_sim,n_sim))
+)
+p_h500 <- ggplot(dat, aes(di, fill=hypo)) +
+  geom_density(alpha=0.5) +
+  labs(x = 'Differenzen[N]', y = 'relative Häufigkeit') +
+  scale_fill_discrete("Hypothese", labels=c(
+    expression(H[0]  ), expression(H[500])
+  )) 
+print(p_h500)
+```

@@ -1,0 +1,446 @@
+# Modellhierarchien 
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+source('_common.R')
+```
+
+
+```{r defs_modell_hierarchy}
+source('../resources/nice_format_helper_fcn.R')
+N <- 78
+beta <- c(10,.5,.7,1.2)
+sigma <- 2
+max_val <- sum(beta*c(1,30,20,20*30))
+candy <- tibble(
+  sweetness = sample(30, N, T),
+  moisture = sample(c(0,5,10,15,20), N, T),
+  moisture_f = as.factor(moisture),
+  like = round((beta[1] + beta[2] * sweetness + beta[3] * moisture +
+            beta[4]*sweetness*moisture)/max_val*100 + rnorm(N, 0, 2))
+)
+mod_full <- lm(like ~ sweetness*moisture, candy)
+mod_res <- lm(like ~ sweetness + moisture, candy)
+set.seed(12)
+n <- 4
+simple <- tibble(x = 0:(n-1),
+                 y = 2 + 0.5 * x + rnorm(n,0,.5))
+mod0 <- lm(y ~ x, simple)
+simple$y_hat <- predict(mod0)
+simple$epsilon <- paste0('epsilon[',1:n,']')
+simple$ys <- paste0('list(x[',1:n,'],y[',1:n,'])')
+simple$yshat <- paste('hat(y)[',1:n,']')
+N <- 20
+K <- 4
+set.seed(1)
+rt_tbl <- tibble::tibble(
+  group = gl(K, N, labels = c('A','B','C','D')),
+  rt = rnorm(K * N, mean = rep(seq(500,800,100), each=N), sd = 50)
+)
+```
+
+## Einfaches Modell
+
+\scriptsize
+```{r, echo=T}
+mod0 <- lm(y ~ x, simple)
+summary(mod0)
+```
+
+
+
+## Einfaches Modell
+
+```{r}
+#| echo: true
+
+mod0 <- lm(y ~ x, simple)
+summary(mod0)
+```
+
+## Abweichungen ... noch mal
+
+### Sum of squares of error
+
+$$
+SSE = \sum_{i=1}^n (y_i - \hat{y}_i)^2
+$$
+
+Typischerweise beinhaltet ein Modell zum berechnen der $\hat{y}_i$ verschiedene Parameter. Bei der einfachen Regression zum Beispiel $\beta_0$ und $\beta_1$ (#Modellparameter $p$ = 2) .
+
+### Freiheitsgrade (degrees of freedom) von SSE
+
+$$
+dfE := n - p
+$$
+
+Die *effektive* Anzahl der Beobachtungen um die Varianz $\sigma^2$ abzuschätzen.
+
+## MSE als Schätzer für $\sigma^2$
+
+### Mean squared error MSE
+
+$$
+MSE = \frac{SSE}{dfE} = \frac{\sum_{i=1}^n (y_i - \hat{y}_i)^2}{n-p}
+$$
+
+Als Schätzer $\hat{\sigma}^2$ für $\sigma^2$ aus $\epsilon_i \sim \mathcal{N}(0,\sigma^2)$
+
+### Parallel zur Berechnung der Stichprobenvarianz
+
+$$
+\hat{\sigma}^2 = s^2 = \frac{1}{n-1}\sum_{i=1}^2(y_i - \bar{y})^2
+$$
+
+wo $s^2$ ein Schätzer für die Varianz von $y$ ist.
+
+## Genereller Linearer Modell Testansatz^[@kutner2005, p.72]
+### Idee
+
+Wir bauen uns eine Teststatistik die die Verbesserung in der Vorhersage ($=$ Reduktion der Fehlervarianz) als Metrik verwendet. Modelle werden in eine Hierarchie gesetzt mit einfacheren Modellen untergeordnet zu komplexeren Modellen.
+
+### Leitfrage:
+
+*Bringt mir die Aufnahme \underline{zusätzlicher} Modellparameter eine \underline{Verbesserung} in der Vorhersage von Y bzw. bezüglich der Aufklärung der Varianz in Y?*
+
+
+## Genereller Linearer Modell Testansatz - Full model
+
+Beispiel einfache lineare Regression
+
+### Volles Modell
+$$
+Y_i = \beta_0 + \beta_1 X_i + \epsilon_i, \quad \epsilon_i \sim \mathcal{N}(0,\sigma^2)
+$$
+
+### Residualvarianz SSE(F)
+
+$$
+\textrm{SSE(F)}  = \sum_{i=1}^n(y_i - \hat{y}_i)^2 = \sum_{i=1}^n [y_i - (\beta_0 + \beta_1 x_i)]^2
+$$
+
+mit $p = 2, dfE(F) = n - 2$
+
+
+## Genereller Linearer Modell Testansatz - Reduced model
+
+### Reduziertes Modell
+$$
+Y_i = \beta_0 + \epsilon_i, \quad \epsilon_i \sim \mathcal{N}(0,\sigma^2)
+$$
+
+### Residualvarianz SSE(R)
+
+$$
+\textrm{SSE(R)} = \sum_{i=1}^n (y_i - \beta_0)^2 = \sum_{i=1}^n(y_i - \bar{y})^2 = \textrm{SSTO}
+$$
+
+mit $p = 1, dfE(R) = n - 1$
+
+
+Im Allgemeinen gilt: $SSE(F) \leq SSE(R)$
+
+## Link: Reduziertes Modell und Stichprobenvarianz
+
+\begin{align*}
+SSE &= \sum_{i=1}^n(y_i - \beta_0)^2 = \sum_{i=1}^n (y_i^2 - 2y_i\beta_0 + \beta_0^2) \\
+0 &= \frac{\mathrm{d}}{\mathrm{d} \beta_0}\sum_{i=1}^n (y_i^2 - 2y_i\beta_0 + \beta_0^2) \\
+0 &= \sum_{i=1}^n (-2y_i + 2 \beta_0) = -2\sum_{i=1}^n y_i + 2\sum_{i=1}^n \beta_0\\
+n\beta_0 &= \sum_{i=1}^n y_i \\
+\beta_0 &= \frac{\sum_{i=1}^n y_i}{n} = \bar{y} \rightarrow \frac{SSE}{n-1} = \hat{\sigma}^2 = s^2
+\end{align*}
+
+
+## Genereller Linearer Modell Testansatz 
+
+Annahme: Das reduzierte Modell ist korrekt. Dann sollte
+$$
+\textrm{SSE(R)} - \textrm{SSE(F)}
+$$
+eher klein sein (Beide Modelle haben einen gleich guten fit).
+
+Annahme: Das reduzierte Modell ist falsch: Dann sollte
+$$
+\textrm{SSE(R)} - \textrm{SSE(F)}
+$$
+eher groß sein (Das reduzierte Modell kann die Daten nicht so gut fitten wie das komplizierte Modell)
+
+## Genereller Linearer Modell Testansatz - Teststatistik
+
+Wenn das reduzierte Modell korrekt ist, dann lässt sich zeigen, dass:
+$$
+MS_{\textrm{test}} = \frac{\textrm{SSE(R)} - \textrm{SSE(F)}}{\textrm{dfE(R)} - \textrm{dfE(F)}}
+$$
+ein Schätzer für die Varianz $\sigma^2$ ($\epsilon_i \sim \mathcal{N}(0,\sigma^2)$) ist.
+
+Wenn das reduzierte Modell korrekt ist, dann ist auch das volle Modell korrekt. Daher ist dann:
+
+$$
+\textrm{MSE(F)} = \frac{\textrm{SSE(F)}}{\textrm{dfE(F)}}
+$$
+auch ein Schätzer für $\sigma^2$
+
+## F-Wert als Teststatistik
+
+$$
+F = \frac{MS_{\textrm{test}}}{MSE(F)}= \frac{\frac{\textrm{SSE(R)} - \textrm{SSE(F)}}{\textrm{dfE(R)} - \textrm{dfE(F)}}}{ \frac{\textrm{SSE(F)}}{\textrm{dfE(F)}}}
+$$
+
+
+## Verteilung der F-Statistik
+
+$$
+F = \frac{MS_{\textrm{test}}}{MSE(F)}  \sim F(\textrm{dfE(R)}-\textrm{dfE(F)},\textrm{dfE(F)})
+$$
+
+```{r}
+#| fig.cap: "Beispiele für die F-Verteilung mit verschiedenen Freiheitsgraden $df_1, df_2$"
+
+dff <- tibble::tibble(
+  F = seq(0.01,5,length.out=100),
+  f1 = df(F, 1, 1),
+  f2 = df(F, 1, 5),
+  f3 = df(F, 5, 10)
+) %>% tidyr::pivot_longer(-1, names_to = 'dist', values_to = 'd')
+ggplot(dff, aes(F, d, color=dist)) + 
+  geom_line(size=1.3) +
+  scale_color_discrete("Verteilung",
+                       labels = c(
+                         expression(F['1,1']),
+                         expression(F['1,5']),
+                         expression(F['5,10'])
+                       )) +
+  labs(x = 'F-Wert', y = 'Dichte') 
+```
+
+## Hypothesentest mit F-Wert
+
+```{r}
+#| fig.cap: "F-Verteilung mit $df_1 = 5, df_2 = 10$ und kritischem Wert bei $\\alpha=0.05$"
+
+k_w <- qf(0.95, 5, 10)
+ggplot(dff %>% dplyr::filter(dist == 'f3'), aes(F, d)) +
+  geom_line(size=1.3) +
+  geom_vline(xintercept = k_w, color='red', linetype = 'dashed') +
+  geom_ribbon(data = tibble::tibble(F = seq(k_w, 5, length.out=30),
+                                    d = df(F, 5, 10)),
+              aes(ymin = 0, ymax = d), fill='red', alpha=0.5) +
+  labs(x = 'F-Wert', y = 'Dichte') 
+```
+^[In `R`: `df(), pf(), qf(), rf()`]
+
+## Teilziel
+
+- Durch den Vergleich von Modellen kann die Verbesserung/Verschlechterung der Modellvorhersage statistisch Überprüft werden
+- Alternativ: Brauchen ich zusätzliche Parameter oder reicht mir das einfache Modell?
+
+## Beispiel: Candy-Problem
+
+```{r}
+#| fig.cap: "Zusammenhang zwischen der Präferenz für ein Bonbon und dem Süßgrad für verschiedene Weichheitsgrade"
+
+ggplot(candy, aes(sweetness, like)) + geom_point(size=3) +
+  facet_grid(~moisture) +
+  theme(text = element_text(size=12))
+```
+
+## Modelle als Hierarchien auffassen
+
+### Full model
+$$
+y_i = \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \beta_3 x_{1i}x_{2i} + \epsilon_i
+$$
+
+### Hierarchie
+
+\begin{align*}
+m_0&: y_i = \beta_0 + \epsilon_i \\
+m_1&: y_i = \beta_0 + \beta_1 x_{1i} + \epsilon_i \\
+m_2&: y_i = \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \epsilon_i \\
+m_3&: y_i = \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \beta_3 x_{1i}x_{2i} + \epsilon_i
+\end{align*}
+
+Es gilt: $m_0 \subseteq m_1 \subseteq m_2 \subseteq m_3$
+
+## Modelle als Hierarchien auffassen in `R`
+
+In R:
+
+```{r}
+#| echo: true
+
+mod_0 <- lm(like ~ 1, candy)
+mod_1 <- lm(like ~ sweetness, candy)
+mod_2 <- lm(like ~ sweetness + moisture, candy)
+mod_3 <- lm(like ~ sweetness * moisture, candy)
+```
+
+
+## Vergleich $m_0$ gegen $m_1$
+
+\begin{align*}
+m_0: y_i &= \beta_0 + \epsilon_i \\
+m_1: y_i &= \beta_0 + \beta_1 x_{1i} + \epsilon_i
+\end{align*}
+
+```{r}
+#| eval: false
+#| echo: true
+
+anova(mod_0, mod_1)
+```
+
+```{r}
+ss1 <- anova(mod_0, mod_1)
+anova_tbl_knitr(ss1)
+```
+
+## Vergleich $m_1$ gegen $m_2$
+
+\begin{align*}
+m_1: y_i &= \beta_0 + \beta_1 x_{1i} + \epsilon_i \\
+m_2: y_i &= \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \epsilon_i 
+\end{align*}
+
+```{r}
+#| echo: true
+#| eval: false
+
+anova(mod_1, mod_2)
+```
+
+```{r}
+ss2 <- anova(mod_1, mod_2)
+anova_tbl_knitr(ss2)
+```
+
+## Vergleich $m_2$ gegen full model $m_3$
+
+\begin{align*}
+m_2: y_i &= \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \epsilon_i  \\
+m_3: y_i &= \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \beta_3 x_{1i} x_{2i} + \epsilon_i 
+\end{align*}
+
+```{r}
+#| echo: true
+#| eval: false
+
+anova(mod_2, mod_3)
+```
+
+```{r}
+ss3 <- anova(mod_2, mod_3)
+anova_tbl_knitr(ss3)
+```
+
+## Vergleich full model $m_3$ gegen minmales Modell $m_0$
+
+\begin{align*}
+m_0: y_i &= \beta_0 + \epsilon_i  \\
+m_3: y_i &= \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \beta_3 x_{1i} x_{2i} + \epsilon_i 
+\end{align*}
+
+```{r}
+#| echo: true
+#| eval: false
+
+anova(mod_0, mod_3)
+```
+
+```{r}
+ss4 <- anova(mod_0, mod_3)
+anova_tbl_knitr(ss4)
+```
+
+## In `summary()` $m_3$ gegen $m_0$
+
+```{r}
+summary(mod_3)
+```
+
+## Eine nominale Variable mit vier Stufen 
+
+```{r}
+#| fig.cap: "Ein Reaktionszeitexperiment mit vier Stufen A, B, C und D"
+ggplot(rt_tbl, aes(group, rt)) + geom_boxplot() +
+  geom_point(alpha=.1, col='red') +
+  labs(x = 'Treatment', y = 'Reaktionszeit') 
+```
+
+## Früher - Analysis of Variance (ANOVA bzw. AOV)
+
+\begin{align*}
+s_{zwischen}^2 &= \frac{1}{K-1}\sum_{j=1}^K N_j (\bar{x}_{j.}-\bar{x})^2 \\
+s_{innerhalb}^2 &= \frac{1}{N-K}\sum_{j=1}^K\sum_{i=1}^{N_j}(x_{ji}-\bar{x}_{j.})^2 = \frac{1}{N-K}\sum_{j=1}^K(N_j-1)s_j^2 \\
+F &= \frac{\hat{\sigma}_{zwischen}^2} {\hat{\sigma}_{innerhalb}^2} \sim F(K-1,N-K)
+\end{align*}
+
+## ANOVA in R 
+
+```{r}
+#| echo: true
+#| eval: false
+
+mod_aov <- aov(rt ~ group, rt_tbl)
+summary(mod_aov)
+```
+```{r}
+mod_aov <- aov(rt ~ group, rt_tbl)
+broom::tidy(mod_aov) |> 
+  knitr::kable(caption = 'Ausgabe mit aov()',
+               booktabs = T,
+               digits = 1)
+```
+
+## Ansatz mittels Modellhierarchien 
+
+### Full model
+
+$$
+y_i = \beta_0 + \beta_{\Delta_{B-A}} x_1 + \beta_{\Delta_{C-A}} x_2 + \beta_{\Delta_{D-A}} x_3 + \epsilon_i
+$$
+
+### Reduced model
+$$
+y_i = \beta_0 + \epsilon_i
+$$
+
+Wenn das reduced model die Daten gleich gut fittet wie das full model $\Rightarrow$ Information über das Treatment verbessert meine Vorhersage von $y_i$ nicht.
+
+## Model fit - Full model
+
+```{r}
+#| echo: true
+#| eval: false
+
+mod <- lm(rt ~ group, rt_tbl)
+```
+
+```{r}
+mod <- lm(rt ~ group, rt_tbl)
+lm_tbl_knitr(mod)
+```
+
+## `anova()` mit nur einem Modell 
+
+```{r}
+#| echo: true
+#| eval: false
+
+anova(mod)
+```
+
+```{r}
+broom::tidy(anova(mod)) |> 
+  knitr::kable(caption = 'Äquivalent zum Vergleich full gegen reduced model',
+               booktabs = T,
+               digits = 1)
+```
+
+
+## Zum Nacharbeiten 
+
+@christensen2018[p.57-64] \newline
+

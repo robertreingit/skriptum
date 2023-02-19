@@ -1,0 +1,327 @@
+# Vorhersage 
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+source('_common.R')
+```
+
+## Vorhergesagte Werte $\hat{y}_i$
+
+```{r defs_reg_03}
+jump <- readr::read_delim(paste0('data/running_jump.csv'),
+                          delim=';',
+                          col_types = 'dd')
+mod <- lm(jump_m ~ v_ms, jump)
+p <- ggplot(jump, aes(v_ms, jump_m)) + geom_point() + 
+  labs(x = 'Anlaufgeschwindigkeit[m/s]',
+       y = 'Sprungweite[m]') 
+```
+
+Wenn ein einfaches lineares Modell gefittet wurde ist eine zentrale Frage welche Vorhersagen anhand des Modell getroffen werden können. Die Vorhersagen $\hat{y}_i$ liegen auf der vorhergesagten Regressionsgerade und berechnen sich nach dem Modell für einen gegeben $x$-Wert. 
+
+$$
+\hat{y} = \hat{\beta_0} + \hat{\beta_0} x
+$$
+
+Wie schon mehrfach besprochen unterliegt die Regressionsgerade inherent der Unsicherheit bezüglich der geschätzen Modellkoeffizienten $\hat{\beta}_0$ und $\hat{\beta}_1$. Diese Unsicherheit überträgt sich auf die geschätzen Werte  $\hat{y}_i$ und muss daher bei deren Interpretation berücksichtigt werden.
+
+In @fig-pred-01 sind die bereits behandelten Sprungdaten gegen die Anlaufgeschwindigkeiten zusammen mit der Regressionsgeraden und vorhergesagten Werten (rot) abgetragen.
+
+```{r pred_01}
+#| label: fig-pred-01
+#| fig-cap: "Vorhersagewerte $\\hat{y}_i$ (rote Punkte) für die Sprungdaten."
+
+p +
+  geom_abline(intercept = coef(mod)[1], slope = coef(mod)[2], col='green') +
+  geom_point(data = data.frame(y_hat = predict(mod),
+                                 v_ms = jump$v_ms),
+               mapping = aes(y = y_hat), color = 'red')
+```
+
+In `R` können die vorhergesagten Werte des mittels `lm()` gefitteten Modells mit der Hilfsfunktion `predict()` bestimmt werden. Wenn der Funktion `predict()` keine weiteren Parameter außer dem `lm`-Objekt übergeben werden, berechnet `predict()` die vorhergesagten Werte $\hat{y}_i$ für alle die $x$-Werte die auch zum fitten des Modells benutzt wurden. Die Reihenfolge der Werte $\hat{y}_i$ enspricht dabei den Werten im Original-`data.frame()`.
+
+
+```{r}
+#| echo=T
+
+predict(mod)[1:5] 
+```
+
+Wir haben uns hier nur die ersten fünf Werte ausgeben lassen, da nur demonstriert werden soll wie die `predict()`-Funktion angewendet werden kann. Um eine Anwendung zu geben, so können mittels `predict()` die Residuen auch von Hand ohne die `resid()`-Funktion erhalten werden.
+
+```{r}
+#| echo=T
+
+(jump$jump_m - predict(mod))[1:5]
+resid(mod)[1:5]
+```
+
+Wiederum nur zur Demonstration die ersten fünf Wert um die Äquivalenz der beiden Methoden zu demonstrieren.
+
+Meistens liegt das Interesse jedoch weniger auf den vorhergesagten Werten $\hat{y}_i$ für die gemessenen Werte, sondern es sollen Werte vorhergesagt werden für $x$-Werte die nicht im Datensatz enthalten sind. Operational ändert sich nichts, es wird immer noch das gefittete Modell verwendetet und es müssen lediglich neue $x$-Werte übergeben werden.
+
+In `R` kann dies mittels des zweite Parameter in `predict()` erreicht werden. Soll zum Beispiel die Sprungweite für eine Anlaufgeschwindigkeit von $v = 11.5[m/s]$ berechnen werden, muss zunächst ein neues `tibble()` erstellt werden, welches den gewünschten $x$-Wert enthält. Dabei muss der Spaltenname in dem neuen `tibble()` demjenigen im Original-`tibble()` entsprechen. Ansonsten funktioniert die Anwendung von `predict()` nicht.
+
+
+```{r}
+#| echo: true
+
+df <- tibble(v_ms = 11.5)
+df
+```
+
+Dieses `tibble()` kann nun zusammen mit dem `lm()`-Objekt an `predict()` übergeben werden.
+
+```{r}
+#| echo: true
+
+predict(mod, newdata = df)
+```
+
+D.h., bei einer Anlaufgeschwindigkeit von $v = 11.5[m/s]$ ist anhand des Modells eine Sprungweite von $`r round(predict(mod, newdata=df),1)`m$ zu erwarten.
+
+## Unsicherheit in der Vorhersage 
+
+Wie schon angesprochen ist unser Modell natürlich mit Unsicherheiten behaftet. Diese drücken sich in den Standardfehler für die beiden Koeffizienten $\hat{\beta_0}$ und $\hat{\beta_1}$ (siehe @tbl-pred-01).
+
+```{r}
+#| label: tbl-pred-01
+#| tbl-cap: Modellparameter und Standardfehler
+ 
+broom::tidy(mod) |> select(term, estimate, "std.error") |> 
+  knitr::kable(
+    booktabs = T,
+    col.names = c('', 'Schätzer', '$s_e$'),
+    digits = 2
+  )
+```
+
+
+Der vorhergesagte Wert $\hat{y}$ ist daher für sich alleine ist noch nicht brauchbar, da auch Informationen über dessen Unsicherheit notwendig sind um die Ergebnisse korrekt zu interpretieren.
+
+Es können zwei unterschiedliche Anwendungsfälle voneinander unterschieden werden. 
+
+1. Der mittlere, erwartete Wert $\hat{\bar{y}}_{neu}$
+2. Die Vorhersage eines einzelnen Wertes  $\bar{y}_{neu}$
+
+Im konkreten Fall werden damit zwei unterschiedliche Fragestellungen beantwortet. Im 1. Fall lautet die Frage, ich habe eine Trainingsgruppe und möchte wissen was der mittlere Wert der Gruppe anhand des Modells ist, wenn alle eine bestimmte Anlaufgeschwindigkeit $v_{neu}$ haben. Im 2. Fall lautet die Frage welche Weite eine einzelne Athletin für die Anlaufgeschwindigkeit $v_{neu}$ springen sollte. In beiden Fällen werden keiner genau den Wert des Regressionsmodells treffen, aber im 1. Fall der Gruppe werden sich Streuungen nach oben bzw. nach unten gegenseitig im Schnitt ausbalancieren während im 2. Fall der einzelnen Athletin dies nicht der Fall ist. Daher hat die Vorhersage im 2. Fall eine höhere Unsicherheit. Diese Unterschied sollte sich dementsprechend in den Varianzen der beiden Vorhersagen wiederspiegeln.
+
+Wie bereits erwähnt, der vorhergesagte Wert $\hat{y}_{neu}$ ist in beiden Fällen gleich und entsprecht der oben beschriebenen Methode anhand des Modell $y_{neu} = \hat{\beta}_0 + \hat{\beta}_1 \times x_{\text{neu}}$. 
+
+
+Für den erwarteten Mittelwert errechnet sich die Varianz nach:
+
+\begin{equation}
+Var(\hat{\bar{y}}_{neu}) = \hat{\sigma}^2 \left[\frac{1}{n} + \frac{(x_{neu} - \bar{x})^2}{\sum(x_i - \bar{x})^2}\right] = \hat{\sigma}_{\hat{\bar{y}}_{neu}}^2
+\end{equation}
+
+Das dazugehörige Konfidenzintervall errechnet sich danach mittels:
+
+\begin{equation}
+\hat{\bar{y}}_{neu} \pm q_{t(1-\alpha/2;n-2)} \times \hat{\sigma}_{\hat{\bar{y}}_{neu}}
+\end{equation}
+
+Die Varianz für die Vorhersage eines einzelnen Wertes errechnet sich:
+
+\begin{equation}
+Var(\hat{y}_{neu}) = \hat{\sigma}^2 \left[1 + \frac{1}{n} + \frac{(x_{neu} - \bar{x})^2}{\sum(x_i - \bar{x})^2}\right] = \hat{\sigma}^2 + \hat{\sigma}_{\hat{\bar{y}}_{neu}}^2 = \hat{\sigma}_{\hat{y}_{neu}}^2
+\end{equation}
+
+Was wiederum zu dem folgenden Konfidenzintervall führt:
+
+\begin{equation}
+\hat{y}_{neu} \pm q_{t(1-\alpha/2;n-2)} \times \hat{\sigma}_{\hat{y}_{neu}}
+\end{equation}
+
+In beiden Fällen ist der Term
+
+$$
+\frac{(x_{neu} - \bar{x})^2}{\sum(x_i - \bar{x})^2}
+$$
+
+enthalten. Anhand des Zählers kann abgeleitet werden, dass die Unsicherheit der Vorhersage mit dem Abstand vom Mittelwert der $x$-Werte zunimmt. Rein heuristisch macht dies Sinn, da davon ausgegangen werden kann, dass um den Mittelwert der $x$-Werte auch die meiste Information über $y$ vorhanden ist und dementsprechend umso weiter die Werte sich vom $\bar{x}$ entfernen die Information abnimmt. Im Nenner ist wiederum wie auch beim Standardfehler $\sigma_{\beta_1}$ des Steigungskoeffizienten $\beta_1$ zu sehen, dass die Varianz abnimmt mit der Streuung der $x$-Werte. Daher, wenn eine Vorhersage in einem bestimmten Bereich von $x$-Werten durchgeführt werden soll, dann sollte darauf geachtet werden möglichst diesen Bereich auch zu samplen um die Unsicherheit so klein wie möglich zu halten.
+
+
+## Vorhersagen in R mit `predict()`
+
+### Erwarteter Mittelwert
+```{r}
+#| echo=T
+df <- data.frame(v_ms = 11.5) # oder tibble(v_ms = 11.5)
+predict(mod, newdata = df, interval = 'confidence')
+```
+
+### Individuelle Werte
+```{r, echo=T}
+predict(mod, newdata = df, interval = 'prediction')
+```
+
+## Konfidenzintervalle graphisch
+
+```{r}
+newdata <- data.frame(v_ms = seq(6, 14, length.out = 30))
+ci_co <- predict(mod, newdata = newdata, interval = 'confidence')
+newdata$y_hat <- ci_co[,1]
+newdata$ci_low <- ci_co[,2]
+newdata$ci_up <- ci_co[,3]
+newdata$jump_m <- newdata$y_hat 
+ci_pr <- predict(mod, newdata = newdata, interval = 'predict')
+newdata <- newdata %>% dplyr::mutate(y_hat = ci_co[,1],
+                              ci_low = ci_co[,2], ci_up = ci_co[,3],
+                              pr_low = ci_pr[,2], pr_up = ci_pr[,3])
+p + geom_line(data = newdata, aes(x = v_ms, y = y_hat)) +
+  geom_abline(intercept = coef(mod)[1], slope = coef(mod)[2])  +
+  geom_ribbon(data = newdata, aes(x = v_ms, ymin = pr_low, ymax = pr_up), alpha = .5) + 
+  geom_ribbon(data = newdata, aes(ymin = ci_low, ymax = ci_up), alpha = .5, fill='red') +
+  lims(x = c(6,12))
+```
+
+Weiterführende Literatur sind @kutner2005
+
+## $R^2$ und Root-mean-square
+
+```{r}
+set.seed(12)
+n <- 4
+simple <- tibble(x = 0:(n-1),
+                 y = 2 + 0.5 * x + rnorm(n,0,.5))
+mod0 <- lm(y ~ x, simple)
+simple$y_hat <- predict(mod0)
+simple$epsilon <- paste0('epsilon[',1:n,']')
+simple$ys <- paste0('list(x[',1:n,'],y[',1:n,'])')
+simple$yshat <- paste('hat(y)[',1:n,']')
+```
+
+## Einfaches Modell
+
+\scriptsize
+```{r}
+#| echo: true
+
+mod0 <- lm(y ~ x, simple)
+summary(mod0)
+```
+
+
+## Nochmal Abweichungen
+
+1. **Gesamtvarianz**:
+$$
+SSTO := \sum_{i=1}^N (y_i - \bar{y})^2
+$$
+2. **Regressionsvarianz**: 
+$$
+SSR :=\sum_{i=1}^N(\hat{y}_i - \bar{y})^2
+$$
+
+3. **Residualvarianz**:
+$$
+SSE := \sum_{i=1}^N (y_i - \hat{y}_i)^2
+$$
+
+```{r}
+#| fig.cap: "Minimalmodell der Abweichungen"
+
+y_av <- mean(simple$y)
+text_size <- 7
+ggplot(simple, aes(x,y,label = epsilon)) + 
+  geom_segment(aes(x = x, y = y_hat, xend = x, yend = y),
+               arrow = arrow(type='closed', length=unit(0.05, unit='npc')), size=1.5,
+               color = 'green') +
+  geom_line(aes(y = y_hat), size=2, color = 'red') +
+  geom_segment(aes(x = x+0.1, y = y_av, xend = x+0.1, yend = y),
+               color = 'blue', size = 1.5,
+               arrow = arrow(type = 'closed', length=unit(0.05, unit='npc'))) +
+  geom_segment(aes(x = x-0.1, y = y_av, xend = x-0.1, yend = y_hat),
+               size = 1.5, color = 'gray30',
+               arrow = arrow(type = 'closed', length=unit(0.05, unit='npc'))) +
+  geom_hline(yintercept = y_av, size = 2) +
+  geom_point(size=7) +
+  geom_point(aes(y = y_hat), size=7, color = 'red') +
+  geom_text(x = 2, y = 2, label = 'SSTO==y[i]-bar(y)', parse=T,
+            size=text_size, color = 'blue') +
+  geom_text(x = 2, y = 1.7, label = 'SSR==hat(y[i])-bar(y)', parse=T,
+            size=text_size, color = 'gray30') +
+  geom_text(x = 2, y = 1.4, label = 'SSE==y[i]-hat(y[i])', parse=T,
+            size=text_size, color = 'green') +
+  geom_text(x = 0, y = y_av+0.15, label = 'bar(y)', parse=T,
+            size = text_size) 
+```
+
+## Verhältnis von $SSR$ zu $SSTO$
+
+
+```{r}
+#| fig.cap: "Perfekter Zusammenhang"
+
+ggplot(simple, aes(x,y_hat,label = epsilon)) + 
+  geom_line(aes(y = y_hat), size=2, color = 'red') +
+  geom_segment(aes(x = x+0.1, y = y_av, xend = x+0.1, yend = y_hat),
+               color = 'blue', size = 3,
+               arrow = arrow(type = 'closed', length=unit(0.05, unit='npc'))) +
+  geom_segment(aes(x = x-0.1, y = y_av, xend = x-0.1, yend = y_hat),
+               size = 2, color = 'gray30',
+               arrow = arrow(type = 'closed', length=unit(0.05, unit='npc'))) +
+  geom_hline(yintercept = y_av, size = 2) +
+  geom_point(size = 9, color = 'red') +
+  geom_point(size = 3) +
+  labs(x = 'X', y = 'Y') +
+  lims(x = c(-0.2,3.3), y = c(1, 3.5)) +
+  geom_text(x = 2, y = 2, label = 'SSTO==y[i]-bar(y)', parse=T,
+            size=text_size, color = 'blue') +
+  geom_text(x = 2, y = 1.7, label = 'SSR==hat(y[i])-bar(y)', parse=T,
+            size=text_size, color = 'gray30') +
+  geom_text(x = 2, y = 1.4, label = 'SSE==y[i]-hat(y[i])', parse=T,
+            size=text_size, color = 'green') + geom_point(aes(y = y_hat), size=7) 
+```
+
+$$
+\frac{SSR}{SSTO} = 1
+$$
+
+```{r}
+#| fig.cap: "Kein Zusammenhang"
+
+simple$rnd <- y_av + c(0.5, -1.0, 0.8, -.5)
+ggplot(simple, aes(x, rnd)) + 
+  geom_segment(aes(x = x, y = y_av, xend = x, yend = rnd),
+               arrow = arrow(type='closed', length=unit(0.05, unit='npc')), size=2,
+               color = 'green') +
+  geom_hline(yintercept = y_av, size = 2) +
+  geom_line(aes(y = y_av), size=2, color = 'red') +
+  geom_segment(aes(x = x+0.1, y = y_av, xend = x+0.1, yend = rnd),
+               color = 'blue', size = 3,
+               arrow = arrow(type = 'closed', length=unit(0.05, unit='npc'))) +
+  geom_point(size=7) +
+  labs(x = 'X', y = 'Y') +
+  lims(x = c(-0.2,3.3), y = c(1, 3.5)) +
+  geom_text(x = 2, y = 2, label = 'SSTO==y[i]-bar(y)', parse=T,
+            size=text_size, color = 'blue') +
+  geom_text(x = 2, y = 1.7, label = 'SSR==hat(y[i])-bar(y)', parse=T,
+            size=text_size, color = 'gray30') +
+  geom_text(x = 2, y = 1.4, label = 'SSE==y[i]-hat(y[i])', parse=T,
+            size=text_size, color = 'green') +
+  geom_point(aes(y = y_av), size = 7, color = 'red') 
+```
+
+$$
+\frac{SSR}{SSTO} = 0
+$$
+
+## Determinationskoeffizient $R^2$
+
+Es gilt: $SSTO = SSR + SSE$
+
+$$
+R^2 = \frac{SSR}{SSTO} = 1 - \frac{SSE}{SSTO} \in [0,1] 
+$$
+^[Bei der einfachen Regression gilt: $r_{xy} = \pm\sqrt{R^2}$]
+
+### Korrigierter Determinationskoeffizient $R_a^2$
+
+$$
+R_a^2 = 1 - \frac{\frac{SSE}{n-p}}{\frac{SSTO}{n-1}} = 1 - \frac{n-1}{n-p}\frac{SSE}{SSTO}
+$$
+

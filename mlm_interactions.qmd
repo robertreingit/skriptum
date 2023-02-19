@@ -1,0 +1,414 @@
+# Interaktionseffekte 
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+source('_common.R')
+```
+
+
+
+```{r defs_mult_reg_inter}
+lm_coef_ex <- function(mod, max_co=3) round(summary(mod)$coefficients[,1:max_co],2)
+n <- 40
+set.seed(123)
+foo <- MASS::mvrnorm(n, mu = c(184,77),
+              Sigma=matrix(c(72,37,37,125),nr=2))
+handball <- tibble::tibble(
+  arm_span = foo[,1],
+  body_mass = foo[,2],
+  vel = 1 + 0.12*body_mass + 0.06*arm_span + 0.02*(body_mass-77)*(arm_span-184) + rnorm(n)
+)
+```
+
+## Beispieldaten^[@debanne2011]
+
+```{r}
+handball |> head() |>
+  knitr::kable(col.names=c('Velocity[m/s]','body mass[kg]','arm span[cm]'),
+               booktabs = TRUE,
+               caption = "Beispieldaten (synthetisch)",
+               linesep = "",
+               digits = 2,
+               escape = F)
+```
+
+
+## Beispieldaten - Deskriptiv
+
+```{r}
+handball |> summarytools::descr(
+  stats = c('mean','sd','min','max'), style = 'rmarkdown',
+  transpose = T) |>
+  knitr::kable(booktabs= T,
+               caption = 'Deskriptive Statistik der Handballdaten',
+               linesep = '',
+               digits = 1)
+```
+
+## Beispieldaten
+
+```{r}
+#| fig.cap: "Geschwindigkeit gegen Körpergewicht"
+
+ggplot(handball, aes(body_mass, vel)) +
+  geom_point(size=3) +
+  labs(x = 'Köpergewicht [kg]', y = 'Geschwindigkeit [m/s]') 
+```
+
+```{r}
+#| fig.cap: "Geschwindigkeit gegen Armspannweite"
+
+ggplot(handball, aes(arm_span, vel)) +
+  geom_point(size=3) +
+  labs(x = 'Armspannweite [cm]', y = 'Geschwindigkeit [m/s]') 
+```
+
+## Beispieldaten - Startmodell
+
+$$
+Y_{i} = \beta_0 + \beta_1 \times \textrm{bm}_i + \beta_2 \times \textrm{as}_i + \epsilon_i
+$$
+```{r, echo=T}
+mod_1 <- lm(vel ~ body_mass + arm_span, handball)
+```
+```{r}
+mod_1 |> lm_tbl_knitr(caption = "Modell 1", long = T, add_sigma = T)
+```
+
+## Modellfit
+
+```{r}
+#| fig.cap: "3D Streudiagramm"
+
+par(mar=c(1,1,1,1), cex.axis = 0.5)
+# x, y, z variables
+x <- handball$body_mass
+y <- handball$arm_span
+z <- handball$vel
+# Compute the linear regression (z = ax + by + d)
+fit <- lm(z ~ x + y)
+# predict values on regular xy grid
+grid.lines = 26
+x.pred <- seq(min(x), max(x), length.out = grid.lines)
+y.pred <- seq(min(y), max(y), length.out = grid.lines)
+xy <- expand.grid( x = x.pred, y = y.pred)
+z.pred <- matrix(predict(fit, newdata = xy), 
+                 nrow = grid.lines, ncol = grid.lines)
+# fitted points for droplines to surface
+fitpoints <- predict(fit)
+# scatter plot with regression plane
+plot3D::scatter3D(x, y, z, col='black', pch=16, cex=1.2,
+    theta = 20, phi = 20, ticktype = "detailed",
+    xlab = "body mass[kg]", ylab = "arm span[cm]", zlab = "ball velocity[m/s]",  
+    surf = list(x = x.pred, y = y.pred, z = z.pred,  
+    facets = NA, fit = fitpoints, col='red'), main = "", bty="b2",
+    colkey=F, d = 4)
+```
+
+## Zentrierung
+
+```{r, echo=T}
+handball <- dplyr::mutate(handball,
+                          body_mass_c = body_mass - mean(body_mass),
+                          arm_span_c = arm_span - mean(arm_span))
+```
+
+```{r}
+handball |> summarytools::descr(stat = c('mean','sd'),
+                    style="rmarkdown", transpose = T) |> 
+  knitr::kable(booktabs=T, digits = 2,
+               caption = 'Deskriptive Statistik')
+```
+
+## Modell mit zentrierten Variablen
+
+```{r, echo=T}
+mod_2 <- lm(vel ~ body_mass_c + arm_span_c, handball)
+```
+```{r}
+mod_2 |> lm_tbl_knitr(caption = "Modell 2", long = T, add_sigma = T)
+```
+
+## Residuen im zentrierten, additiven Modell
+
+```{r}
+#| fig.cap="Residuenplot"
+
+handball <- handball |> 
+  dplyr::mutate(res_2 = resid(mod_2),
+                y_hat_2 = predict(mod_2))
+p_resid_2 <- ggplot(handball, aes(y_hat_2, res_2)) +
+  geom_point() +
+  geom_hline(yintercept = 0, col = 'red', linetype = 'dashed') +
+  labs(x = expression(paste('Vorhergesagte Werte ', hat(y)[i])),
+       y = expression(paste('Residuen ', hat(e)[i]))) 
+print(p_resid_2)
+```
+
+## Added-variable plot
+
+```{r}
+#| out.width: "90%"
+#| label: "fig-mlm-interaction-avp"
+#| fig.cap: "Added-variable Graph mit `car::avPlots()`"
+
+par(mar=c(3,3,2,1))
+car::avPlots(mod_2)
+#mtext('body_mass_c | others', 1, line=1.8)
+#mtext('vel | others', 2, line=1.9)
+```
+
+
+## Was passiert wenn die Effekte nicht mehr nur additiv sind?
+
+```{r}
+#| fig.cap: "Unterteilung von Körpergewicht und Armspannweite in Kategorien"
+
+hb_quick <- handball |>
+  dplyr::mutate(as_f = cut(arm_span_c, 3),
+         bm_f = cut(body_mass_c, 3)) 
+
+hb_quick |>
+  dplyr::group_by(as_f, bm_f) |> 
+  dplyr::summarize(m = mean(vel), sd = sd(vel)) |> 
+  ggplot(aes(as_f, m, color=bm_f, group=bm_f)) +
+  geom_pointrange(aes(ymin = m - sd, ymax = m + sd)) +
+  geom_line() +
+  labs(x = 'Armspannweite', y = 'Geschwindigkeit') +
+  theme(legend.position = 'bottom')
+```
+
+## Was passiert wenn die Effekte nicht mehr nur additiv sind?
+
+### Neues Modell mit Interaktionen:
+
+
+$$
+Y_{i} = \beta_0 + \beta_1 \times \textrm{bm}_i + \beta_2 \times \textrm{as}_i + \beta_3 \times \textrm{bm}_i \times \textrm{as}_i + \epsilon_i
+$$
+\vspace{4cm}
+
+
+## Modellierung
+
+```{r}
+#| echo: true
+mod_3 <- lm(vel ~ body_mass_c * arm_span_c, handball) 
+```
+```{r}
+handball <- handball |> 
+  dplyr::mutate(res_3 = resid(mod_3),
+                y_hat_3 = predict(mod_3))
+mod_3 |> lm_tbl_knitr(caption = "Modell 3", long = T, add_sigma = T)
+```
+^[`A*B wird von R ausmultipliziert in A + B + A:B`. Hätte auch `lm(vel ~ body_mass_c + arm_span_c + body_mass_c:arm_span_c)` verwenden können.]
+
+## Einfache Steigungen in Vergleich
+
+```{r}
+#| fig.cap: "Modell ohne Interaktionen"
+
+hb_new <- tibble::tibble(
+  arm_span_c = rep(c(-5,5),5),
+  body_mass_c = rep(seq(-6,6,by=3), each=2),
+  bm_f = factor(body_mass_c)
+)
+hb_new_1 <- hb_new |> 
+  dplyr::mutate(vel = predict(mod_2, newdata = hb_new))
+ggplot(hb_new_1, aes(arm_span_c, vel, group=bm_f)) +
+  geom_point() +
+  geom_line(aes(linetype=bm_f)) +
+  scale_linetype_discrete("Level von\nbody mass\ncentered", guide = guide_legend(reverse=T)) +
+  scale_x_continuous("Armspannweite zentriert[cm]", breaks = c(-5,0,5)) +
+  labs(y = 'Ballgeschwindigkeit[m/s]') +
+  theme(text = element_text(size=12))
+```
+
+```{r}
+#| fig.cap="Modell mit Interaktionen"
+
+hb_new_2 <- hb_new |>  dplyr::mutate(vel = predict(mod_3, newdata = hb_new))
+p_inter_1 <- ggplot(hb_new_2, aes(arm_span_c, vel, group=bm_f)) +
+  geom_point() +
+  geom_line(aes(linetype=bm_f)) +
+  scale_linetype_discrete("Level von\nbody mass\ncentered",
+                          guide = guide_legend(reverse=T)) +
+  scale_x_continuous("Armspannweite zentriert[cm]", breaks = c(-5,0,5)) +
+  labs(y = 'Ballgeschwindigkeit[m/s]') +
+  theme(text = element_text(size=12))
+print(p_inter_1)
+```
+
+
+## Interaktionen sind symmetrisch
+
+```{r}
+#| fig.cap: "Veränderung mit der Körpergewicht"
+
+hb_new_3 <- tibble::tibble(
+  arm_span_c = rep(seq(-10,10,by=5), each=2),
+  body_mass_c = rep(c(-.5,.5), 5),
+  arm_f = factor(arm_span_c)
+)
+hb_new_3 <- hb_new_3 |> 
+  dplyr::mutate(vel = predict(mod_3, newdata = hb_new_3))
+p_inter_2 <- ggplot(hb_new_3, aes(body_mass_c, vel, group=arm_f)) +
+  geom_point() +
+  geom_line(aes(linetype=arm_f)) +
+  scale_linetype_discrete("Level von\narm span\ncentered",
+                          guide = guide_legend(reverse=T)) +
+  scale_x_continuous("Bodymass zentriert[kg]", breaks = c(-.5,0,.5)) +
+  labs(y = 'Ballgeschwindigkeit[m/s]') +
+  theme(text = element_text(size=12))
+print(p_inter_2)
+```
+
+```{r}
+#| fig.cap: "Veränderung mit dem Armspannweite"
+
+print(p_inter_1)
+```
+
+
+## Warum das Model Sinn macht{.t}
+
+```{r}
+#| fig.cap: "Veränderung mit dem Körpergewicht"
+
+print(p_inter_2)
+```
+```{r}
+tbl_simple <- hb_new_3 |>
+  dplyr::filter(arm_span_c %in% c(10,0,-10)) |> 
+  dplyr::group_by(arm_span_c) |>
+  dplyr::summarize(b_0 = coef(lm(vel ~ body_mass_c))[1],
+            b_1 = coef(lm(vel ~ body_mass_c))[2],
+            arm_f = arm_f[1]) |> 
+  dplyr::select(-1) |> dplyr::relocate(arm_f) |> 
+  dplyr::arrange(dplyr::desc(arm_f)) |> 
+  knitr::kable(booktabs = T,
+               col.names = c('arm span\\\\centered',
+                             '$\\beta_0$','$\\beta_1$'),
+               digits = 2, escape = F,
+               caption = 'Einfache Steigungen')
+tbl_simple
+```
+
+## Warum das Modell Sinn macht{.t}
+
+\scriptsize
+```{r}
+tbl_simple
+```
+```{r}
+mod_3_cs <- coef(mod_3) 
+names(mod_3_cs) <- c('b0','bm_c','as_c','bm_c:as_c')
+knitr::kable(mod_3_cs, booktabs = T, col.names = 'betas',
+             digits = 2, caption='Modellkoeffizienten', escape=T)
+```
+
+## Interpretation der Koeffizienten
+
+$$
+Y = b_0 + b_1 \cdot x_1 + b_2 \cdot x_2 + b_3 \cdot x_1 \cdot x_2 + \epsilon_i
+$$
+
+- $b_0$: (y-Achsenabschnitt) der Wert von $\hat{Y}$ wenn $x_1 = 0$ und $x_2 = 0$ gilt.
+- $b_1$: Der Unterschied in $\hat{Y}$ wenn zwei Objekte sich in $x_1$ um eine Einheit unterscheiden und $x_2 = 0$ ist.
+- $b_2$: Der Unterschied in $\hat{Y}$ wenn zwei Objekte sich in $x_2$ um eine Einheit unterscheiden und $x_1 = 0$ ist.
+- $b_3$: (Interaktionskoeffizient) Die Veränderung des Effekts von $x_1$ auf $\hat{Y}$ wenn $x_2$ um eine Einheit größer wird bzw. genau andersherum für $x_2$.
+
+## Aus der Ebene wird eine gekrümmte Fläche 
+
+```{r}
+#| fig.cap: "3D Streudiagramm des Interaktionsmodells"
+
+par(mar=c(1,1,1,1), cex.axis = 0.5)
+# x, y, z variables
+x <- handball$body_mass_c
+y <- handball$arm_span_c
+z <- handball$vel
+# Compute the linear regression (z = ax + by + d)
+fit <- lm(z ~ x + y)
+# predict values on regular xy grid
+grid.lines = 26
+x.pred <- seq(min(x), max(x), length.out = grid.lines)
+y.pred <- seq(min(y), max(y), length.out = grid.lines)
+xy <- expand.grid( body_mass_c = x.pred, arm_span_c = y.pred)
+z.pred <- matrix(predict(mod_3, newdata = xy), 
+                 nrow = grid.lines, ncol = grid.lines)
+# fitted points for droplines to surface
+fitpoints <- predict(mod_3)
+# scatter plot with regression plane
+plot3D::scatter3D(x, y, z, col='black', pch=16, cex=1.2,
+    theta = -20, phi = 20, ticktype = "detailed",
+    xlab = "body mass[kg]", ylab = "arm span[cm]", zlab = "ball velocity[m/s]",  
+    surf = list(x = x.pred, y = y.pred, z = z.pred,  
+    facets = NA, fit = fitpoints, col='red'), main = "", bty="b2",
+    colkey=F, d = 4)
+```
+
+
+## Residuenvergleich
+
+```{r}
+#| fig.cap="Residuen im additiven Modell"
+
+print(p_resid_2)
+```
+
+```{r}
+#| fig.cap="Residuen im Interaktionsmodell"
+
+ggplot(handball, aes(y_hat_3, res_3)) +
+  geom_point() +
+  geom_hline(yintercept = 0, col = 'red', linetype = 'dashed') +
+  labs(x = expression(paste('Vorhergesagte Werte ', hat(y)[i])),
+       y = expression(paste('Residuen ', hat(e)[i]))) 
+```
+
+## Residuenvergleich - qq-Plot
+
+```{r}
+#| fig.cap: "additives Modell"
+
+ggplot(handball, aes(sample = res_2)) +
+  geom_qq() +
+  stat_qq_line() +
+  labs(x = 'Theoretisch', y = 'Empirisch') 
+```
+```{r}
+#| fig.cap: "Interaktionsmodell"
+
+ggplot(handball, aes(sample = res_3)) +
+  geom_qq() +
+  stat_qq_line() +
+  labs(x = 'Theoretisch', y = 'Empirisch') 
+```
+
+
+## Take-away{.t}
+
+Interaktionsmodell
+
+- Erhöht die Flexibilität des linearen Modells.
+- Bei Interaktionen hängt der Einfluss der einzelnen Variablen immer von den Werten der anderen Variablen ab. 
+- Achtung: Interpretation der einfachen Haupteffekte nicht mehr möglich bzw. sinnvoll!
+
+
+## Zuschlag
+Was passiert im Interaktionsmodell mit den Koeffizienten wenn die $x_{ki}$s zentriert werden?
+
+\small
+\begin{align*}
+y_i &= \beta_0 + \beta_1 (x_{1i} - \bar{x}_1) + \beta_2 (x_{2i} - \bar{x}_2) + \beta_3 (x_{1i}-\bar{x}_1)(x_{2i}-\bar{x}_2) \\
+ &= \beta_0 + \beta_1 x_{1i} - \beta_1 \bar{x}_1 + \beta_2 x_{2i} - \beta_2 \bar{x}_2 + \beta_3 x_{1i} x_{2i} - \beta_3 x_{1i} \bar{x}_2 - \beta_3 \bar{x}_1 x_{2i} + \beta_3 \bar{x}_1 \bar{x}_2 \\ 
+ &= \beta_0 - \beta_1 \bar{x}_1 - \beta_2 \bar{x}_2 + \beta_3 \bar{x}_1 \bar{x}_2 + \beta_1 x_{1i}- \beta_3 \bar{x}_2 x_{1i} + \beta_2 x_{2i} - \beta_3 \bar{x}_1 x_{2i} + \beta_3 x_{1i} x_{2i} \\
+ &= \underbrace{\beta_0 - \beta_1 \bar{x}_1 - \beta_2 \bar{x}_2 + \beta_3 \bar{x}_1 \bar{x}_2}_{\beta_0} + \underbrace{(\beta_1 - \beta_3 \bar{x}_2) x_{1i}}_{\beta_1 x_{1i}} + \underbrace{(\beta_2 - \beta_3 \bar{x}_1) x_{2i}}_{\beta_2 x_{2i}} + \beta_3 x_{1i} x_{2i} 
+\end{align*}
+
+## Zum Nacharbeiten
+
+@kutner2005 [p.306-313]

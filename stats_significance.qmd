@@ -1,0 +1,624 @@
+# Statistische Signifikanz, p-Wert und Power 
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+source('_common.R')
+```
+```{r stats_significance_defs}
+n <- 20
+set.seed(123)
+world <- tibble(ID = paste0('P',stringr::str_pad(1:n, width=2, pad="0")),
+                Kraft = sample(2000:2500, n))
+world$Kraft[13] <- 1800
+world$Kraft[17] <- 3200
+d_gr <- 100
+d_x <- 2 
+```
+
+
+## Mit welcher Stichprobenverteilung arbeite ich denn jetzt?
+
+```{r}
+#| fig.cap: "Mehrer mögliche Verteilungen"
+
+dat_0s <- tibble(
+  x = seq(-10, 10, length.out=100),
+  v0 = dnorm(x, 0, 1),
+  v1 = dnorm(x, -4, 1),
+  v2 = dnorm(x, 3, 1),
+  v3 = dnorm(x, 5, 1))  %>% 
+  tidyr::pivot_longer(-x, names_to="Verteilung", values_to="v")
+ggplot(dat_0s, aes(x,v,ymin=0, ymax=v, fill=Verteilung)) +
+  geom_ribbon(alpha=.5) +
+  geom_line() +
+  labs(x = 'Werte', y = 'Dichte') 
+```
+
+## Mit der Verteilung die annimmt das nichts passiert!
+
+```{r}
+#| fig.cap: "Verteilung wenn nichts passiert."
+
+d_x <- 0.025
+x <- seq(-3, 3, d_x)
+dat_0 <- tibble(
+  x = x,
+  v = dnorm(x, 0, 1) 
+)
+
+ggplot(dat_0, aes(x,v,ymin=0, ymax=v)) +
+  #geom_area(data = low, fill='red', alpha=.8) +
+  #geom_area(data = up, fill='red', alpha=.8) +
+  geom_line() +
+  labs(x = 'Werte', y = 'Dichte') 
+```
+
+```{r}
+#| fig.cap: "Quantilefunktion wenn nichts passiert."
+
+xx <- seq(0,1,0.01)
+n_pts <- length(xx)
+dat_4 <- tibble(
+  x = xx,
+  v = qnorm(xx) 
+)
+ggplot(dat_4, aes(x,v,ymin=0, ymax=v)) +
+  geom_line() +
+  labs(x = 'Quantile', y = 'Werte') 
+```
+
+## *Signifikanter* Wert
+
+```{r}
+#| fig.cap: "Verteilung wenn nichts passiert und kritische Regionen."
+low <- tibble(x = seq(-3, -2, length.out=50), v = dnorm(x))
+up <- tibble(x = seq(2, 3, length.out=50), v = dnorm(x))
+ggplot(dat_0, aes(x,v,ymin=0, ymax=v)) +
+  geom_area(fill='green', alpha=.5) +
+  geom_area(data = low, fill='red', alpha=.8) +
+  geom_area(data = up, fill = 'red', alpha=.8) +
+  geom_vline(xintercept = c(-2,2), color='red', linetype='dashed') +
+  geom_label(data = tibble(x = c(-2,2), v = 0.3,
+                           labels=c(expression(k[lower]),
+                                    expression(k[upper]))),
+             aes(x,v,label=labels), parse=T) +
+  geom_line() +
+  labs(x = 'Werte', y = 'Dichte') 
+```
+
+Wenn der Stichprobenwert der Statistik in der *kritischen* Region auftritt, dann wird von einem **statistisch** signifikanten Effekt gesprochen. *Unter der $H_0$ bin ich überrascht diesen Wert zu sehen!*
+
+## Der p-Wert
+
+```{r}
+#| fig.cap: "Der gelben Flächen zeigen den p-Wert für den Wert der Statistik von d = 2,5 an."
+
+p_val <- 2.5
+p_dat_up <- tibble(
+  x = seq(p_val, 3, length.out=40),
+  v = dnorm(x)
+)
+p_dat_low <- tibble(
+  x = seq(-3, -p_val, length.out=40),
+  v = dnorm(x)
+)
+ggplot(dat_0, aes(x,v,ymin=0, ymax=v)) +
+  geom_area(data = low, fill='red', alpha=.8) +
+  geom_area(data = up, fill='red', alpha=.8) +
+  geom_area(data = p_dat_low, fill='yellow', alpha=0.9) +
+  geom_area(data = p_dat_up, fill='yellow', alpha=0.9) +
+  geom_vline(xintercept = c(-2,2), color='red', linetype='dashed') +
+  geom_label(data = tibble(x = c(-2,2), v = 0.3,
+                           labels=c(expression(k[lower]),
+                                    expression(k[upper]))),
+             aes(x,v,label=labels), parse=T) +
+  geom_line() +
+  geom_point(data = tibble(x = p_val, v = 0), size=2) +
+  labs(x = 'Werte', y = 'Dichte') 
+```
+
+## p-Werte
+
+Der p-Wert gibt die Wahrscheinlichkeit für den gefundenen oder einen noch extremeren Wert unter der $H_0$ an.
+
+
+```{r}
+#| fig.cap="Verschiedene P-Werte"
+
+foo <- function(p, lo=-3, up=3, d_x=0.025) {
+  len <- 40
+  x <- c(seq(lo, -abs(p), length.out=len))
+  tibble(x, v= dnorm(x), type=p)
+}
+foo2 <- function(p, lo=-3, up=3, d_x=0.025) {
+  len <- 40
+  x <- c(seq(abs(p), up, length.out=len))
+  tibble(x, v= dnorm(x), type=p)
+}
+p_s <- c(-2.7, -1.13, 0.7, 2.1) 
+p_vals <- round(2*(1 - pnorm(abs(p_s))),2)
+dat_3 <- purrr::map_dfr(p_s, foo)
+dat_3_up <- purrr::map_dfr(p_s, foo2)
+ggplot(dat_3, aes(x,v,ymin=0, ymax=v)) +
+  geom_ribbon(alpha=0.5) +
+  geom_ribbon(data=dat_3_up, alpha=0.5) +
+  geom_line(data=dat_0) +
+  geom_point(data = tibble(x=p_s, v=0,type=p_s), color='red') +
+  facet_grid(~type, labeller=as_labeller(function(p){
+    paste("Statistik = ", p, "\np-Wert = ", p_vals[which(p_s == p)])
+  })) +
+  labs(x = 'Werte', y = 'Dichte') + 
+  scale_x_continuous(breaks=c(-3,0,3)) +
+  theme(strip.text = element_text(size=8))
+```
+
+## p-Werte
+
+*"[A] p-value is the probability under a specified statistical model that a statistical summary of the data (e.g., the sample mean difference between two compared groups) would be equal to or more extreme than its observed value."* [@wasserstein2016, p.131]
+
+*"[T]he P value is the probability of seeing data that are as weird or more weird than those that were
+actually observed."* [@christensen2018, p.38]
+
+## Signifikanter Wert - Das Kleingedruckte
+
+- **Vor** dem Experiment wird für ein $H_0$ ein $\alpha$-Level angesetzt (per Konvention $\alpha=0,05 = 5\%$)
+- Anhand des $\alpha$-Levels können **kritische Werte** ($k_{lower}, k_{upper}$) bestimmt werden. Diese bestimmen die Grenzen der **kritischen Regionen**.
+- Wenn der gemessene Wert w der Statistik in die kritische Region fällt, also $w \leq k_{lower}$ oder $w \geq k_{upper}$ gilt, dann wird von einem **statistisch** signifikanten Wert gesprochen und die dazugehörige Hypothese wird **abgelehnt**. Äquivalent: Der p-Wert ist kleiner als $\alpha$.
+- Da in $\alpha$-Fällen ein Wert in der kritischen Region auftritt, auch wenn die $H_0$ zutrifft, wird in $\alpha$-Fällen ein $\alpha$-Fehler gemacht.
+
+## Signifikanter Wert - Das Kleingedruckte
+
+- Wenn der Wert w der Statistik nicht in den kritischen Regionen liegt, oder gleichwertig der p-Wert größer als $\alpha$ ist, wird die $H_0$ **beibehalten**. D.h. nicht, dass **kein Effekt** vorliegt, sondern lediglich, dass anhand der Daten keine Evidenz diesbezüglich gefunden werden konnte!
+- Die **statistische** Signifikanz sagt nichts über die Wahrscheinlichkeit der Theorie aus!
+- Ein p-Wert von $p = 0.0001$ heißt nicht, dass mit 99,99\% Wahrscheinlichkeit ein Effekt vorliegt!
+- *Statistisch* signifikant heißt nicht automatisch *praktisch* relevant!
+
+## Nochmal, wenn die $H_0$ nicht abgelehnt wird
+
+![Ausschnitt aus @altman1995](pics/altman_1995.png){height=6cm}
+
+## Nochmal p-Wert (@wasserstein2016)
+
+1. P-values can indicate how incompatible the data are with a specified statistical model.
+2. P-values do not measure the probability that the studied hypothesis is true, or the probability that the data were produced by random chance alone.
+3. Scientific conclusions and business or policy decisions should not be based only on whether a p-value passes a specific threshold.
+4. Proper inference requires full reporting and transparency
+5. A p-value, or statistical significance, does not measure the size of an effect or the importance of a result.
+6. By itself, a p-value does not provide a good measure of evidence regarding a model or hypothesis.
+
+## Was passiert nun aber wenn die "andere" Hypothese zutrifft? 
+
+```{r}
+#| fig.cap: "Differenzen mit kritischen Regionen (rot) mit einer Wahrscheinlichkeit von $\\alpha$ wenn $H_0$ zutrifft."
+
+differences <- readr::read_csv('data/combinations_differences.csv')
+n_sim <- dim(differences)[1]
+sigma <- sd(differences$d)
+xx <- -750:1250
+n_pts <- length(xx)
+q_crit <- qnorm(0.975, 0, sd = sigma)
+dat_power <- tibble(
+  x = rep(xx,2),
+  y = c(dnorm(xx,0,sigma), dnorm(xx,500,sigma)),
+  hypo = rep(c("H0","H500"), c(n_pts, n_pts))
+)
+low <- tibble(x = seq(-750,-q_crit), y = dnorm(x, 0, sigma), hypo='H50')
+up <- tibble(x = seq(q_crit, 750), y = dnorm(x, 0, sigma), hypo='H50')
+ggplot(dat_power, aes(x,y,fill=hypo,ymin=0,ymax=y)) +
+  geom_ribbon(alpha=.5) +
+  geom_area(data = up, fill='red', alpha=0.8) +
+  geom_area(data = low, fill='red', alpha=.8) +
+  geom_line() +
+  scale_fill_discrete('Hypothese') +
+  labs(x = 'Differenzen[N]', y = 'relative Häufigkeit') 
+```
+
+## Wir machen einen $\beta$-Fehler! 
+```{r}
+#| fig.cap: "Differenzen mit kritischen Regionen (rot) mit einer Wahrscheinlichkeit von $\\alpha$ wenn $H_0$ zutrifft und $\\beta$ (grün) wenn $H_1$ zutrifft."
+
+beta <- tibble(
+  x = -300:q_crit,
+  y = dnorm(x, 500, sigma)
+)
+ggplot(dat_power, aes(x,y,fill=hypo,ymin=0,ymax=y)) +
+  geom_ribbon(alpha=.5) +
+  geom_area(data = up, fill='red', alpha=0.8) +
+  geom_area(data = low, fill='red', alpha=.8) +
+  geom_area(data = beta, fill='green', alpha=0.5) +
+  geom_line() +
+  scale_fill_discrete('Hypothese') +
+  labs(x = 'Differenzen[N]', y = 'relative Häufigkeit') 
+```
+
+## Snap!(1989) - The Power
+
+```{r}
+#| fig.cap: "$1-\\beta$ = Power des Tests (blaue Fläche)."
+
+beta <- tibble(
+  x = -300:q_crit,
+  y = dnorm(x, 500, sigma)
+)
+power <- tibble(
+  x = q_crit:max(dat_power$x),
+  y = dnorm(x, 500, sigma)
+)
+ggplot(dat_power, aes(x,y,fill=hypo,ymin=0,ymax=y)) +
+  geom_ribbon(alpha=.5) +
+  geom_area(data = up, fill='red', alpha=0.8) +
+  geom_area(data = low, fill='red', alpha=.8) +
+  geom_area(data = beta, fill='green', alpha=0.5) +
+  geom_area(data = power, fill='blue', alpha=0.5) +
+  geom_line() +
+  scale_fill_discrete('Hypothese') +
+  labs(x = 'Differenzen[N]', y = 'relative Häufigkeit') 
+```
+
+## Terminologie noch mal
+
+- $\alpha$: Die Wahrscheinlichkeit sich gegen die $H_0$ zu entscheiden, wenn die $H_0$ zutrifft. $\alpha$-Level wird vor dem Experiment festgelegt um zu kontrollieren welche Fehlerrate toleriert wird.
+- $\beta$: Die Wahrscheinlichkeit sich gegen die $H_1$ zu entscheiden, wenn die $H_1$ zutrifft.
+- Power := $1 - \beta$: Die Wahrscheinlichkeit sich für die $H_1$ zu entscheiden, wenn die $H_1$ zutrifft. Sollte ebenfalls **vor** dem Experiment festgelegt werden.
+
+
+## Wie können wir die Power erhöhen? 
+
+```{r}
+#| fig.cap: "Verteilungen wenn $\\delta$=500 und $\\delta$=0 in unserem kleine Welt Beispiel mit n = 3."
+
+dat <- tibble(
+  di = c(differences$d + 500, differences$d),
+  hypo = rep(c('H500','H0'), c(n_sim,n_sim))
+)
+p_h500 <- ggplot(dat, aes(di, fill=hypo)) +
+  geom_density(alpha=0.5) +
+  labs(x = 'Differenzen[N]', y = 'relative Häufigkeit') +
+  scale_fill_discrete("Hypothese", labels=c(
+    expression(H[0]  ), expression(H[500])
+  ))
+print(p_h500)
+```
+
+
+## Stichprobengröße von n = 3 auf n = 9 erhöhen?
+
+```{r}
+#| fig.cap: "Stichprobenverteilungen der Differenz unter $H_0$ und $H_1:\\delta=500$N bei einer Stichprobengröße von n = 9"
+
+sample_k9 <- readr::read_csv('data/sample_k9.csv')
+sigma <- sample_k9$sd[1]
+d <- sample_k9$m[2]
+xx = seq(-4*sigma,d+4*sigma)
+n_pts = length(xx)
+dat_k9 <- tibble(
+  x = rep(xx,2),
+  y = c(dnorm(xx, 0, sigma), dnorm(xx, d, sigma)),
+  hypo = rep(c('H0','H500'), c(n_pts, n_pts))
+)
+ggplot(dat_k9, aes(x,y,fill=hypo, ymin=0, ymax=y)) +
+  geom_ribbon(alpha=0.5) +
+  geom_line() +
+  scale_fill_discrete("Hypothese", labels=c(
+    expression(H[0]  ), expression(H[500])
+  )) +  
+  lims(x = c(-750, 1250)) +
+  labs(x = 'Differenzen[N]', y = 'relative Häufigkeiten') 
+```
+
+## Standardfehler 
+
+Die Standardabweichung der Statistik wird als **Standardfehler** $s_e$ bezeichnet^[Der Standardfehler schätzt die Reliabilität der Statistik ab (@cohen1988)]. Der Standardfehler ist nicht gleich der Standardabweichung in der Population bzw. der Stichprobe. Es gilt für den Mittelwert:
+
+
+\begin{table}[]
+    \caption{Standardfehler des Mittelwerts, n = Stichprobengröße}
+    \centering
+    \begin{tabular}{ll}
+     \toprule
+     Population & Stichprobe \\
+     \midrule
+     $\sigma_{\bar{X}} =  \sqrt{\frac{\sigma^2}{n}} = \frac{\sigma}{\sqrt{n}}$ & 
+     $ s_e =  \sqrt{\frac{s^2}{n}} = \frac{s}{\sqrt{n}}$ \\ 
+     \bottomrule
+    \end{tabular}
+    \label{tab:s_e}
+\end{table}
+
+
+
+# Parameterschätzung 
+
+## Problem bei einer dichotomen Betrachtung der Daten
+
+![Auszug aus @cumming2013 [p.1]](../pics/cumming_luck.png)
+
+
+## Wie groß ist der Effekt? 
+
+```{r}
+#| fig.cap: "Stichprobenverteilungen der Differenz unter $H_0$ und $H_1:\\delta=500$N bei einer Stichprobengröße von n = 9"
+
+d_x <- 2 
+sigma <- sample_k9$sd[1]
+d <- sample_k9$m[2]
+xx = seq(-4*sigma,d+4*sigma)
+n_pts = length(xx)
+dat_k9 <- tibble(
+  x = rep(xx,2),
+  y = c(dnorm(xx, 0, sigma), dnorm(xx, d, sigma)),
+  hypo = rep(c('H0','H500'), c(n_pts, n_pts))
+)
+ggplot(dat_k9, aes(x,y,fill=hypo, ymin=0, ymax=y)) +
+  geom_ribbon(alpha=0.5) +
+  geom_line() +
+  scale_fill_discrete("Hypothese", labels=c(
+    expression(H[0]  ), expression(H[500])
+  )) +  
+  lims(x = c(-750, 1250)) +
+  labs(x = 'Differenzen[N]', y = 'relative Häufigkeiten') 
+```
+
+
+## Schätzung der Populationsparameter
+
+```{r}
+alpha <- 0.05
+delta <- 500
+mu <- delta
+d_hat <- 350
+s_hat <- 132
+s_e <- round(s_hat/sqrt(9))
+c_i <- d_hat + c(-1,1)*qnorm(1-alpha/2)*s_e
+```
+
+Kleine Welt: Experiment wird einmal mit n = 9 durchgeführt 
+
+### Beobachtete Stichprobenkennwerte
+
+\begin{align*}
+d = \bar{x}_{treat} - \bar{x}_{con} &= `r d_hat` \\
+s &= `r s_hat` \\
+s_e &= `r s_e`
+\end{align*}
+
+Wie präzise ist meine Schätzung und welche anderen Unterschiedswerte sind anhand der beobachteten Daten noch plausibel?
+
+## Welche $\delta$s sind plausibel für $d = `r d_hat`$? 
+
+```{r}
+#| fig.cap: "Verschiedene Verteilungen von Gruppendifferenzen, beobachteter Unterschied (rot)"
+
+cut_h <- 0.00002
+dat_con <- tibble(
+  x = seq(-500, 1000, length.out=200),
+  d0 = dnorm(x, 0, s_e),
+  dm75 = dnorm(x, -75, s_e),
+  d500 = dnorm(x, 500, s_e),
+  d350 = dnorm(x, 350, s_e),
+  d250 = dnorm(x, 250, s_e)
+) %>% tidyr::pivot_longer(-x, names_to="x_bar", values_to="v") %>% 
+  dplyr::filter(v > cut_h)
+ggplot(dat_con, aes(x,v,ymin=cut_h, ymax=v, fill=x_bar)) + 
+  geom_line() +
+  geom_ribbon(alpha=0.3) +
+  geom_vline(xintercept = d_hat, col = 'red', linetype='dashed') +
+  scale_fill_discrete("Verteilungen",
+                      breaks = c('d0', 'd500', 'd350', 'dm75', 'd250'),
+                      labels = c(expression(delta==0),
+                                 expression(delta==500),
+                                 expression(delta==350),
+                                 expression(delta==-75),
+                                 expression(delta==250))) +
+  labs(x = "Differenz", y = "Dichte") 
+```
+
+Plausibel unter einem gegebenem **$\alpha$-Level**!
+
+
+## Alle möglichen $\delta$s die plausibel sind
+
+```{r}
+#| fig.cap: "Konfidenzintervall (grün), Populationsparameter $\\delta$ und $\\alpha$-Level für die beobachtete Differenz (gelb)."
+
+mu_s <- seq(150, 550, length.out=25) 
+q_s <- qnorm(alpha, mu_s, s_e)
+df <- tibble(mu_s = mu_s,
+             lu = qnorm(alpha/2,mu_s, s_e),
+             up = qnorm(1-alpha/2, mu_s, s_e)) %>%
+  dplyr::mutate(inside = dplyr::if_else(mu_s >= c_i[1] & mu_s <= c_i[2], 'ja', 'nein'))
+ggplot(df, aes(x = mu_s, y = mu_s, ymin = lu, ymax = up, color = inside)) +
+  geom_hline(yintercept = d_hat, color = 'yellow') +
+  geom_hline(yintercept = c_i, color = 'green') +
+  geom_hline(yintercept = delta, color = 'black') +
+  geom_pointrange(size=0.3) +
+  labs(x = bquote('Mögliche'~delta), y = "") +
+  scale_color_manual("plausibel", values = c('green','red')) +
+  scale_y_continuous(breaks = seq(50,700,50)) +
+  scale_x_continuous(breaks = NULL) +
+  annotate("text", y=550,x=100,label=expression(delta==500), size=4) +
+  annotate("text", y=400,x=100,label=expression(d==350), size=4) +
+  coord_flip() 
+```
+
+## Was passiert wenn ich das Experiment ganz oft wiederhole?
+
+```{r}
+#| fig.cap: "Simulation von $n = 100$ Konfidenzintervallen."
+#| cache: true
+
+foo <- function(mu = 500, se = 132, n = 20, alpha = 0.05) {
+  sam <- rnorm(n, mu, se)
+  x_hat <- mean(sam)
+  s_e <- sd(sam)/sqrt(n)
+  q <- qnorm(alpha/2)
+  c(x_hat, x_hat + c(1,-1) * q * s_e)
+}
+N <- 100
+set.seed(2)
+c_is <- t(replicate(N, foo(mu, sigma, 20)))
+colnames(c_is) <- c("x_hat","lo","up")
+df_2 <- as_tibble(c_is) %>% dplyr::mutate(id = dplyr::row_number(),
+                                   inside = dplyr::if_else((mu >= lo) & (mu <= up), 'ja','nein'))
+ggplot(df_2, aes(id, x_hat, color = inside)) + 
+  geom_pointrange(aes(ymin = lo, ymax = up), size=0.3) +
+  geom_hline(yintercept = mu, color = 'black') +
+  scale_color_manual("enthalten", values = c('green','red')) +
+  labs(x = 'Experiment[#]', y = "d") +
+  coord_flip()
+```
+
+## Konfidenzintervall - Das Kleingedruckte
+
+- Das Konfidenzintervall für ein gegebenes $\alpha$-Niveau gibt nicht die Wahrscheinlichkeit an mit der der *wahre* Parameter in dem Intervall liegt.
+- Das Konfidenzintervall gibt alle mit den Daten kompatiblen Populationsparameter an.
+- Das $\alpha$-Niveau des Konfidenzintervalls gibt an bei welchem Anteil von Wiederholungen davon auszugehen ist, das das Konfidenzintervall den wahren Populationsparameter enthält. 
+
+## Konfidenzintervall herleiten nach @spiegelhalter2019 [p.241]
+\scriptsize
+1. We use probability theory to tell us, for any particular population
+parameter, an interval in which we expect the observed statistic to lie
+with 95% probability.
+2. Then we observe a particular statistic.
+3. Finally (and this is the difficult bit) we work out the range of possible
+population parameters for which our statistic lies in their 95\%
+intervals. This we call a "95\% confidence interval".
+4. This resulting confidence interval is given the label "95\%" since, with
+repeated application, 95% of such intervals should contain the true
+value.^[Strictly speaking, a 95\% confidence interval does ***not*** mean there is a 95\% probability that this particular interval contains the true value [...]]
+
+All clear? If it isn’t, then please be reassured that you have joined
+generations of baffled students.
+
+
+## Konfidenzintervall berechnen (Vorschau)
+
+$$
+\textrm{CI}_{1-\alpha} = \bar{x} \pm z_{\alpha/2} \times s_e 
+$$
+
+
+## Dualität von Signifikanztests und Konfidenzintervall
+
+Wenn das Konfidenzintervall mit Niveau $1-\alpha\%$ die $H_0$ nicht beinhaltet, dann wird auch bei einem Signifikanztest die $H_0$ bei einer Irrtumswahrscheinlichkeit von $\alpha$ abgelehnt.
+
+
+
+
+## Verteilungen
+```{r}
+#| fig.cap: "Eine Dichtefunktion"
+
+d_x <- 0.025
+x <- seq(-3, 3, d_x)
+dat_0 <- tibble(
+  x = x,
+  v = dnorm(x, 0, 1) 
+)
+low <- tibble(
+  x = seq(-3,-2,d_x),
+  v = dnorm(x, 0, 1)
+)
+up <- tibble(
+  x = seq(2, 3, d_x),
+  v = dnorm(x, 0, 1)
+)
+ggplot(dat_0, aes(x,v,ymin=0, ymax=v)) +
+  geom_area(fill='green', alpha=.5) +
+  geom_line() +
+  labs(x = 'Werte', y = 'Dichte') 
+```
+
+## Eigenschaften von Verteilungen - Mittelwert $\mu$
+```{r}
+#| fig.cap: "Verteilungen mit unterschiedlichen Mittelwerten"
+
+xx <- seq(-3,6,d_x)
+n_pts <- length(xx)
+dat_1 <- tibble(
+  x = rep(xx,2),
+  v = c(dnorm(xx, 0, 1),
+        dnorm(xx, 3, 1)),
+  pos = rep(c('x0','x3'), c(n_pts,n_pts))
+)
+ggplot(dat_1, aes(x,v,ymin=0, ymax=v, fill=pos)) +
+  geom_ribbon(alpha=.5) +
+  geom_line() +
+  labs(x = 'Werte', y = 'Dichte') +
+  scale_fill_discrete("Lageparameter",
+                      labels = c(expression(mu == 0), expression(mu == 3))) 
+```
+
+^[auch Lageparameter oder Erwartungswert]
+
+## Eigenschaften von Verteilungen - Varianz $\sigma^2$
+```{r}
+#| fig.cap: "Verteilungen mit unterschiedlichen Varianzen"
+
+xx <- seq(-5,5,d_x)
+n_pts <- length(xx)
+dat_2 <- tibble(
+  x = rep(xx,2),
+  v = c(dnorm(xx, 0, 1),
+        dnorm(xx, 0, sqrt(2))),
+  type = rep(c('s1','s0.5'), c(n_pts,n_pts))
+)
+ggplot(dat_2, aes(x,v,ymin=0, ymax=v,fill=type)) +
+  geom_ribbon(alpha=.5) +
+  geom_line() +
+  labs(x = 'Werte', y = 'Dichte') +
+  scale_fill_discrete("Varianz",labels = c(
+    expression(sigma^2 == 2),
+    expression(sigma^2 == 1)
+  )) 
+```
+
+^[auch Skalenparameter]
+
+## Formeln 
+
+\begin{table}[]
+    \caption{Parameter einer Verteilung und deren Sch\"atzer}
+    \centering
+    \begin{tabular}{llr}
+     \toprule
+     Population & Stichprobe & \\
+     \midrule
+     Mittelwert $\mu$ & $\bar{x} = \frac{1}{n}\sum_{i=1}^n x_i$  \\
+     Varianz $\sigma^2$ & $s^2 = \frac{1}{n-1}\sum_{i=1}^n (x_i - \bar{x})^2$ \\
+     Standardabweichung $\sigma$ & $s = \sqrt{s^2}$ \\
+     \bottomrule
+    \end{tabular}
+\end{table}
+
+n := Anzahl der Stichprobenelemente, $x_i$ := Messwerte
+
+
+## Nebenbei: Warum der Mittelwert Sinn macht
+```{r}
+#| fig.cap: "Verteilung der Mittelwerte von Stichproben der Größe $n=10$, Kleine Welt Population $\\mu$ (rot)"
+
+bar <- function(world, k=3) {
+  n <- dim(world)[1]
+  x <- 1:n
+  N <- choose(n,k)
+  x_bars <- numeric(N)
+  # get all permutations
+  id_1 <- t(combn(x,k))
+  for (i in 1:nrow(id_1)) {
+    x_bars[i] <- mean(world$Kraft[id_1[i,]])
+  }
+  x_bars
+}
+x_bars <- bar(world, 10)
+mu <- mean(world$Kraft)
+ggplot(tibble(x=x_bars),aes(x)) +
+  geom_histogram(aes(y = stat(density)), bins = 30) +
+  geom_vline(xintercept = mu,
+             color = 'red', linetype = 'dashed') +
+  labs(x = 'Mittelwerte[N]', y = 'Häufigkeit') 
+```
+
+

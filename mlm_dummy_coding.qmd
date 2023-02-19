@@ -1,0 +1,471 @@
+# Integration von nominale Variablen 
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+source('_common.R')
+```
+
+
+```{r defs_dummy}
+N <- 30
+set.seed(123)
+height <- tibble::tibble(cm = rnorm(2*N,rep(c(180,167),each=N),10),
+                 gender = factor(rep(c('m','f'),each=N)))
+N <- 20
+K <- 4
+set.seed(1)
+data <- tibble::tibble(
+  group = gl(K, N, labels = c('A','B','C','D')),
+  rt = rnorm(K * N, mean = rep(seq(500,800,100), each=N), sd = 50)
+)
+```
+
+## Beispiel: Körpergröße bei Frauen und Männern
+
+```{r}
+#| fig.cap: "Simulierte Daten: Verteilung von Körpergrößen nach Geschlecht"
+
+ggplot(height, aes(gender,cm)) + 
+  see::geom_violindot(size_dots=20, fill_dots='red') +
+  labs(x = 'Gender', y = 'Körpergröße[cm]') 
+```
+
+## Datensatz
+
+
+```{r}
+height[c(1:3,31:33),] |> 
+  knitr::kable(
+    booktabs = T,
+    caption = "Ausschnitt aus den Daten",
+    digits = 1,
+    linesep = ''
+  )
+```
+
+```{r}
+x_hat <- height |> dplyr::group_by(gender) |>
+  dplyr::summarize(m = round(mean(cm),1), sd = round(sd(cm),1))
+knitr::kable(x_hat, format ='latex', booktabs=TRUE,
+             caption = "Deskriptive Werte")
+```
+
+
+## Nominale Variablen in `R`
+
+Nominale Variablen werden in `R` als `factor()` dargestellt.
+
+```{r}
+#| echo: true
+gender <- factor(c(0,0,1,1),
+                 levels = c(0,1),
+                 labels = c('m','f'))
+gender
+```
+^[Viele Funktionen in `R` transformieren eine Vektor mit Zeichenketten in einen `factor()` um. z.B. `factor(c('m','m','f','f'))`]
+
+## t-Test in `R` mit `t.test()`
+
+```{r}
+#| echo: true
+#| eval: false
+t.test(cm ~ gender, data=height, var.equal=T)
+```
+```{r}
+nice_ttest(t.test(cm ~ gender, data=height, var.equal=T))
+```
+
+
+## Modellformulierung beim t-Test $(n_w = n_m)$
+
+\small
+\begin{align*}
+Y_{if} &= \mu_{f} + \epsilon_{if}, \quad \epsilon_{if} \sim \mathcal{N}(0,\sigma^2) \\
+Y_{im} &= \mu_{m} + \epsilon_{im}, \quad \epsilon_{im} \sim \mathcal{N}(0,\sigma^2)
+\end{align*}
+
+### Hypothesen
+\begin{align*}
+H_0&: \delta = 0 \\
+H_1&: \delta \neq 0
+\end{align*}
+
+### Teststatistik
+$$
+t = \frac{\bar{y}_m - \bar{y}_w}{\sqrt{\frac{s_m^2 + s_w^2}{2}}\sqrt{\frac{2}{n}}}
+$$
+
+### Referenzverteilung
+$$
+t \sim t_{df=2n-2}
+$$
+
+```{r}
+#| fig.cap: "t-Verteilung mit $df=58$"
+
+n_fig_pts <- 100
+t_dist <- tibble::tibble(
+  x = seq(-3,3,length.out=n_fig_pts),
+  t = dt(x,58)
+) 
+ggplot(t_dist, aes(x,t)) +
+  geom_ribbon(aes(ymin=0, ymax=t), alpha=0.3, fill='red') +
+  geom_line() + 
+  labs(x = 't-Werte', y = 'Dichte') 
+```
+
+## Kann ich aus dem t-Test ein lineares Modell machen? 
+
+
+### t-Test
+\begin{align*}
+Y_{if} &= \mu_{f} + \epsilon_{if}, \quad \epsilon_{if} \sim \mathcal{N}(0,\sigma^2) \\
+Y_{im} &= \mu_{m} + \epsilon_{im}, \quad \epsilon_{im} \sim \mathcal{N}(0,\sigma^2) \\
+t &= \frac{\bar{y}_m - \bar{y}_w}{\sqrt{\frac{s_m^2 + s_w^2}{2}}\sqrt{\frac{2}{n}}} \\
+t &\sim t_{df=2n-2}
+\end{align*}
+
+### Lineares Modell
+\begin{align*}
+Y_i &= \beta_0 + \beta_1 \times x_i + \epsilon_i \\
+\Delta_m &= \mu_m - \mu_f \\
+Y_i &= \beta_0 + \beta_1 \times x_{??} + \epsilon_i \\
+Y_i &= \mu_f + \Delta_{m} \times x_{??} + \epsilon_i 
+\end{align*}
+
+## Dummy- oder Indikatorkodierung 
+
+\begin{align*}
+Y_i &= \mu_f + \Delta_{m} \times x_{1i} + \epsilon_i \\
+\Delta_m &= \mu_m - \mu_f \\
+x_1 &= 
+\begin{cases}
+0\text{ wenn weiblich}\\
+1\text{ wenn männlich}
+\end{cases} 
+\end{align*}
+
+Für eine nominale Variable wird eine Indikatorvariablen (Dummyvariable) definiert. Über diese Indikatorvariable kann die Zugehörigkeit eines Messwerts $Y_i$ zu einer Faktorstufe $k$ bestimmt werden. Eine Faktorstufe ist dabei immer die Referenzstufe bei der die Indikatorvariable gleich $0$ ist.
+
+
+## Einfach mal stumpf in `lm()` eingeben
+
+```{r}
+#| eval: false
+#| echo: true
+
+mod <- lm(cm ~ gender, height)
+```
+```{r}
+mod <- lm(cm ~ gender, height)
+lm_tbl_knitr(mod)
+```
+^[`R` gibt die Faktorstufe nach dem Namen des Faktors an. Im Beispiel steht `genderm` für Stufe `m` im Faktor `gender`.]
+
+## Vergleich der Konfidenzintervalle
+
+### Lineares Modell
+```{r}
+#| echo: true
+confint(mod)
+```
+### t-Test
+```{r}
+#| echo: true
+t.test(cm ~ gender,
+       data = height,
+       var.equal=T)$conf
+```
+
+
+^[Mit `t.test()$conf.int` kann auf das berechnete Konfidenzintervall zugegriffen werden.]
+
+## Auf welchen Werten wird ein lineares Modell gerechnet???
+
+```{r}
+cbind(height, (0:1)[as.numeric(height$gender)])[c(1:3,41:43),] |> 
+  knitr::kable(booktabs = TRUE,
+               col.names = c('cm', 'gender', '$x_1$'),
+               row.names = F,
+               escape = F,
+               linesep = '',
+               caption = "Repräsentation der Faktorvariablen",
+               digits = 2)
+```
+
+## Residuen
+
+```{r}
+#| fig.cap: "Residuen"
+
+height |> dplyr::mutate(y_hat = predict(mod),
+                 e_hat = resid(mod)) |> 
+  ggplot(aes(y_hat, e_hat)) +
+  geom_point() +
+  geom_hline(yintercept = 0, col = 'red', linetype = 'dashed') +
+  labs(x = expression(paste('Vorhergesagte Werte ', hat(y)[i])),
+       y = expression(paste('Residuen ', hat(e)[i]))) 
+```
+
+
+## Wen's interessiert - t-Wert
+
+Seien beide Gruppen gleich groß ($n$) mit $N = n_m + n_w = 2 \times n$. Der t-Wert für $\beta_1$ berechnet sich aus $t = \frac{b_1}{s_b}$ mit:
+
+$$
+s_b = \sqrt{\frac{\sum_{i=1}^N (y_i - \bar{y})^2}{N-2}\frac{1}{\sum_{i=1}^N(x_i-\bar{x})^2}}
+$$
+Dadurch, das die $x_i$ entweder gleich $0$ oder $1$ sind, ist $\bar{x}=0.5$ und die Abweichungsquadrate im zweiten Term sind alle gleich $\frac{1}{4}$.
+
+$$
+\sum_{i=1}^N(x_i - \bar{x})^2=\sum_{i=1}^N\left(x_i - \frac{1}{2}\right)^2 = \sum_{i=1}^N\frac{1}{4}=\frac{N}{4}=\frac{2n}{4}=\frac{n}{2}
+$$
+
+Der ersten Term kann mit etwas Algebra und der Definition für die Stichprobenvarianz $s^2$ auf die gewünschte Form gebracht werden.
+
+$$
+\frac{\sum_{i=1}^N(y_i-\hat{y})^2}{N-2}=\frac{\sum_{i=1}^n(\overbrace{y_{im} - \bar{y}_m}^{Männer})^2+\sum_{i=1}^n(\overbrace{y_{iw}-\bar{y}_w}^{Frauen})^2}{2(n-1)}=\frac{(n-1)s_m^2+(n-1)s_w^2}{2(n-1)}=\frac{s_m^2+s_w^2}{2}
+$$
+
+
+## Wen's interessiert - $\beta_1 = \mu_w - \mu_m$
+
+Mit $s_x^2 = \frac{N\frac{1}{4}}{N-1} = \frac{N}{4(N-1)}$
+\begin{align*}
+    b_1 &= \frac{cov(x,y)}{s_x^2} \\
+    &= \frac{\sum_{i=1}^N(y_i - \bar{y})(x_i - \bar{x})}{N-1} \frac{4(N-1)}{N} \\
+    &= 4\frac{\sum_{i=1}^n(y_{im}-\bar{y})\frac{-1}{2}+\sum(y_{iw}-\bar{y})\frac{1}{2}}{N} \\
+    &= \frac{4}{2}\frac{\sum_{i=1}^n(y_{iw}-\bar{y}) - \sum_{i=1}^n(y_{im}-\bar{y})}{2n} \\
+    &= \frac{\sum_{i=1}^n y_{iw}}{n} - \frac{n\bar{y}}{n} - \frac{\sum_{i=1}^n y_{im}}{n} + \frac{n\bar{y}}{n} \\
+    &= \bar{y}_w - \bar{y}_m = \Delta
+\end{align*}
+
+## Wen's interessiert - $\beta_0 = \mu_m$
+
+Mit $b_1 = \Delta = \bar{y}_w - \bar{y}_m$:
+\begin{align*}
+b_0 &= \bar{y} - \Delta \times \bar{x} \\
+&= \frac{\sum_{i=1}^N y_i}{N} - \Delta \times \frac{1}{2} \\
+&= \frac{\sum_{i=1}^n y_{im} + \sum_{i=1}^n y_{iw}}{2n} - \frac{1}{2}(\bar{y}_w - \bar{y}_m)  \\
+&= \frac{1}{2}\frac{\sum_{i=1}^ny_{im}}{n} + \frac{1}{2}\frac{\sum_{i=1}^ny_{iw}}{n} - \frac{1}{2}\bar{y}_w + \frac{1}{2}\bar{y}_m \\
+&= \frac{1}{2}\bar{y}_m + \frac{1}{2}\bar{y}_w - \frac{1}{2}\bar{y}_w + \frac{1}{2}\bar{y}_m \\
+&= \bar{y}_m
+\end{align*}
+
+## Können auch mehr als zwei Stufen verwendet werden?
+
+```{r}
+#| fig.cap: "Ein Reaktionszeitexperiment mit vier Stufen A, B, C und D"
+
+ggplot(data, aes(group, rt)) + geom_boxplot() +
+  geom_point(alpha=.1, col='red') +
+  labs(x = 'Gruppe', y = 'Reaktionszeit') 
+```
+
+## Deskriptive Daten
+
+```{r}
+tmp <- data |> dplyr::group_by(group) |>
+  dplyr::summarize(y_hat = mean(rt), sd = sd(rt))
+mat <-  t(matrix(c(-1,1,0,0,-1,0,1,0,-1,0,0,1),nr=4))
+tmp |> dplyr::mutate(delta = c(NA,mat %*% y_hat)) |>
+  knitr::kable(booktabs = TRUE,
+               col.names = c('Gruppe','$\\bar{y}_j$', '$s_j$', '$\\Delta_{j-A}$'),
+               digits = 2,
+               format = 'latex',
+               escape=F,
+               caption="Gruppenmittelwerte, Standardabweichung und Unterschiede zu Stufe A")
+```
+
+
+## Reaktionszeitexperiment als lineares Modell
+
+### Modell
+
+$$
+y_i = \mu_A + \Delta_{B-A} x_1 + \Delta_{C-A} x_2 + \Delta_{D-A} x_3 + \epsilon_i
+$$
+
+### Dummyvariablen
+```{r}
+mat <- contrasts(data$group)
+colnames(mat) <- c('x1','x2','x3')
+knitr::kable(mat, booktabs=TRUE, format='latex') |>
+  kableExtra::kable_styling(position = 'center')
+```
+
+## Nochmal allgemeiner
+
+\begin{table}[]
+    \centering
+    \begin{tabular}{lcccc}
+    \toprule
+         & $x_1$ & $x_2$ & $\ldots$ & $x_{K-1}$ \\
+    \midrule
+    Referenz ($j=1$) & 0 & 0 &  & 0 \\
+    $j=2$ & 1 & 0 & $\ldots$  & 0 \\
+    $j=3$ & 0 & 1 & $\ldots$  & 0 \\
+    $j=K$ & 0 & 0 & $\ldots$  & 1 \\
+    \bottomrule
+    \end{tabular}
+\end{table}
+
+Mit $K$ Faktorstufen werden (K-1) Dummyvariablen $x_1, x_2, \ldots, x_{K-1}$ benötigt. Eine Stufe wird als Referenz definiert. Die $x_1$ bis $x_{K-1}$ kodieren die Abweichungen der anderen Stufen von dieser Stufe.^[Diese Art der Kodierung wird auch als treatment Kodierung bezeichnet.]
+
+
+## Reaktionszeitexperiment mit `lm()`
+```{r}
+#| echo: true
+#| eval: false
+
+mod <- lm(rt ~ group, data)
+```
+
+```{r}
+mod <- lm(rt ~ group, data)
+lm_tbl_knitr(mod)
+```
+\label{slide:rs}
+
+## Ausblick
+```{r}
+#| echo: true
+#| eval: false
+
+anova(mod)
+```
+
+```{r}
+lm_anova_tbl_knitr(anova(mod), caption = "ANOVA-Tabelle")
+```
+
+## Kombination von kontinuierlichen und nominalen Variablen
+
+```{r}
+#| fig.cap: "Hypothetische Leistungsentwicklung in Abhängigkeit vom Alter und Gender"
+
+N <- 50
+set.seed(1)
+lew <- tibble::tibble(
+  ta = sample(10, N, replace=T),
+  gender = sample(0:1, N, replace=T),
+  perf = rnorm(N, 30, 3) + 2 * ta + 10*gender,
+  gender_f = factor(gender, levels = c(1,0), labels=c('f','m'))
+)
+ggplot(lew, aes(ta, perf, color = gender_f)) +
+  geom_point(size=2) +
+  labs(x = 'Trainingsalter', y = 'Performance') +
+  scale_color_discrete('Gender') 
+```
+
+
+## Modellansatz 
+
+- Aus gender (K = 2) wird eine **Dummyvariable**
+- Frauen werden (zufällig) als Referenz genommen 
+
+\begin{align*}
+Y_i &= \beta_{ta = 0,x_1=0} + \Delta_m \times x_1 + \beta_{ta} \times ta + \epsilon_i \\
+x_1 &= 
+\begin{cases}
+0\text{ wenn weiblich}\\
+1\text{ wenn männlich}
+\end{cases} \\
+\end{align*}
+
+
+## Modellieren mit `lm()`
+```{r}
+#| echo: true
+#| eval: false
+
+mod <- lm(perf ~ gender_f + ta, lew)
+```
+```{r}
+mod <- lm(perf ~ gender_f + ta, lew)
+lm_tbl_knitr(mod, add_sigma = T, long = F)
+```
+
+
+## Die resultierenden Graden
+
+```{r}
+#| fig.cap: "Leistungsentwicklung in Abhängigkeit vom Alter und Gender"
+
+new_lew <- data.frame(ta = c(1,10,1,10),
+           gender_f = factor(c(0,0,1,1),
+                             levels=0:1,
+                             labels=c('f','m')))
+new_lew <- new_lew |> dplyr::mutate(y_hat=predict(mod, new_lew))
+ggplot(lew, aes(ta, perf, color = gender_f)) + geom_point() +
+  geom_line(data = new_lew, aes(y = y_hat)) +
+  labs(x = 'Trainingsalter', y = 'Performance') +
+  scale_color_discrete('Gender') 
+```
+
+## Interaktion zwischen kontinuierlichen und nominalen Variablen
+
+```{r}
+#| fig.cap: "Leistungsentwicklung in Abhängigkeit vom Alter und Gender"
+
+N <- 50
+set.seed(1)
+lew <- tibble::tibble(
+  ta = sample(10, N, replace=T),
+  gender = sample(0:1, N, replace=T),
+  perf = rnorm(N, 30, 3) + 2 * ta + 10*gender + 2*ta*gender,
+  gender_f = factor(gender, levels = c(0,1), labels=c('f','m'))
+)
+ggplot(lew, aes(ta, perf, color = gender_f)) +
+  geom_point(size=2) +
+  labs(x = 'Trainingsalter', y = 'Performance') +
+  scale_color_discrete('Gender') 
+```
+
+## Ansatz für ein Interaktionsmodell
+
+Das vorhergehendes Modell wird um einen Interaktionsterm erweitert.
+
+$$
+y_i = \beta_{ta=0,x_1=0} + \Delta_m \times x_1 + \beta_{ta} \times ta + \beta_{ta \times gender} \times x_1 \times ta + \epsilon_i
+$$
+
+## Interaktionsmodell mit `lm()`
+
+```{r}
+#| echo: true
+#| eval: false
+
+mod <- lm(perf ~ gender_f * ta, lew)
+```
+```{r}
+mod <- lm(perf ~ gender_f * ta, lew)
+lm_tbl_knitr(mod, add_sigma = T, long = F)
+```
+
+
+## Regressionsgeraden
+
+```{r}
+#| fig.cap: "Leistungsentwicklung in Abhängigkeit vom Alter und Gender"
+
+new_lew <- data.frame(ta = c(1,10,1,10),
+           gender_f = factor(c(0,0,1,1),
+                             levels=0:1,
+                             labels=c('f','m')))
+new_lew <- new_lew |> dplyr::mutate(y_hat = predict(mod,new_lew))
+ggplot(lew, aes(ta, perf, color = gender_f)) +
+  geom_point() +
+  geom_line(data = new_lew, aes(y = y_hat)) +
+  labs(x = 'Trainingsalter', y = 'Performance') +
+  scale_color_discrete('Gender') 
+```
+
+
+
+## Zum Nacharbeiten
+
+@kutner2005 [p.313-319] \newline
+
