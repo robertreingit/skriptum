@@ -188,87 +188,110 @@ Da der Wert D, wiederum auf den Daten der Stichprobe berechnet wird, handelt es 
 #| label: fig-sts-basics-ex-1-dotplot
 #| fig.height: 1.5
 
-ggplot(world_ex_1,
-       aes(Kraft, 1, color = Gruppe)) +
-  geom_point(size=3) +
-  geom_segment(data = world_ex_1_hat, aes(xend = Kraft, y=0.99, yend=1.01), size=1.3) +
-  annotate("segment",
-           x = world_ex_1_hat$Kraft[1],
-           xend = world_ex_1_hat$Kraft[2],
-           y = 1.01,
-           yend = 1.01,
-           arrow = arrow(ends = "both", angle = 45, length = unit(.2,"cm"))) +
-  annotate("text",
-           x = mean(world_ex_1_hat$Kraft), y = 1.01, label = 'D', vjust=-.5) +
-  scale_x_continuous('Kraftwerte[N]', breaks = seq(1800, 3200, 200), limits=c(1800, 3200)) +
-  scale_y_continuous('', breaks = NULL, limits=c(0.975, 1.025))
+diff_dotplot <- function(df_1, df_2) {
+  # Plots a dotplot with two groups.
+  # Args:
+  #   df_1: point data
+  #   df_2: average data
+  ggplot(df_1,
+         aes(Kraft, 1, color = Gruppe)) +
+    geom_point(size=3) +
+    geom_segment(data = df_2, aes(xend = Kraft, y=0.99, yend=1.01), size=1.3) +
+    annotate("segment",
+             x = df_2$Kraft[1],
+             xend = df_2$Kraft[2],
+             y = 1.01,
+             yend = 1.01,
+             arrow = arrow(ends = "both", angle = 45, length = unit(.2,"cm"))) +
+    annotate("text",
+             x = mean(df_2$Kraft), y = 1.01, label = 'D', vjust=-.5) +
+    scale_x_continuous('Kraftwerte[N]', breaks = seq(1800, 3200, 200), limits=c(1800, 3200)) +
+    scale_y_continuous('', breaks = NULL, limits=c(0.975, 1.025))
+}
 
+diff_dotplot(world_ex_1, world_ex_1_hat)
 ```
 
-## Intervention erhöht Kraftfähigkeit um `r d_gr` N
+In @fig-sts-basics-ex-1-dotplot sind die Werte der beiden Gruppen, deren Mittelwerte $\bar{K}_{\text{CON}}$ und $\bar{K}_{\text{TRT}}$ und der Unterschied $D$ zwischen diesen abgebildet. Wie erwartet zeigt die Interventionsgruppen den höheren Kraftwert im Vergleich zu der Kontrollgruppe. Allerdings ist der Wert mit $D = `r D`$ größer als der tatsächliche Zuwachs von $\Delta_{\text{Training}} = `r d_gr`$ (Warum ist das so?).
+
+Der Unterschied zwischen den beiden Gruppen ist natürlich auch zum Teil auf die Unterschiede die zwischen den beiden Gruppen vor der Intervention bestanden haben zurück zu führen. Was wäre denn passiert, wenn wir eine andere Stichprobe gezogen hätten?
 
 ```{r}
-s_1 <- c(12,2,19)
-s_2 <- c(4,8,16)
-dat_kon <- world[s_1,]
-dat_int <- world[s_2,] |> 
-  dplyr::mutate(Kraft = Kraft + d_gr)
+id_s <- c(12,2,19,4,8,16)
 ```
 
-### Stichprobe 2
-Kontrollgruppe 
+Sei $i = \{`r paste(id_s, collapse=',')`\}$ eine zweite Stichprobe. Dies würde zu den folgenden Werten führen nach der Intervention führen.
 
 ```{r}
-dat_kon |> knitr::kable(booktabs=T,
-                         col.names=c('ID','Kraft[N]'))
+#| label: tbl-sts-basics-sample-2
+#| tbl-cap: "Ergebnis der Intervention in Experiment 2 für die Kontroll- und die Interventionsgruppe."
+
+world_ex_2 <- world[id_s,] |> mutate(Gruppe=rep(c('CON','TRT'),each=3))
+world_ex_2 <- world_ex_2 |>
+  rows_update(world_ex_2 |> filter(Gruppe == 'TRT') |>
+                mutate(Kraft = Kraft + d_gr),
+              by = 'ID')
+world_ex_2_hat <- world_ex_2 |> group_by(Gruppe) |> summarize(Kraft = mean(Kraft))
+
+world_ex_1 |> 
+  kable(
+    booktabs=TRUE, 
+    col.names = c('ID', 'Kraft[N]','Gruppe'))
 ```
-
-Mittelwert: `r round(mean(dat_kon$Kraft))` N
-
-Interventionsgruppe
 
 ```{r}
-dat_int |> knitr::kable(booktabs=T,
-                         col.names=c('ID','Kraft[N]'))
+#| fig.cap: "Dotplot der beiden Stichproben in Experiment 2. Senkrechte Striche zeigen die jeweiligen Mittelwerte an."
+#| label: fig-sts-basics-ex-2-dotplot
+#| fig.height: 1.5
+
+diff_dotplot(world_ex_2, world_ex_2_hat)
 ```
 
-Mittelwert: `r round(mean(dat_int$Kraft))` N
-
-Differenz: $d = `r round(round(mean(dat_int$Kraft)) - mean(round(dat_kon$Kraft)))`$ N
-
-## Intervention erhöht Kraftfähigkeit um `r d_gr` N
+In @fig-sts-basics-ex-2-dotplot sind wiederum die Datenpunkte, Mittelwerte und der Unterschied abgetragen. In diesem Fall ist allerdings die Differenz zwischen den beiden Gruppen genau in der anderen Richtung $D = `r round(diff(world_ex_2_hat$Kraft))`, so dass die Interpretation des Ergebnisses genau in der anderen Richtung wäre. Nämlich, nicht nur hat das Krafttraining zu keiner Verbesserung in der Kraftfähigkeit geführt, sondern zu einer Verschlechterung!
 
 ```{r}
-s_1 <- c(6,5,7)
-s_2 <- c(20,14,16)
-dat_kon <- world[s_1,]
-dat_int <- world[s_2,] |> 
-  dplyr::mutate(Kraft = Kraft + d_gr)
+id_s3 <- c(6,5,7,20,14,16) 
 ```
 
-### Stichprobe 3
-
-Kontrollgruppe 
+Es hätte aber auch sein können, das wir noch eine andere Stichprobe gezogen hätten, z.B. $i = \{`r paste(id_s3, collapse=',')`\}$. Dies würde zu dem folgenden Ergebnis führen (siehe @tbl-sts-basics-ex-3). 
 
 ```{r}
-dat_kon |> knitr::kable(booktabs=T,
-                         col.names=c('ID','Kraft[N]'))
+#| tbl-cap: "Mittelwertsdaten aus Experiment 3 und der Unterschied $D$ zwischen den beiden Gruppenmittelwerten"
+#| label: tbl-sts-basics-ex-3
+
+world_ex_3 <- world[id_s3,] |>
+  mutate(Gruppe=rep(c('CON','TRT'),each=3)) 
+world_ex_3_hat <-  world_ex_3 |> 
+  rows_update(world_ex_3 |> filter(Gruppe == 'TRT') |>
+                mutate(Kraft = Kraft + d_gr),
+              by = 'ID')  |> 
+  group_by(Gruppe) |> summarize(Kraft = mean(Kraft)) 
+
+world_ex_3_hat |> 
+  bind_rows(world_ex_3_hat |> summarize(Gruppe = '$D$', Kraft = diff(Kraft))) |> 
+  kable(
+    booktabs=T,
+    digits = 0,
+    col.names = c('Gruppe', 'Kraft[N]')
+  ) #|> 
+  #kableExtra::row_spec(2, extra_latex_after = "\\cmidrule{1-2}")
+  
 ```
 
-Mittelwert: `r round(mean(dat_kon$Kraft))` N
+Wir hätten zwar wieder einen positiven Unterschied zwischen den beiden Gruppen in der zu erwartenden Richtung gefunden, aber der Unterschied wäre deutlich kleiner als das tatsächlichen $\Delta = `r d_gr`$ und würde möglicherweise dazu führen, dass wir das Krafttraining als ineffektiv bewerten würden.
 
-Interventionsgruppe
+Zusammengenommen, hängt das Ergebnis des Experiments stark damit zusammen, welche Stichprobe genommen wird. Was wir in dem Beispiel beobachtet haben hängt mit der sogenannten Stichprobenvariabilität zusammen. 
 
-```{r}
-dat_int |> knitr::kable(booktabs=T,
-                         col.names=c('ID','Kraft[N]'))
-```
+::: {#def-sample-variability}
+## Stichprobenvariabilität
 
-Mittelwert: `r round(mean(dat_int$Kraft))` N
+Durch die Anwendung von Zufallsstichproben, variiert eine auf den Daten berechnete Statistik. Die Variabilität wird als Stichprobenvariabilität bezeichnet.
 
-Differenz: $d = `r round(round(mean(dat_int$Kraft)) - mean(round(dat_kon$Kraft)))`$ N
+:::
 
+Streng genommen, führt die Stichprobenvariabilität für sich genommen noch nicht dazu, das sich die Statistik zwischen Wiederholungen des Experiments verändert, sondern die zu untersuchenden Werte in der Population müssen selbst auch noch eine Streuung aufweisen. Wenn wir eine Population untersuchen würden, bei der alle Personen die gleiche Beinkraft hätten, würden unterschiedliche Stichproben immer den gleichen Mittelwert haben und wiederholte Durchführung des Experiment würden immer wieder zu dem selben Ergebnis führen. Dieser Fall ist aber praktisch nie gegeben und sämtlich Parameter für die wir uns hier interessieren zeigen immer eine natürlich Streuung in der Population mit dem besagten Ergebnis, das wiederholte Zufallsstichproben zu unterschiedlichen Ergebnissen führen. Insgesamt ist eine zentrale Aufgabe mit dieser Variabilität umzugehen und trotzdem in der Lage zu sein rationale Entscheidungen zu treffen. Eine Kernannahme dabei ist, das wir mit Hilfe von Daten etwas über die Welt lernen können und uns die Sammlung von Daten überhaupt in die Lage versetzt rationale Entscheidungen zu treffen. Entscheidungen wie ein spezialisiertes Krafttraining mit einer klinischen Population durchzführen, eine bestimmte taktische Variante in Mannschaftssport zu trainieren um die Gegner besser auszuspielen. Alle diese Entscheidungen sollten rational vor dem Hintergrund von Variabilität getroffen werden um möglichst oft auch korrekte Entscheidungen zu treffen. Wie wir sehen werden, kann uns die Statistik nicht helfen immer die korrekte Entscheidungen zu treffen aber bisher haben wir noch kein besseres System entwickelt. Nochmal auf den Punkt gebracht nach @wild2000 [p.28]
 
+> The subject matter of statistics is the process of finding out more about the real world by collecting and then making sense of data.
 
 ## Verschiedene Möglichkeiten Stichproben zu ziehen
 
