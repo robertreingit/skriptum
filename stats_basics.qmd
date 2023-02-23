@@ -1,4 +1,4 @@
-# Eine kleine Welt und die Ungewissheit
+# Eine kleine Welt der Unsicherheit 
 
 ```{r}
 #| echo: false
@@ -38,6 +38,8 @@ include_graphics('pics/small_world.png')
 Eine Population oder auch die Grundgesamtheit ist Gesamtheit aller Objekte/Dinge/Personen über die eine Aussage getroffen werden soll.
 
 :::
+
+## Ein Experiment
 
 Wir wollen nun eine Krafttrainingsstudie durchführen um die Beinkraft zu erhöhen. Wir haben allerdings nur sehr wenige Ressourcen (bzw. wir sind faul) und können insgesamt nur sechs Messungen durchführen. Aus einem kürzlich durchgeführten Census haben wir aber die Kraftwerte der ganzen Population. Wir stellen die Kraftwerte zunächst mittels einer Tabelle dar (siehe @tbl-sts-basics-world)
 
@@ -313,7 +315,9 @@ ggplot(tibble(D = c(D_1, D_2, D_3)), aes(x = D)) +
 ```
 
 
-Die drei Werte liegen ja relativ weiter auseiander. Eien Anschlussfrage könnte jetzt sein: "*Welche weiteren Werte sind denn überhaupt möglich mit der vorliegenden Population?*". 
+Die drei Werte liegen ja relativ weiter auseiander. Eien Anschlussfrage könnte jetzt sein: "*Welche weiteren Werte sind denn überhaupt möglich mit der vorliegenden Population?*".
+
+## Die Stichprobenverteilung
 
 Wir können jetzt ja einfach mal das Experiment anfangen zu wiederholen. In @fig-sts-basics-sample-combination sind mal 15 verschiedene Stichproben abgetragen. Wir haben in jeder Zeile jeweils sechs TeilnehmerInnen gezogen. Drei für die Kontrollgruppe und drei für die Inervationsgruppe. Für jede dieser Zeilen können wir jeweils den Gruppenmittelwert berechnen und den Unterschied $D$ bestimmen.
 
@@ -444,7 +448,9 @@ $$
 
 Daher bleibt die Form der Verteilung immer genau gleich und wird lediglich um den Wert $\Delta$ im Vergleich zur Nullintervention verschoben. Wobei mit Nullintervention Umgangssprachlich die Intervention bezeichnet, bei der nichts passiert also $\Delta = 0$ gilt.
 
-Das führt jetzt aber zu einem Problem für uns. Gehen wir jetzt nämlich von diesen beiden Annahmen aus, das entweder die Intervention effektiv ist $\Delta = 'd_gr'$ gilt oder das die Intervention nichts bringt also $\Delta = 0$ gilt. Wenn wir diese beiden Verteilungen übereinander legen erhalten wir @fig-sts-basics-all-combinations-both. Wir haben die Darstellung jetzt etwas verändert und eine Kurve durch die relativen Häufigkeiten gelegt. Dieser Graphen wird jetzt nicht mehr als Histogramm sondern als Dichtegraph\index{Dichtegraph} bezeichnet.
+## Unsicherheit in Lummerland
+
+Das führt jetzt aber zu einem Problem für uns. Gehen wir jetzt nämlich von diesen beiden Annahmen aus, das entweder die Intervention effektiv ist $\Delta = `r d_gr`$ gilt oder das die Intervention nichts bringt also $\Delta = 0$ gilt. Wenn wir diese beiden Verteilungen übereinander legen erhalten wir @fig-sts-basics-all-combinations-both. Wir haben die Darstellung jetzt etwas verändert und eine Kurve durch die relativen Häufigkeiten gelegt. Dieser Graphen wird jetzt nicht mehr als Histogramm sondern als Dichtegraph\index{Dichtegraph} bezeichnet.
 
 ```{r}
 #| fig.cap: "Verteilung aller möglichen Differenzen zwischen Kontroll- und Interventionsgruppe wenn $\\Delta = 0$ und $\\Delta = 100$."
@@ -482,56 +488,37 @@ Wenn wir jetzt unser Experiment einmal durchgeführt haben und ein einziges Erge
 
 Die Methoden der Statistik liefern uns nun Werkzeuge an die Hand um trotzdem rational zu Entscheiden welche der beiden Annahmen möglicherweise wahrscheinlicher ist. Gleichzeitig ermöglicht uns die Statistik abzuschätzen respektive zu berechnen wie groß die Unsicherheit in dieser Entscheidung ist. Die Statistik sagt dabei immer nur etwas über die beobachteten Daten aus. Die Statistik sagt jedoch nichts über die zugrundeliegenden wissenschaftlichen Theorien aus.
 
+Schauen wir uns jetzt als vorläufig letzten Punkt an welche Entscheidungsmöglichkeiten wir haben.
 
+## Eine Entscheidung treffen
 
-## Wie kann ich anhand eines Datenpunktes etwas sagen? 
+Wir hatten im Beispiel zwei verschiedene Annahmen, einmal das das Training nichts bringt und keine Verbesserung der Kraftfähigkeit folgt $\Delta = 0N$. Andererseits hatten wir das Beispiel gestartet damit, dass die Kraftfähigkeit um $100N$ zunimmt, also $\Delta = 100N$. Wie bezeichnen jetzt diese beiden Annahmen als Hypothesen und bezeichnen $\Delta = 0N$ als die Nullhypothese $H_0$ und $\Delta = 100N$ als die Alternativhypothese $H_1$.
 
-```{r}
-#| fig.cap: "Verteilung aller möglichen Differenzen zwischen Kontroll- und Interventionsgruppe mit Stichproben der Größen k = 3"
-
-differences <- readr::read_csv('data/combinations_differences.csv')
-n_sim <- dim(differences)[1]
-dat <- tibble(
-  di = c(differences$d, differences$d + d_gr),
-  hypo = rep(c('H0','H100'), c(n_sim,n_sim))
-)
-ggplot(dat, aes(di, fill=hypo)) +
-  geom_density(alpha=0.5) +
-  labs(x = 'Differenzen[N]', y = 'relative Häufigkeit') +
-  scale_fill_discrete("Hypothese")
-```
-
-# Entscheiden
-
-## Entscheidungsmöglichkeiten
-
-\begin{table}[]
-    \caption{Entscheidungsm\"oglichkeiten wenn entweder $H_0$ oder $H_{100}$ zutrifft. $H_0$: keine Unterschied, $H_{100}$: Training erhöht Kraft um 100N}
-    \centering
-    \begin{tabular}{crcc}\toprule
-    & & \multicolumn{2}{c}{Realit\"at} \\
-    & & $H_0$ & $H_{100}$ \\ \midrule
-    \multirow{2}{*}{Entscheidung} & $H_{100}$ & $\alpha$-Fehler & Korrekt \\
-         & $H_0$ & Korrekt & $\beta$-Fehler \\ \bottomrule
-    \end{tabular}
-    \label{tab:my_label}
-\end{table}^[Auch: $\alpha$-Fehler: Fehler 1. Art, $\beta$-Fehler: Fehler 2. Art]
-
-
-## Nehmen wir einen einfacheren Fall mit $\delta = 500$N
+Wenn wir jetzt das Experiment durchgeführt haben, können wir uns also entweder für die $H_0$ oder die $H_1$ entscheiden. Aus Gründen der Symmetrie ist dies gleichbedeutend wenn wir uns nur auf die $H_0$ fokussieren und entweder die $H_0$ annehmen bzw. beibehalten oder verwerfen also uns gegen $H_0$ entscheiden.
 
 ```{r}
-#| fig.cap: "Verteilungen wenn $\\delta$=500 und $\\delta$=0"
+#| label: tbl-sts-basics-decisions
+#| tbl-cap: "Entscheidungsmöglichkeiten wenn entweder $H_0$ oder $H_{1}$ zutrifft." 
 
-dat <- tibble(
-  di = c(differences$d + 500, differences$d),
-  hypo = rep(c('H500','H0'), c(n_sim,n_sim))
-)
-p_h500 <- ggplot(dat, aes(di, fill=hypo)) +
-  geom_density(alpha=0.5) +
-  labs(x = 'Differenzen[N]', y = 'relative Häufigkeit') +
-  scale_fill_discrete("Hypothese", labels=c(
-    expression(H[0]  ), expression(H[500])
-  )) 
-print(p_h500)
+tibble(
+  hypo = c('$H_0$', '$H_1$'),
+  h_0 = c('korrekt', '$\\alpha$'),
+  h_1 = c('$\\beta$', 'korrekt')
+) |> 
+  kable(
+    booktabs = TRUE,
+    col.names = c('', '$H_0$', '$H_1$'),
+    escape = F
+  ) |> 
+  kableExtra::add_header_above(c(" " = 1, "Realität" = 2))  
 ```
+
+In @tbl-sts-basics-decisions sind die verschiedenen Entscheidungsmöglichkeiten abgetragen. In der Realität gehen wir, wie gesagt, von zwei Fällen aus. Entweder trifft die $H_0$ oder die $H_1$ zu. Wenn die $H_=$ zutrifft und wir uns für die $H_0$ entscheiden, dann haben wir eine korrekte Entscheidung getroffen. Wenn $H_0$ zutrifft und wir allerdings die $H_0$ ablehnen, also uns für die $H_1$ entscheiden ist unsere Entscheidung falsch und wir begehen einen Fehler. Dieser Fehler wird als Fehler 1. Art bzw. $\alpha$-Fehler bezeichnet. Trifft in der Realität dagegen die $H_1$ zu und wir entscheiden uns gegen die $H_0$ und für die $H_1$, dann haben wir wiederum eine korrekte Entscheidung getroffen. Zuletzt, wenn die $H_1$ zutrifft und wir uns aber für die $H_0$ entscheiden, also die $H_0$ beibehalten bzw. uns gegen die $H_1$ entscheiden, treffen wir wieder eine falsche Entscheidung. Dieser Fehler wird als Fehler 2. Art, bzw. $\beta$-Fehler bezeichnet.
+
+::: {#def-alpha-fehler}
+Wenn eine Entscheidung gegen die $H_0$ getroffen wird, obwohl die $H_0$ korrekt ist, wird dies als $\alpha$-Fehler\index{$\alpha$-Fehler} bezeichnet.
+:::
+
+::: {#def-beta-fehler}
+Wenn eine Entscheidung gegen die $H_1$ getroffen wird, obwohl die $H_1$ korrekt ist, wird dies als $\beta$-Fehler\index{$\beta$-Fehler} bezeichnet.
+:::
