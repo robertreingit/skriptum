@@ -6,6 +6,7 @@
 #| message: false
 source('_common.R')
 ```
+
 ```{r stats_significance_defs}
 n <- 20
 set.seed(123)
@@ -15,25 +16,234 @@ world$Kraft[13] <- 1800
 world$Kraft[17] <- 3200
 d_gr <- 100
 d_x <- 2 
+mu_lummer <- 0
+sd_lummer <- 230
 ```
 
 
-## Mit welcher Stichprobenverteilung arbeite ich denn jetzt?
+Im vorherigen Kapitel haben wir gesehen, wie Unsicherheit ein zentrales Problem bei der Interpretation von Ergebnissen von Experimenten oder Daten allgemein ist. Im nun folgenden Abschnitt wollen wir eine Prozess aufbauen, der es uns vor dem Hintergrund dieser Unsicherheit eine Entscheidung zu treffen.
+
+## Wie treffe ich eine Entscheidung? 
+
+In unserem kleine Welt Bespiel waren wir in der komfortablen Position, das wir genau wussten was passiert bzw. welcher Prozess unseren beobachteten Datenpunkt erzeugt hat. D.h wir kannten den datengenerieren Prozesses.
+
+::: {#def-dgp}
+## Datengeneriereden Prozess
+
+Der Prozess in der realen Welt der die beobachteten Daten und damit die daraus folgende Statistik erzeugt wird als datengenerierender Prozess (DGP) \index{Datengenerierender Prozess} bezeichnet.
+:::
+
+Letztendlich zielt unsere Untersuchung, unser Experiment, darauf ab, Informationen über den DGP zu erhalten, weil diese Information uns erlaubt Aussagen über die reale Welt zu treffen. Dabei muss allerdings beachtet werden, dass dieser Prozess in den allermeisten Fällen ein starke Vereinfachung des tatsächlichen Prozesses in der Realität darstellt. Meistens sind die Abläufe in der Realität zu komplex um sie ins Gänze abzubilden. Somit wird fast immer nur ein Modell verwendet. 
+
+Zurück zu unseren Problem, wenn wir ein Experiment durchführen, dann haben wir normalerweise nur eine einzige beobachtete Statistik. In unseren bisherigen Beispiel also den berechneten Unterschied $D$ in der Kraftfähigkeit nach der Intervention zwischen der Kontroll- und der Interventionsgruppe.
 
 ```{r}
-#| fig.cap: "Mehrer mögliche Verteilungen"
+#| fig.cap: "Beobachteter Unterschied nach der Durchführung unseres Experiments"
+#| label: fig-sts-sig-result-1 
+#| fig.height: 1.5
 
-dat_0s <- tibble(
-  x = seq(-10, 10, length.out=100),
-  v0 = dnorm(x, 0, 1),
-  v1 = dnorm(x, -4, 1),
-  v2 = dnorm(x, 3, 1),
-  v3 = dnorm(x, 5, 1))  %>% 
-  tidyr::pivot_longer(-x, names_to="Verteilung", values_to="v")
-ggplot(dat_0s, aes(x,v,ymin=0, ymax=v, fill=Verteilung)) +
+D_obs <- tibble(Kraft = 50)
+ggplot(D_obs,
+       aes(Kraft, 1)) +
+  geom_point(size=3, color = 'red') +
+  scale_x_continuous('D[N]', limits = c(-500, 700), breaks = seq(-500, 700, 200)) +
+  scale_y_continuous('', breaks = NULL)
+```
+
+In @fig-sts-sig-result-1 sehen wir unseren beobachteten Wert. Dieser sei $D = `r D_obs$Kraft[1]`$. Wir wissen ja aber von vorne herein schon, das dieser Wert beeinflusst ist durch die zufällige Wahl der Stichprobe und die daran geknüpfte Streuung der Werte in der Population. Wie können wir den nun überhaupt eine Aussage treffen darüber, ob das Krafttraining was bringt oder vielleicht nur einen kleinen Effekt zeigt oder möglicherweise sogar schädlich ist?
+
+Überlegen wir uns zunächst, welche Prozesse unseren beobachteten Wert zustande gebracht haben könnten. Wir haben schon zwei Prozesse kennengelernt, einmal den Prozess mit $\Delta = 100$ und auch den Prozess mit $\Delta = 0$
+
+```{r}
+#| fig.cap: "Mögliche datengenerierende Prozesse für den beobachteten Unterschied $D$ (rot)"
+#| label: fig-sts-sig-dgp-1
+#| fig.height: 2
+
+x <- seq(-1000, 1000, length.out = 100)
+tibble(x = x,
+       d_0 = dnorm(x, 0, sd_lummer),
+       d_100 = dnorm(x, 100, sd_lummer)) |> 
+  pivot_longer(-x, names_to = 'Verteilung', values_to = 'd') |> 
+  ggplot(aes(x, d, ymin=0, ymax=d, group=Verteilung)) +
+  geom_ribbon(aes(fill = Verteilung), alpha=.5) +
+  geom_line() +
+  annotate('point', x = D_obs$Kraft, y = 0, color = 'red', size = 3) +
+  labs(x = 'D[N]', y = 'Dichte')
+
+```
+
+In @fig-sts-sig-dgp-1 ist wieder unser beobachteter Wert $D = `r D_obs$Kraft[1]`$ und die beiden Verteilungen abgetragen. Leider können wir nicht sagen, welche der beiden Verteilungen, bzw. deren zugrundeliegende Prozesse, unseren beobachteten Wert erzeugt haben. Da unser beobachteter Wert $D$ genau zwischen den beiden Maxima der Verteilungn liegt. Etwas motiviertes Starren auf die Abbildung wird uns allerdings auf die Idee bringen, dass der Wert ja nicht nur von diesen beiden Verteilungen erzeugt worden sein kann sondern durchaus noch mehr Verteilungen dafür in Frage kommen.
+
+```{r}
+#| fig.cap: "Beispiele für weitere mögliche Verteilungen als DGP."
+#| label: fig-sts-sig-dgp-2
+#| fig.height: 2
+
+tibble(x = x,
+       d_0 = dnorm(x, 0, sd_lummer),
+       d_100 = dnorm(x, 100, sd_lummer),
+       d_350 = dnorm(x, 350, sd_lummer),
+       d_n250 = dnorm(x, -250, sd_lummer)) |> 
+  pivot_longer(-x, names_to = 'Verteilung', values_to = 'd') |> 
+  ggplot(aes(x, d, ymin=0, ymax=d, group=Verteilung)) +
+  geom_ribbon(aes(fill = Verteilung), alpha=.5) +
+  geom_line() +
+  annotate('point', x = D_obs$Kraft, y = 0, color = 'red', size = 3) +
+  labs(x = 'D[N]', y = 'Dichte')
+```
+
+@fig-sts-sig-dgp-2 zeigt, dass selbst die Verteilung mit $\Delta = -250N$ und $\Delta = 350N$ nicht unplausibel sind den beobachteten Wert erzeugt zu haben. Warum aber bei diesen fünf Verteilungen aufhören, warum sollte $Delta$ nicht $-50$ oder $127$ sein. Und überhaupt, ich bin mir nicht sicher, das die Natur nur ganzzahlige Wert kennt (siehe $\pi$). Warum sollte $D$ nicht auch $123.4567N$ sein?
+
+Wenn diese Überlegung weitergeführt wird, dann wird schnell klar, dass letztendlich eine unendliche Anzahl von Verteilung in der Lage ist unseren beobachteten Wert plausibel zu generieren. D.h. wir haben ein Experiment durchgeführt und den ganzen Aufwand betrieben und haben wochenlang mit unseren ProbandInnen Krafttraining durchgeführt und sind hinterher eigentlich keinen Schritt weiter da wir immer noch nicht wissen was der datengenerierende Prozess ist. Also können wir selbst nach dem Experiment nicht sagen ob unser Krafttraining tatsächlich nützlich ist.
+
+Zum Glück werden wir sehen und unser Unterfangen ist nicht ganz so aussichtslos. Schauen wir uns zum Beispiel die Verteilung für $\Delta = -350N$ an (@fig-sts-sig-dgp-3).
+
+```{r}
+#| fig.cap: "Verteilung für $\\Delta = -350N$ und der beobachtete Wert $D$"
+#| label: fig-sts-sig-dgp-3
+#| fig.height: 2
+
+tibble(x = x,
+       d = dnorm(x, -350, sd_lummer)) |>  
+  ggplot(aes(x, d, ymin=0, ymax=d)) +
   geom_ribbon(alpha=.5) +
   geom_line() +
+  annotate('point', x = D_obs$Kraft, y = 0, color = 'red', size = 3) +
+  labs(x = 'D[N]', y = 'Dichte')
+```
+
+Unser beobachteter Wert ist jetzt nicht vollkommen unmöglich unter der Annahme das $\Delta = -350N$ ist, aber so richtig *wahrscheinlich* ist er auch nicht. Der Wert liegt relativ weit am Rand der Verteilung. Die Kurve ist dort schon ziemlich nahe bei Null. D.h. der beobachtete Wert ist zwar schon möglich aber es wäre schon überraschend wenn wir bei einer Durchführung des Experiments ausgerechnet so einen Wert beobachten würden.
+
+Wenn wir jetzt dagegen von der Annahme ausgehen, dass dem DGP der Wert $\Delta = 50N$ zugrundeliegen würde, hätten wir die Verteilung in @fig-sts-sig-dgp-4. Hier ist der beobachtete Wert mitten drin in dem Teil der Verteilung der auch zu erwarten würde. D.h. unser beobachteter Wert ist durchaus plausibel unter der Annahme das $\Delta = 50N$ gilt.
+
+```{r}
+#| fig.cap: "Verteilung für $\\Delta = 50N$ und der beobachtete Wert $D$"
+#| label: fig-sts-sig-dgp-4
+#| fig.height: 2
+
+tibble(x = x,
+       d = dnorm(x, 50, sd_lummer)) |>  
+  ggplot(aes(x, d, ymin=0, ymax=d)) +
+  geom_ribbon(alpha=.5) +
+  geom_line() +
+  annotate('point', x = D_obs$Kraft, y = 0, color = 'red', size = 3) +
+  labs(x = 'D[N]', y = 'Dichte')
+```
+
+Diesen Ansatz können wir verwenden um mit Hilfe unseres Experiments doch etwas über den DGP auszusagen. Allerdings müssen wir uns noch einmal etwas eingehender mit Verteilungen auseinandersetzen. D.h. wir müssen uns erst ein mal ein paar neue Konzepte erarbeiten.
+
+## Verteilungen - 1. deep dive
+```{r}
+#| fig.cap: "Eine Dichtefunktion"
+
+d_x <- 0.025
+x <- seq(-3, 3, d_x)
+dat_0 <- tibble(
+  x = x,
+  v = dnorm(x, 0, 1) 
+)
+low <- tibble(
+  x = seq(-3,-2,d_x),
+  v = dnorm(x, 0, 1)
+)
+up <- tibble(
+  x = seq(2, 3, d_x),
+  v = dnorm(x, 0, 1)
+)
+ggplot(dat_0, aes(x,v,ymin=0, ymax=v)) +
+  geom_area(fill='green', alpha=.5) +
+  geom_line() +
   labs(x = 'Werte', y = 'Dichte') 
+```
+
+## Eigenschaften von Verteilungen - Mittelwert $\mu$
+```{r}
+#| fig.cap: "Verteilungen mit unterschiedlichen Mittelwerten"
+
+xx <- seq(-3,6,d_x)
+n_pts <- length(xx)
+dat_1 <- tibble(
+  x = rep(xx,2),
+  v = c(dnorm(xx, 0, 1),
+        dnorm(xx, 3, 1)),
+  pos = rep(c('x0','x3'), c(n_pts,n_pts))
+)
+ggplot(dat_1, aes(x,v,ymin=0, ymax=v, fill=pos)) +
+  geom_ribbon(alpha=.5) +
+  geom_line() +
+  labs(x = 'Werte', y = 'Dichte') +
+  scale_fill_discrete("Lageparameter",
+                      labels = c(expression(mu == 0), expression(mu == 3))) 
+```
+
+^[auch Lageparameter oder Erwartungswert]
+
+## Eigenschaften von Verteilungen - Varianz $\sigma^2$
+```{r}
+#| fig.cap: "Verteilungen mit unterschiedlichen Varianzen"
+
+xx <- seq(-5,5,d_x)
+n_pts <- length(xx)
+dat_2 <- tibble(
+  x = rep(xx,2),
+  v = c(dnorm(xx, 0, 1),
+        dnorm(xx, 0, sqrt(2))),
+  type = rep(c('s1','s0.5'), c(n_pts,n_pts))
+)
+ggplot(dat_2, aes(x,v,ymin=0, ymax=v,fill=type)) +
+  geom_ribbon(alpha=.5) +
+  geom_line() +
+  labs(x = 'Werte', y = 'Dichte') +
+  scale_fill_discrete("Varianz",labels = c(
+    expression(sigma^2 == 2),
+    expression(sigma^2 == 1)
+  )) 
+```
+
+^[auch Skalenparameter]
+
+## Formeln 
+
+\begin{table}[]
+    \caption{Parameter einer Verteilung und deren Sch\"atzer}
+    \centering
+    \begin{tabular}{llr}
+     \toprule
+     Population & Stichprobe & \\
+     \midrule
+     Mittelwert $\mu$ & $\bar{x} = \frac{1}{n}\sum_{i=1}^n x_i$  \\
+     Varianz $\sigma^2$ & $s^2 = \frac{1}{n-1}\sum_{i=1}^n (x_i - \bar{x})^2$ \\
+     Standardabweichung $\sigma$ & $s = \sqrt{s^2}$ \\
+     \bottomrule
+    \end{tabular}
+\end{table}
+
+n := Anzahl der Stichprobenelemente, $x_i$ := Messwerte
+
+
+## Nebenbei: Warum der Mittelwert Sinn macht
+```{r}
+#| fig.cap: "Verteilung der Mittelwerte von Stichproben der Größe $n=10$, Kleine Welt Population $\\mu$ (rot)"
+
+bar <- function(world, k=3) {
+  n <- dim(world)[1]
+  x <- 1:n
+  N <- choose(n,k)
+  x_bars <- numeric(N)
+  # get all permutations
+  id_1 <- t(combn(x,k))
+  for (i in 1:nrow(id_1)) {
+    x_bars[i] <- mean(world$Kraft[id_1[i,]])
+  }
+  x_bars
+}
+x_bars <- bar(world, 10)
+mu <- mean(world$Kraft)
+ggplot(tibble(x=x_bars),aes(x)) +
+  geom_histogram(aes(y = stat(density)), bins = 30) +
+  geom_vline(xintercept = mu,
+             color = 'red', linetype = 'dashed') +
+  labs(x = 'Mittelwerte[N]', y = 'Häufigkeit') 
 ```
 
 ## Mit der Verteilung die annimmt das nichts passiert!
@@ -507,118 +717,5 @@ Wenn das Konfidenzintervall mit Niveau $1-\alpha\%$ die $H_0$ nicht beinhaltet, 
 
 
 
-## Verteilungen
-```{r}
-#| fig.cap: "Eine Dichtefunktion"
-
-d_x <- 0.025
-x <- seq(-3, 3, d_x)
-dat_0 <- tibble(
-  x = x,
-  v = dnorm(x, 0, 1) 
-)
-low <- tibble(
-  x = seq(-3,-2,d_x),
-  v = dnorm(x, 0, 1)
-)
-up <- tibble(
-  x = seq(2, 3, d_x),
-  v = dnorm(x, 0, 1)
-)
-ggplot(dat_0, aes(x,v,ymin=0, ymax=v)) +
-  geom_area(fill='green', alpha=.5) +
-  geom_line() +
-  labs(x = 'Werte', y = 'Dichte') 
-```
-
-## Eigenschaften von Verteilungen - Mittelwert $\mu$
-```{r}
-#| fig.cap: "Verteilungen mit unterschiedlichen Mittelwerten"
-
-xx <- seq(-3,6,d_x)
-n_pts <- length(xx)
-dat_1 <- tibble(
-  x = rep(xx,2),
-  v = c(dnorm(xx, 0, 1),
-        dnorm(xx, 3, 1)),
-  pos = rep(c('x0','x3'), c(n_pts,n_pts))
-)
-ggplot(dat_1, aes(x,v,ymin=0, ymax=v, fill=pos)) +
-  geom_ribbon(alpha=.5) +
-  geom_line() +
-  labs(x = 'Werte', y = 'Dichte') +
-  scale_fill_discrete("Lageparameter",
-                      labels = c(expression(mu == 0), expression(mu == 3))) 
-```
-
-^[auch Lageparameter oder Erwartungswert]
-
-## Eigenschaften von Verteilungen - Varianz $\sigma^2$
-```{r}
-#| fig.cap: "Verteilungen mit unterschiedlichen Varianzen"
-
-xx <- seq(-5,5,d_x)
-n_pts <- length(xx)
-dat_2 <- tibble(
-  x = rep(xx,2),
-  v = c(dnorm(xx, 0, 1),
-        dnorm(xx, 0, sqrt(2))),
-  type = rep(c('s1','s0.5'), c(n_pts,n_pts))
-)
-ggplot(dat_2, aes(x,v,ymin=0, ymax=v,fill=type)) +
-  geom_ribbon(alpha=.5) +
-  geom_line() +
-  labs(x = 'Werte', y = 'Dichte') +
-  scale_fill_discrete("Varianz",labels = c(
-    expression(sigma^2 == 2),
-    expression(sigma^2 == 1)
-  )) 
-```
-
-^[auch Skalenparameter]
-
-## Formeln 
-
-\begin{table}[]
-    \caption{Parameter einer Verteilung und deren Sch\"atzer}
-    \centering
-    \begin{tabular}{llr}
-     \toprule
-     Population & Stichprobe & \\
-     \midrule
-     Mittelwert $\mu$ & $\bar{x} = \frac{1}{n}\sum_{i=1}^n x_i$  \\
-     Varianz $\sigma^2$ & $s^2 = \frac{1}{n-1}\sum_{i=1}^n (x_i - \bar{x})^2$ \\
-     Standardabweichung $\sigma$ & $s = \sqrt{s^2}$ \\
-     \bottomrule
-    \end{tabular}
-\end{table}
-
-n := Anzahl der Stichprobenelemente, $x_i$ := Messwerte
-
-
-## Nebenbei: Warum der Mittelwert Sinn macht
-```{r}
-#| fig.cap: "Verteilung der Mittelwerte von Stichproben der Größe $n=10$, Kleine Welt Population $\\mu$ (rot)"
-
-bar <- function(world, k=3) {
-  n <- dim(world)[1]
-  x <- 1:n
-  N <- choose(n,k)
-  x_bars <- numeric(N)
-  # get all permutations
-  id_1 <- t(combn(x,k))
-  for (i in 1:nrow(id_1)) {
-    x_bars[i] <- mean(world$Kraft[id_1[i,]])
-  }
-  x_bars
-}
-x_bars <- bar(world, 10)
-mu <- mean(world$Kraft)
-ggplot(tibble(x=x_bars),aes(x)) +
-  geom_histogram(aes(y = stat(density)), bins = 30) +
-  geom_vline(xintercept = mu,
-             color = 'red', linetype = 'dashed') +
-  labs(x = 'Mittelwerte[N]', y = 'Häufigkeit') 
-```
 
 
