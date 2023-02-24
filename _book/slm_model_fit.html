@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.258">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Scriptum - Fortgeschrittene Statistik - 7&nbsp; Modellfit</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./slm_prediction.html" rel="next">
+<link href="./slm_inference.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "Keine Treffer",
+    "search-matching-documents-text": "Treffer",
+    "search-copy-link-title": "Link in die Suche kopieren",
+    "search-hide-matches-text": "Zusätzliche Treffer verbergen",
+    "search-more-match-text": "weitere Treffer in diesem Dokument",
+    "search-more-matches-text": "weitere Treffer in diesem Dokument",
+    "search-clear-button-title": "Zurücksetzen",
+    "search-detached-cancel-button-title": "Abbrechen",
+    "search-submit-button-title": "Abschicken"
+  }
+}</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Modellfit</span></h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Scriptum - Fortgeschrittene Statistik</a> 
+    </div>
+      </div>
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Vorwort</a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./stats_title.html" class="sidebar-item-text sidebar-link">Statistik</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./stats_basics.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Eine kleine Welt der Unsicherheit</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./stats_significance.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Statistische Signifikanz, p-Wert und Power</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./stats_distributions.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Verteilungen</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./stats_hypotheses.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Hypothesen testen</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./slm_title.html" class="sidebar-item-text sidebar-link">Das einfache Regressionmodell</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./slm_basics.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Einführung</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./slm_inference.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Inferenz</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./slm_model_fit.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Modellfit</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./slm_prediction.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Vorhersage</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./mlm_title.html" class="sidebar-item-text sidebar-link">Multiple Regression</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mlm_basics.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Einführung</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mlm_interactions.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Interaktionseffekte</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mlm_dummy_coding.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Integration von nominale Variablen</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mlm_hierarchies.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Modellhierarchien</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./lm_title.html" class="sidebar-item-text sidebar-link">Das allgemeine lineare Modell</a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lm_basics.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Synthese</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">Literatur</a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Inhaltsverzeichnis</h2>
+   
+  <ul>
+  <li><a href="#residuen" id="toc-residuen" class="nav-link active" data-scroll-target="#residuen"><span class="toc-section-number">7.1</span>  Residuen</a></li>
+  <li><a href="#was-sind-noch-mal-residuen-epsilon_i-bzw.-deren-schätzer-hatepsilon_i-e_i" id="toc-was-sind-noch-mal-residuen-epsilon_i-bzw.-deren-schätzer-hatepsilon_i-e_i" class="nav-link" data-scroll-target="#was-sind-noch-mal-residuen-epsilon_i-bzw.-deren-schätzer-hatepsilon_i-e_i"><span class="toc-section-number">7.2</span>  Was sind noch mal Residuen <span class="math inline">\(\epsilon_i\)</span> bzw. deren Schätzer <span class="math inline">\(\hat{\epsilon}_i = e_i\)</span></a></li>
+  <li><a href="#annahme-epsilon_i-sim-mathcaln0-sigma2" id="toc-annahme-epsilon_i-sim-mathcaln0-sigma2" class="nav-link" data-scroll-target="#annahme-epsilon_i-sim-mathcaln0-sigma2"><span class="toc-section-number">7.3</span>  Annahme: <span class="math inline">\(\epsilon_i \sim \mathcal{N}(0, \sigma^2)\)</span></a></li>
+  <li><a href="#übersicht-residuen" id="toc-übersicht-residuen" class="nav-link" data-scroll-target="#übersicht-residuen"><span class="toc-section-number">7.4</span>  Übersicht Residuen</a></li>
+  <li><a href="#residuen-in-r-berechnen-mit-residuals-und-freunden" id="toc-residuen-in-r-berechnen-mit-residuals-und-freunden" class="nav-link" data-scroll-target="#residuen-in-r-berechnen-mit-residuals-und-freunden"><span class="toc-section-number">7.5</span>  Residuen in <code>R</code> berechnen mit <code>residuals()</code> und Freunden</a></li>
+  <li><a href="#residuen-in-r-inspizieren" id="toc-residuen-in-r-inspizieren" class="nav-link" data-scroll-target="#residuen-in-r-inspizieren"><span class="toc-section-number">7.6</span>  Residuen in <code>R</code> inspizieren</a></li>
+  <li><a href="#diagnoseplot---einfache-residuen-hatepsilon_i-sim-haty_i" id="toc-diagnoseplot---einfache-residuen-hatepsilon_i-sim-haty_i" class="nav-link" data-scroll-target="#diagnoseplot---einfache-residuen-hatepsilon_i-sim-haty_i"><span class="toc-section-number">7.7</span>  Diagnoseplot - Einfache Residuen <span class="math inline">\(\hat{\epsilon_i} \sim \hat{y_i}\)</span></a></li>
+  <li><a href="#diagnoseplot---standardisierte-residuen-hatepsilon_si-sim-haty_i" id="toc-diagnoseplot---standardisierte-residuen-hatepsilon_si-sim-haty_i" class="nav-link" data-scroll-target="#diagnoseplot---standardisierte-residuen-hatepsilon_si-sim-haty_i"><span class="toc-section-number">7.8</span>  Diagnoseplot - Standardisierte Residuen <span class="math inline">\(\hat{\epsilon}_{Si} \sim \hat{y_i}\)</span></a></li>
+  <li><a href="#diagnoseplot---studentized-residuen-hatepsilon_ti-sim-haty_i" id="toc-diagnoseplot---studentized-residuen-hatepsilon_ti-sim-haty_i" class="nav-link" data-scroll-target="#diagnoseplot---studentized-residuen-hatepsilon_ti-sim-haty_i"><span class="toc-section-number">7.9</span>  Diagnoseplot - Studentized Residuen <span class="math inline">\(\hat{\epsilon}_{Ti} \sim \hat{y_i}\)</span></a></li>
+  <li><a href="#diagnoseplot---wie-sehen-probleme-aus" id="toc-diagnoseplot---wie-sehen-probleme-aus" class="nav-link" data-scroll-target="#diagnoseplot---wie-sehen-probleme-aus"><span class="toc-section-number">7.10</span>  Diagnoseplot - Wie sehen Probleme aus?</a></li>
+  <li><a href="#diagnoseplot---wie-sehen-probleme-aus-1" id="toc-diagnoseplot---wie-sehen-probleme-aus-1" class="nav-link" data-scroll-target="#diagnoseplot---wie-sehen-probleme-aus-1"><span class="toc-section-number">7.11</span>  Diagnoseplot - Wie sehen Probleme aus?</a></li>
+  <li><a href="#wie-kann-die-verteilung-der-residuen-überprüft-werden" id="toc-wie-kann-die-verteilung-der-residuen-überprüft-werden" class="nav-link" data-scroll-target="#wie-kann-die-verteilung-der-residuen-überprüft-werden"><span class="toc-section-number">7.12</span>  Wie kann die Verteilung der Residuen überprüft werden?</a></li>
+  <li><a href="#konstruktion-eines-qq-graphen" id="toc-konstruktion-eines-qq-graphen" class="nav-link" data-scroll-target="#konstruktion-eines-qq-graphen"><span class="toc-section-number">7.13</span>  Konstruktion eines qq-Graphen</a></li>
+  <li><a href="#konstruktion-eines-qq-graphen-1" id="toc-konstruktion-eines-qq-graphen-1" class="nav-link" data-scroll-target="#konstruktion-eines-qq-graphen-1"><span class="toc-section-number">7.14</span>  Konstruktion eines qq-Graphen</a></li>
+  <li><a href="#beispiele-für-qq-graphen-mit-qqnorm-und-qqline" id="toc-beispiele-für-qq-graphen-mit-qqnorm-und-qqline" class="nav-link" data-scroll-target="#beispiele-für-qq-graphen-mit-qqnorm-und-qqline"><span class="toc-section-number">7.15</span>  Beispiele für qq-Graphen mit <code>qqnorm()</code> und <code>qqline()</code></a></li>
+  <li><a href="#diagnoseplot---qq-diagramm" id="toc-diagnoseplot---qq-diagramm" class="nav-link" data-scroll-target="#diagnoseplot---qq-diagramm"><span class="toc-section-number">7.16</span>  Diagnoseplot - QQ-Diagramm</a></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary"><span class="toc-section-number">7.17</span>  <code>summary()</code></a></li>
+  <li><a href="#neue-idee-zu-residuen" id="toc-neue-idee-zu-residuen" class="nav-link" data-scroll-target="#neue-idee-zu-residuen"><span class="toc-section-number">7.18</span>  Neue Idee zu Residuen</a></li>
+  <li><a href="#zum-nacharbeiten" id="toc-zum-nacharbeiten" class="nav-link" data-scroll-target="#zum-nacharbeiten"><span class="toc-section-number">7.19</span>  Zum Nacharbeiten</a></li>
+  <li><a href="#hebelwerte" id="toc-hebelwerte" class="nav-link" data-scroll-target="#hebelwerte"><span class="toc-section-number">7.20</span>  Hebelwerte</a></li>
+  <li><a href="#dffits" id="toc-dffits" class="nav-link" data-scroll-target="#dffits"><span class="toc-section-number">7.21</span>  DFFITS</a></li>
+  <li><a href="#cooks-abstand" id="toc-cooks-abstand" class="nav-link" data-scroll-target="#cooks-abstand"><span class="toc-section-number">7.22</span>  Cooks-Abstand</a>
+  <ul class="collapse">
+  <li><a href="#daumenregel" id="toc-daumenregel" class="nav-link" data-scroll-target="#daumenregel"><span class="toc-section-number">7.22.1</span>  Daumenregel</a></li>
+  <li><a href="#in-r" id="toc-in-r" class="nav-link" data-scroll-target="#in-r"><span class="toc-section-number">7.22.2</span>  In <code>R</code></a></li>
+  </ul></li>
+  <li><a href="#cooks-abstand-plot" id="toc-cooks-abstand-plot" class="nav-link" data-scroll-target="#cooks-abstand-plot"><span class="toc-section-number">7.23</span>  Cooks-Abstand plot</a></li>
+  <li><a href="#dfbetas" id="toc-dfbetas" class="nav-link" data-scroll-target="#dfbetas"><span class="toc-section-number">7.24</span>  DFBETAS</a>
+  <ul class="collapse">
+  <li><a href="#daumenregel-1" id="toc-daumenregel-1" class="nav-link" data-scroll-target="#daumenregel-1"><span class="toc-section-number">7.24.1</span>  Daumenregel</a></li>
+  <li><a href="#in-r-1" id="toc-in-r-1" class="nav-link" data-scroll-target="#in-r-1"><span class="toc-section-number">7.24.2</span>  In <code>R</code></a></li>
+  </ul></li>
+  <li><a href="#dfbetas-1" id="toc-dfbetas-1" class="nav-link" data-scroll-target="#dfbetas-1"><span class="toc-section-number">7.25</span>  DFBETAS</a></li>
+  <li><a href="#zusammenfassung" id="toc-zusammenfassung" class="nav-link" data-scroll-target="#zusammenfassung"><span class="toc-section-number">7.26</span>  Zusammenfassung</a></li>
+  <li><a href="#diagnoseplots-in-r-mit-plotmod" id="toc-diagnoseplots-in-r-mit-plotmod" class="nav-link" data-scroll-target="#diagnoseplots-in-r-mit-plotmod"><span class="toc-section-number">7.27</span>  Diagnoseplots in R mit <code>plot(mod)</code></a></li>
+  <li><a href="#zum-nacharbeiten-1" id="toc-zum-nacharbeiten-1" class="nav-link" data-scroll-target="#zum-nacharbeiten-1"><span class="toc-section-number">7.28</span>  Zum Nacharbeiten</a>
+  <ul class="collapse">
+  <li><a href="#weiterführendes" id="toc-weiterführendes" class="nav-link" data-scroll-target="#weiterführendes"><span class="toc-section-number">7.28.1</span>  Weiterführendes</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Modellfit</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<div class="cell">
+
+</div>
+<section id="residuen" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="residuen"><span class="header-section-number">7.1</span> Residuen</h2>
+<div class="cell">
+
+</div>
+</section>
+<section id="was-sind-noch-mal-residuen-epsilon_i-bzw.-deren-schätzer-hatepsilon_i-e_i" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="was-sind-noch-mal-residuen-epsilon_i-bzw.-deren-schätzer-hatepsilon_i-e_i"><span class="header-section-number">7.2</span> Was sind noch mal Residuen <span class="math inline">\(\epsilon_i\)</span> bzw. deren Schätzer <span class="math inline">\(\hat{\epsilon}_i = e_i\)</span></h2>
+<p><span class="math display">\[
+y_i = \beta_0 + \beta_1 \times x_i + \epsilon_i
+\]</span></p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="slm_model_fit_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Spielzeugbeispiel mit Residuen <span class="math inline">\(\hat{\epsilon}_i = e_i = y_i - \hat{y}_i\)</span></figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="annahme-epsilon_i-sim-mathcaln0-sigma2" class="level2" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="annahme-epsilon_i-sim-mathcaln0-sigma2"><span class="header-section-number">7.3</span> Annahme: <span class="math inline">\(\epsilon_i \sim \mathcal{N}(0, \sigma^2)\)</span></h2>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="slm_model_fit_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Verteilung der Werte für verschiedene x-Werte (rote Punkte) und die resultierende Regressionsgerade mit den Vorhersagewerte <span class="math inline">\(\hat{y}_i\)</span> (schwarze Punkte)</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="übersicht-residuen" class="level2" data-number="7.4">
+<h2 data-number="7.4" class="anchored" data-anchor-id="übersicht-residuen"><span class="header-section-number">7.4</span> Übersicht Residuen</h2>
+<table class="table">
+<caption>Übersicht über verschiedene Arten von Residuen<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></caption>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Typ</th>
+<th>Berechnung</th>
+<th>Ziel</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Einfache Residuen</td>
+<td><span class="math inline">\(e_i = y_i - \hat{y}_i\)</span></td>
+<td>Verteilungsannahme</td>
+</tr>
+<tr class="even">
+<td>Standardisierte Residuen</td>
+<td><span class="math inline">\(e_{Si} = \frac{e_i}{\hat{\sigma}\sqrt{1-h_i}}\)</span></td>
+<td>Verteilungsannahme</td>
+</tr>
+<tr class="odd">
+<td>Studentized Residuen</td>
+<td><span class="math inline">\(e_{Ti} = \frac{e_i}{\hat{\sigma}_{(-i)}\sqrt{1-h_i}}\)</span></td>
+<td>Einfluss auf Modell</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="residuen-in-r-berechnen-mit-residuals-und-freunden" class="level2" data-number="7.5">
+<h2 data-number="7.5" class="anchored" data-anchor-id="residuen-in-r-berechnen-mit-residuals-und-freunden"><span class="header-section-number">7.5</span> Residuen in <code>R</code> berechnen mit <code>residuals()</code> und Freunden</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">residuals</span>(mod)[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>] <span class="co"># einfache Residuen</span></span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         1          2          3          4          5 
+ -9.300928  -9.368288 -11.217658  -5.572108  -6.363565 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rstandard</span>(mod)[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>] <span class="co"># standardisierte Residuen</span></span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         1          2          3          4          5 
+-1.4592936 -1.4598906 -1.7440573 -0.8724351 -0.9916310 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rstudent</span>(mod)[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>] <span class="co"># studentized Residuen</span></span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         1          2          3          4          5 
+-1.4814779 -1.4821191 -1.7928881 -0.8697060 -0.9914135 </code></pre>
+</div>
+</div>
+<div class="cell">
+
+</div>
+</section>
+<section id="residuen-in-r-inspizieren" class="level2" data-number="7.6">
+<h2 data-number="7.6" class="anchored" data-anchor-id="residuen-in-r-inspizieren"><span class="header-section-number">7.6</span> Residuen in <code>R</code> inspizieren</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>y_hat <span class="ot">&lt;-</span> <span class="fu">predict</span>(mod)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(y_hat, <span class="fu">residuals</span>(mod))</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(y_hat, <span class="fu">rstandard</span>(mod))</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(y_hat, <span class="fu">rstudent</span>(mod))</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="diagnoseplot---einfache-residuen-hatepsilon_i-sim-haty_i" class="level2" data-number="7.7">
+<h2 data-number="7.7" class="anchored" data-anchor-id="diagnoseplot---einfache-residuen-hatepsilon_i-sim-haty_i"><span class="header-section-number">7.7</span> Diagnoseplot - Einfache Residuen <span class="math inline">\(\hat{\epsilon_i} \sim \hat{y_i}\)</span></h2>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="slm_model_fit_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Streudiagramm der Residuen <span class="math inline">\(\hat{\epsilon_i}\)</span> gegen die Vorhersagewerte <span class="math inline">\(\hat{y}_i\)</span></figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="diagnoseplot---standardisierte-residuen-hatepsilon_si-sim-haty_i" class="level2" data-number="7.8">
+<h2 data-number="7.8" class="anchored" data-anchor-id="diagnoseplot---standardisierte-residuen-hatepsilon_si-sim-haty_i"><span class="header-section-number">7.8</span> Diagnoseplot - Standardisierte Residuen <span class="math inline">\(\hat{\epsilon}_{Si} \sim \hat{y_i}\)</span></h2>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="slm_model_fit_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Streudiagramm der standardisierten Residuen <span class="math inline">\(\hat{\epsilon}_{Si}\)</span> gegen die Vorhersagewerte <span class="math inline">\(\hat{y}_i\)</span></figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="diagnoseplot---studentized-residuen-hatepsilon_ti-sim-haty_i" class="level2" data-number="7.9">
+<h2 data-number="7.9" class="anchored" data-anchor-id="diagnoseplot---studentized-residuen-hatepsilon_ti-sim-haty_i"><span class="header-section-number">7.9</span> Diagnoseplot - Studentized Residuen <span class="math inline">\(\hat{\epsilon}_{Ti} \sim \hat{y_i}\)</span></h2>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="slm_model_fit_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Streudiagramm der studentized Residuals <span class="math inline">\(\hat{\epsilon}_{Ti}\)</span> gegen die Vorhersagewerte <span class="math inline">\(\hat{y}_i\)</span></figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="diagnoseplot---wie-sehen-probleme-aus" class="level2" data-number="7.10">
+<h2 data-number="7.10" class="anchored" data-anchor-id="diagnoseplot---wie-sehen-probleme-aus"><span class="header-section-number">7.10</span> Diagnoseplot - Wie sehen Probleme aus?</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="slm_model_fit_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Beispielstreudiagramm</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="diagnoseplot---wie-sehen-probleme-aus-1" class="level2" data-number="7.11">
+<h2 data-number="7.11" class="anchored" data-anchor-id="diagnoseplot---wie-sehen-probleme-aus-1"><span class="header-section-number">7.11</span> Diagnoseplot - Wie sehen Probleme aus?</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="slm_model_fit_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Beispielstreudiagramm</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="wie-kann-die-verteilung-der-residuen-überprüft-werden" class="level2" data-number="7.12">
+<h2 data-number="7.12" class="anchored" data-anchor-id="wie-kann-die-verteilung-der-residuen-überprüft-werden"><span class="header-section-number">7.12</span> Wie kann die Verteilung der Residuen überprüft werden?</h2>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<caption>Spielzeugbeispieldaten mit <span class="math inline">\(n=5\)</span></caption>
+<thead>
+<tr class="header">
+<th style="text-align: right;">y</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">-2.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">5.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">-1.2</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7.0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="slm_model_fit_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Dichtefunktion der Standardnormalverteilung</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="konstruktion-eines-qq-graphen" class="level2" data-number="7.13">
+<h2 data-number="7.13" class="anchored" data-anchor-id="konstruktion-eines-qq-graphen"><span class="header-section-number">7.13</span> Konstruktion eines qq-Graphen</h2>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="slm_model_fit_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<table class="table">
+<caption>Sortierte Datenwerte</caption>
+<thead>
+<tr class="header">
+<th>kleinster</th>
+<th>2.kleinster</th>
+<th>mittlerer</th>
+<th>2.größter</th>
+<th>größter</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>-2</td>
+<td>-1.2</td>
+<td>0.1</td>
+<td>5</td>
+<td>7</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="konstruktion-eines-qq-graphen-1" class="level2" data-number="7.14">
+<h2 data-number="7.14" class="anchored" data-anchor-id="konstruktion-eines-qq-graphen-1"><span class="header-section-number">7.14</span> Konstruktion eines qq-Graphen</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="slm_model_fit_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Streudiagramm der empirischen Werte gegen die theoretischen Quantilen</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="beispiele-für-qq-graphen-mit-qqnorm-und-qqline" class="level2" data-number="7.15">
+<h2 data-number="7.15" class="anchored" data-anchor-id="beispiele-für-qq-graphen-mit-qqnorm-und-qqline"><span class="header-section-number">7.15</span> Beispiele für qq-Graphen mit <code>qqnorm()</code> und <code>qqline()</code></h2>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="slm_model_fit_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="diagnoseplot---qq-diagramm" class="level2" data-number="7.16">
+<h2 data-number="7.16" class="anchored" data-anchor-id="diagnoseplot---qq-diagramm"><span class="header-section-number">7.16</span> Diagnoseplot - QQ-Diagramm</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="slm_model_fit_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">QQ-Diagramm der Residuen des ADAS-ADCS-Modells</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p><a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+</section>
+<section id="summary" class="level2" data-number="7.17">
+<h2 data-number="7.17" class="anchored" data-anchor-id="summary"><span class="header-section-number">7.17</span> <code>summary()</code></h2>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = adcs ~ adas, data = adl)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-11.2177  -3.8033  -0.4663   2.7950  20.9634 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  26.5445     4.3052   6.166 3.05e-07 ***
+adas         -0.2638     0.1015  -2.599   0.0131 *  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 6.516 on 39 degrees of freedom
+Multiple R-squared:  0.1477,    Adjusted R-squared:  0.1258 
+F-statistic: 6.757 on 1 and 39 DF,  p-value: 0.01312</code></pre>
+</div>
+</div>
+</section>
+<section id="neue-idee-zu-residuen" class="level2" data-number="7.18">
+<h2 data-number="7.18" class="anchored" data-anchor-id="neue-idee-zu-residuen"><span class="header-section-number">7.18</span> Neue Idee zu Residuen</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="slm_model_fit_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Spielzeugbeispiel mit Residuen <span class="math inline">\(\hat{\epsilon}_i = e_i = y_i - \hat{y}_i\)</span></figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="zum-nacharbeiten" class="level2" data-number="7.19">
+<h2 data-number="7.19" class="anchored" data-anchor-id="zum-nacharbeiten"><span class="header-section-number">7.19</span> Zum Nacharbeiten</h2>
+<p><span class="citation" data-cites="kutner2005">Kutner u.&nbsp;a. (<a href="references.html#ref-kutner2005" role="doc-biblioref">2005, p.100–114</a>)</span> <span class="citation" data-cites="pos_residuals">Altman und Krzywinski (<a href="references.html#ref-pos_residuals" role="doc-biblioref">2016b</a>)</span> <span class="citation" data-cites="fox2011">Fox (<a href="references.html#ref-fox2011" role="doc-biblioref">2011, p.285–296</a>)</span></p>
+</section>
+<section id="hebelwerte" class="level2" data-number="7.20">
+<h2 data-number="7.20" class="anchored" data-anchor-id="hebelwerte"><span class="header-section-number">7.20</span> Hebelwerte</h2>
+<div class="cell">
+
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="slm_model_fit_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Streudiagramm der ADCS-MCI-ADL scores gegen ADAS-cos scores</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="slm_model_fit_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Hebelwerte der jeweiligen <span class="math inline">\(x_i\)</span>s</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="slm_model_fit_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Hebelwerte der jeweiligen Datenpunkte</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="dffits" class="level2" data-number="7.21">
+<h2 data-number="7.21" class="anchored" data-anchor-id="dffits"><span class="header-section-number">7.21</span> DFFITS</h2>
+<p>Mit Hilfe der Hebelwerte lassen sich verschiedene Maße erstellen um den Einfluss von Datenpunkten auf das Modell zu überprüfen. Ein Maß wird als bezeichnet (siehe <a href="#eq-dffits">Gleichung&nbsp;<span>7.1</span></a>)</p>
+<p><span id="eq-dffits"><span class="math display">\[
+(DFFITS)_i = \frac{\hat{y}_i - \hat{y}_{i(i)}}{\sqrt{\hat{\sigma}^2h_i}}
+\tag{7.1}\]</span></span></p>
+<p>Im Zähler kommen vin <a href="#eq-dffits">Gleichung&nbsp;<span>7.1</span></a> zweimal vorhergesagte <span class="math inline">\(y\)</span>-Werte vor. <span class="math inline">\(\hat{y}_i\)</span> ist dabei der ganz normale Vorhersagewert der uns mittlerweile schon mehrfach begegnet ist. Der zweite Wert <span class="math inline">\(\hat{y}_{i(i)}\)</span> bezeichnet den vorhergesagten Wert aus dem Modell aus dem der Wert <span class="math inline">\(y_i\)</span> weggelassen wurde. D.h, dass Modell ist mit einem Wert weniger gefittet worden. Daher misst die Differenz <span class="math inline">\(\hat{y}_i - \hat{y}_{i(i)}\)</span> den Unterschied in den Vorhersagewerte zwischen zwei Modellen bei denen einmal der Wert <span class="math inline">\(y_i\)</span> zum fitten verwendet wurde und einmal wenn <span class="math inline">\(y_i\)</span> nicht zum fitten verwendet wurde. Umso größer der Unterschied zwischen diesen beiden Werte umso größer ist der Einfluss des Wertes <span class="math inline">\(y_i\)</span> auf den Modellfit. Den Nenner von <a href="#eq-dffits">Gleichung&nbsp;<span>7.1</span></a> lassen wir mal fallen, da es sich dabei nur um einen Normierungswert handelt. Dementsprechend, wird mittels DFFITS für jeden Datenpunkt ein Wert ermittelt und umso größer dieser Wert ist umso größer ist der Einfluss des jeweiligen Datenpunktes auf den Modellfit.</p>
+<p>Im idealen Fall sollte alle Datenpunkt ungefähr den gleichen Einfluss haben und einzelne Datenpunkte die einen übermäßig großen Einfluss auf das Modell haben sollten noch einmal genauer inspiziert werden.</p>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Tipp
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Als Daumenregel, kann für kleine bis mittlere Datensätze ein DFFITS von <span class="math inline">\(\approx 1\)</span> auf Probleme hindeuten, während bei großen Datensätzen <span class="math inline">\(\approx 2\sqrt{k/N}\)</span> als Orientierungshilfe verwendet werden kann (k := Anzahl der Prediktoren, N := Stichprobengröße).</p>
+</div>
+</div>
+<div class="callout-warning callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Warnung
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Wenn ein Wert außerhalb der Daumenregel liegt, heißt das nicht, dass er automatisch ausgeschlossen werden muss/soll, sondern lediglich inspiziert werden sollte und das Modell mit und ohne diesen Wert interpretiert werden sollte.</p>
+</div>
+</div>
+<p>In <code>R</code> können die DFFITS werden mittels der <code>dffits()</code>-Funktion berechnet werden. Als Parameter erwartet <code>dffits()</code> das gefittete <code>lm()</code>-Objekt. Ähnlich wie bei den Residuen, werden die DFFITS-Werte gegen die vorhergesagten <span class="math inline">\(y_i\)</span>-Werte graphisch abgetragen um die Wert zu inspizieren und Probleme in der Modellspezifikation zu identifizieren.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(adl<span class="sc">$</span>y_hat, <span class="fu">dffits</span>(mod),</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>,<span class="dv">2</span>),</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="fu">expression</span>(<span class="fu">hat</span>(y)[i]),</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab=</span><span class="st">'DFFIT-Wert'</span>)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>), <span class="at">col=</span><span class="st">'red'</span>, <span class="at">lty=</span><span class="dv">2</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-dffits" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="slm_model_fit_files/figure-html/fig-dffits-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Abbildung&nbsp;7.1: Beispiel für DFFITS gegen <span class="math inline">\(\hat{y}_i\)</span></figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>In <a href="#fig-dffits">Abbildung&nbsp;<span>7.1</span></a> sind die DFFITS-Werte gegen die vorhergesagten Werte <span class="math inline">\(\hat{y}_i\)</span> abgetragen und zusätzlich die Daumenregel <span class="math inline">\(\pm1\)</span> eingezeichnet. Hier ist ein Wert nur gerade so außerhalb des vorgeschlagenen Bereichs. Hier könnte daher sich dieser Datenpunkt noch einmal genauer angeschaut werden, ob bei Ausschluß des Wertes es zu einer qualitativ anderen Interpretation der Daten kommt oder ob bespielsweise Übertragungsfehler für diesen Wert vorliegen oder sonstige Gründe.</p>
+</section>
+<section id="cooks-abstand" class="level2" data-number="7.22">
+<h2 data-number="7.22" class="anchored" data-anchor-id="cooks-abstand"><span class="header-section-number">7.22</span> Cooks-Abstand</h2>
+<p>Ein Maß um den Einfluss von einzelnen Datenpunkten auf die Vorhersagewerte <span class="math inline">\(\hat{y}_i\)</span> über alle Werte abzuschätzen.</p>
+<p><span class="math display">\[
+D_i = \frac{\sum_{j=1}^N(\hat{y_j} - \hat{y}_{j(i)})}{k\hat{\sigma}^2}
+\]</span></p>
+<section id="daumenregel" class="level3" data-number="7.22.1">
+<h3 data-number="7.22.1" class="anchored" data-anchor-id="daumenregel"><span class="header-section-number">7.22.1</span> Daumenregel</h3>
+<p><span class="math inline">\(D_i &gt; 1\)</span></p>
+</section>
+<section id="in-r" class="level3" data-number="7.22.2">
+<h3 data-number="7.22.2" class="anchored" data-anchor-id="in-r"><span class="header-section-number">7.22.2</span> In <code>R</code></h3>
+<p><code>cooks.distance()</code></p>
+</section>
+</section>
+<section id="cooks-abstand-plot" class="level2" data-number="7.23">
+<h2 data-number="7.23" class="anchored" data-anchor-id="cooks-abstand-plot"><span class="header-section-number">7.23</span> Cooks-Abstand plot</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="slm_model_fit_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Cook’s <span class="math inline">\(D_i\)</span> gegen <span class="math inline">\(\hat{y}_i\)</span></figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="dfbetas" class="level2" data-number="7.24">
+<h2 data-number="7.24" class="anchored" data-anchor-id="dfbetas"><span class="header-section-number">7.24</span> DFBETAS</h2>
+<p>Ein Maß für die Veränderung der <span class="math inline">\(\beta\)</span>-Koeffizienten durch einzelne Datenpunkte <span class="math inline">\(i\)</span>.</p>
+<p><span class="math display">\[
+(DFBETAS)_{k(i)} = \frac{\hat{\beta}_k - \hat{\beta}_{k(i)}}{\sqrt{\hat{\sigma}^2c_{kk}}}
+\]</span></p>
+<section id="daumenregel-1" class="level3" data-number="7.24.1">
+<h3 data-number="7.24.1" class="anchored" data-anchor-id="daumenregel-1"><span class="header-section-number">7.24.1</span> Daumenregel</h3>
+<p>Für kleine bis mittlere Datensätze <span class="math inline">\(\approx 1\)</span><br>
+Für große Datensätze <span class="math inline">\(\approx 2/\sqrt{N}\)</span></p>
+</section>
+<section id="in-r-1" class="level3" data-number="7.24.2">
+<h3 data-number="7.24.2" class="anchored" data-anchor-id="in-r-1"><span class="header-section-number">7.24.2</span> In <code>R</code></h3>
+<p><code>dfbeta()</code><a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
+</section>
+</section>
+<section id="dfbetas-1" class="level2" data-number="7.25">
+<h2 data-number="7.25" class="anchored" data-anchor-id="dfbetas-1"><span class="header-section-number">7.25</span> DFBETAS</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="slm_model_fit_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">DFBETA-Werte für <span class="math inline">\(\beta_0\)</span> und <span class="math inline">\(\beta_1\)</span> gegen <span class="math inline">\(\hat{y}_i\)</span></figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="zusammenfassung" class="level2" data-number="7.26">
+<h2 data-number="7.26" class="anchored" data-anchor-id="zusammenfassung"><span class="header-section-number">7.26</span> Zusammenfassung</h2>
+<table class="table">
+<caption>Übersicht über die verschiedene Einflussmaße zur Bewertung der Modellgüte</caption>
+<thead>
+<tr class="header">
+<th>Typ</th>
+<th>Veränderung</th>
+<th>Daumenregel</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\((DFFITS)_i\)</span></td>
+<td>Vorhersagewert i</td>
+<td><span class="math inline">\(2\sqrt{k/N}\)</span></td>
+</tr>
+<tr class="even">
+<td>Cook</td>
+<td>Durchschnittliche Vorhersagewerte</td>
+<td><span class="math inline">\(&gt;1\)</span></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\((DFBETAS)_{k(i)}\)</span></td>
+<td>Koeffizient i</td>
+<td><span class="math inline">\(2\sqrt{N}\)</span></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(e_{Ti}\)</span></td>
+<td>Residuum i</td>
+<td>t-Verteilung(n-k-2)</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="diagnoseplots-in-r-mit-plotmod" class="level2" data-number="7.27">
+<h2 data-number="7.27" class="anchored" data-anchor-id="diagnoseplots-in-r-mit-plotmod"><span class="header-section-number">7.27</span> Diagnoseplots in R mit <code>plot(mod)</code></h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mod)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="slm_model_fit_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="zum-nacharbeiten-1" class="level2" data-number="7.28">
+<h2 data-number="7.28" class="anchored" data-anchor-id="zum-nacharbeiten-1"><span class="header-section-number">7.28</span> Zum Nacharbeiten</h2>
+<p><span class="citation" data-cites="pos_diagnostics">Altman und Krzywinski (<a href="references.html#ref-pos_diagnostics" role="doc-biblioref">2016a</a>)</span> <span class="citation" data-cites="fox2011">Fox (<a href="references.html#ref-fox2011" role="doc-biblioref">2011, p.294–302</a>)</span></p>
+<section id="weiterführendes" class="level3" data-number="7.28.1">
+<h3 data-number="7.28.1" class="anchored" data-anchor-id="weiterführendes"><span class="header-section-number">7.28.1</span> Weiterführendes</h3>
+<p><span class="citation" data-cites="young2019">Young (<a href="references.html#ref-young2019" role="doc-biblioref">2019</a>)</span></p>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography" style="display: none">
+<div id="ref-pos_diagnostics" class="csl-entry" role="doc-biblioentry">
+Altman, Naomi, und Martin Krzywinski. 2016a. <span>„Points of significance: Analyzing outliers: influential or nuisance“</span>. <em>Nature Methods</em> 13 (4): 281–82.
+</div>
+<div id="ref-pos_residuals" class="csl-entry" role="doc-biblioentry">
+———. 2016b. <span>„Points of significance: regression diagnostics“</span>. <em>Nature Methods</em> 13 (5): 385–86.
+</div>
+<div id="ref-fox2011" class="csl-entry" role="doc-biblioentry">
+Fox, John. 2011. <em>An R companion to applied regression</em>. 2. Aufl. SAGE Publication Inc., Thousand Oaks.
+</div>
+<div id="ref-kutner2005" class="csl-entry" role="doc-biblioentry">
+Kutner, Michael H, Christopher J Nachtsheim, John Neter, und William Li. 2005. <em>Applied Linear Statistical Models</em>. 5. Aufl. McGraw-Hill Irwin New York.
+</div>
+<div id="ref-young2019" class="csl-entry" role="doc-biblioentry">
+Young, Alwyn. 2019. <span>„Channeling fisher: Randomization tests and the statistical insignificance of seemingly significant experimental results“</span>. <em>The Quarterly Journal of Economics</em> 134 (2): 557–98.
+</div>
+</div>
+</section>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p><span class="math inline">\(h_i\)</span> = Influenz von Punkt <span class="math inline">\(i\)</span><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>In <code>R</code> mit <code>qqnorm(resid(mod))</code><a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Es wird eine Matrize mit <span class="math inline">\(k\)</span>-Spalten zurückgegeben.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Kopiert");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Kopiert");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./slm_inference.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Inferenz</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./slm_prediction.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Vorhersage</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>
