@@ -132,7 +132,52 @@ tibble(x = x,
 
 Diesen Ansatz können wir verwenden um mit Hilfe unseres Experiments doch etwas über den DGP auszusagen. Allerdings müssen wir uns noch einmal etwas eingehender mit Verteilungen auseinandersetzen um z.B. genauer zu bestimmen welche Ergebnisse uns überraschen würden. D.h. wir müssen uns erst ein mal ein paar neue Konzepte erarbeiten.
 
-## Verteilungen - 1. deep dive
+## Die Verteilung - 1. deep dive
+
+Wir versuchen jetzt als erstes zu Verstehen was nochmal genau der Graph der Verteilung bedeutet. Auf der x-Achse werden die verschiedenen möglichen Werte der jeweiligen Statistik abgebildet. In unserem bisherigen Beispiel was das die Unterschiede $D$ zwischen der Kontroll- und der Treatmentgruppe. Der Wert auf der y-Achse was zunächst die relative Häufigkeit was auch Sinn gemacht hatte, da wir nur eine bestimmte endliche Anzahl von möglichen Unterschieden $D$ (ihr erinnert auch an die Zahl) vorliegen hatten. Was passiert aber wenn wir tatsächlich eine kontiuierliche Statistik haben, also eine Statistik die alle Werte innerhalb eines Intervalls einnehmen kann. Um den Fall zu verstehen fangen wir aber erst mal wieder mit einem einfachen Modell an.
+
+### Der Münzwurf
+
+Wir fangen mit dem einfachsten Experiment an: dem Münzwurf. Beim Münzwurf haben wir zwei mögliche Ausgänge unseres Experiments, entweder Kopf oder Zahl. Wir gehen von einer perfekten Münze aus, d.h. die Münze ist vollkommen symmetrisch auf beiden System und keine der Seiten ist in irgendeiner Form schwere oder beeinflusst in einer Art den Ausgang.
+
+Wenn wir uns an die Schule zurück erinnern, dann haben wir in Wahrscheinlichkeitstheorie schon mal was gehört, das im Fall gleichwahrscheinlicher Ereignisse die Wahrscheinlichkeit für ein bestimmtes Ereignis, mittels der Anzahl der vorteilhaften Ausgänge geteilt durch die Anzahl der möglichen Ausgänge berechnet wird. Also beim einmaligen Münzwurf haben wir zwei Ausgänge $\{\text{Kopf}, \text{Zahl}\}$ und jeweils nur vorteilhaften Ausang als entweder Kopf oder Zahl, daher folgt daraus.
+
+\begin{align}
+P(\text{Kopf}) &= \frac{1}{2} \\
+P(\text{Zahl}) &= \frac{1}{2}
+\end{align}
+
+Wenn wir das jetzt als Graphen in Form einer Wahrscheinlichkeitsverteilung abtragen, dann sieht das noch wenig interessant aus (siehe @fig-sts-sig-coin-toss-1). Das Muster ist aber trotzdem wichtig, damit wir später wissen worauf wir hier eigentlich schauen. Auf der x-Achse haben wir die möglichen Ausgänge, Kopf oder Zahl, und auf der y-Achse haben wir die Wahrscheinlichkeit abgetragen.
+
+```{r}
+#| fig.cap: "Wahrscheinlichkeitsverteilung des einmaligen Münzwurfes"
+#| label: fig-sts-sig-coin-toss-1
+
+ggplot(tibble(x = 1:2, y = 0.5),
+       aes(x, y=0,xend=x, yend=y)) +
+  geom_segment(size=2) +
+  scale_x_continuous('Ereignis', limits = c(0, 3), breaks=1:2,
+                     labels = c('Kopf','Zahl')) +
+  scale_y_continuous('Wahrscheinlichkeit P', limits = c(0, 1))
+
+```
+
+Da sich mit einem Münzwurf aber so wenig anfangen lässt, machen wir das Ganze jetzt etwas komplizierter und schauen uns an, wie unser Experiment aussieht wenn wir zwei Münzwwürfe uns anschauen. Rein operational, wir schmeißen unsere Münze in die Luft, schreiben uns das Ergebnis auf, und machen das Ganze noch ein zweites Mal und schreiben uns das Ergebnis auf. D.h. was auch immer im ersten Durchgang passiert, hat keine Auswirkungen auf das Ergebnis des zweiten Wurfs. Wir könnten auch zwei Münzen nehmen und beide gleichzeitig in die Luft werfen. Das wäre das gleiche Experiment. Welche Ausgänge haben wir jetzt beim zweimaligen Münzwurf? Zunächst einmal haben wir jetzt nicht mehr nur einen einzelnen Ausgang sondern wir haben ein Ausgangstupel, eine Liste mit zwei Elementen. Etwas motiviertes krizteln auf einem Schmierblatt wird wahrscheinlich relativ schnell zu folgender Tabelle führen (siehe @tbl-sts-sig-coin-toss-2)
+
+| Ausgang 1. Wurf | Ausgang 2. Wurf | Tupel |
+| --- | --- | --- |
+| Kopf | Kopf | (Kopf, Kopf) |
+| Kopf | Zahl | (Kopf, Zahl) |
+| Zahl | Kopf | (Zahl, Kopf) |
+| Zahl | Zahl | (Zahl, Zahl) |
+
+Jetzt können wir uns wieder fragen, was die Wahrscheinlichkeit für die jeweiligen Ereignistupel ist. Eine direkte Methode wäre, wieder mittels der Symmetrie zu argumentieren. Es gibt vier verschiedene Ausgänge von denen jetzt keiner in irgendeiner Weise bevorzugt ist, daraus würde folgen das alle vier Ausgänge eine Wahrscheinlichkeit von $P = \frac{1}{4}$ haben.
+
+Eine weitere Möglichkeit wäre mit den Wahrscheinlichkeiten aus dem einfachen Wurf an das Problem heran zu gehen. 
+
+: Mögliche Ausgänge bei einem zweimaligen Münzwurf {#tbl-sts-sig-coin-toss-2}
+
+### Lage- und Skalenparameter
 
 In @fig-sts-sig-dgp-2 sind verschiedene Verteilungen abgebildet die sich eigentlich nur in ihrer Position bzw. Lage unterscheiden. Der Parameter der bei einer Verteilungen die Lage steuert ist der Mittelwert den wir bereits schon kennengelernt haben. Hier jetzt aber nicht der Mittelwert $\bar{x}$ in der Stichprobe, sondern der Mittelwert der zugrundeliegenden Population der dann mit dem Symbol $\mu$ bezeichnet wird. Die Beschreibung als Parameter der Verteilung heißt nichts anderes das die Verteilung von $\mu$ abhängt, oder formal das die Verteilung eine Funktion von $\mu$ ist. Wenn wir uns an Funktionen aus der Schule zurück erinnen wo wir Funktionen $f$ von $x$ kennengelernt haben und als $f(x)$ dargestellt haben. Übertragen auf die Verteilung könnte dies mittels $f(\mu)$ dargestellt werden.
 
