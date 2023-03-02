@@ -171,11 +171,64 @@ Da sich mit einem Münzwurf aber so wenig anfangen lässt, machen wir das Ganze 
 | Zahl | Kopf | (Zahl, Kopf) |
 | Zahl | Zahl | (Zahl, Zahl) |
 
+: Mögliche Ausgänge bei einem zweimaligen Münzwurf {#tbl-sts-sig-coin-toss-2}
+
 Jetzt können wir uns wieder fragen, was die Wahrscheinlichkeit für die jeweiligen Ereignistupel ist. Eine direkte Methode wäre, wieder mittels der Symmetrie zu argumentieren. Es gibt vier verschiedene Ausgänge von denen jetzt keiner in irgendeiner Weise bevorzugt ist, daraus würde folgen das alle vier Ausgänge eine Wahrscheinlichkeit von $P = \frac{1}{4}$ haben.
 
-Eine weitere Möglichkeit wäre mit den Wahrscheinlichkeiten aus dem einfachen Wurf an das Problem heran zu gehen. 
+Eine weitere Möglichkeit wäre mit den Wahrscheinlichkeiten aus dem einfachen Wurf an das Problem heran zu gehen. Wir betrachten die beiden Münzwürfe jetzt wieder sequentiell (siehe @fig-sts-sig-coin-toss-tree). Im ersten Schritt können wir entweder Kopf oder Zahl beobachten. Beide Wahrscheinlichkeiten sind $P = \frac{1}{2}$. Darauf folgend können wir wieder zwei verschiedene Ausgänge beobachten, eben Kopf oder Zahl, wieder mit der Wahrscheinlichkeit $P = \frac{1}{2}$. 
 
-: Mögliche Ausgänge bei einem zweimaligen Münzwurf {#tbl-sts-sig-coin-toss-2}
+```{r}
+#| fig.cap: "Auswahlmöglichkeiten beim sequentiellen zweimaligen Münzwurf"
+#| label: fig-sts-sig-coin-toss-tree
+
+DiagrammeR::grViz("digraph {
+  graph [layout = dot, rankdir = LR]
+  
+  node [shape = ellipse]        
+  rec1 [label = 'Start']
+  rec2 [label = 'Kopf']
+  rec3 [label =  'Zahl']
+  rec4 [label = 'Kopf']
+  rec5 [label = 'Zahl']
+  rec6 [label = 'Kopf']
+  rec7 [label = 'Zahl']
+  
+  # edge definitions with the node IDs
+  rec1 -> rec2; rec1 -> rec3; rec2->rec4; rec2->rec5;rec3->rec6;rec3->rec7;
+  }",
+  height = 500)
+```
+
+Da die Münzwürfe voneinander unabhängig sind und keinen Einfluss aufeinander ausüben, folgt daraus, dass die Wahrscheinlichkeiten für jede spezielle Folge von Kopf oder Zahl sich berechnet nach:
+
+$$
+P(\text{Ausgang}) = P(\text{1. Wurf}) \times P(\text{2. Wurf})
+$$ {#eq-2coin-toss}
+
+Also in unseren Fall:
+
+$$
+P(\text{Ausgang}) = \frac{1}{2} \times \frac{1}{2} = \frac{1}{4}
+$$ {#eq-2coin-toss-prob}
+
+Womit wir wieder beim gleichen Ergebnis wie vorher angekommen sind. Der Vorteil dieser Herangehensweise ist jedoch, dass wir damit eine einfache Möglichkeit gefunden haben das Ergebnis auf mehr als nur zwei Würfe zu verallgemeinern. Nehmen wir zum Beispiel den dreifachen Münzwurf, dann können wir die Wahrscheinlichkeit für die Folge $P(\text{KKZ}) = \frac{1}{2}\times \frac{1}{2} \times \frac{1}{2} = \frac{1}{8}$ direkt angeben. Bleibe aber erst noch mal kurz beim zweimaligen Münzwurf und schauen uns die Wahrscheinlichkeitsverteilung an. Hier stoßen wir nämlich auf ein Problem in der Darstellung. Wenn wir bei dem Muster aus @fig-sts-coin-toss-1 bleiben wollen und auf der x-Achse die möglichen Ergnisse und auf der y-Achse die dazugehörende Wahrscheinlichkeit abtragen wollen, dann ist nicht ganz klar wie wir die Ergebnisse ordnen sollen. Eine mögliche Lösung ist in @fig-sts-sig-coin-toss-2a zu sehen.
+
+```{r}
+#| fig.cap: "Wahrscheinlichkeitsverteilung des zweimaligen Münzwurfes (K: Kopf, Z: Zahl)" 
+#| label: fig-sts-sig-coin-toss-2a
+
+ggplot(tibble(x = 1:4, y = 0.25),
+       aes(x, y=0,xend=x, yend=y)) +
+  geom_segment(size=2) +
+  scale_x_continuous('Ereignis', limits = c(0, 5), breaks=1:4,
+                     labels = c('KK','KZ','ZK','ZZ')) +
+  scale_y_continuous('Wahrscheinlichkeit P', limits = c(0, 1))
+
+```
+
+
+
+
 
 ### Lage- und Skalenparameter
 
