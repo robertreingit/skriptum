@@ -211,7 +211,9 @@ $$
 P(\text{Ausgang}) = \frac{1}{2} \times \frac{1}{2} = \frac{1}{4}
 $$ {#eq-2coin-toss-prob}
 
-Womit wir wieder beim gleichen Ergebnis wie vorher angekommen sind. Der Vorteil dieser Herangehensweise ist jedoch, dass wir damit eine einfache Möglichkeit gefunden haben das Ergebnis auf mehr als nur zwei Würfe zu verallgemeinern. Nehmen wir zum Beispiel den dreifachen Münzwurf, dann können wir die Wahrscheinlichkeit für die Folge $P(\text{KKZ}) = \frac{1}{2}\times \frac{1}{2} \times \frac{1}{2} = \frac{1}{8}$ direkt angeben. Bleibe aber erst noch mal kurz beim zweimaligen Münzwurf und schauen uns die Wahrscheinlichkeitsverteilung an. Hier stoßen wir nämlich auf ein Problem in der Darstellung. Wenn wir bei dem Muster aus @fig-sts-coin-toss-1 bleiben wollen und auf der x-Achse die möglichen Ergnisse und auf der y-Achse die dazugehörende Wahrscheinlichkeit abtragen wollen, dann ist nicht ganz klar wie wir die Ergebnisse ordnen sollen. Eine mögliche Lösung ist in @fig-sts-sig-coin-toss-2a zu sehen.
+Womit wir wieder beim gleichen Ergebnis wie vorher angekommen sind. Der Vorteil dieser Herangehensweise ist jedoch, dass wir damit eine einfache Möglichkeit gefunden haben das Ergebnis auf mehr als nur zwei Würfe zu verallgemeinern. Nehmen wir zum Beispiel den dreifachen Münzwurf, dann können wir die Wahrscheinlichkeit für die Folge $P(\text{KKZ}) = \frac{1}{2}\times \frac{1}{2} \times \frac{1}{2} = \frac{1}{8}$ direkt angeben.
+
+Bleiben wir aber erst noch mal kurz beim zweimaligen Münzwurf und schauen uns die Wahrscheinlichkeitsverteilung an. Hier stoßen wir nämlich auf ein Problem in der Darstellung. Wenn wir bei dem Muster aus @fig-sts-sig-oin-toss-1 bleiben wollen und auf der x-Achse die möglichen Ergnisse und auf der y-Achse die dazugehörende Wahrscheinlichkeit abtragen wollen, dann ist nicht ganz klar wie wir die Ergebnisse ordnen sollen. Eine mögliche Lösung ist in @fig-sts-sig-coin-toss-2a zu sehen.
 
 ```{r}
 #| fig.cap: "Wahrscheinlichkeitsverteilung des zweimaligen Münzwurfes (K: Kopf, Z: Zahl)" 
@@ -226,9 +228,77 @@ ggplot(tibble(x = 1:4, y = 0.25),
 
 ```
 
+Dies ist natürlich nicht die einzige Möglichkeit wie wir die Ereignisse ordenen können sondern wahrscheinlich ist jede der 24 möglichen Anordnungen gleich sinnig. Wir könnten auch beispielsweise nicht mehr die beiden einzelnen Ausgänge als Ereignisse wählen, sondern könnten zum Beispiel nur noch die Anzahl der Köpfe in unseren zwei Würfen zählen. Dies würde zu der folgenden Zuordnung führen (siehe @tbl-sts-sig-coin-toss-2a).
 
+| Ereignisse | Anzahl der Köpfe |
+| --- | --- |
+| (Kopf, Kopf) | 2 |
+| (Kopf, Zahl) | 1 |
+| (Zahl, Kopf) | 1 |
+| (Zahl, Zahl) | 0 |
 
+: Zuordnung der Anzahl der Köpfe zu den Ereignissen beim zweimaligen Münzwurf {# tbl-sts-sig-coin-toss-2a}
 
+Wir verliegen bei dieser Zuordnung nachtürlich die Information bei welchem Wurf die Zahl beobachtet wurde, aber eigentlich interessiert uns das sowieso nicht so brennend. In der Terminologie der Wahrscheinlichkeitstheorie wird die Anzahl der Köpfe als Zufallsvariable bezeichnet.
+
+::: {#def-random-variable}
+## Zufallsvariable
+
+Eine Zufallsvariable\index{Zufallsvariable} ist die Abbildung eines Zufallsereignisses auf eine Zahl.
+
+:::
+
+Anders dargestellt, ist eine Zufallsvariable eine Funktion, die einem Ereignis eine Zahl zuordnet (siehe @fig-sts-sig-random-variable.
+
+```{r}
+#| fig.cap: "Eine Zufallsvariable ist eine Abbildung."
+#| label: fig-sts-sig-random-variable
+#| fig.height: 2
+
+DiagrammeR::grViz("digraph {
+  graph [layout = dot, rankdir = LR]
+  
+  node [shape = ellipse]        
+  rec1 [label = 'Ereignis']
+  rec2 [label = 'Zahl']
+ 
+  # edge definitions with the node IDs
+  rec1 -> rec2; 
+  }",
+  height = 300)
+```
+
+Wenn wir uns jetzt die Wahrscheinlichkeiten für unsere Zufallsvariable anschauen, dann sehen wir aber, dass wir nicht mehr vier verschiedne Ausgänge haben, sondern nur noch drei und das die gleiche Wahrscheinlichkeit für nicht gleich sind.
+
+|Ereignisse | Zufallsvariale | Wahrscheinlichkeit |
+|---| --- | --- |
+| (Zahl, Zahl) | Keine Köpfe | $\frac{1}{4}$ |
+| (Kopf, Zahl)(Zahl,Kopf)| 1 Kopf | $\frac{1}{4} + \frac{1}{4} = \frac{1}{2}$ |
+|(Kopf,Kopf) | 2 Köpfe | $\frac{1}{4}$ |
+
+: Wahrscheinlichkeitstabelle für Zufallsvariable "Anzahl der Köpfe beim zweimaligen Münzwurf". {#tbl-sts-sig-coin-toss-2b}
+
+Jetzt können wir wieder eine Wahrscheinlichkeitsverteilung für unsere Zufallsvariable abtragen (siehe @fig-sts-sig-coin-toss-2c).
+
+```{r}
+#| fig.cap: "Wahrscheinlichkeitsverteilung für die Anzahl der Köpfe beim zweimaligen Münzwurf"
+#| label: fig-sts-sig-coin-toss-2c
+#| fig.height: 2
+
+ggplot(tibble(x = 0:2, y = c(0.25,0.5,0.25)), 
+       aes(x, y=y,xend=x, yend=0)) +
+  geom_segment(size=1) +
+  geom_point(size=2) +
+  scale_x_continuous('Anzahl der Köpfe', breaks=0:2) +
+  scale_y_continuous('Wahrscheinlichkeit P', limits = c(0, 1))
+
+```
+
+Nur nebenher noch einmal das offensichtliche Ansprechen, die Summe der Wahrscheinlichkeiten muss zu $1$ addieren. Das sollte auch einsichtig sein. Wenn ich alle möglichen Ereignisse abfrage also: "*Was ist die Wahrscheinlichkeit das ich keine Köpfe, 1 Kopf oder 2 Köpfe beim zweimaligen Münzwurf erhalte*", dann sind das alle möglichen Ausgänge und dementsprechend sollte die Wahrscheinlichkeit dafür "1" sein oder mathematisch ausgedrückt:
+
+$$
+P(\text{0 Köpfe} \cup \text{1 Kopf} \cup \text{2 Köpfe}) = \frac{1}{4} + \frac{1}{2} + \frac{1}{4} = 1
+$$
 
 ### Lage- und Skalenparameter
 
