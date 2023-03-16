@@ -9,7 +9,7 @@ source('_common.R')
 
 ## Back to school
 
-Wir beginnen mit ein Konzept das wir schon alle kennen. Nämlich die Punkt-Steigungsform aus der Schule (siehe @eq-slm-psform-1).
+Wir beginnen mit ein Konzept das wir schon alle kennen. Nämlich der Punkt-Steigungsform aus der Schule (siehe @eq-slm-psform-1).
 
 $$
 y = m x + b
@@ -94,45 +94,71 @@ Wir bezeichnen die beiden Variablen $m$, die Steigung, und $b$, den y-Achsenabsc
 
 $$
 y_i = \beta_0 + \beta_1 x_i
-$$
+$$ {#eq-slm-psform-beta}
 
 Das ist immer noch unsere einfache Punkt-Steigungsform, wir haben lediglich den Index $i$ eingeführt um unterschiedliche $y-x$-Wertepaare zu bezeichnen und wir haben den $y$-Achsenabschnitt und die Steigung mit neuen Symbolen versehen.
+
+Bei dem bisherigen Zusammenhang handelt es sich um einen funktionalen Zusammenhang\index{Funktionaler Zusammenhang} zwischen den beiden Variablen $x$ und $y$. Funktional deswegen, weil wir eine definiertes mathematisches Modell angeben können, d.h. wir haben eine mathematische Funktion welche die Beziehung zwischen den beiden Variablen beschreibt. Wenn wir den Wert für $x$ kenne, dann können wir den präzisen Wert für $y$ ausreichen, indem wir ihn in @eq-slm-psform-1 einsetzen. Aus der Schule kennen wir auch noch die Darstellung $y = f(x)$. Streng genommen ist diese Darstellung für @eq-slm-psform-1 nicht ausreichend, denn um den Wert für $y$ auszurechnen benötigen wir auch noch Kenntnis über die Werte $m$ und $b$, bzw. in unsere weiteren Darstellung $\beta_0$ und $\beta_1$. Daher sollte der Zusammenhang eigentlich mit $y = f(x, \beta_0, \beta_1)$ bezeichnet werden. Es gilt aber immernoch, für gegebene $x, \beta_0$ und $\beta_1$ ist der Wert für $y$ fest determiniert.
+
+Wenn wir mit realen Daten arbeiten, dann funktioniert dieser Ansatz leider nicht ganz. Selbst wenn wir ein Experiment gleich durchführen werden wir immer etwas unterschiedliche Werte im Sinne der Messungenauigkeit messen. Wenn wir biologische Systeme messen, kommt dazu das diese in den seltensten Fällen zeitstabil sind sondern immer bestimmte Veränderungen von einem Zeitpunkt zum nächsten auftauchen. In @fig-slm-basics-jump-1 sind Sprungweiten von mehreren Weitspringerinnen gegen die Anlaufgeschwindigkeit abgetragen. Bei der Betrachtung der Daten erscheint ein linearer Zusammenhang zwischen diesen beiden Variablen durchaus als plausibel. 
 
 ```{r defs_reg_01}
 jump <- readr::read_delim('data/running_jump.csv',
                           delim=';',
-                          col_types = 'dd')
+                          col_types = 'dd')  
+jump <- jump |> add_column(i = 1:dim(jump)[1], .before=1)
 mod_jump <- lm(jump_m ~ v_ms, jump)
 jump <- jump |> mutate(y_hat = predict(mod_jump))
 ```
 
-## Einfaches Beispiel - Daten
-
 ```{r}
-jump |> select(jump_m, v_ms) |>
-  head(n = 7) |>  
-  kable(booktabs=TRUE,
-               linesep="",
-               caption="Ausschnitt der Sprungdaten",
-               digits = 2)
-```
+#| fig.cap: "Zusammenhang der Anlaufgeschwindigkeit und der Sprungweite beim Weitsprung"
+#| label: fig-slm-basics-jump-1 
+#| fig.height: 4
 
-## Einfaches Beispiel - Grafik
-
-```{r}
-#| fig.cap="Zusammenhang der Anlaufgeschwindigkeit und der Sprungweite",
-#| fig.height=2
-
-ggplot(jump, aes(v_ms, jump_m)) + geom_point() + 
+id_mark <- which(jump$v_ms > 9 & jump$v_ms < 9.1)[-2]
+ggplot(jump, aes(v_ms, jump_m)) +
+  geom_point(data = jump[id_mark,], color = 'red', size = 3) +
+  geom_point(size=2) + 
   labs(x = 'Anlaufgeschwindigkeit[m/s]',
        y = 'Sprungweite[m]') 
 ```
 
-## Einfaches Beispiel - Regressionsgerade
+In @fig-slm-basics-jump-1 sind zwei Punkte rot markiert. Die beiden Werte haben praktisch die gleichen $x$-Werte allerdings unterscheiden sich die $y$-Werte deutlich von einander. Und dies sind nicht die einzigen Beispielpaare bei denen die $x$-Werte nahe beiandern liegen, während die $y$-Werte deutlich weiter voneiander entfernt liegen als bei einen funktionalen Zusammenhang nach @eq-slm-psform-1 zu erwarten wäre. Diese Abweichungen kommen durch zufällige Einflussfaktoren wie eben zum Beispiel die Veränderungen angesprochener biologischer Faktoren, Messunsicherheiten, beim Weitsprung draußen sind auch immer externe Einflüsse mögliche, vielleicht wenn es sich um den gleichen Springer handelt, hat er auch beim zweiten Mal keine Lust mehr gehabt. Wenn die Punkte zwei unterschiedliche Springer sind, dann kommt auch dazu, dass zwei Weitspringer bei identischer Anlaufgeschwindigkeit unterschiedliche Sprungfähigkeiten haben oder auch technisch nicht gleich gesprungen sind und so weiter und so fort. Insgesamt führen alle diese Einflüsse dazu, dass wir nicht mehr einen streng funktionalen Zusammenhang zwischen unseren beiden Variablen $x$ der Anlaufgeschwindigkeit und $y$ der Sprungweite vorfinden. Wie wir mit diesen Einflüssen umgehen ist das zentrale Thema des nächsten Abschnitts und markiert auch unseren Eingang zur einfachen linearen Regression.
+
+## Die einfache lineare Regression
+
+Bleiben wir bei unserem Beispiel aus @fig-slm-basics-jump-1 und interpretieren das als praktisches Problem. Wir sind eine Weitsprungtrainerin und stehen jetzt vor der Aufgabe in unserem Training etwas zu verändern um die Weitsprungleistung zu verbessern. Wir haben wir haben uns dazu entschlossen am Anlauf etwas zu verbessern wissen jetzt aber nicht ob, das wirklich lohnenswert ist. Von einer befreundeten Trainerin haben wir einen Datensatz bekommen von Anlaufgeschwindigkeiten und den dazugehörigen Sprungweiten. Schauen wir uns zunächst die einmal die Struktur der Daten an.
 
 ```{r}
-#| fig.cap="Zusammenhang der Anlaufgeschwindigkeit und der Sprungweite",
-#| fig.height=2
+#| label: tbl-slm-basics-jump-1
+#| tbl-cap: "Ausschnitt der Sprungdaten"
+
+jump |> select(jump_m, v_ms) |>
+  head(n = 7) |>  
+  kable(booktabs=TRUE,
+               linesep="",
+               digits = 2)
+```
+
+In @tbl-slm-basics-jump-1 ist ein Ausschnitt Sprungdaten abgebildet. Wir haben eine einfache Struktur der Daten. Wir haben eine Tabelle mit zwei Spalten. `jump_m` bezeichnet die Sprungweiten und `v_ms` die Anlaufgeschwindigkeiten. Damit wir die Datenpaare voneinander unterscheiden bzw. identifzieren können führen wir unseren bereits besprochenen Index $i$ und können so einzelne Paare ansprechen.
+
+```{r}
+#| label: tbl-slm-basics-jump-2
+#| tbl-cap: "Ausschnitt der Sprungdaten"
+jump |> select(i, jump_m, v_ms) |>
+  head(n = 7) |>  
+  kable(booktabs=TRUE,
+               linesep="",
+               digits = 2)
+```
+
+Das waren bisher aber nur Formalitäten. Wir wollen jetzt denn Zusammenhang zwischen den beiden Variablen modellieren. Wir könnten wahrscheinlich auch einfach Pi-mal-Daumen abschätzen wie groß der Zusammenhang ist. Wenn wir jetzt aber einen unserer Läufer haben, der z.B. etwa $9m/s$ anläuft, welchen Vergleichswerte nehmen wir dann aus @fig-slm-basics-jump-1. Den unteren oder den oberen der beiden roten Werte? Oder vielleicht den Mittelwert? Welchen Wert nehmen wir wenn unserer Athlete $9.7m/s$ anläuft. Da haben wir leider keinen Vergleichswert in unserer Tabelle. Daher wäre es schon ganz praktisch eine Formel nach dem Muster von @eq-slm-psform-beta zu haben. Wie wir allerdings schon festgestellt haben, geht dies nicht so einfach da wir eben das Problem mit den Einflussfaktoren haben, die dazu führen, dass die Werte eben nicht streng auf eine Gerade liegen.
+
+
+```{r}
+#| fig.cap: "Zusammenhang der Anlaufgeschwindigkeit und der Sprungweite"
+#| fig.height: 2
 
 beta_0 <- coef(mod_jump)[1]
 beta_1 <- coef(mod_jump)[2]
