@@ -153,33 +153,94 @@ jump |> select(i, jump_m, v_ms) |>
                digits = 2)
 ```
 
-Das waren bisher aber nur Formalitäten. Wir wollen jetzt denn Zusammenhang zwischen den beiden Variablen modellieren. Wir könnten wahrscheinlich auch einfach Pi-mal-Daumen abschätzen wie groß der Zusammenhang ist. Wenn wir jetzt aber einen unserer Läufer haben, der z.B. etwa $9m/s$ anläuft, welchen Vergleichswerte nehmen wir dann aus @fig-slm-basics-jump-1. Den unteren oder den oberen der beiden roten Werte? Oder vielleicht den Mittelwert? Welchen Wert nehmen wir wenn unserer Athlete $9.7m/s$ anläuft. Da haben wir leider keinen Vergleichswert in unserer Tabelle. Daher wäre es schon ganz praktisch eine Formel nach dem Muster von @eq-slm-psform-beta zu haben. Wie wir allerdings schon festgestellt haben, geht dies nicht so einfach da wir eben das Problem mit den Einflussfaktoren haben, die dazu führen, dass die Werte eben nicht streng auf eine Gerade liegen.
+Das waren bisher aber nur Formalitäten. Wir wollen jetzt denn Zusammenhang zwischen den beiden Variablen modellieren. Wir könnten wahrscheinlich auch einfach Pi-mal-Daumen abschätzen wie groß der Zusammenhang ist. Wenn wir jetzt aber einen unserer Läufer haben, der z.B. etwa $9m/s$ anläuft, welchen Vergleichswerte nehmen wir dann aus @fig-slm-basics-jump-1. Den unteren oder den oberen der beiden roten Werte? Oder vielleicht den Mittelwert? Welchen Wert nehmen wir wenn unserer Athlete $9.7m/s$ anläuft. Da haben wir leider keinen Vergleichswert in unserer Tabelle. Daher wäre es schon ganz praktisch eine Formel nach dem Muster von @eq-slm-psform-beta zu haben. Wie wir allerdings schon festgestellt haben, geht dies nicht so einfach da wir eben das Problem mit den Einflussfaktoren haben, die dazu führen, dass die Werte eben nicht streng auf eine Gerade liegen. Somit liegt die Herausforderung nun eine Gerade zu finden die möglichst *genau* die Daten wiederspiegelt.
 
 
 ```{r}
-#| fig.cap: "Zusammenhang der Anlaufgeschwindigkeit und der Sprungweite"
-#| fig.height: 2
+#| fig.cap: "Mögliche Geraden um den Zusammenhang der Anlaufgeschwindigkeit und der Sprungweite zu modellieren"
+#| label: fig-slm-basics-line-1
 
 beta_0 <- coef(mod_jump)[1]
 beta_1 <- coef(mod_jump)[2]
 ggplot(jump, aes(v_ms, jump_m)) + 
-  labs(x = 'Anlaufgeschwindigkeit[m/s]',
-       y = 'Sprungweite[m]') +
-  geom_abline(slope = beta_1, intercept = beta_0,
-              col = 'blue')  +
-  geom_abline(data = tibble(s = beta_1 + seq(-0.05, 0.05, 0.01),
-                            y_in = beta_0),
+  geom_abline(slope = beta_1, intercept = beta_0, col = 'blue', alpha=.3)  +
+  geom_abline(data = tibble(s = beta_1 + seq(-0.1, 0.1, 0.2), y_in = beta_0),
               aes(slope = s, intercept = y_in), alpha=.1, col='blue') +
-  geom_segment(aes(x = v_ms, xend = v_ms, yend = jump_m, y = y_hat),
-               col = 'red') +
-  geom_point() 
+  geom_abline(intercept = 3, slope = 0.3, col = 'blue', alpha=.3) +
+  geom_abline(intercept = -3, slope = 1.2, col = 'blue', alpha=.3) +
+  #geom_segment(aes(x = v_ms, xend = v_ms, yend = jump_m, y = y_hat),
+  #             col = 'red') +
+  geom_point() +
+  #lims(y = c(-10, 10), x = c(-2, 12)) +
+  labs(x = 'Anlaufgeschwindigkeit[m/s]',
+       y = 'Sprungweite[m]') 
 ```
 
-## Loss function
+In @fig-slm-basics-line-1 sind die Daten zusammen mit verschiedenen möglichen Geraden abgebildet. Eine kurze Überlegung macht schnell klar, dass es im Prinzip unendlich viele unterschiedliche Geraden gibt die durch die Datenpunkte gelegt werden können. D.h. es gibt unendlich viele Kombinationen von $\beta_0$ und $\beta_1$, die die jeweiligen Geraden bezeichnen. Daher muss jetzt eine Kriterium gefunden werden, welches ermöglicht aus diesen unendlich vielen Geraden eine auszuwählen die im Sinne des Kriterium optimal ist.
+
+Tatsächlich gibt es dort auch verschiedene Möglichkeiten Kriterien anzuwenden, dasjenige dass jedoch am weitesten verbreitet ist aus verschiedenen Gründen sind die quadratierten Abweichungen von der Gerade. Schauen wir uns die Herleitung dazu schrittweise an. In @fig-slm-basics-line-2 ist zur Übersicht nur ein Ausschnitt der Daten zusammen mit einer möglichen Gerade eingezeichnet. Die senkrechten Abweichungen der Geraden zu den jeweiligen Datenpunkten sind rot eingezeichnet. Es ist ersichtlich, dass für diese Wahl der Geraden es zwei Punkte gibt die tatsächlich auch ziemlich genau auf der Geraden liegen während die anderen Punkte zum Teil oberhalb bzw. unterhalb der Geraden liegen. Das Kriterium wäre jetzt dementsprechen die jenige Geraden aus den unendlich vielen zu finden, bei der diese Abweichung ein Minimum annehmen. 
 
 $$
-\sum_{i=1}^n(y_i - (\beta_0 + \beta_1 v_i))^2
+\text{Min}\sum_{i=1}^n y_i - (\beta_0 + \beta_1 x_i) = \sum_{i=1}^n y_i - \beta_0 - \beta_1 x_i
 $$
+
+```{r}
+#| fig.cap: "Abweichungen der Gerade von der Datenpunkten für die Daten mit eine Anlaufgeschwindigkeit zwischen $8m/s$ und $10m/s$."
+#| label: fig-slm-basics-line-2
+
+beta_0 <- coef(mod_jump)[1]
+beta_1 <- coef(mod_jump)[2]
+ggplot(jump |> filter(v_ms > 8, v_ms < 10), aes(v_ms, jump_m)) + 
+  geom_abline(slope = beta_1, intercept = beta_0, col = 'blue', alpha=.3)  +
+  geom_segment(aes(x = v_ms, xend = v_ms, yend = jump_m, y = y_hat),
+               col = 'red') +
+  geom_point(size=3) +
+  labs(x = 'Anlaufgeschwindigkeit[m/s]',
+       y = 'Sprungweite[m]') 
+```
+
+Unglücklicherweise haben die einfachen Abweichungen die unhandliche Eigenschaft, dass dann die *Gerade* $y_i = \hat{y}$ optimal ist. 
+
+$$
+\sum_{i=1}^n y_i - \hat{y} = \sum_i^n y_i - \sum_{i=1}^n \hat{y} = \sum_{i=1}^n y_i - n\hat{y} = \sum_{i=1}^n y_i - n\frac{1}{n}\sum_{i=1}^n y_i = \sum_{i=1}^n y_i - \sum_{i=1}^n y_i= 0
+$$
+
+Wir können das Kriterium aber auch noch etwas schärfer machen. Wenn wir sagen, dass wir größere Abweichungen stärker gewichten wollen als kleinere Abweichungen. D.h. große Abweichungen zwischen der Gerade und den Datenpunkten sollten stärker berücksichtigt werden, als kleine Abweichungen. Dies können wir erreichen indem wir die Abweichungen noch zusätzlich quadrieren. Dies hat auch noch den Vorteil noch verschiedene andere mathematische Vorteile, unter anderem führt dies dazu, dass wir eine Gerade erhalten, die auch tatsächlich die Steigung der Punkte berücksichtigt und nicht einfache nur eine horizontale Gerade durch die Punkte zeichnet. Dementsprechend erhalten wir die folgende Funktion, die es zu minimieren gilt:
+
+$$
+\text{Min} \sum_{i=1}^n(y_i - (\beta_0 + \beta_1 x_i))^2
+$$ {#eq-slm-basics-rms-1}
+
+Die Abweichungen zwischen der zu findenden Gerade und den Datenpunkten werden als Residuen $e_i$ bezeichnet. Dementsprechend ist die Minimierungsgleichung auch als:
+
+$$
+\text{Min} \sum_{i=1}^n e_i
+$$
+darzustellen, mit $e_i := y_i - (\beta_0 + \beta_1 x_i)$. Führen wir noch eine weitere Bezeichnung $E$ ein, mit der wir die Minimierungsfunktion bezeichnen ($E$ nach englisch error).
+
+$$
+E = \sum_{i=1}^n e_i = \sum_{i=1}^n y_i - (\beta_0 - \beta_1 x_i)
+$$
+
+Das Minimum lässt sich jetzt finden, indem die partiellen Ableitungen von $\beta_0$ und $\beta_1$ berechnen und wie wir es aus der Schule kennen, die Ableitungen gleich Null gesetzt werden.
+
+\begin{align*}
+\frac{\partial E}{\partial \beta_0} &= -2 \sum_{i=1}^n (y_i - \beta_0 - \beta_1 x_i) = 0 \\
+\frac{\partial E}{\partial \beta_1} &= -2 \sum_{i=1}^n x_i (y_i - \beta_0 - \beta_1 x_i) = 0
+\end{align*}
+
+Diese Gleichungen lassen sich umstellen und nach $\beta_0$ und $\beta_1$ auflösen:
+
+\begin{align*}
+\hat{\beta_1} &= \frac{\sum_{i=1}^n (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^n (x_i - \bar{x})^2} \\
+\hat{\beta_0} &= \bar{y} - \hat{\beta_1} \bar{x}
+\end{align*}
+
+$\bar{x}$ und $\bar{y}$ sind wieder die Mittelwerte von $x_i$ und $y_i$.
+
+Über diese beiden Gleichungen erhalten wir die gewünschten Koeffizienten $\hat{\beta_0}$ und $\hat{\beta_1}$. Die Methode wird als die als die Methode der kleinsten Quadrate\index{Methode der kleinsten Quadrate} bezeichnet oder im Englischen Root-Mean-Square (RMS)\index{RMS}.
+
+
 
 $$
 y = -0.14 + 0.76 \times v
