@@ -283,6 +283,43 @@ ggplot(jump, aes(v_ms, jump_m)) +
        y = 'Sprungweite[m]') 
 ```
 
+Um uns auch zu vergewissern, dass unsere Berechnungen korrekt sind, schauen wir uns noch einmal an, wie sich $E$ verhällt, wenn wir unterschiedliche Kombinationen von Werten für $\beta_0$ und $\beta_1$ in unserer linearen Gleichung verwenden.
+
+```{r}
+#| fig.cap: "Heatmap von $log(E)$ für verschiedene Werte von $\\beta_0$ und $\\beta_1$"
+#| fig.height: 4
+#| fig.width: 4
+#| label: fig-slm-basics-gradient
+
+coefs <- coef(mod_jump)
+foo <- function(ab) {
+  res <- numeric(nrow(ab))
+  for (i in 1:nrow(ab)) {
+    res[i] <- sum((jump$jump_m - ab$a[i] - ab$b[i] * jump$v_ms)**2)
+  } 
+  ab |> mutate(z = res)
+}
+min_coef <- sum( (jump$jump_m - coefs[1] - coefs[2]*jump$v_ms))
+n <- 40 
+a <- seq(coefs[1]-.4, coefs[1]+.4, length.out=n)
+b <- seq(coefs[2]-.1, coefs[2]+.1, length.out=n)
+ab <- expand_grid(a = a,
+                  b = b)
+ggplot(foo(ab), aes(a, b, z = log(z))) +
+  geom_contour_filled(show.legend=F) +
+  geom_contour(color='red', show.legend = F) +
+  geom_hline(yintercept = coefs[2], linetype = 'dashed', color = 'black') +
+  geom_vline(xintercept = coefs[1], linetype = 'dashed', color = 'black') +
+  geom_point(data = tibble(a = coefs[1], b = coefs[2], z = min_coef), color='black', size=6) +
+  theme(panel.background = element_rect(fill='white')) +
+  scale_colour_manual(aesthetics = 'fill', drop = FALSE,
+                      values = colorRampPalette(c('white','red'))(10)) +
+  labs(x = expression(hat(beta)[0]), y = expression(hat(beta)[1]))
+
+```
+
+In @fig-slm-basics-gradient sind verschiedene Werte für $E$ in einer heatmap abgetragen. Die Abweichungen wurden $log$-transformiert (d.h. der Logarithmus der $E$-Werte wurde berechnet), da sonst die Unterschiede in der diagnolen Bildrichtung zu schnell wachsen und die Unterschied nicht mehr so einfach zu deuten sind. Werte näher an Weiß bedeuten kleine Werte und Werte näher an Rot bedeuten größere Werte von $E$. Das berechnete Paar von $(\hat{\beta}_0, \hat{\beta}_1)$ ist schwarz eingezeichnet. Die Abbildung zeigt, dass dieses Wertepaar tatsächlich ein Minimum bezüglich der Funktion $E$ bedeutet, da in alle Richtung weg von dem schwarzen Punkt die Werte für $E$ zunehmen.
+
 ### Detaillierte Herleitung der Normalengleichungen
 
 Um die Herleitung der Normalengleichungen Schritt-für-Schritt nachvollziehen zu können benötigen wir zunächst einmal ein paar algebraische Tricks.
