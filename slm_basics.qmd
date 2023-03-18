@@ -445,11 +445,39 @@ Gehen wir zurück nun zu unseren Ausgangsproblem der Weitspringer, was haben wir
 Unsere Trainerin kann jetzt die berechnete Gerade dazu nehmen um zu überprüfen ob es sich lohnen würde Trainingszeit in den Anlauf zu stecken und welche Verbesserung dort zu erwarten sind. Allerdings fehlt dazu noch etwas, wir wissen nämlich noch nicht ob die berechnete Gerade auch wirklich die Daten gut wiederspiegelt. Im Beispiel erscheint dies anhand der Grafik als relativ plausibel. Das muss aber nicht immer so sein. Wir können nämlich für alle möglichen Daten eine Gerade berechnen ohne das diese Gerade die Daten wirklich auch nur annährend korrekt wiedergibt. In @eq-slm-basics-norm1 steht nirgends für welche Daten die Berechnung nur erlaubt ist.
 
 ```{r}
-#| fig.cap: "Gerade durch einer Parabel folgenden Kurve"
-#| label: fig-slm-basics-parabel
+#| fig.cap: "Gefittete Gerade durch die Daten einer Funktion $f(x) = x^3$."
+#| label: fig-slm-basics-cubepoly
+
+tibble(
+  x = seq(-1, 3, length.out=50),
+  y = x**3
+) |> 
+ggplot(aes(x,y)) +
+  geom_smooth(method='lm', formula=y~x, se=F) +
+  geom_point() +
+  labs(x = 'x-Wert', y = 'y-Wert')
 
 ```
 
+In @fig-slm-basics-cubepoly sind synthetische Daten der Funktion $f(x) = x^3$ abgebildet und die mittels @eq-slm-basics-norm1 berechneten Gerade eingezeichnet. Die Gerade ist zwar in der Lage die ansteigenden Werte zu modellieren aber eben nicht Schwingungen die durch die kubische Abhängigkeit zustande kommen. Aber, nichts verhindert die Anwendung der Formel auf die Daten.
+
+Der gleiche Effekt ist auch in @fig-slm-basics-sinus wieder zu beobachten. Hier besteht eine sinusförmige Abhängigkeit zwischen $y$ und $x$. Wir können wieder @eq-slm-basics-norm1 anwenden und erhalten auch ein Ergebnis für $\hat{\beta}_0$ und $\hat{\beta}_1$. Allerdings repräsentiert die Gerade in keinster Weise den tatsächlichen Zusammenhang zwischen den Daten.
+
+```{r}
+#| fig.cap: "Gefittete Gerade durch die Daten einer Funktion $f(x) = sin(x) + 3$."
+#| label: fig-slm-basics-sinus
+
+tibble(
+  x = seq(0, 3*pi, length.out = 100),
+  y = sin(x) + 3
+) |> 
+  ggplot(aes(x,y)) +
+  geom_smooth(method = 'lm', se = F, formula = y~x) +
+  geom_point() +
+  labs(x = 'x-Werte', y = 'y-Werte')
+```
+
+Im nächsten Kapitel werden wir uns daher damit beschäftigen die Repräsentation der Daten näher zu betrachten und zu präzisieren.
 
 Wir nehmen noch eine weitere Eigenschaft der Gerade mit, die zunächst nichts mit der Interpretation der Koeffizienten zu tun hat, aber später noch mal von Interesse sein wird. Die Gerade hat nämlich die Eigenschaft durch den Punkt ($\bar{x}$, $\bar{y}$) zu gehen. Dies kann daran gesehen werden wenn in die Gleichung $\bar{x}$ für $x_i$ eingesetzt wird. Anhand der Normalgleichungen kann die Geradengleichung in der Form.
 
@@ -463,7 +491,27 @@ $$
 y_i = \bar{y} - \hat{\beta}_1 \bar{x} + \hat{\beta}_1 \bar{x} = \bar{y}
 $$
 
-D.h. für den Wert $\bar{x}$ nimmt die Geradengleichung der Wert $\bar{y}$ an.
+D.h. für den Wert $\bar{x}$ nimmt die Geradengleichung der Wert $\bar{y}$ an. Für die Sprungdaten ist die auch noch mal in @fig-slm-basics-hatxy graphisch dargestellt.
+
+```{r}
+#| fig.cap: "Regressionsgerade der Sprungdaten und der Punkt $(\\bar{x}, \\bar{y})$"
+#| label: fig-slm-basics-hatxy
+
+ggplot(jump, aes(v_ms, jump_m)) +
+  geom_abline(slope = coef(mod_jump)[2], intercept = coef(mod_jump)[1], color='blue') +
+  geom_point(size=3) +
+  geom_hline(yintercept = mean(jump$jump_m), linetype = 'dashed') +
+  geom_vline(xintercept = mean(jump$v_ms), linetype = 'dashed') +
+  geom_point(data = tibble(v_ms = mean(jump$v_ms), jump_m = mean(jump$jump_m)), size=3, color='red') +
+  geom_label(data = tibble(v_ms = mean(jump$v_ms),
+                           jump_m = 5,
+                           label=expression(bar(x))), aes(label=label), parse = T) +
+  geom_label(data = tibble(v_ms = 7,
+                           jump_m = mean(jump$jump_m),
+                           label=expression(bar(y))), aes(label=label), parse = T) +
+  labs(x = 'Anlaufgeschwindigkeit [m/s]', y = 'Sprungweite [m]')
+```
+
 
 ## Regression in `R`
 
