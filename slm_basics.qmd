@@ -65,6 +65,7 @@ Der y-Achsenabschnitt ist der Wert den $y$ einnimmt wenn $x$ den Wert $0$ annimm
 Die Variable $m$ dahingehend bestimmt die Steigung der Gerade. 
 
 ::: {#def-slm-basics-slope}
+## Steigungskoeffizient
 
 Wenn $y$ durch eine lineare Gleichung $y = mx + b$ definiert ist, dann bestimmt die Variable $m$ die Steiung der dazugehörenden Gerade. D.h. wenn sich die Variable $x$ um einen Einheit vergrößert (verkleinert) wird der Wert von $y$ um $m$ Einheiten größer (kleiner). Gilt $m < 0$ dann umgekehrt.
 
@@ -513,18 +514,15 @@ ggplot(jump, aes(v_ms, jump_m)) +
 ```
 
 
-## Regression in `R`
+## Die einfacahe Regression in `R`
 
-### Model fitten mit `lm()`
-```{r, echo=T}
-mod <- lm(jump_m ~ v_ms, data = jump)
-mod
-```
+In `R` wird eine Regression mit der Funktion `lm()` berechnet. Die für uns zunächst wichtigsten Parameter von `lm()` sind der erste Parameter `formula` und der zweite Parameter `data`. Mit der Formel wird der Zusammenhang zwischen den Variablen beschrieben, dabei können die Namen bzw. Bezeichner aus dem `tibble()` benutzt werden, die an den zweiten Parameter `data` übergeben werden. D.h. die Spaltennamen aus dem `tibble()` werden in `formula` verwendet.
 
-## Formelsyntax in `lm(y ~ x, data)`
+In unserem Weitsprungbeispiel konnten wir in @tbl-slm-basics-jump-1 sehen, das das `tibble()` zwei Spalten mit den Namen `v_ms`, den Anlaufgeschwindigkeiten, und `jump_m`, den Weitsprungweiten enthielt. Dementsprechend, müssen wir diese beiden Bezeichner in `formula` verwenden, um unser Regressionsmodell zu beschreiben. Die Form der Modellbeschreibung folgt, dabei einer bestimmten Syntax die wir uns zunächst anschauen müssen. Zentrales Element der Syntax ist das Tilde Zeichen `~` (Win: ALTGR++, MacOS: ___),  welches interpretiert wird als *modelliert mit*. Der Term der auf der linken Seite steht bezeichnet die abhängige Variable während die Terme auf der rechten Seite der Tilde stehen die unabhängige Variablen spezifizieren. Dementsprechend kann der Satz *"Y wird mittels X modelliert"* in die Formelsyntax mit `Y ~ X` übersetzt. Die komplette Syntax orientiert sich an eine Arbeit von @wilkinson1973.
 
+Wenn ein konstanter in der Syntax benötigt wird, dann wird dieser mit einer $1$ bezeichnet. Also zum Beispiel wenn wir @eq-slm-psform-beta modellieren wollen benutzen wir die Syntax `y ~ 1 + x`. Die beiden Koeffizienten $\beta_0$ und $\beta_1$ brauchen wir nicht explizit anzugeben, sondern `R` generiert uns automatisch anhand der Bezeichner Koeffizienten, die allerdings die Namen der Bezeichner bekommen. Dazu kommt noch eine Besonderheit, dass `R` bei einer Regressionsgleichung automatisch davon ausgeht, dass ein konstanter Term verwendet werden soll, d.h. der Term `+1` wird automatisch dazugefüht. Wenn wir ein Modell ohne einen $y$-Achsenabschnitt fitten wollen, dann müssen wir dies `R` explizit mitteilen, indem wir `-1` der linken Seite hinzufügen, also z.B. `y ~ x - 1`. Die Syntax generalisiert dann später einfach, wenn zusätzliche Terme in der multiplen Regression benötigt werden, in dem weitere unabhängige Variablen durch `+` dazugefügt werden. Dementsprechend würde sich die Formel `y ~ x_1 + x_1` übersetzen in *die abhängige Variable $y$ wird mittels der unabhängigen Variablen `x_1` und `x_2` und einem konstaten Term modelliert*. In @tbl-slm-basics-formelsyntax sind weitere Beispiele für die Struktur der Formelsyntax für `lm()` gezeigt.
 
-Table: Formelsyntaxbeispiele für `lm()`
+Table: Formelsyntaxbeispiele für `lm()` (y-Ab = y-Achsenabshnitt, StKoef = Steigungskoeffizient) {#tbl-slm-basics-formelsyntax}
 
 | Modell | Formel |  Erklärung |
 |---|---|---|
@@ -532,27 +530,86 @@ Table: Formelsyntaxbeispiele für `lm()`
 | $y=\beta_0+\beta x$ | `y ~ x` | y-Ab und StKoef |
 | $y=\beta_0+\beta_1x_1+\beta_2x_2$ | `y ~ x1 + x2` | y-Ab und 2 StKoe |
 
-y-Ab = y-Achsenabshnitt, StKoef = Steigungskoeffizient
+Wenn wir jetzt also unsere Weitsprungdaten modellieren wollen, verwenden wir die folgenden Befehle.
 
-## `lm()`-fit mit `summary()` inspizieren
+```{r}
+#| echo: true
 
-```{r, echo=T}
+lm(jump_m ~ v_ms, data = jump)
+```
+
+Per default ist das Ergebnis von `lm()` nicht wirklich besonders hilfreich und es werden nur die beiden berechneten Koeffizienten ausgegeben. Dabei bezeichnet der Term `(Intercept)` den automatisch dazugefügten konstanten Term in der Formel, sprich den $y$-Achsenabschnitt $\hat{\beta}_0$ und mit `v_ms` den Steigungskoeffizienten $\hat{\beta}_1$. Um aus `lm()` mehr Informationen heraus zu bekommen, ist es sinnvoll das Ergebnis einen Variable zuzuweisen. In dem vorliegenden Arbeit wird dazu in den meisten Fällen eine Variante des Bezeichners `mod` benutzt, als Kurzform vom *model*. Diese Bezeichnung ist aber wie alle Bezeichner in `R` vollkommen willkürlich und entspringt nur der Tippfaulheit des Autors.
+
+```{r}
+#| echo: true
+
+mod <- lm(jump_m ~ v_ms, data = jump)
+```
+
+Um jetzt mehr Informationen aus dem gefitteten `lm()`-Objekt zu bekommen werden Helferfunktion verwendet. Die wichtigste Funktion ist die `summary()`-Funktion (`?summary.lm`).
+
+```{r}
+#| echo: true
+
 summary(mod)
 ```
 
-## `lm()` und ein paar friends...
+Hier bekommen wir schon deutlich mehr Informationen mitgeteilt. Als erstes die Formell die wir `lm()` übergeben haben. Dann folgt ein Abschnitt über die Residuen, gefolgt von den Koeffzienten und im unteren Abschnitt noch weitere Statistiken. Wir konzentrieren uns zunächst einmal nur auf die Tabelle im Abschnitt `Coefficients`. Hier begegnen uns wieder in der ersten Spalte die Bezeichner für die beiden $\beta$s in Form von $\beta_0$ `(Intercept)` und $\beta_1$ `v_ms`. In der zweiten Spalte daneben stehen die berechneten Koeffizienten die wir jetzt schon mehrmals gesehen haben. Die weiteren Spalten ignorieren wir hier zunächst. Im Laufe der folgenden Kapitel werden wir uns die weiteren Statistiken anschauen und deren Bedeutung verstehen.
 
+Bei der Benutzung von `lm()` werden uns noch weitere Helferfunktionen begegnen, die den Umgang mit dem gefitteten Modell vereinfachen. Wollen wir zum Beispiel die beiden Koeffiziente aus dem Modell extrahieren können wir dazu die Funktion `coefficients()` oder auch nur kurz `coef()` verwenden.
 Koeffizienten und Standardschätzfehler
-```{r, echo=T}
+```{r}
+#| echo: true
+ 
 coef(mod)
-sigma(mod)
 ```
 
-Residuen
-```{r, echo=T}
-# Nur die ersten beiden
-# Residuen
-# damit der Ausdruck
-# auf das Slide passt.
-resid(mod)[1:2]
+Die Funktion `coef()` gibt einen Vektor benannten Vektor zurück der entweder über die Bezeichner oder einfach über die Position der Koeffizienten angesprochen werden kann. Möchte ich zum Beispiel den Steigungskoeffizienten verwendent werwende ich:
+
+```{r}
+#| echo: true
+
+coef(mod)[1]
 ```
+
+oder 
+
+```{r}
+#| echo: true
+
+coef(mod)['v_ms']
+```
+
+Ein etwas übersichtlicher Zugang ist wieder zunächst einmal das Ergebnis von `coef()` einer Variablen zuweisen und diese dann weiter benutzen.
+
+```{r}
+#| echo: true
+
+jump_betas <- coef(mod)
+jump_betas[1]
+```
+
+Die Koeffizienten kann ich zum Beispiel benutzen um die Regressionsgerade in ein Streudiagramm hinzuzufügen (Das `tibble()` mit den Sprungdaten hat den Bezeichner `jump`). Entweder mit dem `ggplot2()` Grafiksystem.
+
+```{r}
+#| echo: true
+
+ggplot(jump,
+       aes(x = v_ms, y = jump_m)) +
+  geom_abline(intercept = jump_betas[1],
+              slope = jump_betas[2],
+              color = 'red') +
+  geom_point()
+```
+
+Oder mit den Standard `R`-Grafiksystem. Hier kann der Funktion `abline()` das gefittete `lm()`-Objekt direkt übergeben werden und die Koeffizienten werden automatisch extrahiert.
+
+```{r}
+#| echo: true
+#| fig.height: 4
+
+plot(jump_m ~ v_ms, data = jump)
+abline(mod, color = 'red')
+```
+
+Zusammenfassend lässt sich sagen, das wir jetzt gelernt haben wie wir ein einfaches Regressionmodell der Form @eq-slm-psform-beta an einen beliebigen Datensatz fitten können. Die Berechnung der beiden Koeffizienten $\beta_0$ und $\beta_1$ erfolgt mittels @eq-slm-basics-norm1. Dabei berechnen wir die Koeffizienten nicht von Hand sondern lassen die von `R` mittels der `lm()` durchführen. Die Berechnung ist dabei vollkommen mechanisch und die Koeffizienten per-se sagen nichts darüber aus, ob das lineare Modell die Daten tatsächlich auch widerspiegelt. Dazu müssen wir noch etwas mehr Theorie aufbauen um Aussagen darüber zu treffen ob das Modell adäquat ist. Dies gehen wir in den folgenden Abschnitten und Kapiteln an.
