@@ -7,7 +7,71 @@
 source('_common.R')
 ```
 
-Nachdem das Modell gefittet wurde stellt sich die Frage ob tatsächlich ein Zusammenhang zwischen der Prädiktorvariable und der abhängigen Variable besteht. Da das einfache lineare Modelle zwei Parameter $\beta_0$ und $\beta_1$ beinhaltet (streng genommen ist $\sigma^2$ ein dritter Parameter) kann diese Frage auf beide Koeffizienten angewendet werden.
+Nachdem wir im vorhergehenden Kapitel gelehrnt haben, wie wir ein Regressionsgerade an einen Datensatz fitten. Stellt sich nun die Frage ob die Regressionsgerade tatsächlich einen relevanten Zusammenhang zwischen den beiden Variablen beschreibt. Da das einfache lineare Modelle zwei Parameter $\beta_0$ und $\beta_1$ beinhaltet kann diese Fragestellung auf beide Koeffizienten angewendet werden. D.h. wir fragen uns ob das Modell einen statistisch signifikanten Zusammenhang zwischen den beiden Variablen beschreibt. Bezogen auf die beiden Parameter, ist der Parameter $\hat{\beta}_0$ statistisch signifikant und ist der Parameter $\hat{\beta}_1$ statistisch signifikant? Um unseren Werkzeugsatz zu statistischer Signifikanz anwenden zu können brauchen wir aber erst einmal wieder eine Verteilung bei der wir kritische Bereiche markieren können um zu entscheiden ob eine beobachtete Statistik statistisch signifikant ist. Wie behalten dabei im Hinterkopf das statistische Signifikanz nicht das Gleiche ist wie praktische Relevanz.
+
+Der erste Schritt um eine Verteilung zu bekommen ist allerdings, dass wir zunächst einmal eine Zufallsvariable benötigen. Bisher haben wir den Zusammenhang zwischen Variablen über die Formel
+
+$$
+y_i = \beta_0 + \beta_1 \cdot x_i
+$$
+
+beschrieben. In dieser Form ist allerdings noch kein zufälliges Element vorhanden. Für ein gegebenes $x_i$ bekommen wir ein genau spezifiziertes $y_i$. Allerdings haben wir bei der Herleitung gesehen, dass die Daten in den seltensten Fällen genau auf der Gerade liegen, sondern wir die Parameter $\hat{\beta}_0$ und $\hat{beta}_1$ so gewählt haben, dass die quadrierten Abweichungen, die Residuen $\epsilon_i$ minimal werden. Dies Residuen verwenden wir jetzt um eine zufälliges Element in unsere Regression rein zu bekommen. Ein mögliche Annahme ist, das die Residuen beispielsweise Normalverteilt sind.
+
+Warum könnte dies Sinn machen. In dem vorhergehenden Weitsprungbeispiel haben wir informell hergeleitet, dass die Weitsprungleistung von unzähligen weiteren Faktoren beeinflusst werden kann, welche dazu führen, dass für eine gegebene Anlaufgeschwindigkeit nicht immer die gleiche Weitsprungweite erzielt wird. Generell, ist diese Art der Begründung bei biologischen System meistens plausibel. In vorhergehenden Abschnitt haben wir dazu aber auch noch gesehen, dass die Normalverteilung eben gut geeignet ist, um solche Prozesse, bei denen viele kleine additive Effekt auftreten. Dieser Argumentation folgend ist es plausibel diese Einflüsse auch beim Regressionsfall mittels einer Normalverteilung zu modellieren. Dazu führen wir noch eine weitere Annahme an, nämlich dass diese Einflüsse im Mittel in gleichen Maßen die Werte nach nach oben wie auch nach unten ablenken. D.h. die Werte nach oben und unten von der Regressionsgerade abweichen. Dies erlaubt uns jetzt die Annahme genau zu spezifizieren.
+
+$$
+\epsilon_i \sim \mathcal{N}(0, \sigma^2)
+$$
+
+D.h also, wir gehen davon aus, dass die Residuen normalverteilt sind, mit einem Mittelwert von $\mu = 0$ und einer noch näher zu spezifizierenden Varianz $\sigma^2$. Das führt dann zu der folgenden Formulierung des Regressionsmodells.
+
+$$
+Y_i = \beta_0 + \beta_1 \cdot x_i + \epsilon_i, \quad \epsilon_i \sim \mathcal{N}(0, \sigma^2)
+$$ {#eq-simple-regression-model}
+
+Ypsilon wird jetzt groß geschrieben, da es sich um eine Zufallsvariable handelt. Dies führt jetzt dazu, das das Regressionsmodell in zwei Teile unterschieden werden kann. Einmal eine deterministischen Teil $\beta_0 + \beta_1 \cdot x$ und einen stochastischen Teil $\epsilon_i$. Dies führt dazu, dass $Y_i$ ebenfalls stochastisch ist und zu einer Zufallsvariable wird.
+
+Schauen wir uns weiter an, wie sich $Y_i$ verhält, wenn wir $x_i$ als Konstante $x$ mit ein bestimmten Wert annehmen. Dann wird aus @eq-simple-regression-model $Y_i = \beta_0 + \beta_i \cdot x + \epsilon_i. Folglich bleibt der deterministische Teil immer gleich, wird auch konstante, allerdings folgt $\epsilon_i$ einer Normalverteilung und daher folgt $Y_i$ auch einer Normalverteilung. Allerdings, ist der Mittelwert $\mu_{Y_i}$ nicht gleich Null, sondern die Normalverteilung von $\epsilon_i$ wird um die Konstante $\beta_0 + \beta_1 \cdot x$ verschoben (siehe @fig-slm-inf-epsilon-1). Das führt dazu, dass $Y_i$ der Verteilung $\mathcal{N}(\beta_0 + \beta_1 x)$ folgt.
+
+```{r}
+#| label: fig-slm-inf-epsilon-1
+#| layout-ncol: 2
+#| fig.height: 3
+#| fig-subcap: 
+#|   - "Verteilung von $\\epsilon_i$"
+#|   - "Verteilung von $Y_i$"
+ 
+ggplot(tibble(x = seq(-3,3,length.out=100), y = dnorm(x)), aes(x,ymin=0,ymax=y)) +
+  geom_ribbon(fill='red', alpha=.5) +
+  geom_line(aes(x,y)) +
+  scale_x_continuous(expression(epsilon[i]), breaks = 0) +
+  scale_y_continuous('Dichte', breaks = NULL)
+
+ggplot(tibble(x = seq(-3,3,length.out=100), y = dnorm(x)), aes(x,ymin=0,ymax=y)) +
+  geom_ribbon(fill='red', alpha=.5) +
+  geom_line(aes(x,y)) +
+  scale_x_continuous(expression(Y[i]), breaks = 0, labels=expression(beta[0]+beta[1]~x)) +
+  scale_y_continuous('Dichte', breaks = NULL)
+```
+
+Daraus folgt jetzt aber weiter, dass für jedes gegebenes $X$ die $Y$-Werte einer Normalverteilung folgen sollten. Lediglich der Mittelwert der jeweiligen $Y$-Normalverteilung hängt von $X$ über die Formel $\beta_0 + \beta_1 \cdot X$ zusammen. Formal:
+
+$$
+Y|X \sim N(\beta_0+ \beta_1 X,\sigma^2)
+$$
+
+Die Varianz der jeweiligen $Y$-Werte ist dabei die zuvor angenommen Varianz der $\epsilon_i$ also $\sigma^2$. Graphisch führt das für drei verschiedene $X$-Wert zu der folgenden Abbilung (siehe @fig-slm-inf-epsilon-2)
+
+```{r}
+#| fig.cap: Verteilung der Daten für verschiedene $x$-Werte
+#| label: fig-slm-inf-epsilon-2
+
+include_graphics('pics/Stats_Figures.png')
+```
+
+
+
+
 
 Eine kurze Überlegung zeigt, dass wenn zwischen der Prädiktorvariablen und $y$ kein Zusammenhang besteht, dann sollte der Steigungskoeffizient $\beta_1$ gleich Null sein bzw. auf Grund von Stichprobenvariabilität in der Nähe von Null sein. Daher ist eine plausible Hypothese die sich statistisch Überprüfung lässt:
 
@@ -34,17 +98,6 @@ y_i &= \beta_0 + \beta_1 x_i + \epsilon_i \quad i=1,\ldots,N \\
 \end{align*}
 
 ## Modellannahmen - Verteilung der Werte für gegebene x-Werte
-
-$$
-Y|X \sim N(\beta_0+ \beta_1 X,\sigma^2)
-$$
-
-```{r}
-#| fig.cap: Verteilung der Daten für verschiedene $x$-Werte
-
-include_graphics('pics/Stats_Figures.png')
-```
-
 
 ## Statistische Hypothesen
 

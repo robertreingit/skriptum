@@ -353,7 +353,57 @@ div.csl-indent {
 <div class="cell">
 
 </div>
-<p>Nachdem das Modell gefittet wurde stellt sich die Frage ob tatsächlich ein Zusammenhang zwischen der Prädiktorvariable und der abhängigen Variable besteht. Da das einfache lineare Modelle zwei Parameter <span class="math inline">\(\beta_0\)</span> und <span class="math inline">\(\beta_1\)</span> beinhaltet (streng genommen ist <span class="math inline">\(\sigma^2\)</span> ein dritter Parameter) kann diese Frage auf beide Koeffizienten angewendet werden.</p>
+<p>Nachdem wir im vorhergehenden Kapitel gelehrnt haben, wie wir ein Regressionsgerade an einen Datensatz fitten. Stellt sich nun die Frage ob die Regressionsgerade tatsächlich einen relevanten Zusammenhang zwischen den beiden Variablen beschreibt. Da das einfache lineare Modelle zwei Parameter <span class="math inline">\(\beta_0\)</span> und <span class="math inline">\(\beta_1\)</span> beinhaltet kann diese Fragestellung auf beide Koeffizienten angewendet werden. D.h. wir fragen uns ob das Modell einen statistisch signifikanten Zusammenhang zwischen den beiden Variablen beschreibt. Bezogen auf die beiden Parameter, ist der Parameter <span class="math inline">\(\hat{\beta}_0\)</span> statistisch signifikant und ist der Parameter <span class="math inline">\(\hat{\beta}_1\)</span> statistisch signifikant? Um unseren Werkzeugsatz zu statistischer Signifikanz anwenden zu können brauchen wir aber erst einmal wieder eine Verteilung bei der wir kritische Bereiche markieren können um zu entscheiden ob eine beobachtete Statistik statistisch signifikant ist. Wie behalten dabei im Hinterkopf das statistische Signifikanz nicht das Gleiche ist wie praktische Relevanz.</p>
+<p>Der erste Schritt um eine Verteilung zu bekommen ist allerdings, dass wir zunächst einmal eine Zufallsvariable benötigen. Bisher haben wir den Zusammenhang zwischen Variablen über die Formel</p>
+<p><span class="math display">\[
+y_i = \beta_0 + \beta_1 \cdot x_i
+\]</span></p>
+<p>beschrieben. In dieser Form ist allerdings noch kein zufälliges Element vorhanden. Für ein gegebenes <span class="math inline">\(x_i\)</span> bekommen wir ein genau spezifiziertes <span class="math inline">\(y_i\)</span>. Allerdings haben wir bei der Herleitung gesehen, dass die Daten in den seltensten Fällen genau auf der Gerade liegen, sondern wir die Parameter <span class="math inline">\(\hat{\beta}_0\)</span> und <span class="math inline">\(\hat{beta}_1\)</span> so gewählt haben, dass die quadrierten Abweichungen, die Residuen <span class="math inline">\(\epsilon_i\)</span> minimal werden. Dies Residuen verwenden wir jetzt um eine zufälliges Element in unsere Regression rein zu bekommen. Ein mögliche Annahme ist, das die Residuen beispielsweise Normalverteilt sind.</p>
+<p>Warum könnte dies Sinn machen. In dem vorhergehenden Weitsprungbeispiel haben wir informell hergeleitet, dass die Weitsprungleistung von unzähligen weiteren Faktoren beeinflusst werden kann, welche dazu führen, dass für eine gegebene Anlaufgeschwindigkeit nicht immer die gleiche Weitsprungweite erzielt wird. Generell, ist diese Art der Begründung bei biologischen System meistens plausibel. In vorhergehenden Abschnitt haben wir dazu aber auch noch gesehen, dass die Normalverteilung eben gut geeignet ist, um solche Prozesse, bei denen viele kleine additive Effekt auftreten. Dieser Argumentation folgend ist es plausibel diese Einflüsse auch beim Regressionsfall mittels einer Normalverteilung zu modellieren. Dazu führen wir noch eine weitere Annahme an, nämlich dass diese Einflüsse im Mittel in gleichen Maßen die Werte nach nach oben wie auch nach unten ablenken. D.h. die Werte nach oben und unten von der Regressionsgerade abweichen. Dies erlaubt uns jetzt die Annahme genau zu spezifizieren.</p>
+<p><span class="math display">\[
+\epsilon_i \sim \mathcal{N}(0, \sigma^2)
+\]</span></p>
+<p>D.h also, wir gehen davon aus, dass die Residuen normalverteilt sind, mit einem Mittelwert von <span class="math inline">\(\mu = 0\)</span> und einer noch näher zu spezifizierenden Varianz <span class="math inline">\(\sigma^2\)</span>. Das führt dann zu der folgenden Formulierung des Regressionsmodells.</p>
+<p><span id="eq-simple-regression-model"><span class="math display">\[
+Y_i = \beta_0 + \beta_1 \cdot x_i + \epsilon_i, \quad \epsilon_i \sim \mathcal{N}(0, \sigma^2)
+\tag{6.1}\]</span></span></p>
+<p>Ypsilon wird jetzt groß geschrieben, da es sich um eine Zufallsvariable handelt. Dies führt jetzt dazu, das das Regressionsmodell in zwei Teile unterschieden werden kann. Einmal eine deterministischen Teil <span class="math inline">\(\beta_0 + \beta_1 \cdot x\)</span> und einen stochastischen Teil <span class="math inline">\(\epsilon_i\)</span>. Dies führt dazu, dass <span class="math inline">\(Y_i\)</span> ebenfalls stochastisch ist und zu einer Zufallsvariable wird.</p>
+<p>Schauen wir uns weiter an, wie sich <span class="math inline">\(Y_i\)</span> verhält, wenn wir <span class="math inline">\(x_i\)</span> als Konstante <span class="math inline">\(x\)</span> mit ein bestimmten Wert annehmen. Dann wird aus <a href="#eq-simple-regression-model">Gleichung&nbsp;<span>6.1</span></a> $Y_i = _0 + _i x + _i. Folglich bleibt der deterministische Teil immer gleich, wird auch konstante, allerdings folgt <span class="math inline">\(\epsilon_i\)</span> einer Normalverteilung und daher folgt <span class="math inline">\(Y_i\)</span> auch einer Normalverteilung. Allerdings, ist der Mittelwert <span class="math inline">\(\mu_{Y_i}\)</span> nicht gleich Null, sondern die Normalverteilung von <span class="math inline">\(\epsilon_i\)</span> wird um die Konstante <span class="math inline">\(\beta_0 + \beta_1 \cdot x\)</span> verschoben (siehe <span class="quarto-unresolved-ref">?fig-slm-inf-epsilon-1</span>). Das führt dazu, dass <span class="math inline">\(Y_i\)</span> der Verteilung <span class="math inline">\(\mathcal{N}(\beta_0 + \beta_1 x)\)</span> folgt.</p>
+<div class="cell quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell-output-display quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-slm-inf-epsilon-1-1" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="slm_inference_files/figure-html/fig-slm-inf-epsilon-1-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Abbildung&nbsp;6.1: Verteilung von <span class="math inline">\(\epsilon_i\)</span></figcaption><p></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-slm-inf-epsilon-1-2" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="slm_inference_files/figure-html/fig-slm-inf-epsilon-1-2.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Abbildung&nbsp;6.2: Verteilung von <span class="math inline">\(Y_i\)</span></figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<p>Daraus folgt jetzt aber weiter, dass für jedes gegebenes <span class="math inline">\(X\)</span> die <span class="math inline">\(Y\)</span>-Werte einer Normalverteilung folgen sollten. Lediglich der Mittelwert der jeweiligen <span class="math inline">\(Y\)</span>-Normalverteilung hängt von <span class="math inline">\(X\)</span> über die Formel <span class="math inline">\(\beta_0 + \beta_1 \cdot X\)</span> zusammen. Formal:</p>
+<p><span class="math display">\[
+Y|X \sim N(\beta_0+ \beta_1 X,\sigma^2)
+\]</span></p>
+<p>Die Varianz der jeweiligen <span class="math inline">\(Y\)</span>-Werte ist dabei die zuvor angenommen Varianz der <span class="math inline">\(\epsilon_i\)</span> also <span class="math inline">\(\sigma^2\)</span>. Graphisch führt das für drei verschiedene <span class="math inline">\(X\)</span>-Wert zu der folgenden Abbilung (siehe <a href="#fig-slm-inf-epsilon-2">Abbildung&nbsp;<span>6.3</span></a>)</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-slm-inf-epsilon-2" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="pics/Stats_Figures.png" class="img-fluid figure-img" width="400"></p>
+<p></p><figcaption class="figure-caption">Abbildung&nbsp;6.3: Verteilung der Daten für verschiedene <span class="math inline">\(x\)</span>-Werte</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
 <p>Eine kurze Überlegung zeigt, dass wenn zwischen der Prädiktorvariablen und <span class="math inline">\(y\)</span> kein Zusammenhang besteht, dann sollte der Steigungskoeffizient <span class="math inline">\(\beta_1\)</span> gleich Null sein bzw. auf Grund von Stichprobenvariabilität in der Nähe von Null sein. Daher ist eine plausible Hypothese die sich statistisch Überprüfung lässt:</p>
 <p><span class="math display">\[
 H_0: \beta_1 = 0
@@ -373,19 +423,6 @@ y_i &amp;= \beta_0 + \beta_1 x_i + \epsilon_i \quad i=1,\ldots,N \\
 </section>
 <section id="modellannahmen---verteilung-der-werte-für-gegebene-x-werte" class="level2" data-number="6.2">
 <h2 data-number="6.2" class="anchored" data-anchor-id="modellannahmen---verteilung-der-werte-für-gegebene-x-werte"><span class="header-section-number">6.2</span> Modellannahmen - Verteilung der Werte für gegebene x-Werte</h2>
-<p><span class="math display">\[
-Y|X \sim N(\beta_0+ \beta_1 X,\sigma^2)
-\]</span></p>
-<div class="cell">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="pics/Stats_Figures.png" class="img-fluid figure-img" width="400"></p>
-<p></p><figcaption class="figure-caption">Verteilung der Daten für verschiedene <span class="math inline">\(x\)</span>-Werte</figcaption><p></p>
-</figure>
-</div>
-</div>
-</div>
 </section>
 <section id="statistische-hypothesen" class="level2" data-number="6.3">
 <h2 data-number="6.3" class="anchored" data-anchor-id="statistische-hypothesen"><span class="header-section-number">6.3</span> Statistische Hypothesen</h2>
@@ -423,7 +460,7 @@ H_0: &amp; \beta_1 = 0
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="slm_inference_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="slm_inference_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
 <p></p><figcaption class="figure-caption">Acht Zufallsziehung unter der <span class="math inline">\(H_0\)</span></figcaption><p></p>
 </figure>
 </div>
@@ -436,7 +473,7 @@ H_0: &amp; \beta_1 = 0
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="slm_inference_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="slm_inference_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
 <p></p><figcaption class="figure-caption">Verteilung der <span class="math inline">\(\beta_1\)</span>s - 1000 Simulationen unter der Annahme der <span class="math inline">\(H_0\)</span>.</figcaption><p></p>
 </figure>
 </div>
@@ -482,7 +519,7 @@ H_0: &amp; \beta_1 = 0
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="slm_inference_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="slm_inference_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
 <p></p><figcaption class="figure-caption">Verteilung von <span class="math inline">\(\frac{\beta_1}{s_{\beta_1}}\)</span>,Dichtefunktion der t-Verteilung (rot) mit <span class="math inline">\(df = n - 2\)</span></figcaption><p></p>
 </figure>
 </div>
@@ -495,7 +532,7 @@ H_0: &amp; \beta_1 = 0
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="slm_inference_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="slm_inference_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
 <p></p><figcaption class="figure-caption">Verteilung von <span class="math inline">\(\hat{\sigma}\)</span></figcaption><p></p>
 </figure>
 </div>
