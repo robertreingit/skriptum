@@ -29,14 +29,15 @@ $$
 Y_i = \beta_0 + \beta_1 \cdot x_i + \epsilon_i, \quad \epsilon_i \sim \mathcal{N}(0, \sigma^2)
 $$ {#eq-simple-regression-model}
 
-Ypsilon wird jetzt groß geschrieben, da es sich um eine Zufallsvariable handelt. Dies führt jetzt dazu, das das Regressionsmodell in zwei Teile unterschieden werden kann. Einmal eine deterministischen Teil $\beta_0 + \beta_1 \cdot x$ und einen stochastischen Teil $\epsilon_i$. Dies führt dazu, dass $Y_i$ ebenfalls stochastisch ist und zu einer Zufallsvariable wird.
+$Y$ wird jetzt groß geschrieben, da es sich um eine Zufallsvariable handelt. Dies führt jetzt dazu, das das Regressionsmodell in zwei Teile unterschieden werden kann. Einmal eine deterministischen Teil $\beta_0 + \beta_1 \cdot x$ und einen stochastischen Teil $\epsilon_i$. Dies führt dazu, dass $Y_i$ ebenfalls stochastisch ist und zu einer Zufallsvariable wird.
 
-Schauen wir uns weiter an, wie sich $Y_i$ verhält, wenn wir $x_i$ als Konstante $x$ mit ein bestimmten Wert annehmen. Dann wird aus @eq-simple-regression-model $Y_i = \beta_0 + \beta_i \cdot x + \epsilon_i. Folglich bleibt der deterministische Teil immer gleich, wird auch konstante, allerdings folgt $\epsilon_i$ einer Normalverteilung und daher folgt $Y_i$ auch einer Normalverteilung. Allerdings, ist der Mittelwert $\mu_{Y_i}$ nicht gleich Null, sondern die Normalverteilung von $\epsilon_i$ wird um die Konstante $\beta_0 + \beta_1 \cdot x$ verschoben (siehe @fig-slm-inf-epsilon-1). Das führt dazu, dass $Y_i$ der Verteilung $\mathcal{N}(\beta_0 + \beta_1 x)$ folgt.
+Schauen wir uns weiter an, wie sich $Y_i$ verhält, wenn wir $x_i$ als Konstante $x$ mit ein bestimmten Wert annehmen. Dann wird aus @eq-simple-regression-model $Y_i = \beta_0 + \beta_i \cdot x + \epsilon_i$. Folglich bleibt der deterministische Teil immer gleich, wird zu einer Konstante. Da $\epsilon_i$ normalverteilt ist ist $Y_i$ ebenfalls normalverteilt. Der Mittelwert der Normalverteilung von $Y_i$ $\mu_{Y_i}$ ist allerdings nicht gleich Null, sondern die Normalverteilung von $\epsilon_i$ wird um die Konstante $\beta_0 + \beta_1 \cdot x$ verschoben (siehe @fig-slm-inf-epsilon-1). Das führt dazu, dass $Y_i$ der Verteilung $\mathcal{N}(\beta_0 + \beta_1 x)$ folgt.
 
 ```{r}
 #| label: fig-slm-inf-epsilon-1
 #| layout-ncol: 2
 #| fig.height: 3
+#| fig.cap: Relation der Lageparameter von $e_i$ und $Y_i$
 #| fig-subcap: 
 #|   - "Verteilung von $\\epsilon_i$"
 #|   - "Verteilung von $Y_i$"
@@ -54,13 +55,15 @@ ggplot(tibble(x = seq(-3,3,length.out=100), y = dnorm(x)), aes(x,ymin=0,ymax=y))
   scale_y_continuous('Dichte', breaks = NULL)
 ```
 
-Daraus folgt jetzt aber weiter, dass für jedes gegebenes $X$ die $Y$-Werte einer Normalverteilung folgen sollten. Lediglich der Mittelwert der jeweiligen $Y$-Normalverteilung hängt von $X$ über die Formel $\beta_0 + \beta_1 \cdot X$ zusammen. Formal:
+Daraus folgt jetzt aber zusätzlich, dass für jedes gegebenes $X$ die $Y$-Werte einer Normalverteilung folgen. Lediglich die Verschiebung des Mittelwert der jeweiligen $Y$-Normalverteilung hängt von $X$ über die Formel $\beta_0 + \beta_1 \cdot X$ zusammen. Formal:
 
 $$
 Y|X \sim N(\beta_0+ \beta_1 X,\sigma^2)
 $$
 
-Die Varianz der jeweiligen $Y$-Werte ist dabei die zuvor angenommen Varianz der $\epsilon_i$ also $\sigma^2$. Graphisch führt das für drei verschiedene $X$-Wert zu der folgenden Abbilung (siehe @fig-slm-inf-epsilon-2)
+Die Schreibweise $|X$ wird übersetzt für gegenbenes $X$ und sagt aus, dass die Verteilung von $Y$ von $X$ abhängt. Die Varianz der jeweiligen $Y$-Werte ist dabei die zuvor angenommen Varianz der $\epsilon_i$ also $\sigma^2$. Eine wichtige Annahme die noch mal betont werden sollte, wir gehen davon aus, dass die einzelnen Punkte unabhängig voneinander sind. Im Weitsprungbeispiel würde dies bedeuten, dass jeder Sprung von einem anderen Athleten kommen muss.
+
+Wenn wir die Verteilungen von $Y$ graphisch führ beispielweise drei verschiedene $X$-Wert darstellen, dann folgt daraus die folgende Abbildung (siehe @fig-slm-inf-epsilon-2). D.h. für jeden $X$-Wert werden mehrere $Y$-Werte beobachtet, die jeweils einer Normalverteilung folgen.
 
 ```{r}
 #| fig.cap: Verteilung der Daten für verschiedene $x$-Werte
@@ -69,6 +72,195 @@ Die Varianz der jeweiligen $Y$-Werte ist dabei die zuvor angenommen Varianz der 
 include_graphics('pics/Stats_Figures.png')
 ```
 
+In @fig-slm-inf-epsilon-2 ist klar zu sehen, wie für jeden der drei Punkte von $X$ die beobachteten $Y$-Werte einer Normalverteilung. Die Breite der Verteilung ist an jedem Punkte gleich, nämlich $=\sigma^2$ während der Mittelwert der Gleichung $\beta_0 + \beta_1 X$ folgend entlang der Regressionsgerade verschoben ist.
+
+Wenn wir uns zurück an die Ausführungen zur statistischen Signifikanz erinnern, dann haben wir in dem Zusammenhang vom einem datengenerierenden Prozess gesprochen (@def-dgp) (DGP). In unserem jetztzigen Modell können wir dementsprechend zwei Komponenten als Teile des DGP identizifieren. Entsprechend @eq-simple-regression-model besteht der DGP aus dem deterministischen Teil $\beta_0 + \beta_1 X$ und dem stochastischen Teil $\epsilon_i \sim \mathcal{N}(0,\sigma^2)$. Diese Einsicht können wir verwenden um die Eigenschaften dieses Modells bezüglich Aussagen über statistische Signifikanz zu untersuchen.
+
+Wir fokussieren uns jetzt auf ein vereinfachtes Modell bei dem wir zusätzlich noch $\beta_0 = 0$ setzen, und wir uns erst mal nur für die Eigenschaften von $\beta_1$ interessieren. Gehen wir nun davon aus, dass zwischen $X$ und $Y$ der Zusammenhang $\beta_1 = 1$ besteht. D.h. wenn $X$ um eine Einheit vergrößert wird, dann wird $Y$ ebenfalls um eine Einheit größer.
+
+$$
+Y = 0 + 1 \cdot X + \epsilon, \quad \epsilon\sim\mathcal{N}(0,\sigma^2)
+$$ {#eq-slm-inf-sim-mod-1}
+
+Jetzt müssen wir noch einen Wert für $\sigma^2$ festlegen. Sei dieser einfach einmal $\sigma = \frac{1}{2}$. Jetzt können wir `R` benutzen um *Experimente*, also Beobachtungen, anhand dieses DGP zu simulieren. Der Einfachheit halber legen wir ein übersichtliches $N = 12$ fest und nehmen uns jeweils drei $X$-Werte z.B.  mit $X \in \{-1, 0, 1\}$, d.h. wir ziehen für jeden $X$-Wert vier $Y$-Werte.
+
+```{r}
+#| echo: true
+
+N <- 12
+beta_0 <- 0
+beta_1 <- 1
+sigma <- 1/2
+dat_sim_1 <- tibble(
+  x_i = rep(-1:1, each=4),
+  y_i = beta_0 + beta_1 * x_i + rnorm(N, mean = 0, sd = sigma)
+)
+```
+
+Wenn wir uns die generierten Daten anschauen, dann sehen wir wenig überraschend 12 verschiedene Werte für $y_i$ und jeweils $3 \times 4$ verschiedene Werte für $x_i$ (siehe @tbl-slm-inf-sim-1).
+
+```{r}
+#| label: tbl-slm-inf-sim-1
+#| tbl-cap: Eine Simulation des Modells @eq-slm-inf-sim-mod-1
+ 
+kable(dat_sim_1,
+      booktabs = TRUE,
+      linesep = '',
+      digits = 2)
+```
+
+Wenn wir die Daten graphisch darstellen erhalten wir (@fig-slm-inf-sim-1):
+
+```{r}
+#| echo: true
+#| label: fig-slm-inf-sim-1
+#| fig.cap: Streudiagramm der Daten aus @tbl-slm-inf-sim-1
+
+ggplot(dat_sim_1, aes(x_i, y_i)) + 
+  geom_point()
+```
+
+Ebenfalls wenig überraschend, die Punkte sind auf den $x$-Werten $-1, 0$ und $1$ zentriert und liegen nicht alle aufeinander, da sie einer Zufallsstichprobe aus $\mathcal{N}(0, \frac{1}{4})$ entspringen.
+
+Jetzt kann ich natürlich für diese Daten unsere Normalengleichungen anwenden und Werte für $\hat{\beta}_0$ und $\hat{\beta}_1$ berechnen. Oder eben direkt in `R`.
+
+```{r}
+#| echo: true
+
+mod_sim_1 <- lm(y_i ~ x_i, dat_sim_1)
+coef(mod_sim_1)
+```
+
+Wir sehen, dass die berechneten Werte für $\beta_0$ und $\beta_1$ schon in der Nähe der tatsächlichen Werte liegen (siehe @eq-slm-inf-mod-1), aber auf Grund der Stichprobenvariabilität eben nicht genau auf diesen Werten. Was passiert denn jetzt, wenn ich das Ganze noch einmal durchlaufen lassen?
+
+```{r}
+#| echo: true
+
+dat_sim_2 <- tibble(
+  x_i = rep(-1:1, each=4),
+  y_i = beta_0 + beta_1 * x_i + rnorm(N, mean = 0, sd = sigma)
+)
+mod_sim_2 <- lm(y_i ~ x_i, dat_sim_2)
+coef(mod_sim_2)
+```
+
+Wieder wenig überraschend, da jedes Mal wenn ich `rnom()` eine neue Ziehung aus der Normalverteilung generiert wird, erhalte ich neue Werte für $y_i$ und dementsprechend andere Werte für $\hat{\beta}_0$ und $\hat{\beta}_1$. Nochmal, warum? **Stichprobenvariabilität**! Jetzt sind wir wieder bei dem gleichen Prinzip, das wir im Rahmen der kleinen Welt ausgiebig behandelt haben. Schauen wir uns jetzt doch einfach mal was passiert wenn wir die Simulation nicht $2\times$ sondern z.B. $1000\times$ durchführen.
+
+```{r}
+set.seed(123)
+```
+
+```{r}
+#| echo: true
+
+N_sim <- 1000
+beta_1_s <- numeric(N_sim)
+x_i <- rep(-1:1, each=4)
+for (i in 1:N_sim) {
+  daten_temporaer <- tibble(x_i,
+                            y_i = beta_0 + beta_1 * x_i + rnorm(N, mean = 0, sd = sigma))
+  model_temporaer <- lm(y_i ~ x_i, daten_temporaer)
+  beta_1_s[i] <- coef(model_temporaer)[2]
+}
+```
+
+Wir erhalten jetzt einen Vektor `beta_1_s` mit $`r N_sim`$ beobachteten $\hat{\beta}_1$. Da das etwas viele Werte sind um die uns einzeln anzuschauen, generieren wir uns ein Histogram der $\hat{\beta}_1$s. (@fig-slm-inf-hist-sim-1).
+
+```{r}
+#| echo: true
+#| fig.cap: Histogram der auf den simulierten Daten berechneten $\hat{\beta}_1$. Wahrer Wert von $\beta_1$ rot eingezeichnet.
+#| label: fig-slm-inf-hist-sim-1
+#| fig.height: 4
+
+hist(beta_1_s, xlab = expression(hat(beta)[1]), main='')
+abline(v = beta_1, col='red', lty=2)
+```
+
+In @fig-slm-inf-hist-sim-1 begegnet uns zunächst einmal wieder unsere altbekannte Glockenkurve. Schön ist, dass deren Mittelwert im Bereich des wahren Werts von $\beta_1$ liegt und Werte mit größer werdender Abweichung vom wahren Wert in ihrer Häufigkeit abnehmen. Aber die Häufigkeit ist nicht Null, sondern eben geringer. Werte in der Nähe von $\beta_1$ weisen dagegen eine größere Häufigkeit aufweisen. Das sollte uns jetzt auch irgendwie zufrieden stimmen, denn dies bedeutet, dass wir in der Lage sind mit unserem Regressionsmodell im Mittel tatsächlich den korrekten Wert abzuschätzen. Allerdings, wie immer, bei einer einzelnen Durchführung des Experiments können wir alles von perfekt spot-on bis komplett danebenliegen und würden es nicht wissen.
+
+Wir können jetzt aber auch wieder ganz parallel zu unseren Herleitungen in der kleinen Welt einen Entscheidungsprozess spezifizieren. Wenn @fig-slm-inf-hist-sim-1 den DGP beschreibt und das die Verteilung der zu erwartenden $\hat{\beta}_1$ unter dem Modell sind, wenn wir jetzt ein neues Experiment durchführen, dann würden wir sagen, dass wenn unserer beobachteter Wert in den Rändern der Verteilung von @fig-slm-inf-hist-sim-1 liegt, das wir eher nicht davon ausgehen, dass unserer neues Experiment den gleichen DGP zugrundeliegen hat. D.h wir definieren uns jetzt Grenzen am oberen und am unteren Rand der Verteilung, und wenn jetzt ein neuer beobachteter Wert entweder unterhalb der unteren Grenze oder oberhalb der oberen Grenze liegt, dann sagen wir: *Wir sind jetzt aber sehr überrascht diesen Wert zu sehen, wenn der dem gleichen datengenerierenden Prozess entstammen soll. Daher glauben wir nicht, dass dieses Experiment den gleichen DGP besitzt.* Jetzt müssen wir also Grenzen definieren, dazu nehmen wir uns Quantilen und schneiden z.B. unten $2.5\%$ und oben $2.5\%$ ab um insgesamt auf $5\%$ zu kommen, was wir als unsere Irrtumswahrscheinlichkeit $\alpha$ festsetzen. Wieder setzen wir `R` auf die Daten an.
+
+```{r}
+crit_vals <- quantile(beta_1_s, probs = c(0.025, 0.975))
+crit_vals
+```
+
+Oder ins Histogram übertragen (siehe @fig-slm-inf-hist-sim-2)
+
+```{r}
+#| fig.cap: Histogram der auf den simulierten Daten berechneten $\hat{\beta}_1$. Wahrer Wert von $\beta_1$ rot eingezeichnet und kritische Werte grün.
+#| label: fig-slm-inf-hist-sim-2
+#| fig.height: 4
+
+hist(beta_1_s, xlab = expression(hat(beta)[1]), main='')
+abline(v = beta_1, col='red', lty=2)
+abline(v = crit_vals, col='green', lty=2)
+```
+```{r}
+set.seed(22411)
+daten_neu <- tibble(x_i,
+                    y_i = beta_0 + beta_1 * x_i + rnorm(N, mean = 0, sd = sigma))
+model_neu <- lm(y_i ~ x_i, daten_neu)
+beta_neu <- round(coef(model_neu)[2] + 0.1, 2)
+```
+
+Wir führen unserer Experiment noch einmal durch und beobachten jetzt einen Wert für $\hat{\beta}_1$ von 
+$`r beta_neu`$. Dieser Wert liegt außerhalb unseres definierten Intervalls $[`r round(crit_vals[1],2)`, `r round(crit_vals[2], 2)`]$, daher sehen wir diesen Wert als derart unwahrscheinlich unter dem angenommenen DGP, das wir sagen: *Wir glauben nicht, dass diesem Experiment nicht der angenommene DGP zugrunde liegt*. Graphisch wieder dargestellt (siehe @fig-slm-inf-hist-sim-3).
+
+
+```{r}
+#| fig.cap: Histogram der auf den simulierten Daten berechneten $\hat{\beta}_1$. Wahrer Wert von $\beta_1$ rot eingezeichnet und kritische Werte grün und der beobachtete Wert als roter Punkt.
+#| label: fig-slm-inf-hist-sim-3
+#| fig.height: 4
+
+hist(beta_1_s, xlab = expression(hat(beta)[1]), main='')
+abline(v = beta_1, col='red', lty=2)
+abline(v = crit_vals, col='green', lty=2)
+points(beta_neu, 0, col='red', lwd=4)
+```
+
+## Teststatistik informell herleiten
+
+```{r}
+#| fig.cap="Acht Zufallsziehung unter der $H_0$",
+ 
+set.seed(123)
+N <- 45 
+n <- 8
+r_dat <- data.frame(
+        x = rep(runif(N, -1, 1), n),
+        y = rnorm(n*N),
+        i = rep(1:n, each=N)
+      ) 
+ggplot(r_dat, aes(x,y)) + geom_point(size=.3) + 
+  geom_smooth(method='lm', formula = y ~ x, se=F, col='red') +
+  scale_x_continuous(breaks = c(-0.5,0.5)) +
+  facet_wrap(~i, labeller = labeller(.cols = function(i) { paste('Ziehung', i)}), ncol=4) 
+```
+
+## Stichprobenverteilung von $\beta_1$ unter der Annahme $\beta_1 = 0$ 
+
+```{r}
+#| fig.cap="Verteilung der $\\beta_1$s - 1000 Simulationen unter der Annahme der $H_0$.",
+#| fig.height=2.5
+
+set.seed(123)
+n <- 45
+N <- 1000
+x <- runif(n, -1, 1)
+sigma <- 1
+foo <- function() {
+  y <- rnorm(n, mean = 0, sd = sigma)
+  mod <- lm(y~x)
+  b <- coef(mod)[2]
+  c(b, sigma(mod))
+}
+
+betas <- replicate(N, foo())
+ggplot(data.frame(b = betas[1,]), aes(b)) +
+  geom_histogram(aes(y = ..density..), bins = 20) +
+  labs(x = expression(beta[1]), y = 'Relative Häufigkeit') 
+```
 
 
 
@@ -115,60 +307,6 @@ H_0: \beta_1 \leq 0  \\
 H_1: \beta_1 > 0
 \end{gather*}
 
-## Teststatistik informell herleiten
-
-### Simulation unter der $H_0$
-
-\begin{align*}
-N &= 45 \\
-x &\sim \mathcal{U}(-1,1) \\
-y &\sim \mathcal{N}(0,\sigma) \\
-\sigma &= 1 \\
-H_0: & \beta_1 = 0
-\end{align*}
-
-## Teststatistik informell herleiten
-
-```{r}
-#| fig.cap="Acht Zufallsziehung unter der $H_0$",
- 
-set.seed(123)
-N <- 45 
-n <- 8
-r_dat <- data.frame(
-        x = rep(runif(N, -1, 1), n),
-        y = rnorm(n*N),
-        i = rep(1:n, each=N)
-      ) 
-ggplot(r_dat, aes(x,y)) + geom_point(size=.3) + 
-  geom_smooth(method='lm', formula = y ~ x, se=F, col='red') +
-  scale_x_continuous(breaks = c(-0.5,0.5)) +
-  facet_wrap(~i, labeller = labeller(.cols = function(i) { paste('Ziehung', i)}), ncol=4) 
-```
-
-## Stichprobenverteilung von $\beta_1$ unter der Annahme $\beta_1 = 0$ 
-
-```{r}
-#| fig.cap="Verteilung der $\\beta_1$s - 1000 Simulationen unter der Annahme der $H_0$.",
-#| fig.height=2.5
-
-set.seed(123)
-n <- 45
-N <- 1000
-x <- runif(n, -1, 1)
-sigma <- 1
-foo <- function() {
-  y <- rnorm(n, mean = 0, sd = sigma)
-  mod <- lm(y~x)
-  b <- coef(mod)[2]
-  c(b, sigma(mod))
-}
-
-betas <- replicate(N, foo())
-ggplot(data.frame(b = betas[1,]), aes(b)) +
-  geom_histogram(aes(y = ..density..), bins = 20) +
-  labs(x = expression(beta[1]), y = 'Relative Häufigkeit') 
-```
 
 ## Verteilung der Statistik unter der $H_0$
 
