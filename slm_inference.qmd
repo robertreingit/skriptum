@@ -273,7 +273,7 @@ Diese Teststatistik folgt einer t-Verteilung mit $N-2$ Freiheitsgeraden. Da dies
 ```{r}
 #| echo: true
 #| fig.cap: Verteilung von t bei 1000 Simulationen unter der Annahme der $H_0$ und die theoretische Verteilung von t (rot). 
-#| label: fig-slm-inf-beta-1-dist
+#| label: fig-slm-inf-beta1-dist
 
 N <- 45
 n_sim <- 1000
@@ -307,7 +307,7 @@ ggplot(betas, aes(t)) +
 
 In @fig-slm-inf-beta1-dist können wir sehen, dass die theoretische Verteilung in rot die beobachtete Verteilung sehr gut abschätzt. Die formale Herleitung schenken wir uns hier an der Stelle, da dies vor allem viel Algebra und eher weniger Einsicht nach sich zieht.
 
-
+In `R` kann der Wert $\hat{\sigma}^2$ über die Funktion `sigma()` aus dem gefitteten `lm()`-Modell extrahiert werden.
 
 ```{r defs_reg_02}
 jump <- readr::read_delim('data/running_jump.csv',
@@ -316,62 +316,17 @@ jump <- readr::read_delim('data/running_jump.csv',
 mod <- lm(jump_m ~ v_ms, jump)
 ```
 
+```{r}
+#| echo: true
 
-## Inferenz
-
-### Modellannahmen
-
-\begin{align*}
-y_i &= \beta_0 + \beta_1 x_i + \epsilon_i \quad i=1,\ldots,N \\
-\epsilon_i &\sim N(0,\sigma^2) \quad \textrm{identisch, unabhängig verteilt}
-\end{align*}
-
-## Modellannahmen - Verteilung der Werte für gegebene x-Werte
-
-## Statistische Hypothesen
-
-### Ungerichtet
-
-\begin{gather*}
-H_0: \beta_1 = 0  \\
-H_1: \beta_1 \neq 0
-\end{gather*}
-
-### Gerichtet
-
-\begin{gather*}
-H_0: \beta_1 \leq 0  \\
-H_1: \beta_1 > 0
-\end{gather*}
-
-
-
-### in `R`
-
-```{r, echo=T}
 sigma(mod)
 ```
 
-
-
-## Verteilung der Statistik unter der $H_0$
-
-Unter den Annahmen des Regressionsmodells und der $H_0$ gilt:
-
-$$
-\frac{\beta_1}{\sigma_{\beta_1}} \sim t_{N-2}
-$$
-
-Mittels $\alpha$ lässt sich daher wieder ein kritischer Wert bestimmen ab dem die $H_0$ verworfen wird.
-
-
-
-
-## Verteilung der $\hat{\sigma} = \sqrt{\sum_{i=1}^N e_i^2/(N-K)}$
+Schauen wir uns die Stichprobenverteilung von $\hat{\sigma}^2$ anhand unserer Simulation an. Es ist wieder zu beobachten, das im Mittel der korrekte, im Modell definierte, Wert von $\sigma = 1$ beobachtet wird (siehe @fig-slm-inf-sigma-dist).
 
 ```{r}
-#| fig.cap="Verteilung von $\\hat{\\sigma}$",
-#| fig.height=2.5
+#| fig.cap: "Verteilung von $\\hat{\\sigma}$ in der Simulation und der wahre Wert in rot eingezeichnet"
+#| label: fig-slm-inf-sigma-dist
 
 ggplot(betas, aes(sigma)) +
   geom_histogram(aes(y = ..density..), bins = 20) +
@@ -380,11 +335,28 @@ ggplot(betas, aes(sigma)) +
 ```
 
 
-## Nochmal `summary()`
-\tiny
-```{r, echo=T}
+Aber wie immer, leider steht uns bei einem realen Experiment diese Information nicht zur Verfügung und wir haben nur einen einzelnen Wert, der alles von komplett daneben bis ziemlich perfekt sein kann.
+
+Schauen wir uns noch einmal die Ausgabe zu unserem Weitsprungmodell mittels `summary()` an. Unter Residual Standard Error sehen wir, dass hier $\hat{\sigma}$ angegeben wird. Dieser Wert wird auch als mittlerer Schätzfehler bezeichnet und kann als Maß verwendet werden, welche Abweichung das Modell im Mittel hat. Die Einheit sind wieder in den Einheiten der abhängigen Variable, so kann auch schon abgeschätzt werden mit welcher Präzision das Modell die Daten fittet.
+
+```{r}
+#| echo: true
+
 summary(mod)
 ```
+
+In unserem Fall beobachten wir $`r round(sigma(mod), 2)`m$. Diesen Wert muss jetzt unsere Trainerin im Sinne der Weitsprungleistung der deren Varianz interpretieren und ein Abschätzung treffen zu können.
+
+Nach der Herleitung der Teststatistik für $\beta_1$, können wir jetzt auch weitere Teil der Ausgabe von `summary()` interpretieren. In der Tabelle stehen entsprechend die Standardfehler für $\hat{\beta}_1$ und $\hat{\beta}_0$. Für $\beta_0$ wird genau die gleiche Vorgehensweise wie auch bei \beta_1$ angewendet. Die Nullhypothese $H_0$ ist hier ebenfalls das der Parameter standardmäßig als Null angesetzt wird.
+
+\begin{align*}
+H_0: \beta_0 &= 0 \\
+H_1: \beta_0 &neq 0
+\end{align*}
+
+Dementsprechend überprüft die Hypothesentestung ob der $y$-Achsenabschnitt gleich Null ist. Hier sollte berücksichtigt werden, dass diese Hypothese in den seltensten Fällen tatsächlich auch von Interesse ist und lediglich besagt, dass entweder der $y$-Achsenabschnitt durch den Nullpunkt geht, oder dass wenn tatsächlich $\beta_1 = 0$ gilt, der Mittelwert von $y$ gleich Null ist, was ebenfalls in den seltensten Fällen von Interesse ist.
+
+Die Spalten 3 und 4 in `summary()` unter `Coefficients:` können jetzt interpretiert werden, da es sich hierbei um die $t$-Teststatistik handelt und den entsprechenden p-Wert unter der jeweiligen $H_0$. Die Hypothesen sind ungerichtet.
 
 ## Konfidenzintervalle für die Koeffizienten
 
