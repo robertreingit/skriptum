@@ -164,7 +164,7 @@ for (i in 1:N_sim) {
 }
 ```
 
-Wir erhalten jetzt einen Vektor `beta_1_s` mit $`r N_sim`$ beobachteten $\hat{\beta}_1$. Da das etwas viele Werte sind um die uns einzeln anzuschauen, generieren wir uns ein Histogram der $\hat{\beta}_1$s. (@fig-slm-inf-hist-sim-1).
+Wir erhalten jetzt einen Vektor `beta_1_s` mit $`r N_sim`$ beobachteten $\hat{\beta}_1$. Da das etwas viele Werte sind um die uns einzeln anzuschauen, erstellen ein Histogramm der $\hat{\beta}_1$s. (@fig-slm-inf-hist-sim-1).
 
 ```{r}
 #| echo: true
@@ -176,16 +176,18 @@ hist(beta_1_s, xlab = expression(hat(beta)[1]), main='')
 abline(v = beta_1, col='red', lty=2)
 ```
 
-In @fig-slm-inf-hist-sim-1 begegnet uns zunächst einmal wieder unsere altbekannte Glockenkurve. Schön ist, dass deren Mittelwert im Bereich des wahren Werts von $\beta_1$ liegt und Werte mit größer werdender Abweichung vom wahren Wert in ihrer Häufigkeit abnehmen. Aber die Häufigkeit ist nicht Null, sondern eben geringer. Werte in der Nähe von $\beta_1$ weisen dagegen eine größere Häufigkeit aufweisen. Das sollte uns jetzt auch irgendwie zufrieden stimmen, denn dies bedeutet, dass wir in der Lage sind mit unserem Regressionsmodell im Mittel tatsächlich den korrekten Wert abzuschätzen. Allerdings, wie immer, bei einer einzelnen Durchführung des Experiments können wir alles von perfekt spot-on bis komplett danebenliegen und würden es nicht wissen.
+In @fig-slm-inf-hist-sim-1 begegnet uns zunächst einmal wieder unsere altbekannte Glockenkurve. Schön ist, dass deren Mittelwert im Bereich des wahren Werts von $\beta_1$ liegt und Werte mit größer werdender Abweichung vom wahren Wert in ihrer Häufigkeit abnehmen. Aber die Häufigkeit ist nicht Null, sondern eben nur geringer. Werte in der Nähe von $\beta_1$ weisen dagegen eine größere Häufigkeit aufweisen. Das sollte uns jetzt auch irgendwie zufrieden stimmen, denn dies bedeutet, dass wir in der Lage sind mit unserem Regressionsmodell im Mittel tatsächlich den korrekten Wert abzuschätzen. Allerdings, wie immer, bei einer einzelnen Durchführung des Experiments können wir alles von perfekt spot-on bis komplett danebenliegen und würden es nicht wissen.
 
-Wir können jetzt aber auch wieder ganz parallel zu unseren Herleitungen in der kleinen Welt einen Entscheidungsprozess spezifizieren. Wenn @fig-slm-inf-hist-sim-1 den DGP beschreibt und das die Verteilung der zu erwartenden $\hat{\beta}_1$ unter dem Modell sind, wenn wir jetzt ein neues Experiment durchführen, dann würden wir sagen, dass wenn unserer beobachteter Wert in den Rändern der Verteilung von @fig-slm-inf-hist-sim-1 liegt, das wir eher nicht davon ausgehen, dass unserer neues Experiment den gleichen DGP zugrundeliegen hat. D.h wir definieren uns jetzt Grenzen am oberen und am unteren Rand der Verteilung, und wenn jetzt ein neuer beobachteter Wert entweder unterhalb der unteren Grenze oder oberhalb der oberen Grenze liegt, dann sagen wir: *Wir sind jetzt aber sehr überrascht diesen Wert zu sehen, wenn der dem gleichen datengenerierenden Prozess entstammen soll. Daher glauben wir nicht, dass dieses Experiment den gleichen DGP besitzt.* Jetzt müssen wir also Grenzen definieren, dazu nehmen wir uns Quantilen und schneiden z.B. unten $2.5\%$ und oben $2.5\%$ ab um insgesamt auf $5\%$ zu kommen, was wir als unsere Irrtumswahrscheinlichkeit $\alpha$ festsetzen. Wieder setzen wir `R` auf die Daten an.
+Wir können jetzt aber auch wieder ganz parallel zu unseren Herleitungen in der kleinen Welt einen Entscheidungsprozess spezifizieren. Wenn @fig-slm-inf-hist-sim-1 den DGP beschreibt und das die Verteilung der zu erwartenden $\hat{\beta}_1$ unter dem Modell sind. Bei der Dürchführung eines neuen Experiments, dann würden wir sagen, dass wenn unserer beobachteter Wert in den Rändern der Verteilung von @fig-slm-inf-hist-sim-1 liegt, das wir eher nicht davon ausgehen, dass unserer neues Experiment den gleichen DGP zugrundeliegen hat. D.h wir definieren uns jetzt Grenzen am oberen und am unteren Rand der Verteilung. Wenn jetzt ein neuer beobachteter Wert entweder unterhalb der unteren Grenze oder oberhalb der oberen Grenze liegt, dann sagen wir: *Wir sind jetzt aber sehr überrascht diesen Wert zu sehen, wenn der dem gleichen datengenerierenden Prozess entstammen soll. Daher glauben wir nicht, dass dieses Experiment den gleichen DGP besitzt.*
+
+Um diese Entscheidung treffen zu können, müssen wir also Grenzen definieren. Dazu können wir zunächst einmal einfach die Quantilen der Verteilung nehmen und schneiden z.B. unten $2.5\%$ und oben $2.5\%$ ab. So kommen wir dann insgesamt auf $5\%$, um auf die übliche Irrtumswahrscheinlichkeit von $\alpha = 0.05$ zu kommen. Dazu benutzen wir `R` und zwar `quantile()`-Funktion^[Im folgenden Snippet werden die Werte auf zwei Kommastellen mit `round()` der besseren Darstellung wegen gerundet).
 
 ```{r}
-crit_vals <- quantile(beta_1_s, probs = c(0.025, 0.975))
+crit_vals <- round(quantile(beta_1_s, probs = c(0.025, 0.975)), 2)
 crit_vals
 ```
 
-Oder ins Histogram übertragen (siehe @fig-slm-inf-hist-sim-2)
+Mittels dieser Werte können wir zwei disjunkte Wertmenge definieren, einmal die Werte innerhalb von $\hat{\beta}_1 \in [`r paste(crit_vals,collapse=',')`]$ bei denen wir nicht überrascht sind, und die unter der Annahme $\beta_1 = 1$ erwartbar sind und die Werte $\hat{\beta}_1 \notin [`r paste(crit_vals,collapse=',')`]$ diejenigen Werte die uns überraschen würden unter der Annahme. Ins Histogramm übertragen (siehe @fig-slm-inf-hist-sim-2).
 
 ```{r}
 #| fig.cap: Histogram der auf den simulierten Daten berechneten $\hat{\beta}_1$. Wahrer Wert von $\beta_1$ rot eingezeichnet und kritische Werte grün.
@@ -204,7 +206,7 @@ model_neu <- lm(y_i ~ x_i, daten_neu)
 beta_neu <- round(coef(model_neu)[2] + 0.1, 2)
 ```
 
-Wir führen unserer Experiment noch einmal durch und beobachten jetzt einen Wert für $\hat{\beta}_1$ von 
+Führen wir nun ein Experiment noch einmal durch. Wir beobachten einen Wert für $\hat{\beta}_1$ von 
 $`r beta_neu`$. Dieser Wert liegt außerhalb unseres definierten Intervalls $[`r round(crit_vals[1],2)`, `r round(crit_vals[2], 2)`]$, daher sehen wir diesen Wert als derart unwahrscheinlich unter dem angenommenen DGP, das wir sagen: *Wir glauben nicht, dass diesem Experiment nicht der angenommene DGP zugrunde liegt*. Graphisch wieder dargestellt (siehe @fig-slm-inf-hist-sim-3).
 
 
@@ -219,57 +221,92 @@ abline(v = crit_vals, col='green', lty=2)
 points(beta_neu, 0, col='red', lwd=4)
 ```
 
-## Teststatistik informell herleiten
+Daher würden wir diesen Wert als statisisch signifikant bezeichnen und würden unsere Annahme ablehnen.
+
+Jetzt sind wir aber etwas hin und her zwischen Experiment, Annahmen und Schlussfolgerungen gesprungen. Normalerweise kennen wir die Stichprobenverteilung nicht vor dem Experiment, sondern, wir sind am dem Wert $\beta_1$ interessiert. Wenn wir den Wert schon wissen würden, dann müssten wir ja gar kein Experiment mehr durchführen. D.h. wir haben eigentlich noch keinen klaren Vorkenntnisse. Mit welcher Annahme gehen wir dann in das Experiment rein? Nun, wir schon bei kleinen Welt Beispiel, starten wir mit der Annahme das zwischen den beiden Variablen kein Zusammenhang besteht. Übertragen auf die Modellparameter also, dass kein linearer Zusammenhang zwischen den beiden Variablen besteht.
+
+\begin{align*}
+H_0: \beta_1 &= 0 \\
+H_1: \beta_1 &\neq 0
+\end{align*} 
+
+Um die Stichprobenverteilung unter der $H_0$ formal Herleitung zu können, ist der Erwartungswert von $\hat{\beta}_1$ und dessen Standardfehler notwendig. Es lässt sich zeigen, dass die folgenden Zusammenhänge unter den gesetzten Annahmen bestehen:
+
+$$
+E[\hat{\beta}_0] = \beta_0
+$$
+
+Also der Schätzer von $\beta_1$ ist erwartungstreu (biased) und der Standardfehler des Schätzer lässt sich wie folgt bestimmen.
+
+$$
+\sigma_{\beta_1} = \sqrt{\frac{\sigma^2}{\sum{(X_i - \bar{X})^2}}}
+$$ {#eq-slm-beta1-se}
+
+Hier taucht jetzt zum ersten Mal der Parameter $\sigma^2$ formal auf. Wo kommt diese Variance her? Sie gehört zu unserer Annahme der Verteilung der $\epsilon_i \sim \mathcal{N}(0,\sigma^2)$. Bisher haben wir aber noch gar keine Möglichkeit kennen gelerntm, diese abzuschätzen. Wieder nach etwas motivierten Starren auf die verschiedenen Formeln, könnte heuristisch plausibel sein, dass die Varianz, also die Streuung der $\epsilon_i$ mit der Streuung unserer Werte um die Regressionsgerade zusammenhängen könnten. Formal hatten wir diese als Residuen bezeichnet und mit $e_i = \hat{y}_i - y_i$ bezeichnet. Diese $e_i$ sind tatsächlich die Schätzer für die *wahren* $\epsilon_i$ also $e_i = \hat{\epsilon_i} = \hat{y}_i - y_i$. Es lässt sich nun wieder zeigen, dass mittels dieser $e_i$ ein erwartungstreuer Schätzer für $\sigma^2$ erzeugen lässt. Nämlich die mittleren quadrierten Abweichungen (MSE).
+
+$$
+\hat{\sigma} = \frac{\sqrt{\sum_{i=1}^N e_i^2}}{N-2} = \frac{\text{SSE}}{N-2} = \text{MSE}
+$$ {#eq-slm-sigma}
+
+Da das später immer wieder auftauchen wird, hier auch noch mal in die zwei Komponenten zerlegt. Der Zähler wird als Summe der quadrierten Abweichungen (SSE) bezeichnet und durch den Term $N-2$, der als Freiheitsgerade bezeichnet wird, geteilt. Dann mit die Formel und deren Bezeichnung *mittlere* Abweichung zusammenpasst, wäre es schöner wenn die Summe durch die Anzahl $N$ der Terme geteilt wird, allerdings verhält sich das in diesem Fall ähnlich wie bei der Varianz einer Stichprobe wo die Summe auch durch $N-1$ geteilt wird (zur Erinnerung $s = \frac{\sum_{i=1}^N (x_i - \bar{x})^2}{N-1}$). Jetzt wird dementsprechend nicht durch $N-1$ sondern durch $N-2$ geteilt.
+
+Für unser Problem der Stichprobenverteilung ist jetzt aber wichtiger, dass wir mittels @eq-slm-sigma den Standardfehler von $\hat{\beta}_1$ bestimmen können, indem wir für $\sigma^2$ das mittels der Daten ermittelte $\hat{\sigma}^2$ einsetzen.
+
+$$
+\hat{\sigma}_{\beta_1} = \sqrt{\frac{\hat{\sigma}^2}{\sum{(X_i - \bar{X})^2}}}
+$$ {#eq-slm-hatbeta1-se}
+
+Dies erlaubt uns jetzt nach unserem bereits bekannten Muster eine Teststatistik für die $H_0$ herzuleiten:
+
+$$
+t = \frac{\hat{\beta}_1 - \beta_1}{\hat{\sigma}_{\beta_1}}
+$$
+
+Unter der $H_0$ mit $\beta_1 = 0$ wird daraus
+
+$$
+t = \frac{\hat{\beta}_1}{\hat{\sigma}_{\beta_1}}
+$$ {#eq-slm-beta1-statistic}
+
+Diese Teststatistik folgt einer t-Verteilung mit $N-2$ Freiheitsgeraden. Da diese Formel wieder etwas aus der Luft gegriffen erscheint, hier noch mal eine Simulation zusammen mit der theoretischen Testverteilung.
 
 ```{r}
-#| fig.cap="Acht Zufallsziehung unter der $H_0$",
- 
-set.seed(123)
-N <- 45 
-n <- 8
-r_dat <- data.frame(
-        x = rep(runif(N, -1, 1), n),
-        y = rnorm(n*N),
-        i = rep(1:n, each=N)
-      ) 
-ggplot(r_dat, aes(x,y)) + geom_point(size=.3) + 
-  geom_smooth(method='lm', formula = y ~ x, se=F, col='red') +
-  scale_x_continuous(breaks = c(-0.5,0.5)) +
-  facet_wrap(~i, labeller = labeller(.cols = function(i) { paste('Ziehung', i)}), ncol=4) 
-```
+#| echo: true
+#| fig.cap: Verteilung von t bei 1000 Simulationen unter der Annahme der $H_0$ und die theoretische Verteilung von t (rot). 
+#| label: fig-slm-inf-beta-1-dist
 
-## Stichprobenverteilung von $\beta_1$ unter der Annahme $\beta_1 = 0$ 
-
-```{r}
-#| fig.cap="Verteilung der $\\beta_1$s - 1000 Simulationen unter der Annahme der $H_0$.",
-#| fig.height=2.5
-
-set.seed(123)
-n <- 45
-N <- 1000
-x <- runif(n, -1, 1)
+N <- 45
+n_sim <- 1000
+x <- runif(N, -1, 1)
 sigma <- 1
-foo <- function() {
-  y <- rnorm(n, mean = 0, sd = sigma)
+experiment <- function() {
+  y <- rnorm(N, mean = 0, sd = sigma)
   mod <- lm(y~x)
   b <- coef(mod)[2]
-  c(b, sigma(mod))
+  c(beta_0 = coef(mod)[1],
+    beta_1 = coef(mod)[2],
+    sigma = sigma(mod))
 }
+betas <- t(replicate(n_sim, experiment()))
+betas <- tibble(beta_0 = betas[,1],
+                beta_1 = betas[,2],
+                sigma = betas[,3]) |> 
+  mutate(
+   s_e_beta_1 = sqrt(sigma**2/sum( (x - mean(x))**2)),
+   t = beta_1 / s_e_beta_1)
+t_theoretical <- tibble(
+  t = seq(-3, 3, length.out = 150),
+  p = dt(t, N - 2)
+)
 
-betas <- replicate(N, foo())
-ggplot(data.frame(b = betas[1,]), aes(b)) +
+ggplot(betas, aes(t)) +
   geom_histogram(aes(y = ..density..), bins = 20) +
-  labs(x = expression(beta[1]), y = 'Relative Häufigkeit') 
+  geom_line(data = t_theoretical, aes(t, p), color = 'red') +
+  labs(x = "t", y = 'Relative Häufigkeit') 
 ```
 
+In @fig-slm-inf-beta1-dist können wir sehen, dass die theoretische Verteilung in rot die beobachtete Verteilung sehr gut abschätzt. Die formale Herleitung schenken wir uns hier an der Stelle, da dies vor allem viel Algebra und eher weniger Einsicht nach sich zieht.
 
-
-
-Eine kurze Überlegung zeigt, dass wenn zwischen der Prädiktorvariablen und $y$ kein Zusammenhang besteht, dann sollte der Steigungskoeffizient $\beta_1$ gleich Null sein bzw. auf Grund von Stichprobenvariabilität in der Nähe von Null sein. Daher ist eine plausible Hypothese die sich statistisch Überprüfung lässt:
-
-$$
-H_0: \beta_1 = 0
-$$
 
 
 ```{r defs_reg_02}
@@ -308,22 +345,6 @@ H_1: \beta_1 > 0
 \end{gather*}
 
 
-## Verteilung der Statistik unter der $H_0$
-
-
-:::: columns
-::: column
-
-#### Standardfehler von $\beta_1$ 
-$$ \sigma_{\beta_1} = \sqrt{\frac{\sigma^2}{\sum{(X_i - \bar{X})^2}}}$$
-
-$\sigma$ lässt sich abschätzen mit:
-
-$$
-\hat{\sigma} = \sqrt{\sum_{i=1}^N e_i^2/(N-K)}
-$$
-:::
-::: column
 
 ### in `R`
 
@@ -332,8 +353,6 @@ sigma(mod)
 ```
 
 
-:::
-::::
 
 ## Verteilung der Statistik unter der $H_0$
 
@@ -347,23 +366,6 @@ Mittels $\alpha$ lässt sich daher wieder ein kritischer Wert bestimmen ab dem d
 
 
 
-## Teststatistik
-
-
-```{r}
-#| fig.cap="Verteilung von $\\frac{\\beta_1}{s_{\\beta_1}}$,Dichtefunktion der t-Verteilung (rot) mit $df = n - 2$",
-#| fig.height=2.5
-#| 
-s_e_beta_1 <- sqrt(betas[2,]**2/sum( (x - mean(x))**2))
-df_2 <- tibble::tibble(
-  b = seq(-4,4,length.out=100),
-  y = dt(b, 23)
-)
-ggplot(data.frame(b = betas[1,]/s_e_beta_1), aes(b)) +
-  geom_histogram(aes(y = ..density..), bins = 20) +
-  geom_line(data = df_2, aes(b,y), color='red') +
-  labs(x = expression(frac(hat(beta)[1],s[beta[1]])), y = 'Relative Häufigkeit') 
-```
 
 ## Verteilung der $\hat{\sigma} = \sqrt{\sum_{i=1}^N e_i^2/(N-K)}$
 
@@ -371,7 +373,7 @@ ggplot(data.frame(b = betas[1,]/s_e_beta_1), aes(b)) +
 #| fig.cap="Verteilung von $\\hat{\\sigma}$",
 #| fig.height=2.5
 
-ggplot(data.frame(b = betas[2,]), aes(b)) +
+ggplot(betas, aes(sigma)) +
   geom_histogram(aes(y = ..density..), bins = 20) +
   geom_vline(xintercept = 1, col = 'red', linetype = 'dashed') +
   labs(x = expression(hat(sigma)[i]), y = 'Relative Häufigkeit') 
