@@ -9,6 +9,8 @@ source('_common.R')
 
 Nachdem wir im vorhergehenden Kapitel gelehrnt haben, wie wir ein Regressionsgerade an einen Datensatz fitten. Stellt sich nun die Frage ob die Regressionsgerade tatsächlich einen relevanten Zusammenhang zwischen den beiden Variablen beschreibt. Da das einfache lineare Modelle zwei Parameter $\beta_0$ und $\beta_1$ beinhaltet kann diese Fragestellung auf beide Koeffizienten angewendet werden. D.h. wir fragen uns ob das Modell einen statistisch signifikanten Zusammenhang zwischen den beiden Variablen beschreibt. Bezogen auf die beiden Parameter, ist der Parameter $\hat{\beta}_0$ statistisch signifikant und ist der Parameter $\hat{\beta}_1$ statistisch signifikant? Um unseren Werkzeugsatz zu statistischer Signifikanz anwenden zu können brauchen wir aber erst einmal wieder eine Verteilung bei der wir kritische Bereiche markieren können um zu entscheiden ob eine beobachtete Statistik statistisch signifikant ist. Wie behalten dabei im Hinterkopf das statistische Signifikanz nicht das Gleiche ist wie praktische Relevanz.
 
+## Statistische Überprüfung von $\beta_1$ und $\beta_0$
+
 Der erste Schritt um eine Verteilung zu bekommen ist allerdings, dass wir zunächst einmal eine Zufallsvariable benötigen. Bisher haben wir den Zusammenhang zwischen Variablen über die Formel
 
 $$
@@ -61,7 +63,7 @@ $$
 Y|X \sim N(\beta_0+ \beta_1 X,\sigma^2)
 $$
 
-Die Schreibweise $|X$ wird übersetzt für gegenbenes $X$ und sagt aus, dass die Verteilung von $Y$ von $X$ abhängt. Die Varianz der jeweiligen $Y$-Werte ist dabei die zuvor angenommen Varianz der $\epsilon_i$ also $\sigma^2$. Eine wichtige Annahme die noch mal betont werden sollte, wir gehen davon aus, dass die einzelnen Punkte unabhängig voneinander sind. Im Weitsprungbeispiel würde dies bedeuten, dass jeder Sprung von einem anderen Athleten kommen muss.
+Die Schreibweise $|X$ wird übersetzt für gegenbenes $X$ und sagt aus, dass die Verteilung von $Y$ von $X$ abhängt. Es handelt sich dabei um eine bedingte Wahrscheinlichkeit. Die Varianz der jeweiligen $Y$-Werte ist dabei die zuvor angenommen Varianz der $\epsilon_i$ also $\sigma^2$. Eine wichtige Annahme die noch mal betont werden sollte, wir gehen davon aus, dass die einzelnen Punkte unabhängig voneinander sind. Im Weitsprungbeispiel würde dies bedeuten, dass jeder Sprung von einem anderen Athleten kommen muss.
 
 Wenn wir die Verteilungen von $Y$ graphisch führ beispielweise drei verschiedene $X$-Wert darstellen, dann folgt daraus die folgende Abbildung (siehe @fig-slm-inf-epsilon-2). D.h. für jeden $X$-Wert werden mehrere $Y$-Werte beobachtet, die jeweils einer Normalverteilung folgen.
 
@@ -74,7 +76,7 @@ include_graphics('pics/Stats_Figures.png')
 
 In @fig-slm-inf-epsilon-2 ist klar zu sehen, wie für jeden der drei Punkte von $X$ die beobachteten $Y$-Werte einer Normalverteilung. Die Breite der Verteilung ist an jedem Punkte gleich, nämlich $=\sigma^2$ während der Mittelwert der Gleichung $\beta_0 + \beta_1 X$ folgend entlang der Regressionsgerade verschoben ist.
 
-Wenn wir uns zurück an die Ausführungen zur statistischen Signifikanz erinnern, dann haben wir in dem Zusammenhang vom einem datengenerierenden Prozess gesprochen (@def-dgp) (DGP). In unserem jetztzigen Modell können wir dementsprechend zwei Komponenten als Teile des DGP identizifieren. Entsprechend @eq-simple-regression-model besteht der DGP aus dem deterministischen Teil $\beta_0 + \beta_1 X$ und dem stochastischen Teil $\epsilon_i \sim \mathcal{N}(0,\sigma^2)$. Diese Einsicht können wir verwenden um die Eigenschaften dieses Modells bezüglich Aussagen über statistische Signifikanz zu untersuchen.
+Wenn wir uns zurück an die Ausführungen zur statistischen Signifikanz erinnern, dann haben wir in dem Zusammenhang vom einem datengenerierenden Prozess gesprochen (@def-dgp) (DGP). In unserem jetzigen Modell können wir dementsprechend zwei Komponenten als Teile des DGP identizifieren. Entsprechend @eq-simple-regression-model besteht der DGP aus dem deterministischen Teil $\beta_0 + \beta_1 X$ und dem stochastischen Teil $\epsilon_i \sim \mathcal{N}(0,\sigma^2)$. Diese Einsicht können wir verwenden um die Eigenschaften dieses Modells bezüglich Aussagen über statistische Signifikanz zu untersuchen.
 
 Wir fokussieren uns jetzt auf ein vereinfachtes Modell bei dem wir zusätzlich noch $\beta_0 = 0$ setzen, und wir uns erst mal nur für die Eigenschaften von $\beta_1$ interessieren. Gehen wir nun davon aus, dass zwischen $X$ und $Y$ der Zusammenhang $\beta_1 = 1$ besteht. D.h. wenn $X$ um eine Einheit vergrößert wird, dann wird $Y$ ebenfalls um eine Einheit größer.
 
@@ -242,7 +244,9 @@ $$
 \sigma_{\beta_1} = \sqrt{\frac{\sigma^2}{\sum{(X_i - \bar{X})^2}}}
 $$ {#eq-slm-beta1-se}
 
-Hier taucht jetzt zum ersten Mal der Parameter $\sigma^2$ formal auf. Wo kommt diese Variance her? Sie gehört zu unserer Annahme der Verteilung der $\epsilon_i \sim \mathcal{N}(0,\sigma^2)$. Bisher haben wir aber noch gar keine Möglichkeit kennen gelerntm, diese abzuschätzen. Wieder nach etwas motivierten Starren auf die verschiedenen Formeln, könnte heuristisch plausibel sein, dass die Varianz, also die Streuung der $\epsilon_i$ mit der Streuung unserer Werte um die Regressionsgerade zusammenhängen könnten. Formal hatten wir diese als Residuen bezeichnet und mit $e_i = \hat{y}_i - y_i$ bezeichnet. Diese $e_i$ sind tatsächlich die Schätzer für die *wahren* $\epsilon_i$ also $e_i = \hat{\epsilon_i} = \hat{y}_i - y_i$. Es lässt sich nun wieder zeigen, dass mittels dieser $e_i$ ein erwartungstreuer Schätzer für $\sigma^2$ erzeugen lässt. Nämlich die mittleren quadrierten Abweichungen (MSE).
+Hier taucht jetzt zum ersten Mal der Parameter $\sigma^2$ formal auf. Wo kommt diese Variance her? Sie gehört zu unserer Annahme der Verteilung der $\epsilon_i \sim \mathcal{N}(0,\sigma^2)$. Bisher haben wir aber noch gar keine Möglichkeit kennen gelerntm, diese abzuschätzen. Wieder nach etwas motivierten Starren auf die verschiedenen Formeln, könnte heuristisch plausibel sein, dass die Varianz, also die Streuung der $\epsilon_i$ mit der Streuung unserer Werte um die Regressionsgerade zusammenhängen könnten. Formal hatten wir diese als Residuen bezeichnet und mit $e_i = \hat{y}_i - y_i$ bezeichnet. Vormals hatten wir diese Abweichungen als Fehler bezeichnet, aber unter den jetzt eingeführten Annahmen, handelt es sich nicht wirklich um Fehler, sondern die Abweichungen sind eine Folge davon, dass $Y_i$ für jeden Wert von $X_i$ nicht nur einen einzigen Wert hat, sondern eben einer Verteilung folgt $Y_i|X_i \sim \mathcal{N}(\beta_0 + beta_1, \sigma^2)$ deren Form über die $\epsilon_i$ bestimmt wird.
+
+Die $e_i$ sind tatsächlich die Schätzer für die *wahren* $\epsilon_i$ also $e_i = \hat{\epsilon_i} = \hat{y}_i - y_i$. Es lässt sich nun wieder zeigen, dass mittels dieser $e_i$ ein erwartungstreuer Schätzer für $\sigma^2$ erzeugen lässt. Nämlich die mittleren quadrierten Abweichungen (MSE).
 
 $$
 \hat{\sigma} = \frac{\sqrt{\sum_{i=1}^N e_i^2}}{N-2} = \frac{\text{SSE}}{N-2} = \text{MSE}
@@ -305,7 +309,7 @@ ggplot(betas, aes(t)) +
   labs(x = "t", y = 'Relative Häufigkeit') 
 ```
 
-In @fig-slm-inf-beta1-dist können wir sehen, dass die theoretische Verteilung in rot die beobachtete Verteilung sehr gut abschätzt. Die formale Herleitung schenken wir uns hier an der Stelle, da dies vor allem viel Algebra und eher weniger Einsicht nach sich zieht.
+In @fig-slm-inf-beta1-dist können wir sehen, dass die theoretische Verteilung in rot die beobachtete Verteilung sehr gut abschätzt. 
 
 In `R` kann der Wert $\hat{\sigma}^2$ über die Funktion `sigma()` aus dem gefitteten `lm()`-Modell extrahiert werden.
 
@@ -357,6 +361,153 @@ H_1: \beta_0 &neq 0
 Dementsprechend überprüft die Hypothesentestung ob der $y$-Achsenabschnitt gleich Null ist. Hier sollte berücksichtigt werden, dass diese Hypothese in den seltensten Fällen tatsächlich auch von Interesse ist und lediglich besagt, dass entweder der $y$-Achsenabschnitt durch den Nullpunkt geht, oder dass wenn tatsächlich $\beta_1 = 0$ gilt, der Mittelwert von $y$ gleich Null ist, was ebenfalls in den seltensten Fällen von Interesse ist.
 
 Die Spalten 3 und 4 in `summary()` unter `Coefficients:` können jetzt interpretiert werden, da es sich hierbei um die $t$-Teststatistik handelt und den entsprechenden p-Wert unter der jeweiligen $H_0$. Die Hypothesen sind ungerichtet.
+
+## Herleitung der Eigenschaften von $\hat{\beta}_1$
+
+Um den Schätzer $\hat{\beta}_1$ für $\beta_1$ formal herzuleiten. Beginnen wir zunächst mit der folgenden Formel, wobei wir im folgenden den Schätzer mit $b_1$ bezeichnen.
+
+$$
+b_1 = \sum k_i Y_i
+$$ {#eq-b1-k1Yi}
+
+D.h. wir zeigen zunächst, dass $b_1$ durch eine lineare Kombination der $Y_i$-Werte berechnet werden kann. Die Koeffizienten $k_i$ der Summe sind dabei wie folgt definiert: 
+
+$$
+k_i = \frac{X_i - \bar{X}}{\sum(X_i - \bar{X})^2}
+$$ {#eq-defn-ki}
+
+Der Grund für diese zunächst etwas uneinsichtige Definition wird im weiteren klarer werden. Zunächst haben die $k_i$ verschieldene Eigenschaften die wir uns im Späteren zunutze machen wollen. Zunächst erst einmal noch ein paar Identitäten die wir später auch noch verwenden.
+
+Die erste Identität bezieht sich auf das Kreuzprodukt der Abweichungen von $X_i$ und $Y_i$ von ihren jeweiligen Mittelwerten.
+
+\begin{align*}
+\sum(X_i-\bar{X})(Y_i-\bar{Y}) &= \sum(X_i - \bar{X})Y_i  -\underbrace{\sum(X_i - \bar{X})}_{=0}\bar{Y}  \\
+&= \sum(X_i - \bar{X})Y_i
+\end{align*}
+
+Wenn wir in der Formel $(Y_i-\bar{Y})$ durch $(X_i-\bar{X})$ austauschen, folgt noch eine weitere nützliche Identität:
+
+$$
+\sum(X_i-\bar{X})^2 = \sum(X_i - \bar{X})X_i
+$$
+
+Werden die jeweiligen $k_i$ mit den dazugehörigen $X_i$ multipliziert und die Definition der $k_i$ (siehe @eq-defn-ki) beachten, erhalten wir:
+
+$$
+\sum k_i X_i = \frac{\sum(X_i - \bar{X})X_i}{\sum(X_i-\bar{X})^2} = \frac{\sum(X_i-\bar{X})^2}{\sum(X_i-\bar{X})^2} = 1
+$$
+
+D.h. Die Summe der $k_i X_i$ ist gleich $1$. Aus der Definition @eq-defn-ki folgt weiterhin.
+
+$$
+\sum k_i = \sum \left(\frac{X_i-\bar{X}}{\sum(X_i-\bar{X})^2}\right)= \frac{\sum(X_i-\bar{X})}{\sum(X_i-\bar{X})^2} = \frac{0}{\sum(X_i-\bar{X})^2} = 0
+$$
+
+D.h. die Summe der $k_i$ ist gleich Null.
+
+Wenn wir jetzt wieder die Definition unseres Schätzer für $\beta_1$ verwenden (siehe @eq-slm-basics-norm1). Dann erhalten unter der Verwendung der Identität der Kreuzprodukte den gewünschten Zusammenhang zwischen $b_1$ und $Y_i$.
+
+\begin{align*}
+b_1 &= \frac{\sum(X_i - \bar{X})(Y_i - \bar{Y})}{\sum(X_i - \bar{X})^2} \\
+&= \frac{\sum(X_i - \bar{X})Y_i}{\sum(X_i - \bar{X})^2} = \sum k_i Y_i\\
+\end{align*}
+
+Wenden wir jetzt den Erwartungswert auf $Y_i$ an, dann werden die $k_i$ als konstant angesehen und nur die $Y_i$ sind Zufallsvariablen. Da aber $Y_i = \beta_0 + \beta_1 X_i + \epsilon_i$ gilt und in dieser Formel wiederum nur $\epsilon_i$ eine Zufallsvariable mit $\beta_0$ und $\beta_1 X_i$ konstant ist und zudem die $\epsilon \sim \mathcal{N}(0,\sigma^2)$ also $E[\epsilon_i] = 0$ laut der Annahme gilt, folgt:
+
+\begin{align*}
+    E[b_1] &= E\left[\sum k_i Y_i\right] = \sum k_i E[Y_i] = \sum k_i (\beta_0 + \beta_1 X_i) \\
+    &= \beta_0 \sum k_i + \beta_1 \sum k_i X_i = \beta_1
+\end{align*}
+
+D.h. @eq-slm-basics-norm1 ist ein erwartungstreuer Schätzer für $\beta_1$.
+
+Leiten wir noch eine weitere Identität über die Summe der $k_i^2$ her:
+
+$$
+\sum k_i^2 = \sum \left[\frac{X_i-\bar{X}}{\sum(X_i-\bar{X})^2}\right]^2 = \frac{\sum(X_i-\bar{X})^2}{\left[\sum(X_i-\bar{X})^2\right]^2} = \frac{1}{\sum(X_i-\bar{X})^2}
+$$
+Können wir auch noch die Varianz bzw. den Standardfehler unseres Schätzers für $\beta_1$ herleiten. Es gilt nämlich:
+
+\begin{align*}
+    \sigma^2[b_1] &= \sigma^2\left[\sum k_i Y_i\right] = \sum k_i^2 \sigma^2[Y_i] \\
+    &= \sum k_i^2 \sigma^2 = \sigma^2 \sum k_i^2 \\
+    &= \sigma^2 \frac{1}{\sum(X_i-\bar{X})^2}
+\end{align*}
+
+Wir erhalten die bereits eingeführte Formel. Wiederum eine Einsicht aus der Herleitung der Formel folgt, dass die Varianz $\sigma^2$ als konstant angesehen wird, d.h. $\sigma_i^2 = \sigma^2$. Dies hat uns erlaubt im zweiten Schritt $\sigma^2$ aus der Summe heraus zu ziehen. Wenn die Varianz $\sigma^2$ nicht konstant ist, dann ist der berechnete Standardfehler für $\hat{\beta}_1 = b_1$ nicht korrekt.
+
+## Maximum-likelihood Methode bei der einfachen linearen Regression
+
+Ein anderer Herleitung für $\beta_0$ und $\beta_1$ kann über die sogenannten Maximum Likelihood durchgeführt werden. Dabei gehen direkt die Verteilungsannahmen direkt ein.
+
+Für eine gegebene Zufallsvariable die jeweilige Dichte eines gegebenen Wertes über die Dichtefunktion berechnet werden. Wenn ein Zufallsvariable $X$ einer Normalverteilung folgt, dann wird die Verteilung von $X$ nach der bereits kennengelernte Dichtefunktion der Normalverteilung beschrieben.
+
+$$
+f(X|\mu,\sigma^2) = \frac{1}{\sqrt{2 \pi \sigma^2}} \exp\left(-\frac{1}{2}\frac{(X - \mu)^2}{\sigma^2}\right)
+$$
+
+Hier wird die Dichte von $X$ als eine Funktion von $\mu$ und $\sigma^2$ aufgefasst. Es ist aber auch möglich, die Zufallsvariable $X$ als gegeben anzusehen und die Dichte für verschiedene Werte von $\mu$ und $\sigma^2$ abzutragen. Der Einfachheit halber gehen wir davon aus, dass $\sigma^2$ gegeben sei und wir $\mu$ nicht kennen. Eine mögliche Fragestellung ist jetzt, für einen beobachteten Wert $x$, welcher Wert von $\mu$ ist am plausibelsten?
+
+Tragen wir dazu verschiedene Dichtewerte für ein gegebenes $x$ in Abhängigkeit von verschiedenen $\mu$ ab.
+
+D.h. wir interpretieren die Funktion als:
+
+$$
+f(\mu|x,\sigma^2) = \frac{1}{\sqrt{2 \pi \sigma^2}} \exp\left(-\frac{1}{2}\frac{(X - \mu)^2}{\sigma^2}\right)
+$$
+
+Diese Funktion wird als die likelihood-Funktion bezeichnet. Das Maximum dieser Funktion kann als derjenige Wert interpretiert werden bei dem derjenige Wert von $\mu$ die maximal mögliche Dichte einnimmt.
+
+Die Likelihood-Funktion ist eine Funktion, die die Wahrscheinlichkeit beschreibt, mit der eine gegebene Stichprobe, in Abhängikeit  von den Parametern aus einer bestimmten Verteilung stammt. Die Likelihood-Funktion gibt also an, wie gut die beobachteten Daten zu einem bestimmten Satz von Parametern passen.
+
+Formal wird die Likelihood-Funktion als die gemeinsame Wahrscheinlichkeitsdichte der Stichprobe beschrieben, betrachtet als Funktion der Parameter. Dabei werden die beobachteten Werte als festgelegt und die Parameter als Variablen betrachtet. Die Likelihood-Funktion ist also eine Funktion der Parameter, die die Wahrscheinlichkeit der beobachteten Daten als Funktion dieser Parameter beschreibt. Die Likelihood-Funktion ist dabei keine Dichtefunktion und beschreibt somit keine Wahrscheinlichkeiten. Dementsprechend ist gilt für das Integral der Likelihood-Funktion $\int L(\mu|X,\sigma^2) d\mu \neq 1$ bzw. ist $=1$ per *Zufall*.
+
+In unserem Regressionsfall nimmt die Likelihood-Funktion für einen einzelnen Wert die folgende Form an:
+
+$$
+L(\beta_0, \beta_1, \sigma^2|y_i) = \frac{1}{\sqrt{2\pi\sigma^2}} \exp\left(-\frac{(y_i - \beta_0 - \beta_1 x_i)^2}{2\sigma^2}\right)
+$$
+
+Bei unserer Regressionsanalyse haben wir jedoch nicht nur einen einzigen beobachteten Wert $(y_i, x_i)$ sondern $N$ beobachtete Werte. Da die Werte unabhängig voneinander sind (laut der Annahmen), werden die jeweiligen likelihoods miteinander multipliziert. Die resultierende Likelihood-Funktion nimmt dann die folgenden Form an:
+
+\begin{align*}
+L(\beta_0, \beta_1, \sigma^2) &= \prod_{i=1}^{N} f(y_i | x_i; \beta_0, \beta_1, \sigma^2) \\
+&= \prod_{i=1}^{N} \frac{1}{\sqrt{2\pi\sigma^2}} \exp\left(-\frac{(y_i - \beta_0 - \beta_1 x_i)^2}{2\sigma^2}\right) \\
+&= \left(\frac{1}{\sqrt{2\pi \sigma^2}}\right)^N \exp\left(\sum_{i=1}^N \frac{(y_i - \beta_0 - \beta_1 x_i)^2}{2 \sigma^2}\right) \\
+&= \left(\frac{1}{2\pi \sigma^2}\right)^{N/2} \exp\left(\sum_{i=1}^N \frac{(y_i - \beta_0 - \beta_1 x_i)^2}{2 \sigma^2}\right) \\
+\end{align*}
+
+Die Idee ist jetzt wieder die Gleiche. Wir versuchen das Maximum dieser Funktion zu finden, da die Werte $\beta_0, \beta_1$ und $\sigma^2$ dann so gewählt sind, dass sie die höchste likelihood haben. Der Ansatz erfolgt wieder mechanisch ,indem wie bei der Herleitung der Normalengleichungen, die partiellen Ableitungen berechnet werden, diese gleich Null gesetzt werden und das resultierende Gleichungssystem gelöst wird. Zu beachten hierbei, wir haben in jedem Produktterm die gleichen Parameter $\beta_0, \beta-1$ und $\sigma^2$ und die jeweiligen beobachteten $(y_i, x_i)$ Tuple werden als gegeben angesehen. 
+
+Um die Berechnungn zu vereinfachen, bietet sich bei der Likelihoo-Funktion ein Trick an. Es wird nicht Likelihood-Funktion abgeleitet, sondern der Logarithmus der Likelihood-Funktion. D.h. die Funktion wird transformiert. Bei der Logarithmus-Funktion handelt es sich um eine sogenannte bijektive Funktion. Eine bijektive Funktion ist eine Funktion die jedem Element in der Ursprungsmenge genau ein Element in der Zielmenge zuordnet und ebenfalls umgekehrt. Dadurch kommt es zu keinen Kollisionen oder Auslassungen. Einfach gesagt, wenn die Funktion $y = f(x) = log(x)$ ist, dann wird jedem $x$ genau ein $y$ zugeordnet. Bzw. anders herum, wenn ich $y$ kenne, dann kenne ich auch den Wert von $x$ mit $f(x) = y$ bzw. $x = f^{-1}(y) = \exp(y)$. Dadurch, das die Logarithmus-Funktion bijektiv ist, führt dies dazu, dass das Maximum der ursprünglichen Funktion $L(\beta_0, \beta_1, \sigma^2)$ an der gleichen Stelle auftritt wie bei der transformierten Funktion $\ln L(\beta_0, \beta_1, \sigma^2)$.
+
+Wenn jetzt die Eigenschaften der Logarithmusfunktion, speziell des natürlichen Logarithmus, beachtet werden, dann wird auch klar, warum es Sinn machen könnte die Likelihood-Funktion mit dem Logarithmus zu transformieren, da aus den Produkten Summen werden mit denen einfacher umgegangen werden kann:
+
+\begin{align*}
+\log(xy) &= \log(x) + \log(y) \\
+\log\left(\frac{x}{y}\right) &= \log(x) - \log(y) \\
+\log(x^n) &= n\log(x) \\
+\log(\exp(x)) &= x \\
+\log(1) &= 0
+\end{align*}
+
+Der Logarithmus angewendet auf $L(\beta_0, \beta_1, \sigma^2)$ resultiert dann in der folgenden Funktion:
+
+\begin{align*}
+\ell(\beta_0, \beta_1, \sigma^2) &= \ln L(\beta_0, \beta_1, \sigma^2) \\
+&= \ln \left[\left(\frac{1}{2\pi \sigma^2}\right)^{N/2} \exp\left(-\sum_{i=1}^N \frac{(y_i - \beta_0 - \beta_1 x_i)^2}{2 \sigma^2}\right)\right] \\
+&= \ln \left[\left(\frac{1}{2\pi \sigma^2}\right)^{N/2} \right] + \ln \left[\exp\left(-\sum_{i=1}^N \frac{(y_i - \beta_0 - \beta_1 x_i)^2}{2 \sigma^2}\right)\right] \\
+&= \frac{N}{2} \ln \left[\left(\frac{1}{2\pi \sigma^2}\right) \right] -\sum_{i=1}^N \frac{(y_i - \beta_0 - \beta_1 x_i)^2}{2 \sigma^2} \\
+&= -\frac{n}{2}\ln(2\pi) - \frac{n}{2}\ln(\sigma^2) - \frac{1}{2\sigma^2}\sum_{i=1}^{N}(y_i - \beta_0 - \beta_1 x_i)^2
+\end{align*}
+
+Wir die Funktion $\ell(\beta_0, \beta_1, \sigma^2)$ wieder partiell nach $\beta_0$ und $\beta_1$ abgeleitet und gleich Null gesetzt erhalten wir das gleiche Gleichungssystem wie bei den vorhergehenden Herleitungen über die Abweichungen von der Regressionsgeraden. z.B.
+
+\begin{align*}
+\frac{\partial \ell(\beta_0, \beta_1, \sigma^2)}{\partial \beta_0} &= \frac{\partial}{\partial \beta_0} -\frac{n}{2}\ln(2\pi) - \frac{n}{2}\ln(\sigma^2) - \frac{1}{2\sigma^2}\sum_{i=1}^{N}(y_i - \beta_0 - \beta_1 x_i)^2 \\
+&= \frac{2}{2\sigma^2}\sum_{i=1}^N (y_i - \beta_0 - \beta_1 x_i)
+\end{align*}
+Wenn dieser Ausdruck gleich Null gesetzt erhalten wir den gleichen Ausdruck wie unter
 
 ## Konfidenzintervalle für die Koeffizienten
 
