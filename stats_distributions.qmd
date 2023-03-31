@@ -12,7 +12,7 @@ Im Folgenden werden vier verschiedene Verteilungen noch einmal etwas genauer vor
 
 ## Normalverteilung
 
-Beginnen wir mit der Normalverteilung.
+Beginnen wir mit der Normalverteilung\index{Normalverteilung}.
 
 $$
 f(x|\mu,\sigma^2) = \frac{1}{\sqrt{2 \pi \sigma^2}}e^{\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)}
@@ -129,58 +129,35 @@ ggplot(df, aes(x,p, ymin = 0, ymax = p)) +
   labs(x = 'Werte', y = 'Dichte') 
 ```
 
+### z-Transformation
 
-## Abbildung N($\mu$,$\sigma$) auf N($0$,$1$) 
+Es besteht mittels einer einfachen Möglichkeit jede beliebiege Normalverteilung $\mathcal{N}(\mu,\sigma^2)$ auf die Standardnormalverteilung $\mathcal{N}(0,1)$ abzubilden. Die Transformation wird als z-Transformation\index{z-Transformation} bezeichnet und hat die folgende Form:
 
-```{r}
-#| fig.cap: "Standardnormalverteilung mit $\\mu=12, \\sigma^2=2$"
+$$
+z = \frac{X - \mu_X}{\sigma_X}
+$$ {#eq-z-transformation}
 
-x <- seq(6, 18, 0.01)
-p <- dnorm(x, 12, 2)
-df <- data.frame(x, p) 
-ggplot(df, aes(x,p)) +
-  geom_ribbon(aes(ymin = 0, ymax = p), fill = 'red', alpha=.3) +
-  geom_line(size=2, col='red') + 
-  labs(x = 'Werte', y = 'Dichte') +
-  lims(y = c(0,.5)) 
-```
+D.h. der Mittelwert der Verteilung von $X$ wird von X abgezogen und die Differenz wird durch die Standardabweichung der Population $\sigma_X$ geteilt. Die Umkehrfunktion ist dementsprechend:
 
-```{r}
-#| fig.cap: "Normalverteilung mit $\\mu=0, \\sigma=1$"
+$$
+X = \mu_X + z \sigma_X
+$$ {#eq-z-invtransformation}
 
-x <- seq(-6, 6, 0.01)
-p <- dnorm(x)
-df <- data.frame(x, p) 
-ggplot(df, aes(x,p)) +
-  geom_ribbon(aes(ymin = 0, ymax = p), fill = 'red', alpha=.3) +
-  geom_line(size=2, col='red') + 
-  labs(x = 'Werte', y = 'Dichte') +
-  lims(y = c(0,.5)) 
-```
 
-## z-Transformation allgemein bzw. Standardisierung 
+### Zentraler Grenzwertsatz 
 
-\begin{table}[]
-    \caption{z-Transformation}
-    \centering
-    \begin{tabular}{ll}
-     \toprule
-     Population & Stichprobe \\
-     \midrule
-     $z = \frac{x - \mu}{\sigma}$ & $z = \frac{x - \bar{x}}{s}$ \\
-     \bottomrule
-    \end{tabular}
-    \label{tab:zscore}
-\end{table}
-\vspace{2cm}
+Die Normalverteilung spielt in der Wahrscheinlichkeitstheorie und der Statistik aus verschiedenen Gründen eine Spezialrolle. Ein Grund dafür ist der sogenannte Zentrale Grenzwertsatz, den wir hier nicht beweisen sondern nur kurz diskutieren.
 
-## Zentraler Grenzwertsatz oder *Warum die Normalverteilung überall auftaucht*.
+::: {#prp-central-limit}
+## Zentraler Grenzwertsatz
 
-Seien $X_1, X_2, \ldots, X_n$ n unabhängige, gleichverteilte Zufallsvariablen mit $E(X_i)=\mu$ und $Var(X_i)=\sigma^2$. 
+Seien $X_1, X_2, \ldots, X_n$ n unabhängige, gleichverteilte Zufallsvariablen mit $E[X_i]=\mu$ und $Var[X_i]=\sigma^2$ endlich. 
 $$
  \lim_{n\to\infty}\frac{\bar{x} - \mu}{\frac{\sigma}{\sqrt{n}}}\ \rightarrow\ \mathcal{N}(\mu=0,\sigma^2=1)
 $$
+:::
 
+In Worten besagt der Zentrale Grenzwertsatz, dass egal welche Ursprungsform die Verteilung einer Zufallsvariablen $X$ hat, wenn die Stichprobengröße gegen unendlich geht, die konvergiert die Differenz des Stichprobenmittelwerts und des Mittelwert der Verteilung geteilt durch den Stichprobenstandardfehler gegen die Standardnormalverteilung. Grenzwertsätz sind manchmal etwas schwierig zu interpretieren, da hier noch keine Aussage gemacht wird, wie groß die Stichprobe sein muss, damit diese Abschätzung valide ist. In der Praxis wird oft ab einer *gefühlt* großen Stichproben diese Abschätzung als zulässig angesehen. 
 
 # Verteilungszoo
 
