@@ -382,13 +382,40 @@ Die nächste Verallgemeinerung die wir Vornehmen ist dass wir für die Wahrschei
 $$
 p + q = 1
 $$
-Daraus folgt, dass $q = p - 1$. Wenn wir das auf unseren Münzwurf übertragen, müssen wir das dementsprechend berücksichtigen. Wir können uns aber zunutze machen, dass wir wissen wie viele Würfe durchgeführt wurden, nämlich $N$, und wie viele davon Kopf waren, nämlich $y$. Damit wissen wir automatisch auch die Anzahl von Zahl, $N - y$. Jede Kopf, hat die Wahrscheinlichkeit $p$ und jede Zahl hat die Wahrscheinlichkeit $q = 1 - p$ und das gilt unabhängig von der Reihenfolge, da z.B. $ppqp = qppp$ ist. Insgesamt haben wir $y \times p$ und $(n-y) \times q$ also $p^y$ und $q^{n-y}$. Das können wir jetzt alles in eine Formel stecken.
+Daraus folgt, dass $q = p - 1$. Wenn wir das auf unseren Münzwurf übertragen, müssen wir das dementsprechend berücksichtigen. Wir können uns aber zunutze machen, dass wir wissen wie viele Würfe durchgeführt wurden, nämlich $N$, und wie viele davon Kopf waren, nämlich $y$. Damit wissen wir automatisch auch die Anzahl von Zahl, $N - y$. Jedes Kopf, hat die Wahrscheinlichkeit $p$ und jede Zahl hat die Wahrscheinlichkeit $q = 1 - p$. Das gilt unabhängig von der Reihenfolge, da z.B. die Wahrscheinlichkeiten $KKZK$ und $ZKKK$ gleich $ppqp = qppp$ sind. Insgesamt haben wir $y \times K$ und $(n-y) \times Z$ also $p^y$ und $q^{n-y}$. Diesen Zusammenhang können wir in eine Formel stecken.
 
-$$
-P(Y = y) = \binom{N}{y}p^y (1-p)^{N-y} = \binom{N}{y}p^y q^{N-y}
-$$ {#eq-binom-distribution}
+\begin{equation}
+P(Y = y) = \binom{N}{y}p^y (1-p)^{N-y} = \binom{N}{y}p^y q^{N-y} \label{eq-binom-distribution}
+\end{equation}
 
-Damit haben wir jetzt auch direkt unsere erste mathematische Verteilung kennengelernt, die in der Statistik eine zentrale Rolle spielt, die Binomialverteilung\index{Binomialverteilung}. Es handelt sich hier um eine Familie von Verteilungen, da jeweils für verschiedene $N$ und $p$ eine eigene Verteilung vorliegt. Schauen wir uns aber noch mal ob wir mit den ganzen Symbolen wirklich unseren dreifachen Münzwurf zurückbekommen. Es gilt $N = 3, p = \frac{1}{2}$. Daraus folgt das $q = 1 - p = 1 - \frac{1}{2}=\frac{1}{2}$. Wenn wir uns jetzt noch an $x^a x^b = x^{a+b}$ aus der Schule erinnern folgt:
+Damit haben wir jetzt auch direkt unsere erste theoretische Verteilung kennengelernt, die in der Statistik eine zentrale Rolle spielt. Die Verteilung in Formel \eqref{eq-binom-distribution} wird als die Binomialverteilung\index{Binomialverteilung} bezeichnet. Da die Formel \eqref{eq-binom-distribution} von den Parametern $p$ und $n$ abhängt, wird die Binomialverteilung als eine Familie von Verteilungen bezeichnet. 
+
+```{r}
+#| layout-ncol: 2
+#| label: fig-stats-sig-binom-dist-1
+#| fig.height: 4
+#| fig-cap: "Beispiel für verschiedene Binomialverteilungen"
+#| fig-subcap:
+#|   - "$p = 0.5, n = 10$"
+#|   - "$p = 0.3, n = 7$"
+
+binom_dist <- function(p = 0.5, n = 10) {
+  tibble(
+    x = 0:n,
+    p = dbinom(x, n, p)
+  ) |> 
+    ggplot(aes(x, p, xend=x, yend=0)) +
+    geom_segment(size=1.5) +
+    geom_point(size=4) +
+    scale_x_continuous('Anzahl Kopf', breaks = 0:n) +
+    scale_y_continuous('Wahrscheinlichkeit')
+}
+binom_dist()
+binom_dist(n = 7, p = 0.3)
+```
+
+
+Schauen wir uns aber noch mal ob wir mit den ganzen Symbolen wirklich unseren dreifachen Münzwurf zurückbekommen. Es gilt $N = 3, p = \frac{1}{2}$. Daraus folgt das $q = 1 - p = 1 - \frac{1}{2}=\frac{1}{2}$. Wenn wir uns noch an $x^a x^b = x^{a+b}$ aus der Schule erinnern folgt:
 
 \begin{align*}
 P(Y = 0) &= \binom{3}{0} \left(\frac{1}{2}\right)^{0}\left(\frac{1}{2}\right)^3 = \binom{3}{0}\left(\frac{1}{2}\right)^3 = 1 \left(\frac{1}{2}\right)^3 \\
@@ -396,6 +423,25 @@ P(Y = 1) &= \binom{3}{1} \left(\frac{1}{2}\right)^{1}\left(\frac{1}{2}\right)^2 
 P(Y = 2) &= \binom{3}{0} \left(\frac{1}{2}\right)^{2}\left(\frac{1}{2}\right)^1 = \binom{3}{2}\left(\frac{1}{2}\right)^3 = 3 \left(\frac{1}{2}\right)^3 \\
 P(Y = 3) &= \binom{3}{0} \left(\frac{1}{2}\right)^{3}\left(\frac{1}{2}\right)^0 = \binom{3}{3}\left(\frac{1}{2}\right)^3 = 1 \left(\frac{1}{2}\right)^3 \\
 \end{align*}
+
+Tatsächlich können wir unser Ergebnis von oben wiedergewinnen. Die Funktion der Binomialverteilung (Formel \eqref{eq-binom-distribution}) wird als Wahrscheinlichkeitsfuntion\index{Wahrscheinlichkeitsfunktion} bezeichnet.
+
+::: {#def-Wahrscheinlichkeitsfunktion}
+## Wahrscheinlichkeitsfunktion
+
+Eine Wahrscheinlichkeitsfunktion ist eine mathematische Funktion, die die Wahrscheinlichkeiten für alle möglichen Ausgänge eines diskreten Zufallsexperiments angibt. Sie wird auch als diskrete Wahrscheinlichkeitsverteilung bezeichnet. Eine Wahrscheinlichkeitsfunktion ordnet jedem möglichen Ausgang $x$ eines Experiments eine Wahrscheinlichkeit $P(X = x)$ zu. Die Wahrscheinlichkeit liegt zwischen 0 und 1. Die Summe aller Wahrscheinlichkeiten für alle möglichen Ergebnisse muss gleich 1 sein. Eine Wahrscheinlichkeitsfunktion kann als Tabelle oder als Formel dargestellt werden
+:::
+
+Für die Eigenschaften einer Verteilung gibt es einer weitere Darstellungsform, die Verteilungsfunktion.
+
+::: {#def-Verteilungsfunktion}
+## Verteilungsfunktion
+
+Die Verteilungsfunktion gibt die Wahrscheinlichkeit $P$ an, dass eine Zufallsvariable $X$ einen Wert kleiner oder gleich einem bestimmten Wert $x$ annimmt, formal $P(X \seq x)$. Sie wird daher auch als kumulative Verteilungsfunktion bezeichnet.
+:::
+
+Diese Definition ist nicht ganz so einfach nachzuvollziehen.
+
 
 ### Lage- und Skalenparameter
 

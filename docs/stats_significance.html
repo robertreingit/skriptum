@@ -79,6 +79,13 @@ div.csl-indent {
     "search-submit-button-title": "Abschicken"
   }
 }</script>
+<script>
+  MathJax = {
+    tex: {
+      tags: 'ams'  // should be 'ams', 'none', or 'all'
+    }
+  };
+</script>
 <script src="site_libs/quarto-diagram/mermaid.min.js"></script>
 <script src="site_libs/quarto-diagram/mermaid-init.js"></script>
 <link href="site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
@@ -718,41 +725,74 @@ P(Y = 3) = \binom{3}{3}\left(\frac{1}{2}\right)^3
 <p>Die nächste Verallgemeinerung die wir Vornehmen ist dass wir für die Wahrscheinlichkeit das Kopf auftritt das Symbol <span class="math inline">\(p\)</span> benutzen. So könnten wir auch modellieren, wenn wir eine unfaire Münze haben. Wenn jetzt aber <span class="math inline">\(p \neq \frac{1}{2}\)</span> gilt, also zum Beispiel die Wahrscheinlichkeit für Kopf <span class="math inline">\(p = \frac{2}{3}\)</span> wäre, dann ist die Wahrscheinlichkeit für Zahl nicht mehr die Gleiche wie für Kopf. Die Wahrscheinlichkeit für Zahl wäre dann <span class="math inline">\(1 - p\)</span>. Wenn wir für die Wahrscheinlichkeit für das Auftreten von Zahl das Symbol <span class="math inline">\(q\)</span> einführen, muss die Wahrscheinlichkeit für Kopf oder Zahl gleich <span class="math inline">\(1\)</span> sein, formal:</p>
 <p><span class="math display">\[
 p + q = 1
-\]</span> Daraus folgt, dass <span class="math inline">\(q = p - 1\)</span>. Wenn wir das auf unseren Münzwurf übertragen, müssen wir das dementsprechend berücksichtigen. Wir können uns aber zunutze machen, dass wir wissen wie viele Würfe durchgeführt wurden, nämlich <span class="math inline">\(N\)</span>, und wie viele davon Kopf waren, nämlich <span class="math inline">\(y\)</span>. Damit wissen wir automatisch auch die Anzahl von Zahl, <span class="math inline">\(N - y\)</span>. Jede Kopf, hat die Wahrscheinlichkeit <span class="math inline">\(p\)</span> und jede Zahl hat die Wahrscheinlichkeit <span class="math inline">\(q = 1 - p\)</span> und das gilt unabhängig von der Reihenfolge, da z.B. <span class="math inline">\(ppqp = qppp\)</span> ist. Insgesamt haben wir <span class="math inline">\(y \times p\)</span> und <span class="math inline">\((n-y) \times q\)</span> also <span class="math inline">\(p^y\)</span> und <span class="math inline">\(q^{n-y}\)</span>. Das können wir jetzt alles in eine Formel stecken.</p>
-<p><span id="eq-binom-distribution"><span class="math display">\[
-P(Y = y) = \binom{N}{y}p^y (1-p)^{N-y} = \binom{N}{y}p^y q^{N-y}
-\tag{2.4}\]</span></span></p>
-<p>Damit haben wir jetzt auch direkt unsere erste mathematische Verteilung kennengelernt, die in der Statistik eine zentrale Rolle spielt, die Binomialverteilung. Es handelt sich hier um eine Familie von Verteilungen, da jeweils für verschiedene <span class="math inline">\(N\)</span> und <span class="math inline">\(p\)</span> eine eigene Verteilung vorliegt. Schauen wir uns aber noch mal ob wir mit den ganzen Symbolen wirklich unseren dreifachen Münzwurf zurückbekommen. Es gilt <span class="math inline">\(N = 3, p = \frac{1}{2}\)</span>. Daraus folgt das <span class="math inline">\(q = 1 - p = 1 - \frac{1}{2}=\frac{1}{2}\)</span>. Wenn wir uns jetzt noch an <span class="math inline">\(x^a x^b = x^{a+b}\)</span> aus der Schule erinnern folgt:</p>
+\]</span> Daraus folgt, dass <span class="math inline">\(q = p - 1\)</span>. Wenn wir das auf unseren Münzwurf übertragen, müssen wir das dementsprechend berücksichtigen. Wir können uns aber zunutze machen, dass wir wissen wie viele Würfe durchgeführt wurden, nämlich <span class="math inline">\(N\)</span>, und wie viele davon Kopf waren, nämlich <span class="math inline">\(y\)</span>. Damit wissen wir automatisch auch die Anzahl von Zahl, <span class="math inline">\(N - y\)</span>. Jedes Kopf, hat die Wahrscheinlichkeit <span class="math inline">\(p\)</span> und jede Zahl hat die Wahrscheinlichkeit <span class="math inline">\(q = 1 - p\)</span>. Das gilt unabhängig von der Reihenfolge, da z.B. die Wahrscheinlichkeiten <span class="math inline">\(KKZK\)</span> und <span class="math inline">\(ZKKK\)</span> gleich <span class="math inline">\(ppqp = qppp\)</span> sind. Insgesamt haben wir <span class="math inline">\(y \times K\)</span> und <span class="math inline">\((n-y) \times Z\)</span> also <span class="math inline">\(p^y\)</span> und <span class="math inline">\(q^{n-y}\)</span>. Diesen Zusammenhang können wir in eine Formel stecken.</p>
+<p><span class="math display">\[\begin{equation}
+P(Y = y) = \binom{N}{y}p^y (1-p)^{N-y} = \binom{N}{y}p^y q^{N-y} \label{eq-binom-distribution}
+\end{equation}\]</span></p>
+<p>Damit haben wir jetzt auch direkt unsere erste theoretische Verteilung kennengelernt, die in der Statistik eine zentrale Rolle spielt. Die Verteilung in Formel <span class="math inline">\(\eqref{eq-binom-distribution}\)</span> wird als die Binomialverteilung bezeichnet. Da die Formel <span class="math inline">\(\eqref{eq-binom-distribution}\)</span> von den Parametern <span class="math inline">\(p\)</span> und <span class="math inline">\(n\)</span> abhängt, wird die Binomialverteilung als eine Familie von Verteilungen bezeichnet.</p>
+<div id="fig-stats-sig-binom-dist-1" class="cell quarto-layout-panel">
+<figure class="figure">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-stats-sig-binom-dist-1-1" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="stats_significance_files/figure-html/fig-stats-sig-binom-dist-1-1.png" class="img-fluid figure-img" data-ref-parent="fig-stats-sig-binom-dist-1" width="672"></p>
+<p></p><figcaption class="figure-caption">(a) <span class="math inline">\(p = 0.5, n = 10\)</span></figcaption><p></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-stats-sig-binom-dist-1-2" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="stats_significance_files/figure-html/fig-stats-sig-binom-dist-1-2.png" class="img-fluid figure-img" data-ref-parent="fig-stats-sig-binom-dist-1" width="672"></p>
+<p></p><figcaption class="figure-caption">(b) <span class="math inline">\(p = 0.3, n = 7\)</span></figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p></p><figcaption class="figure-caption">Abbildung&nbsp;2.12: Beispiel für verschiedene Binomialverteilungen</figcaption><p></p>
+</figure>
+</div>
+<p>Schauen wir uns aber noch mal ob wir mit den ganzen Symbolen wirklich unseren dreifachen Münzwurf zurückbekommen. Es gilt <span class="math inline">\(N = 3, p = \frac{1}{2}\)</span>. Daraus folgt das <span class="math inline">\(q = 1 - p = 1 - \frac{1}{2}=\frac{1}{2}\)</span>. Wenn wir uns noch an <span class="math inline">\(x^a x^b = x^{a+b}\)</span> aus der Schule erinnern folgt:</p>
 <p><span class="math display">\[\begin{align*}
 P(Y = 0) &amp;= \binom{3}{0} \left(\frac{1}{2}\right)^{0}\left(\frac{1}{2}\right)^3 = \binom{3}{0}\left(\frac{1}{2}\right)^3 = 1 \left(\frac{1}{2}\right)^3 \\
 P(Y = 1) &amp;= \binom{3}{1} \left(\frac{1}{2}\right)^{1}\left(\frac{1}{2}\right)^2 = \binom{3}{1}\left(\frac{1}{2}\right)^3 = 3 \left(\frac{1}{2}\right)^3 \\
 P(Y = 2) &amp;= \binom{3}{0} \left(\frac{1}{2}\right)^{2}\left(\frac{1}{2}\right)^1 = \binom{3}{2}\left(\frac{1}{2}\right)^3 = 3 \left(\frac{1}{2}\right)^3 \\
 P(Y = 3) &amp;= \binom{3}{0} \left(\frac{1}{2}\right)^{3}\left(\frac{1}{2}\right)^0 = \binom{3}{3}\left(\frac{1}{2}\right)^3 = 1 \left(\frac{1}{2}\right)^3 \\
 \end{align*}\]</span></p>
+<p>Tatsächlich können wir unser Ergebnis von oben wiedergewinnen. Die Funktion der Binomialverteilung (Formel <span class="math inline">\(\eqref{eq-binom-distribution}\)</span>) wird als Wahrscheinlichkeitsfuntion bezeichnet.</p>
+<div id="def-Wahrscheinlichkeitsfunktion" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 2.3 (Wahrscheinlichkeitsfunktion) </strong></span>Eine Wahrscheinlichkeitsfunktion ist eine mathematische Funktion, die die Wahrscheinlichkeiten für alle möglichen Ausgänge eines diskreten Zufallsexperiments angibt. Sie wird auch als diskrete Wahrscheinlichkeitsverteilung bezeichnet. Eine Wahrscheinlichkeitsfunktion ordnet jedem möglichen Ausgang <span class="math inline">\(x\)</span> eines Experiments eine Wahrscheinlichkeit <span class="math inline">\(P(X = x)\)</span> zu. Die Wahrscheinlichkeit liegt zwischen 0 und 1. Die Summe aller Wahrscheinlichkeiten für alle möglichen Ergebnisse muss gleich 1 sein. Eine Wahrscheinlichkeitsfunktion kann als Tabelle oder als Formel dargestellt werden</p>
+</div>
+<p>Für die Eigenschaften einer Verteilung gibt es einer weitere Darstellungsform, die Verteilungsfunktion.</p>
+<div id="def-Verteilungsfunktion" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 2.4 (Verteilungsfunktion) </strong></span>Die Verteilungsfunktion gibt die Wahrscheinlichkeit <span class="math inline">\(P\)</span> an, dass eine Zufallsvariable <span class="math inline">\(X\)</span> einen Wert kleiner oder gleich einem bestimmten Wert <span class="math inline">\(x\)</span> annimmt, formal <span class="math inline">\(P(X \seq x)\)</span>. Sie wird daher auch als kumulative Verteilungsfunktion bezeichnet.</p>
+</div>
+<p>Diese Definition ist nicht ganz so einfach nachzuvollziehen.</p>
 </section>
 <section id="lage--und-skalenparameter" class="level3" data-number="2.2.2">
 <h3 data-number="2.2.2" class="anchored" data-anchor-id="lage--und-skalenparameter"><span class="header-section-number">2.2.2</span> Lage- und Skalenparameter</h3>
 <p>In <a href="#fig-sts-sig-dgp-2">Abbildung&nbsp;<span>2.3</span></a> sind verschiedene Verteilungen abgebildet die sich eigentlich nur in ihrer Position bzw. Lage unterscheiden. Der Parameter der bei einer Verteilungen die Lage steuert ist der Mittelwert den wir bereits schon kennengelernt haben. Hier jetzt aber nicht der Mittelwert <span class="math inline">\(\bar{x}\)</span> in der Stichprobe, sondern der Mittelwert der zugrundeliegenden Population der dann mit dem Symbol <span class="math inline">\(\mu\)</span> bezeichnet wird. Die Beschreibung als Parameter der Verteilung heißt nichts anderes das die Verteilung von <span class="math inline">\(\mu\)</span> abhängt, oder formal das die Verteilung eine Funktion von <span class="math inline">\(\mu\)</span> ist. Wenn wir uns an Funktionen aus der Schule zurück erinnen wo wir Funktionen <span class="math inline">\(f\)</span> von <span class="math inline">\(x\)</span> kennengelernt haben und als <span class="math inline">\(f(x)\)</span> dargestellt haben. Übertragen auf die Verteilung könnte dies mittels <span class="math inline">\(f(\mu)\)</span> dargestellt werden.</p>
-<p>Nehmen wir nun zwei Verteilungen die sich bezüglich ihrer Mittelwerte <span class="math inline">\(\mu\)</span> unterscheiden. Zum Beispiel sei <span class="math inline">\(\mu_1 = 0\)</span> und <span class="math inline">\(\mu_2 = 3\)</span>. Wie in <a href="#fig-sts-sig-dist-mu">Abbildung&nbsp;<span>2.12</span></a> zu sehen ist, führt dies dazu, das die beiden Verteilungen gegeneinander verschoben sind.</p>
+<p>Nehmen wir nun zwei Verteilungen die sich bezüglich ihrer Mittelwerte <span class="math inline">\(\mu\)</span> unterscheiden. Zum Beispiel sei <span class="math inline">\(\mu_1 = 0\)</span> und <span class="math inline">\(\mu_2 = 3\)</span>. Wie in <a href="#fig-sts-sig-dist-mu">Abbildung&nbsp;<span>2.13</span></a> zu sehen ist, führt dies dazu, das die beiden Verteilungen gegeneinander verschoben sind.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-sts-sig-dist-mu" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
 <p><img src="stats_significance_files/figure-html/fig-sts-sig-dist-mu-1.png" class="img-fluid figure-img" width="672"></p>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;2.12: Verteilungen mit zwei unterschiedlichen Mittelwerten</figcaption><p></p>
+<p></p><figcaption class="figure-caption">Abbildung&nbsp;2.13: Verteilungen mit zwei unterschiedlichen Mittelwerten</figcaption><p></p>
 </figure>
 </div>
 </div>
 </div>
 <p>Der Mittelwert <span class="math inline">\(\mu\)</span> der Verteilung wird auch als Erwartungswert bezeichnet. Dies kann dahingehend interpretiert werden, das wenn Stichproben aus dieser Verteilungen gezogen werden, im Mittel der Wert <span class="math inline">\(\mu\)</span> erwartet wird. Soweit ist dies eigentlich noch nichts wirklich Neues, sondern hatten dies schon vorher gesehen, als wir alle möglichen Unterschiede zwischen der Kontrollgruppe und der Interventionsgruppe ermittelt haben. Hier war der Mittelwert der Verteilung genau derjenige Wert von <span class="math inline">\(\Delta\)</span>.</p>
 <p>An dieser Stelle sollte nochmal der Unterschied zwischen <span class="math inline">\(\mu\)</span> und <span class="math inline">\(\bar{x}\)</span> klargestellt werden. Der Mittelwert <span class="math inline">\(\mu\)</span> ist eine Eigenschaft der Population, also letztendlich ein Wert den wir niemals kennen werden ohne die gesamte Population zu untersuchen. Der Mittelwert <span class="math inline">\(\bar{x}\)</span> ist eine Eigenschaft der Stichprobe aus der Population. Also der konkrete Wert den wir anhand der Stichprobe berechnen. In vielen Fällen versuchen wir über <span class="math inline">\(\bar{x}\)</span> einen Rückschluss auf <span class="math inline">\(\mu\)</span> zu ziehen.</p>
-<p>Als zweite Eigenschaft von Verteilungen schauen wir uns jetzt die Streuung in der Population an. Die Streuung in der Population wird als Varianz bezeichnet und wird mit dem Symbol <span class="math inline">\(\sigma^2\)</span> bezeichnet. Schauen wir uns zunächst an, welchen Einfluss <span class="math inline">\(\sigma^2\)</span> auf die Form der Verteilung hat. In <a href="#fig-sts-sig-dist-sigma">Abbildung&nbsp;<span>2.13</span></a> sind wieder zwei Verteilungen abgetragen. Dieses Mal ist <span class="math inline">\(\mu\)</span> in beiden Fällen gleich, aber die Varianzen <span class="math inline">\(\sigma\)</span> sind mit <span class="math inline">\(\sigma_1^2 = 2\)</span> und <span class="math inline">\(\sigma_2^2=1\)</span> unterschiedlich.</p>
+<p>Als zweite Eigenschaft von Verteilungen schauen wir uns jetzt die Streuung in der Population an. Die Streuung in der Population wird als Varianz bezeichnet und wird mit dem Symbol <span class="math inline">\(\sigma^2\)</span> bezeichnet. Schauen wir uns zunächst an, welchen Einfluss <span class="math inline">\(\sigma^2\)</span> auf die Form der Verteilung hat. In <a href="#fig-sts-sig-dist-sigma">Abbildung&nbsp;<span>2.14</span></a> sind wieder zwei Verteilungen abgetragen. Dieses Mal ist <span class="math inline">\(\mu\)</span> in beiden Fällen gleich, aber die Varianzen <span class="math inline">\(\sigma\)</span> sind mit <span class="math inline">\(\sigma_1^2 = 2\)</span> und <span class="math inline">\(\sigma_2^2=1\)</span> unterschiedlich.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-sts-sig-dist-sigma" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
 <p><img src="stats_significance_files/figure-html/fig-sts-sig-dist-sigma-1.png" class="img-fluid figure-img" width="672"></p>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;2.13: Verteilungen mit unterschiedlichen Varianzen</figcaption><p></p>
+<p></p><figcaption class="figure-caption">Abbildung&nbsp;2.14: Verteilungen mit unterschiedlichen Varianzen</figcaption><p></p>
 </figure>
 </div>
 </div>
@@ -770,7 +810,7 @@ P(Y = 3) &amp;= \binom{3}{0} \left(\frac{1}{2}\right)^{3}\left(\frac{1}{2}\right
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="stats_significance_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="stats_significance_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
 <p></p><figcaption class="figure-caption">Verteilung der Mittelwerte von Stichproben der Größe <span class="math inline">\(n=10\)</span>, Kleine Welt Population <span class="math inline">\(\mu\)</span> (rot)</figcaption><p></p>
 </figure>
 </div>
@@ -783,7 +823,7 @@ P(Y = 3) &amp;= \binom{3}{0} \left(\frac{1}{2}\right)^{3}\left(\frac{1}{2}\right
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="stats_significance_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="stats_significance_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
 <p></p><figcaption class="figure-caption">Verteilung wenn nichts passiert.</figcaption><p></p>
 </figure>
 </div>
@@ -793,7 +833,7 @@ P(Y = 3) &amp;= \binom{3}{0} \left(\frac{1}{2}\right)^{3}\left(\frac{1}{2}\right
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="stats_significance_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="stats_significance_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="672"></p>
 <p></p><figcaption class="figure-caption">Quantilefunktion wenn nichts passiert.</figcaption><p></p>
 </figure>
 </div>
@@ -806,7 +846,7 @@ P(Y = 3) &amp;= \binom{3}{0} \left(\frac{1}{2}\right)^{3}\left(\frac{1}{2}\right
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="stats_significance_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="stats_significance_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="672"></p>
 <p></p><figcaption class="figure-caption">Verteilung wenn nichts passiert und kritische Regionen.</figcaption><p></p>
 </figure>
 </div>
@@ -820,7 +860,7 @@ P(Y = 3) &amp;= \binom{3}{0} \left(\frac{1}{2}\right)^{3}\left(\frac{1}{2}\right
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="stats_significance_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="stats_significance_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid figure-img" width="672"></p>
 <p></p><figcaption class="figure-caption">Der gelben Flächen zeigen den p-Wert für den Wert der Statistik von d = 2,5 an.</figcaption><p></p>
 </figure>
 </div>
@@ -834,7 +874,7 @@ P(Y = 3) &amp;= \binom{3}{0} \left(\frac{1}{2}\right)^{3}\left(\frac{1}{2}\right
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="stats_significance_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="stats_significance_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" width="672"></p>
 <p></p><figcaption class="figure-caption">Verschiedene P-Werte</figcaption><p></p>
 </figure>
 </div>
@@ -890,7 +930,7 @@ P(Y = 3) &amp;= \binom{3}{0} \left(\frac{1}{2}\right)^{3}\left(\frac{1}{2}\right
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="stats_significance_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="stats_significance_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" width="672"></p>
 <p></p><figcaption class="figure-caption">Differenzen mit kritischen Regionen (rot) mit einer Wahrscheinlichkeit von <span class="math inline">\(\alpha\)</span> wenn <span class="math inline">\(H_0\)</span> zutrifft.</figcaption><p></p>
 </figure>
 </div>
@@ -903,7 +943,7 @@ P(Y = 3) &amp;= \binom{3}{0} \left(\frac{1}{2}\right)^{3}\left(\frac{1}{2}\right
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="stats_significance_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="stats_significance_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid figure-img" width="672"></p>
 <p></p><figcaption class="figure-caption">Differenzen mit kritischen Regionen (rot) mit einer Wahrscheinlichkeit von <span class="math inline">\(\alpha\)</span> wenn <span class="math inline">\(H_0\)</span> zutrifft und <span class="math inline">\(\beta\)</span> (grün) wenn <span class="math inline">\(H_1\)</span> zutrifft.</figcaption><p></p>
 </figure>
 </div>
@@ -916,7 +956,7 @@ P(Y = 3) &amp;= \binom{3}{0} \left(\frac{1}{2}\right)^{3}\left(\frac{1}{2}\right
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="stats_significance_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="stats_significance_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid figure-img" width="672"></p>
 <p></p><figcaption class="figure-caption"><span class="math inline">\(1-\beta\)</span> = Power des Tests (blaue Fläche).</figcaption><p></p>
 </figure>
 </div>
@@ -937,7 +977,7 @@ P(Y = 3) &amp;= \binom{3}{0} \left(\frac{1}{2}\right)^{3}\left(\frac{1}{2}\right
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="stats_significance_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="stats_significance_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid figure-img" width="672"></p>
 <p></p><figcaption class="figure-caption">Verteilungen wenn <span class="math inline">\(\delta\)</span>=500 und <span class="math inline">\(\delta\)</span>=0 in unserem kleine Welt Beispiel mit n = 3.</figcaption><p></p>
 </figure>
 </div>
@@ -950,7 +990,7 @@ P(Y = 3) &amp;= \binom{3}{0} \left(\frac{1}{2}\right)^{3}\left(\frac{1}{2}\right
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="stats_significance_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="stats_significance_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid figure-img" width="672"></p>
 <p></p><figcaption class="figure-caption">Stichprobenverteilungen der Differenz unter <span class="math inline">\(H_0\)</span> und <span class="math inline">\(H_1:\delta=500\)</span>N bei einer Stichprobengröße von n = 9</figcaption><p></p>
 </figure>
 </div>
@@ -982,7 +1022,7 @@ P(Y = 3) &amp;= \binom{3}{0} \left(\frac{1}{2}\right)^{3}\left(\frac{1}{2}\right
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="stats_significance_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="stats_significance_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid figure-img" width="672"></p>
 <p></p><figcaption class="figure-caption">Stichprobenverteilungen der Differenz unter <span class="math inline">\(H_0\)</span> und <span class="math inline">\(H_1:\delta=500\)</span>N bei einer Stichprobengröße von n = 9</figcaption><p></p>
 </figure>
 </div>
@@ -1008,7 +1048,7 @@ s_e &amp;= 44
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="stats_significance_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="stats_significance_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid figure-img" width="672"></p>
 <p></p><figcaption class="figure-caption">Verschiedene Verteilungen von Gruppendifferenzen, beobachteter Unterschied (rot)</figcaption><p></p>
 </figure>
 </div>
@@ -1022,7 +1062,7 @@ s_e &amp;= 44
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="stats_significance_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="stats_significance_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid figure-img" width="672"></p>
 <p></p><figcaption class="figure-caption">Konfidenzintervall (grün), Populationsparameter <span class="math inline">\(\delta\)</span> und <span class="math inline">\(\alpha\)</span>-Level für die beobachtete Differenz (gelb).</figcaption><p></p>
 </figure>
 </div>
@@ -1031,11 +1071,11 @@ s_e &amp;= 44
 </section>
 <section id="was-passiert-wenn-ich-das-experiment-ganz-oft-wiederhole" class="level2" data-number="3.6">
 <h2 data-number="3.6" class="anchored" data-anchor-id="was-passiert-wenn-ich-das-experiment-ganz-oft-wiederhole"><span class="header-section-number">3.6</span> Was passiert wenn ich das Experiment ganz oft wiederhole?</h2>
-<div class="cell" data-hash="stats_significance_cache/html/unnamed-chunk-32_70275cddf59ae3916e3a55d119f3b05e">
+<div class="cell" data-hash="stats_significance_cache/html/unnamed-chunk-33_b966cebb2725b531953d36d4f2b3c558">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="stats_significance_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="stats_significance_files/figure-html/unnamed-chunk-33-1.png" class="img-fluid figure-img" width="672"></p>
 <p></p><figcaption class="figure-caption">Simulation von <span class="math inline">\(n = 100\)</span> Konfidenzintervallen.</figcaption><p></p>
 </figure>
 </div>
