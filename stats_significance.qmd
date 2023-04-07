@@ -437,10 +437,52 @@ Für die Eigenschaften einer Verteilung gibt es einer weitere Darstellungsform, 
 ::: {#def-Verteilungsfunktion}
 ## Verteilungsfunktion
 
-Die Verteilungsfunktion gibt die Wahrscheinlichkeit $P$ an, dass eine Zufallsvariable $X$ einen Wert kleiner oder gleich einem bestimmten Wert $x$ annimmt, formal $P(X \seq x)$. Sie wird daher auch als kumulative Verteilungsfunktion bezeichnet.
+Die Verteilungsfunktion gibt die Wahrscheinlichkeit $P$ an, dass eine Zufallsvariable $X$ einen Wert kleiner oder gleich einem bestimmten Wert $x$ annimmt, formal $P(X \leq x)$. Sie wird daher auch als kumulative Verteilungsfunktion bezeichnet.
 :::
 
-Diese Definition ist nicht ganz so einfach nachzuvollziehen.
+Um die Definition der Verteilungsfunktion leichter nachzuvollziehen schauen wir uns das Ganze graphisch an (siehe @fig-stats-sig-pbinom).
+
+```{r}
+#| layout-ncol: 2
+#| label: fig-stats-sig-pbinom
+#| fig-cap: "Zusammenhang zwischen der Wahrscheinlichkeits- und der Verteilungsfunktion bei $p = 0.5, n = 10$"
+#| fig-subcap: 
+#|   - Wahrscheinlichkeitsfunktion $P(X = x)$
+#|   - Verteilungsfunktion $P(X \leq x)$
+
+binom_pdist <- function(p = 0.5, n = 10) {
+  tibble(
+    x = 0:n,
+    p = pbinom(x, n, p)
+  ) |> 
+    ggplot(aes(x, p, xend=x, yend=0)) +
+    geom_segment(size=1.5) +
+    geom_point(size=4) +
+    scale_x_continuous('Anzahl Kopf', breaks = 0:n) +
+    scale_y_continuous(expression(paste('Wahrscheinlichkeit ', P(X<=x))))
+}
+binom_dist()
+binom_pdist()
+```
+
+Die Wahrscheinlichkeitsfunktion gibt, wie schon bekannt, die Wahrscheinlichkeit für eine bestimmtes Ereignis an. Zum Beispiel, die Wahrscheinlichkeit bei $p = 0.5, n = 10, 5\times$ Kopf zu sehen ist etwas unter $0.25$. Wir könnten uns aber auch fragen, was die Wahrscheinlichkeit ist $5$ oder weniger Köpfe zu beobachten. Diese Wahrscheinlichkeit setzt sic zusammen aus $P(X = 0) + P(X = 1) + P(X = 2) + P(X = 3) + P(X = 4) + P(X = 5)$. Genau diesen Wert gibt die Verteilungsfunktion (siehe @fig-stats-sig-pbinom-2) an.
+
+Die beiden Funktionen sind dabei eineindeutig aufeinander abbildbar. Wenn die Verteilungsfunktion bekannt ist, dann kann daraus die Wahrscheinlichkeitsfunktion berechnet werden und anders herum wenn die Wahrscheinlichkeitsfunktion bekannt ist, dann kann, wie wir eben gesehen haben, die Verteilungsfunktion berechnet werden. Später bei den kontinuierlichen Verteilungen lernen wir noch die Dichtefunktion kennen, welche die Funktion der Wahrscheinlichkeitsfunktion einnimmt.
+
+Für unser Ausgangsproblem ist jetzt aber mit der Verteilungsfunktion die Möglichkeit gegeben, das wir bestimmte Wahrscheinlichkeitsbereiche unserer Verteilung auszeichnen können. Denn die Wahrscheinlichkeitsfunktion liefert uns die Antwort auf die Frage, welchen Wertebereich wir für eine gegebene Verteilung eher nicht erwarten würden. Schauen wir uns zum Beispiel die Verteilung bei $p = 0.5$ und $n = 30$.
+
+```{r}
+#| label: fig-stats-dist-dbinom30
+#| fig-cap: Wahrscheinlichkeitsfunktion bei $p = 0.5$ und $n = 30$
+ 
+binom_dist(n = 30)
+```
+
+In @fig-stats-dist-dbinom30 sehen wir, dass wir zum Beispiel recht überrascht wären, wenn wir bei einem Durchgang von $30$ Münzwürfen einen Wert von z.B. $x = 29 \times$ Kopf beobachten würden. Es ist nicht unmöglich, aber es wäre schon überraschend. Diesen Grad der Überraschung können wir als Kriterium nehmen, um zu entscheiden ob wir eine bestimmt Beobachtung dazu verwenden würden diese als Evidenz für oder gegen eine bestimmte Verteilungsannahme zu sehen.
+
+Setzen wir unser Kriterium z.B. bei 2% an. Die Entscheidung wird jetzt folgendermaßen getroffen. Wenn wir einen Wert beobachten der unter der Annahme einer fairen Münze die wir $30\times$ aus dem Bereich der Werte von $\leq2\%$ kommt. Dann sehen wir dies als gegen die Annahme an.
+
+
 
 
 ### Lage- und Skalenparameter
