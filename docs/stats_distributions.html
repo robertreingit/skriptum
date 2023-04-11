@@ -67,6 +67,9 @@ ul.task-list li input[type="checkbox"] {
     }
   };
 </script>
+<script src="site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -251,11 +254,15 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Inhaltsverzeichnis</h2>
    
   <ul>
-  <li><a href="#normalverteilung" id="toc-normalverteilung" class="nav-link active" data-scroll-target="#normalverteilung"><span class="header-section-number">3.1</span> Normalverteilung</a>
+  <li><a href="#die-verteilung---1.-deep-dive" id="toc-die-verteilung---1.-deep-dive" class="nav-link active" data-scroll-target="#die-verteilung---1.-deep-dive"><span class="header-section-number">3.1</span> Die Verteilung - 1. deep dive</a>
   <ul class="collapse">
-  <li><a href="#die-standardnormalverteilung" id="toc-die-standardnormalverteilung" class="nav-link" data-scroll-target="#die-standardnormalverteilung"><span class="header-section-number">3.1.1</span> Die Standardnormalverteilung</a></li>
-  <li><a href="#z-transformation" id="toc-z-transformation" class="nav-link" data-scroll-target="#z-transformation"><span class="header-section-number">3.1.2</span> z-Transformation</a></li>
-  <li><a href="#zentraler-grenzwertsatz" id="toc-zentraler-grenzwertsatz" class="nav-link" data-scroll-target="#zentraler-grenzwertsatz"><span class="header-section-number">3.1.3</span> Zentraler Grenzwertsatz</a></li>
+  <li><a href="#der-münzwurf" id="toc-der-münzwurf" class="nav-link" data-scroll-target="#der-münzwurf"><span class="header-section-number">3.1.1</span> Der Münzwurf</a></li>
+  </ul></li>
+  <li><a href="#normalverteilung" id="toc-normalverteilung" class="nav-link" data-scroll-target="#normalverteilung"><span class="header-section-number">3.2</span> Normalverteilung</a>
+  <ul class="collapse">
+  <li><a href="#die-standardnormalverteilung" id="toc-die-standardnormalverteilung" class="nav-link" data-scroll-target="#die-standardnormalverteilung"><span class="header-section-number">3.2.1</span> Die Standardnormalverteilung</a></li>
+  <li><a href="#z-transformation" id="toc-z-transformation" class="nav-link" data-scroll-target="#z-transformation"><span class="header-section-number">3.2.2</span> z-Transformation</a></li>
+  <li><a href="#zentraler-grenzwertsatz" id="toc-zentraler-grenzwertsatz" class="nav-link" data-scroll-target="#zentraler-grenzwertsatz"><span class="header-section-number">3.2.3</span> Zentraler Grenzwertsatz</a></li>
   </ul></li>
   <li><a href="#verteilungszoo" id="toc-verteilungszoo" class="nav-link" data-scroll-target="#verteilungszoo"><span class="header-section-number">4</span> Verteilungszoo</a>
   <ul class="collapse">
@@ -286,25 +293,429 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<p>Im Folgenden werden vier verschiedene Verteilungen noch einmal etwas genauer vorgestellt, da diese Verteilung immer wieder im weiteren Verlauf auftauchen werden. Dies sind die Normalverteilung, die <span class="math inline">\(t\)</span>-Verteilung, die <span class="math inline">\(\chi^2\)</span>-Verteilung und die <span class="math inline">\(F\)</span>-Verteilung. Dabei ist es, außer bei der Normalverteilung, weniger wichtig sich die Formeln einzuprägen sondern es soll eher darum gehen die Form der Verteilung, den Wertebereich und die Parameter der Verteilung zu kennen. Also zum Beispiel wird die Normalverteilung durch zwei Parameter <span class="math inline">\(\mu\)</span> und <span class="math inline">\(\sigma^2\)</span> spezifiziert während die <span class="math inline">\(\chi^2\)</span>-Verteilung nur über einen einzelnen Parameter den Freiheitsgrad <span class="math inline">\(df\)</span> bestimmt wird. Streng genommen wird auch nicht über vier Verteilungen gesprochen, sondern es handelt sich um jeweils Verteilungsfamilien, da es beispielsweise nicht die eine Normalverteilung gibt, sondern die Form wie eben beschrieben von den beiden Parametern abhängt. Dies gilt in gleich3em Maßen ebenfalls für die anderen behandelten Verteilungen.</p>
-<section id="normalverteilung" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="normalverteilung"><span class="header-section-number">3.1</span> Normalverteilung</h2>
-<p>Beginnen wir mit der Normalverteilung.</p>
-<p><span class="math display">\[
-f(x|\mu,\sigma^2) = \frac{1}{\sqrt{2 \pi \sigma^2}}e^{\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)}
-\]</span></p>
-<p>Die Normalverteilung ist eine symmetrische Verteilung und hat die uns schon oft begegnete Glockenform (siehe <a href="#fig-stats-dist-ndist">Abbildung&nbsp;<span>3.1</span></a>).</p>
+<section id="die-verteilung---1.-deep-dive" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="die-verteilung---1.-deep-dive"><span class="header-section-number">3.1</span> Die Verteilung - 1. deep dive</h2>
+<p>Wir versuchen jetzt als erstes zu Verstehen was nochmal genau der Graph der Verteilung bedeutet. Auf der x-Achse werden die verschiedenen möglichen Werte der jeweiligen Statistik abgebildet. In unserem bisherigen Beispiel was das die Unterschiede <span class="math inline">\(D\)</span> zwischen der Kontroll- und der Treatmentgruppe. Der Wert auf der y-Achse was zunächst die relative Häufigkeit was auch Sinn gemacht hatte, da wir nur eine bestimmte endliche Anzahl von möglichen Unterschieden <span class="math inline">\(D\)</span> (ihr erinnert auch an die Zahl) vorliegen hatten. Was passiert aber wenn wir tatsächlich eine kontiuierliche Statistik haben, also eine Statistik die alle Werte innerhalb eines Intervalls einnehmen kann. Um den Fall zu verstehen fangen wir aber erst mal wieder mit einem einfachen Modell an.</p>
+<section id="der-münzwurf" class="level3" data-number="3.1.1">
+<h3 data-number="3.1.1" class="anchored" data-anchor-id="der-münzwurf"><span class="header-section-number">3.1.1</span> Der Münzwurf</h3>
+<p>Wir fangen mit dem einfachsten Experiment an: dem Münzwurf. Beim Münzwurf haben wir zwei mögliche Ausgänge unseres Experiments, entweder Kopf oder Zahl. Wir gehen von einer perfekten Münze aus, d.h. die Münze ist vollkommen symmetrisch auf beiden System und keine der Seiten ist in irgendeiner Form schwere oder beeinflusst in einer Art den Ausgang.</p>
+<p>Wenn wir uns an die Schule zurück erinnern, dann haben wir in Wahrscheinlichkeitstheorie schon mal was gehört, das im Fall gleichwahrscheinlicher Ereignisse die Wahrscheinlichkeit für ein bestimmtes Ereignis, mittels der Anzahl der vorteilhaften Ausgänge geteilt durch die Anzahl der möglichen Ausgänge berechnet wird. Also beim einmaligen Münzwurf haben wir zwei Ausgänge <span class="math inline">\(\{\text{Kopf}, \text{Zahl}\}\)</span> und jeweils nur vorteilhaften Ausang als entweder Kopf oder Zahl, daher folgt daraus.</p>
+<p><span class="math display">\[\begin{align}
+P(\text{Kopf}) &amp;= \frac{1}{2} \\
+P(\text{Zahl}) &amp;= \frac{1}{2}
+\end{align}\]</span></p>
+<p>Wenn wir das jetzt als Graphen in Form einer Wahrscheinlichkeitsverteilung abtragen, dann sieht das noch wenig interessant aus (siehe <a href="#fig-sts-sig-coin-toss-1">Abbildung&nbsp;<span>3.1</span></a>). Das Muster ist aber trotzdem wichtig, damit wir später wissen worauf wir hier eigentlich schauen. Auf der x-Achse haben wir die möglichen Ausgänge, Kopf oder Zahl, und auf der y-Achse haben wir die Wahrscheinlichkeit abgetragen.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="fig-stats-dist-ndist" class="quarto-figure quarto-figure-center anchored">
+<div id="fig-sts-sig-coin-toss-1" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
-<p><img src="stats_distributions_files/figure-html/fig-stats-dist-ndist-1.png" class="quarto-discovered-preview-image img-fluid figure-img" width="672"></p>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;3.1: Dichtefunktion der Normalverteilung mit den Parametern <span class="math inline">\(\mu = 0\)</span> und <span class="math inline">\(\sigma = 1\)</span>.</figcaption><p></p>
+<p><img src="stats_distributions_files/figure-html/fig-sts-sig-coin-toss-1-1.png" class="quarto-discovered-preview-image img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Abbildung&nbsp;3.1: Wahrscheinlichkeitsverteilung des einmaligen Münzwurfes</figcaption><p></p>
 </figure>
 </div>
 </div>
 </div>
-<p>Der Wertebereich der Normalverteilung ist <span class="math inline">\(X \in [-\infty, \infty]\)</span>. Das Maximum liegt genau beim Erwartungswert <span class="math inline">\(\mu\)</span> der dementsprechend die Verteilung in die linken 50% und die rechten 50% unterteilt. Das Abfallen der Flanken wird über die Varianz <span class="math inline">\(\sigma^2\)</span> geregelt. Wird <span class="math inline">\(\sigma^2\)</span> größer, fallen die Flanken flacher ab, wird <span class="math inline">\(\sigma^2\)</span> kleiner, fallen die Flanken schneller ab (siehe <a href="#fig-stats-dist-ndist2">Abbildung&nbsp;<span>3.2</span></a>).</p>
+<p>Da sich mit einem Münzwurf aber so wenig anfangen lässt, machen wir das Ganze jetzt etwas komplizierter und schauen uns an, wie unser Experiment aussieht wenn wir zwei Münzwwürfe uns anschauen. Rein operational, wir schmeißen unsere Münze in die Luft, schreiben uns das Ergebnis auf, und machen das Ganze noch ein zweites Mal und schreiben uns das Ergebnis auf. D.h. was auch immer im ersten Durchgang passiert, hat keine Auswirkungen auf das Ergebnis des zweiten Wurfs. Wir könnten auch zwei Münzen nehmen und beide gleichzeitig in die Luft werfen. Das wäre das gleiche Experiment. Welche Ausgänge haben wir jetzt beim zweimaligen Münzwurf? Zunächst einmal haben wir jetzt nicht mehr nur einen einzelnen Ausgang sondern wir haben ein Ausgangstupel, eine Liste mit zwei Elementen. Etwas motiviertes krizteln auf einem Schmierblatt wird wahrscheinlich relativ schnell zu folgender Tabelle führen (siehe <a href="#tbl-sts-sig-coin-toss-2">Tabelle&nbsp;<span>3.1</span></a>)</p>
+<div id="tbl-sts-sig-coin-toss-2" class="anchored">
+<table class="table">
+<caption>Tabelle&nbsp;3.1: Mögliche Ausgänge bei einem zweimaligen Münzwurf</caption>
+<thead>
+<tr class="header">
+<th>Ausgang 1. Wurf</th>
+<th>Ausgang 2. Wurf</th>
+<th>Tupel</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Kopf</td>
+<td>Kopf</td>
+<td>(Kopf, Kopf)</td>
+</tr>
+<tr class="even">
+<td>Kopf</td>
+<td>Zahl</td>
+<td>(Kopf, Zahl)</td>
+</tr>
+<tr class="odd">
+<td>Zahl</td>
+<td>Kopf</td>
+<td>(Zahl, Kopf)</td>
+</tr>
+<tr class="even">
+<td>Zahl</td>
+<td>Zahl</td>
+<td>(Zahl, Zahl)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Jetzt können wir uns wieder fragen, was die Wahrscheinlichkeit für die jeweiligen Ereignistupel ist. Eine direkte Methode wäre, wieder mittels der Symmetrie zu argumentieren. Es gibt vier verschiedene Ausgänge von denen jetzt keiner in irgendeiner Weise bevorzugt ist, daraus würde folgen das alle vier Ausgänge eine Wahrscheinlichkeit von <span class="math inline">\(P = \frac{1}{4}\)</span> haben.</p>
+<p>Eine weitere Möglichkeit wäre mit den Wahrscheinlichkeiten aus dem einfachen Wurf an das Problem heran zu gehen. Wir betrachten die beiden Münzwürfe jetzt wieder sequentiell (siehe <a href="#fig-sts-sig-coin-toss-tree">Abbildung&nbsp;<span>3.2</span></a>). Im ersten Schritt können wir entweder Kopf oder Zahl beobachten. Beide Wahrscheinlichkeiten sind <span class="math inline">\(P = \frac{1}{2}\)</span>. Darauf folgend können wir wieder zwei verschiedene Ausgänge beobachten, eben Kopf oder Zahl, wieder mit der Wahrscheinlichkeit <span class="math inline">\(P = \frac{1}{2}\)</span>.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-sts-sig-coin-toss-tree" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-sts-sig-coin-toss-tree">flowchart TD
+    A[Start] --&gt; B(Kopf)
+    A --&gt; C(Zahl)
+    B --&gt; D(Kopf)
+    B --&gt; E(Zahl)
+    C --&gt; F(Kopf)
+    C --&gt; G(Zahl)
+</pre>
+</div>
+<p></p><figcaption class="figure-caption">Abbildung&nbsp;3.2: Auswahlmöglichkeiten beim sequentiellen zweimaligen Münzwurf</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Da die Münzwürfe voneinander unabhängig sind und keinen Einfluss aufeinander ausüben, folgt daraus, dass die Wahrscheinlichkeiten für jede spezielle Folge von Kopf oder Zahl sich berechnet nach:</p>
+<p><span id="eq-2coin-toss"><span class="math display">\[
+P(\text{Ausgang}) = P(\text{1. Wurf}) \times P(\text{2. Wurf})
+\tag{3.1}\]</span></span></p>
+<p>Also in unseren Fall:</p>
+<p><span id="eq-2coin-toss-prob"><span class="math display">\[
+P(\text{Ausgang}) = \frac{1}{2} \times \frac{1}{2} = \frac{1}{4}
+\tag{3.2}\]</span></span></p>
+<p>Womit wir wieder beim gleichen Ergebnis wie vorher angekommen sind. Der Vorteil dieser Herangehensweise ist jedoch, dass wir damit eine einfache Möglichkeit gefunden haben das Ergebnis auf mehr als nur zwei Würfe zu verallgemeinern. Nehmen wir zum Beispiel den dreifachen Münzwurf, dann können wir die Wahrscheinlichkeit für die Folge <span class="math inline">\(P(\text{KKZ}) = \frac{1}{2}\times \frac{1}{2} \times \frac{1}{2} = \frac{1}{8}\)</span> direkt angeben.</p>
+<p>Bleiben wir aber erst noch mal kurz beim zweimaligen Münzwurf und schauen uns die Wahrscheinlichkeitsverteilung an. Hier stoßen wir nämlich auf ein Problem in der Darstellung. Wenn wir bei dem Muster aus <a href="#fig-sts-sig-coin-toss-1">Abbildung&nbsp;<span>3.1</span></a> bleiben wollen und auf der x-Achse die möglichen Ergnisse und auf der y-Achse die dazugehörende Wahrscheinlichkeit abtragen wollen, dann ist nicht ganz klar wie wir die Ergebnisse ordnen sollen. Eine mögliche Lösung ist in <a href="#fig-sts-sig-coin-toss-2a">Abbildung&nbsp;<span>3.3</span></a> zu sehen.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-sts-sig-coin-toss-2a" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="stats_distributions_files/figure-html/fig-sts-sig-coin-toss-2a-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Abbildung&nbsp;3.3: Wahrscheinlichkeitsverteilung des zweimaligen Münzwurfes (K: Kopf, Z: Zahl)</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Dies ist natürlich nicht die einzige Möglichkeit wie wir die Ereignisse ordenen können sondern wahrscheinlich ist jede der 24 möglichen Anordnungen gleich sinnig. Wir könnten auch beispielsweise nicht mehr die beiden einzelnen Ausgänge als Ereignisse wählen, sondern könnten zum Beispiel nur noch die Anzahl der Köpfe in unseren zwei Würfen zählen. Dies würde zu der folgenden Zuordnung führen (siehe <a href="#tbl-sts-sig-coin-toss-2a">Tabelle&nbsp;<span>3.2</span></a>).</p>
+<div id="tbl-sts-sig-coin-toss-2a" class="anchored">
+<table class="table">
+<caption>Tabelle&nbsp;3.2: Zuordnung der Anzahl der Köpfe zu den Ereignissen beim zweimaligen Münzwurf</caption>
+<thead>
+<tr class="header">
+<th>Ereignisse</th>
+<th>Anzahl der Köpfe</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>(Kopf, Kopf)</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>(Kopf, Zahl)</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>(Zahl, Kopf)</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>(Zahl, Zahl)</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Wir verliegen bei dieser Zuordnung nachtürlich die Information bei welchem Wurf die Zahl beobachtet wurde, aber eigentlich interessiert uns das sowieso nicht so brennend. In der Terminologie der Wahrscheinlichkeitstheorie wird die Anzahl der Köpfe als Zufallsvariable bezeichnet.</p>
+<div id="def-random-variable" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 3.1 (Zufallsvariable) </strong></span>Eine Zufallsvariable ist die Abbildung eines Zufallsereignisses auf eine Zahl.</p>
+</div>
+<p>Anders dargestellt, ist eine Zufallsvariable eine Funktion, die einem Ereignis eine Zahl zuordnet (siehe <a href="#fig-sts-sig-random-variable">Abbildung&nbsp;<span>3.4</span></a>.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-sts-sig-random-variable" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-sts-sig-random-variable">flowchart LR 
+    A[Ereignis] --&gt; B(Zahl)
+</pre>
+</div>
+<p></p><figcaption class="figure-caption">Abbildung&nbsp;3.4: Abbildung des Ereignisses auf eine Zahl</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Wenn wir uns jetzt die Wahrscheinlichkeiten für unsere Zufallsvariable anschauen, dann sehen wir aber, dass wir nicht mehr vier verschiedne Ausgänge haben, sondern nur noch drei und das die gleiche Wahrscheinlichkeit für nicht gleich sind.</p>
+<div id="tbl-sts-sig-coin-toss-2b" class="anchored">
+<table class="table">
+<caption>Tabelle&nbsp;3.3: Wahrscheinlichkeitstabelle für Zufallsvariable “Anzahl der Köpfe beim zweimaligen Münzwurf”.</caption>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Ereignisse</th>
+<th>Zufallsvariale</th>
+<th>Wahrscheinlichkeit</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>(Zahl, Zahl)</td>
+<td>Keine Köpfe</td>
+<td><span class="math inline">\(\frac{1}{4}\)</span></td>
+</tr>
+<tr class="even">
+<td>(Kopf, Zahl)(Zahl,Kopf)</td>
+<td>1 Kopf</td>
+<td><span class="math inline">\(\frac{1}{4} + \frac{1}{4} = \frac{1}{2}\)</span></td>
+</tr>
+<tr class="odd">
+<td>(Kopf,Kopf)</td>
+<td>2 Köpfe</td>
+<td><span class="math inline">\(\frac{1}{4}\)</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Jetzt können wir wieder eine Wahrscheinlichkeitsverteilung für unsere Zufallsvariable abtragen (siehe <a href="#fig-sts-sig-coin-toss-2c">Abbildung&nbsp;<span>3.5</span></a>).</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-sts-sig-coin-toss-2c" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="stats_distributions_files/figure-html/fig-sts-sig-coin-toss-2c-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Abbildung&nbsp;3.5: Wahrscheinlichkeitsverteilung für die Anzahl der Köpfe beim zweimaligen Münzwurf</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Nur um nebenbei noch einmal das offensichtliche Anzusprechen. Die Summe aller Wahrscheinlichkeiten aller Ereignisse muss <span class="math inline">\(1\)</span> sein. Das sollte auch direkt einsichtig sein. Wenn ich alle möglichen Ereignisse abfrage also: “<em>Was ist die Wahrscheinlichkeit das ich keine Köpfe, 1 Kopf oder 2 Köpfe beim zweimaligen Münzwurf erhalte</em>”, dann sind das alle möglichen Ausgänge und dementsprechend sollte die Wahrscheinlichkeit dafür “1” sein oder mathematisch ausgedrückt:</p>
+<p><span class="math display">\[
+P(\text{0 Köpfe} \cup \text{1 Kopf} \cup \text{2 Köpfe}) = \frac{1}{4} + \frac{1}{2} + \frac{1}{4} = 1
+\]</span></p>
+<p>Jetzt gehen wir zum nächst komplizierteren Fall. Die Anzahl der Köpfe bei drei Münzwürfen. Welche Möglichkeiten gibt es hier? Nun bei drei Würfen kann entweder <span class="math inline">\(0, 1, 2\)</span> oder <span class="math inline">\(3\)</span> Kopf auftreten. Wenn wir die Wahrscheinlichkeiten für diese vier Ereignisse berechnen wollen, können wir aber nicht einfache <span class="math inline">\(\frac{1}{4}\)</span> für jedes Ereignis als Wahrscheinlichkeit ansetzen (Warum?). Schauen wir uns erst einmal wieder die möglichen Tupel, oder auch die Elemenarereignisse, den wir erinnern uns, dass die Anzahl der Köpfe eine Zufallsvariable ist. Also eine Abbildung der 3-fach Tupel auf eine der Zahlen <span class="math inline">\(\{0, 1, 2, 3\}\)</span>.</p>
+<div id="tbl-sts-sig-coin-toss-3" class="anchored">
+<table class="table">
+<caption>Tabelle&nbsp;3.4: Abbildung der 3-fach Tupel auf die Anzahl Kopf beim dreifachen Münzwurf</caption>
+<thead>
+<tr class="header">
+<th>Elementarereignis</th>
+<th>Anzahl Kopf</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>(Z,Z,Z)</td>
+<td><span class="math inline">\(0\)</span></td>
+</tr>
+<tr class="even">
+<td>(K,Z,Z)</td>
+<td><span class="math inline">\(1\)</span></td>
+</tr>
+<tr class="odd">
+<td>(Z,K,Z)</td>
+<td><span class="math inline">\(1\)</span></td>
+</tr>
+<tr class="even">
+<td>(Z,Z,K)</td>
+<td><span class="math inline">\(1\)</span></td>
+</tr>
+<tr class="odd">
+<td>(K,K,Z)</td>
+<td><span class="math inline">\(2\)</span></td>
+</tr>
+<tr class="even">
+<td>(Z,K,K)</td>
+<td><span class="math inline">\(2\)</span></td>
+</tr>
+<tr class="odd">
+<td>(K,Z,K)</td>
+<td><span class="math inline">\(2\)</span></td>
+</tr>
+<tr class="even">
+<td>(K,K,K)</td>
+<td><span class="math inline">\(3\)</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Die Elementarereignisse in <a href="#tbl-sts-sig-coin-toss-3">Tabelle&nbsp;<span>3.4</span></a> sind wieder alle gleichwahrscheinlich, daher können wir jetzt wieder einfache abzählen. Es gibt insgesamt <span class="math inline">\(8\)</span> mögliche Ausgänge, davon haben jeiweils einer <span class="math inline">\(0\)</span>-mal oder <span class="math inline">\(3\)</span>-mal Kopf und jeweils <span class="math inline">\(3\)</span> Ausgänge haben <span class="math inline">\(1\)</span>-mal oder <span class="math inline">\(2\)</span>-mal Kopf. Daraus folgt für die Wahrscheinlichkeitsfunktion (siehe <a href="#tbl-sts-sig-coin-toss-3a">Tabelle&nbsp;<span>3.5</span></a>).</p>
+<div id="tbl-sts-sig-coin-toss-3a" class="anchored">
+<table class="table">
+<caption>Tabelle&nbsp;3.5: Wahrscheinlichkeitsfuntion für den dreifachen Münzwurf</caption>
+<thead>
+<tr class="header">
+<th>Anzahl Kopf</th>
+<th>P</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(0\)</span></td>
+<td><span class="math inline">\(\frac{1}{8}\)</span></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(1\)</span></td>
+<td><span class="math inline">\(\frac{3}{8}\)</span></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(2\)</span></td>
+<td><span class="math inline">\(\frac{3}{8}\)</span></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(3\)</span></td>
+<td><span class="math inline">\(\frac{1}{8}\)</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Das Ganze auch wieder als Graph (siehe <span class="quarto-unresolved-ref">?fig-sts-coin-toss-3</span>)</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-sts-sig-coin-toss-3" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="stats_distributions_files/figure-html/fig-sts-sig-coin-toss-3-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Abbildung&nbsp;3.6: Wahrscheinlichkeitsverteilung für die Anzahl der Köpfe beim dreimaligen Münzwurf</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Bleiben wir noch einmal kurz bei dem Beispiel und versuchen uns die Wahrscheinlichkeiten anders herzuleiten. Sollten wir zum Beispiel einmal in die Verlegenheit kommen und 20 Münzwürfe untersuchen wollen, dann wir die Tabelle relative schnell relativ unhandlich.</p>
+<p>Sei <span class="math inline">\(N\)</span> die Anzahl der Würfe die wir durchführen. Wenn wir <span class="math inline">\(N\)</span> kennen, wissen wir auch direkt welche möglichen Ausgänge bei dem Experiment möglich sind, nämlich alle Zahlen zwischen <span class="math inline">\(0\)</span> und <span class="math inline">\(N\)</span>. <span class="math inline">\(0\)</span> wenn wir kein Kopf geworfen haben, und <span class="math inline">\(N\)</span> wenn wir nur Kopf geworfen haben. Dementsprechend sind alle Zahlen dazwischen auch noch möglich.</p>
+<p>Schauen wir uns jetzt noch mal den dreimaligen Münzwurf an. Wenn wir kein Kopf werfen in <span class="math inline">\(3\)</span> Würfen und betrachten die Würfe wieder sequentiell, dann haben wir <span class="math inline">\(\frac{1}{2}\)</span> für die erste Zahl, <span class="math inline">\(\frac{1}{2}\)</span> für die zweite Zahl und <span class="math inline">\(\frac{1}{2}\)</span> für die dritte Zahl. Also insgesamt <span class="math inline">\(P(1 \text{ Kopf}) = \frac{1}{2} \times \frac{1}{2}\times \frac{1}{2} = \frac{1}{8}\)</span>. Aber diese Wahrscheinlichkeit hat ja jedes Elementarereignis egal ob es (K,K,K) oder (K,Z,K) oder (Z,Z,K) usw. ist. Jetzt haben wir aber das Problem, das wir für <span class="math inline">\(1\times\)</span> oder <span class="math inline">\(2\times\)</span> Kopf nicht nur eine Möglichkeit vorhanden diese Anzahl an Kopf zu beobachten. In <a href="#tbl-sts-sig-coin-toss-3">Tabelle&nbsp;<span>3.4</span></a> haben wir bereits gezeigt, dass jeweils drei verschiedene Möglichkeiten, Kombination von Kopf und Zahl, möglich sind. D.h. wir haben jetzt ein Abzählproblem. Können wir irgendwie direkt bestimmen wie viele unterschiedliche Möglichkeiten es gibt?</p>
+<p>Schauen wir uns den Fall <span class="math inline">\(1\times\)</span> Kopf im 3-fach Tupel an. Auf wie viele Arten können wir 3-fach Tupel erzeugen mit nur einem Kopf. Nun, der Kopf ist entweder an der ersten, der zweiten oder der dritten Stelle und die jeweils anderen Position im Tupel sind mit Zahl besetzt. Das hört sich aber ähnlich wie ein Problem an wie wie etwas was wir schon vorher einmal gehört haben. Als wir uns die Anzahl der möglichen Stichproben aus unserer kleinen Welt angeschaut haben. Dort hatten wir das Problem, das wir bestimmen wollten auf wie viele Möglichkeiten wir zwei Stichproben mit jeweils drei Personen aus 20 Personen ziehen können. Dabei sind wir auf den Binomialkoeffizienten gestoßen <a href="stats_basics.html#eq-binom-coef">Gleichung&nbsp;<span>1.3</span></a>.</p>
+<p><span class="math display">\[
+\text{Anzahl} = \binom{n}{k} = \frac{n!}{k!(n-k)!}
+\]</span></p>
+<p>Formal berechnet der Binomialkoeffizient die Möglichkeiten <span class="math inline">\(k\)</span> Objekte aus <span class="math inline">\(n\)</span> Objekten zu ziehen. Wenden wir das mal auf unseren Dreifachwurf an mit <span class="math inline">\(n = N = 3\)</span> und <span class="math inline">\(k = 1\)</span>. Ausgeschrieben, auf wie viele Arten können wir <span class="math inline">\(1\times\)</span> Kopf aus drei Positionen auswählen.</p>
+<p><span class="math display">\[
+\text{Kombinationen mit }1\times\text{ Kopf} = \binom{3}{1} = \frac{3!}{1!(3-1)!} = \frac{3\times 2 \times 1}{1\times 2 \times 1} = 3
+\]</span></p>
+<p>Passt. Probieren wir das auch direkt mit dem Ereignis <span class="math inline">\(2\times\)</span> Kopf, also mit <span class="math inline">\(N = 3\)</span> und <span class="math inline">\(k = 2\)</span>, aus.</p>
+<p><span class="math display">\[
+\text{Kombinationen mit } 2\times \text{ Kopf} = \binom{3}{2} = \frac{3!}{2!(3-2)!} = \frac{3\times 2 \times 1}{2\times 1 \times 1} = 3
+\]</span></p>
+<p>Passt auch. Jetzt müssen wir noch nur die beiden Fälle <span class="math inline">\(0\times\)</span> und <span class="math inline">\(3\times\)</span> Kopf behandeln. Wenn wir in einem Mathebuch den Binomialkoeffizienten nachschlagen, dann sind dort die beiden folgenden Definition zu finden für die Fälle <span class="math inline">\(k=0\)</span> und <span class="math inline">\(k=n\)</span>.</p>
+<p><span class="math display">\[\begin{align*}
+\binom{N}{N} &amp;= 1 \\
+\binom{N}{0} &amp;= 1
+\end{align*}\]</span></p>
+<p>Wenn wir diese Definition für die anderen beiden verbleibenden Fälle anwenden, erhalten wir:</p>
+<p><span class="math display">\[\begin{align*}
+\text{Kombinationen mit } 0\times \text{ Kopf} &amp;= \binom{3}{0} = 1 \\
+\text{Kombinationen mit } 3\times \text{ Kopf} &amp;= \binom{3}{3} = 1
+\end{align*}\]</span></p>
+<p>Damit können wir nun für alle möglichen Ausgängen die Anzahl der möglichen Elementarereignisse mittels bestimmen. Allgemein erhalten wir dadurch eine Formel für die Wahrscheinlichkeiten der Ereignisse für den dreifachen Münzwurf.</p>
+<p><span id="eq-coin-toss-3"><span class="math display">\[
+P(k \times \text{Kopf}) = \binom{3}{k} \frac{1}{2} \times \frac{1}{2} \times \frac{1}{2} = \binom{3}{k} \left(\frac{1}{2}\right)^3
+\tag{3.3}\]</span></span></p>
+<p>Weil wir natürlich sofort nach einer allgemeinen Lösung streben führen wir jetzt noch ein paar Symbole ein. Die Zufallsvariable, also die Anzahl von Kopf, bezeichnen wir mit dem Großbuchstaben <span class="math inline">\(Y\)</span>. Einen speziellen Ausgang bezeichnen wir mit dem Kleinbuchstaben <span class="math inline">\(y\)</span>. Damit würden allgemein die Wahrscheinlichkeit für irgend eines der Ereignisse mit <span class="math inline">\(Y = y\)</span> bezeichnen. Und wenn wir sagen wir das Ereignis <span class="math inline">\(2\times\)</span> Kopf bezeichnen, mit <span class="math inline">\(y = 2\)</span>. Also, die Wahrscheinlichkeit für <span class="math inline">\(3\times\)</span> Kopf mit:</p>
+<p><span class="math display">\[
+P(Y = 3) = \binom{3}{3}\left(\frac{1}{2}\right)^3
+\]</span></p>
+<p>Die nächste Verallgemeinerung die wir Vornehmen ist dass wir für die Wahrscheinlichkeit das Kopf auftritt das Symbol <span class="math inline">\(p\)</span> benutzen. So könnten wir auch modellieren, wenn wir eine unfaire Münze haben. Wenn jetzt aber <span class="math inline">\(p \neq \frac{1}{2}\)</span> gilt, also zum Beispiel die Wahrscheinlichkeit für Kopf <span class="math inline">\(p = \frac{2}{3}\)</span> wäre, dann ist die Wahrscheinlichkeit für Zahl nicht mehr die Gleiche wie für Kopf. Die Wahrscheinlichkeit für Zahl wäre dann <span class="math inline">\(1 - p\)</span>. Wenn wir für die Wahrscheinlichkeit für das Auftreten von Zahl das Symbol <span class="math inline">\(q\)</span> einführen, muss die Wahrscheinlichkeit für Kopf oder Zahl gleich <span class="math inline">\(1\)</span> sein, formal:</p>
+<p><span class="math display">\[
+p + q = 1
+\]</span> Daraus folgt, dass <span class="math inline">\(q = p - 1\)</span>. Wenn wir das auf unseren Münzwurf übertragen, müssen wir das dementsprechend berücksichtigen. Wir können uns aber zunutze machen, dass wir wissen wie viele Würfe durchgeführt wurden, nämlich <span class="math inline">\(N\)</span>, und wie viele davon Kopf waren, nämlich <span class="math inline">\(y\)</span>. Damit wissen wir automatisch auch die Anzahl von Zahl, <span class="math inline">\(N - y\)</span>. Jedes Kopf, hat die Wahrscheinlichkeit <span class="math inline">\(p\)</span> und jede Zahl hat die Wahrscheinlichkeit <span class="math inline">\(q = 1 - p\)</span>. Das gilt unabhängig von der Reihenfolge, da z.B. die Wahrscheinlichkeiten <span class="math inline">\(KKZK\)</span> und <span class="math inline">\(ZKKK\)</span> gleich <span class="math inline">\(ppqp = qppp\)</span> sind. Insgesamt haben wir <span class="math inline">\(y \times K\)</span> und <span class="math inline">\((n-y) \times Z\)</span> also <span class="math inline">\(p^y\)</span> und <span class="math inline">\(q^{n-y}\)</span>. Diesen Zusammenhang können wir in eine Formel stecken.</p>
+<p><span class="math display">\[\begin{equation}
+P(Y = y) = \binom{N}{y}p^y (1-p)^{N-y} = \binom{N}{y}p^y q^{N-y} \label{eq-binom-distribution}
+\end{equation}\]</span></p>
+<p>Damit haben wir jetzt auch direkt unsere erste theoretische Verteilung kennengelernt, die in der Statistik eine zentrale Rolle spielt. Die Verteilung in Formel <span class="math inline">\(\eqref{eq-binom-distribution}\)</span> wird als die Binomialverteilung bezeichnet. Da die Formel <span class="math inline">\(\eqref{eq-binom-distribution}\)</span> von den Parametern <span class="math inline">\(p\)</span> und <span class="math inline">\(n\)</span> abhängt, wird die Binomialverteilung als eine Familie von Verteilungen bezeichnet.</p>
+<div id="fig-stats-sig-binom-dist-1" class="cell quarto-layout-panel">
+<figure class="figure">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-stats-sig-binom-dist-1-1" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="stats_distributions_files/figure-html/fig-stats-sig-binom-dist-1-1.png" class="img-fluid figure-img" data-ref-parent="fig-stats-sig-binom-dist-1" width="672"></p>
+<p></p><figcaption class="figure-caption">(a) <span class="math inline">\(p = 0.5, n = 10\)</span></figcaption><p></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-stats-sig-binom-dist-1-2" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="stats_distributions_files/figure-html/fig-stats-sig-binom-dist-1-2.png" class="img-fluid figure-img" data-ref-parent="fig-stats-sig-binom-dist-1" width="672"></p>
+<p></p><figcaption class="figure-caption">(b) <span class="math inline">\(p = 0.3, n = 7\)</span></figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p></p><figcaption class="figure-caption">Abbildung&nbsp;3.7: Beispiel für verschiedene Binomialverteilungen</figcaption><p></p>
+</figure>
+</div>
+<p>Schauen wir uns aber noch mal ob wir mit den ganzen Symbolen wirklich unseren dreifachen Münzwurf zurückbekommen. Es gilt <span class="math inline">\(N = 3, p = \frac{1}{2}\)</span>. Daraus folgt das <span class="math inline">\(q = 1 - p = 1 - \frac{1}{2}=\frac{1}{2}\)</span>. Wenn wir uns noch an <span class="math inline">\(x^a x^b = x^{a+b}\)</span> aus der Schule erinnern folgt:</p>
+<p><span class="math display">\[\begin{align*}
+P(Y = 0) &amp;= \binom{3}{0} \left(\frac{1}{2}\right)^{0}\left(\frac{1}{2}\right)^3 = \binom{3}{0}\left(\frac{1}{2}\right)^3 = 1 \left(\frac{1}{2}\right)^3 \\
+P(Y = 1) &amp;= \binom{3}{1} \left(\frac{1}{2}\right)^{1}\left(\frac{1}{2}\right)^2 = \binom{3}{1}\left(\frac{1}{2}\right)^3 = 3 \left(\frac{1}{2}\right)^3 \\
+P(Y = 2) &amp;= \binom{3}{0} \left(\frac{1}{2}\right)^{2}\left(\frac{1}{2}\right)^1 = \binom{3}{2}\left(\frac{1}{2}\right)^3 = 3 \left(\frac{1}{2}\right)^3 \\
+P(Y = 3) &amp;= \binom{3}{0} \left(\frac{1}{2}\right)^{3}\left(\frac{1}{2}\right)^0 = \binom{3}{3}\left(\frac{1}{2}\right)^3 = 1 \left(\frac{1}{2}\right)^3 \\
+\end{align*}\]</span></p>
+<p>Tatsächlich können wir unser Ergebnis von oben wiedergewinnen. Die Funktion der Binomialverteilung (Formel <span class="math inline">\(\eqref{eq-binom-distribution}\)</span>) wird als Wahrscheinlichkeitsfuntion bezeichnet.</p>
+<div id="def-Wahrscheinlichkeitsfunktion" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 3.2 (Wahrscheinlichkeitsfunktion) </strong></span>Eine Wahrscheinlichkeitsfunktion ist eine mathematische Funktion, die die Wahrscheinlichkeiten für alle möglichen Ausgänge eines diskreten Zufallsexperiments angibt. Sie wird auch als diskrete Wahrscheinlichkeitsverteilung bezeichnet. Eine Wahrscheinlichkeitsfunktion ordnet jedem möglichen Ausgang <span class="math inline">\(x\)</span> eines Experiments eine Wahrscheinlichkeit <span class="math inline">\(P(X = x)\)</span> zu. Die Wahrscheinlichkeit liegt zwischen 0 und 1. Die Summe aller Wahrscheinlichkeiten für alle möglichen Ergebnisse muss gleich 1 sein. Eine Wahrscheinlichkeitsfunktion kann als Tabelle oder als Formel dargestellt werden</p>
+</div>
+<p>Für die Eigenschaften einer Verteilung gibt es einer weitere Darstellungsform, die Verteilungsfunktion.</p>
+<div id="def-Verteilungsfunktion" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 3.3 (Verteilungsfunktion) </strong></span>Die Verteilungsfunktion gibt die Wahrscheinlichkeit <span class="math inline">\(P\)</span> an, dass eine Zufallsvariable <span class="math inline">\(X\)</span> einen Wert kleiner oder gleich einem bestimmten Wert <span class="math inline">\(x\)</span> annimmt, formal <span class="math inline">\(P(X \leq x)\)</span>. Sie wird daher auch als kumulative Verteilungsfunktion bezeichnet.</p>
+</div>
+<p>Um die Definition der Verteilungsfunktion leichter nachzuvollziehen schauen wir uns das Ganze graphisch an (siehe <a href="#fig-stats-sig-pbinom">Abbildung&nbsp;<span>3.8</span></a>).</p>
+<div id="fig-stats-sig-pbinom" class="cell quarto-layout-panel">
+<figure class="figure">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-stats-sig-pbinom-1" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="stats_distributions_files/figure-html/fig-stats-sig-pbinom-1.png" class="img-fluid figure-img" data-ref-parent="fig-stats-sig-pbinom" width="672"></p>
+<p></p><figcaption class="figure-caption">(a) Wahrscheinlichkeitsfunktion <span class="math inline">\(P(X = x)\)</span></figcaption><p></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-stats-sig-pbinom-2" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="stats_distributions_files/figure-html/fig-stats-sig-pbinom-2.png" class="img-fluid figure-img" data-ref-parent="fig-stats-sig-pbinom" width="672"></p>
+<p></p><figcaption class="figure-caption">(b) Verteilungsfunktion <span class="math inline">\(P(X \leq x)\)</span></figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p></p><figcaption class="figure-caption">Abbildung&nbsp;3.8: Zusammenhang zwischen der Wahrscheinlichkeits- und der Verteilungsfunktion bei <span class="math inline">\(p = 0.5, n = 10\)</span></figcaption><p></p>
+</figure>
+</div>
+<p>Die Wahrscheinlichkeitsfunktion gibt, wie schon bekannt, die Wahrscheinlichkeit für eine bestimmtes Ereignis an. Zum Beispiel, die Wahrscheinlichkeit bei <span class="math inline">\(p = 0.5, n = 10, 5\times\)</span> Kopf zu sehen ist etwas unter <span class="math inline">\(0.25\)</span>. Wir könnten uns aber auch fragen, was die Wahrscheinlichkeit ist <span class="math inline">\(5\)</span> oder weniger Köpfe zu beobachten. Diese Wahrscheinlichkeit setzt sic zusammen aus <span class="math inline">\(P(X = 0) + P(X = 1) + P(X = 2) + P(X = 3) + P(X = 4) + P(X = 5)\)</span>. Genau diesen Wert gibt die Verteilungsfunktion (siehe <a href="#fig-stats-sig-pbinom-2">Abbildung&nbsp;<span>3.8 (b)</span></a>) an.</p>
+<p>Die beiden Funktionen sind dabei eineindeutig aufeinander abbildbar. Wenn die Verteilungsfunktion bekannt ist, dann kann daraus die Wahrscheinlichkeitsfunktion berechnet werden und anders herum wenn die Wahrscheinlichkeitsfunktion bekannt ist, dann kann, wie wir eben gesehen haben, die Verteilungsfunktion berechnet werden. Später bei den kontinuierlichen Verteilungen lernen wir noch die Dichtefunktion kennen, welche die Funktion der Wahrscheinlichkeitsfunktion einnimmt.</p>
+<p>Für unser Ausgangsproblem ist jetzt aber mit der Verteilungsfunktion die Möglichkeit gegeben, das wir bestimmte Wahrscheinlichkeitsbereiche unserer Verteilung auszeichnen können. Denn die Wahrscheinlichkeitsfunktion liefert uns die Antwort auf die Frage, welchen Wertebereich wir für eine gegebene Verteilung eher nicht erwarten würden. Schauen wir uns zum Beispiel die Verteilung bei <span class="math inline">\(p = 0.5\)</span> und <span class="math inline">\(n = 30\)</span>.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-stats-dist-dbinom30" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="stats_distributions_files/figure-html/fig-stats-dist-dbinom30-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Abbildung&nbsp;3.9: Wahrscheinlichkeitsfunktion bei <span class="math inline">\(p = 0.5\)</span> und <span class="math inline">\(n = 30\)</span></figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>In <a href="#fig-stats-dist-dbinom30">Abbildung&nbsp;<span>3.9</span></a> sehen wir, dass wir zum Beispiel recht überrascht wären, wenn wir bei einem Durchgang von <span class="math inline">\(30\)</span> Münzwürfen einen Wert von z.B. <span class="math inline">\(x = 29 \times\)</span> Kopf beobachten würden. Es ist nicht unmöglich, aber es wäre schon überraschend. Diesen Grad der Überraschung können wir als Kriterium nehmen, um zu entscheiden ob wir eine bestimmt Beobachtung dazu verwenden würden diese als Evidenz für oder gegen eine bestimmte Verteilungsannahme zu sehen.</p>
+<p>Setzen wir unser Kriterium z.B. bei 2% an. Die Entscheidung wird jetzt folgendermaßen getroffen. Wenn wir einen Wert beobachten der unter der Annahme einer fairen Münze die wir <span class="math inline">\(30\times\)</span> aus dem Bereich der Werte von <span class="math inline">\(\leq2\%\)</span> kommt. Dann sehen wir dies als gegen die Annahme an.</p>
+<p>Im Folgenden werden vier verschiedene Verteilungen noch einmal etwas genauer vorgestellt, da diese Verteilung immer wieder im weiteren Verlauf auftauchen werden. Dies sind die Normalverteilung, die <span class="math inline">\(t\)</span>-Verteilung, die <span class="math inline">\(\chi^2\)</span>-Verteilung und die <span class="math inline">\(F\)</span>-Verteilung. Dabei ist es, außer bei der Normalverteilung, weniger wichtig sich die Formeln einzuprägen sondern es soll eher darum gehen die Form der Verteilung, den Wertebereich und die Parameter der Verteilung zu kennen. Also zum Beispiel wird die Normalverteilung durch zwei Parameter <span class="math inline">\(\mu\)</span> und <span class="math inline">\(\sigma^2\)</span> spezifiziert während die <span class="math inline">\(\chi^2\)</span>-Verteilung nur über einen einzelnen Parameter den Freiheitsgrad <span class="math inline">\(df\)</span> bestimmt wird. Streng genommen wird auch nicht über vier Verteilungen gesprochen, sondern es handelt sich um jeweils Verteilungsfamilien, da es beispielsweise nicht die eine Normalverteilung gibt, sondern die Form wie eben beschrieben von den beiden Parametern abhängt. Dies gilt in gleich3em Maßen ebenfalls für die anderen behandelten Verteilungen.</p>
+</section>
+</section>
+<section id="normalverteilung" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="normalverteilung"><span class="header-section-number">3.2</span> Normalverteilung</h2>
+<p>Beginnen wir mit der Normalverteilung.</p>
+<p><span class="math display">\[
+f(x|\mu,\sigma^2) = \frac{1}{\sqrt{2 \pi \sigma^2}}e^{\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)}
+\]</span></p>
+<p>Die Normalverteilung ist eine symmetrische Verteilung und hat die uns schon oft begegnete Glockenform (siehe <a href="#fig-stats-dist-ndist">Abbildung&nbsp;<span>3.10</span></a>).</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-stats-dist-ndist" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="stats_distributions_files/figure-html/fig-stats-dist-ndist-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Abbildung&nbsp;3.10: Dichtefunktion der Normalverteilung mit den Parametern <span class="math inline">\(\mu = 0\)</span> und <span class="math inline">\(\sigma = 1\)</span>.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Der Wertebereich der Normalverteilung ist <span class="math inline">\(X \in [-\infty, \infty]\)</span>. Das Maximum liegt genau beim Erwartungswert <span class="math inline">\(\mu\)</span> der dementsprechend die Verteilung in die linken 50% und die rechten 50% unterteilt. Das Abfallen der Flanken wird über die Varianz <span class="math inline">\(\sigma^2\)</span> geregelt. Wird <span class="math inline">\(\sigma^2\)</span> größer, fallen die Flanken flacher ab, wird <span class="math inline">\(\sigma^2\)</span> kleiner, fallen die Flanken schneller ab (siehe <a href="#fig-stats-dist-ndist2">Abbildung&nbsp;<span>3.11</span></a>).</p>
 <div id="fig-stats-dist-ndist2" class="cell quarto-layout-panel">
 <figure class="figure">
 <div class="quarto-layout-row quarto-layout-valign-top">
@@ -325,13 +736,13 @@ f(x|\mu,\sigma^2) = \frac{1}{\sqrt{2 \pi \sigma^2}}e^{\left(-\frac{(x-\mu)^2}{2\
 </div>
 </div>
 </div>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;3.2: Veränderung der Dichtefunktion bei unterschiedlichen Varianzen <span class="math inline">\(\sigma^2\)</span></figcaption><p></p>
+<p></p><figcaption class="figure-caption">Abbildung&nbsp;3.11: Veränderung der Dichtefunktion bei unterschiedlichen Varianzen <span class="math inline">\(\sigma^2\)</span></figcaption><p></p>
 </figure>
 </div>
-<p>Die Standardabweichung kann dazu verwendet werden, die Dichtfunktion in verschiedene Abschnitte zu unterteilen. Es gelten die folgenden Zusammenhänge (siehe <a href="#tbl-stats-dist-sigma-int">Tabelle&nbsp;<span>3.1</span></a>):</p>
+<p>Die Standardabweichung kann dazu verwendet werden, die Dichtfunktion in verschiedene Abschnitte zu unterteilen. Es gelten die folgenden Zusammenhänge (siehe <a href="#tbl-stats-dist-sigma-int">Tabelle&nbsp;<span>3.6</span></a>):</p>
 <div id="tbl-stats-dist-sigma-int" class="anchored">
 <table class="table">
-<caption>Tabelle&nbsp;3.1: Wahrscheinlichkeiten für verschiedene Intervalle um <span class="math inline">\(\mu\)</span> in Abhängigkeit von <span class="math inline">\(\sigma\)</span></caption>
+<caption>Tabelle&nbsp;3.6: Wahrscheinlichkeiten für verschiedene Intervalle um <span class="math inline">\(\mu\)</span> in Abhängigkeit von <span class="math inline">\(\sigma\)</span></caption>
 <thead>
 <tr class="header">
 <th><span class="math inline">\(x \in\)</span></th>
@@ -354,51 +765,51 @@ f(x|\mu,\sigma^2) = \frac{1}{\sqrt{2 \pi \sigma^2}}e^{\left(-\frac{(x-\mu)^2}{2\
 </tbody>
 </table>
 </div>
-<p>Übertragen auf den Dichtegraphen folgt (siehe <a href="#fig-stats-dist-sigma-int">Abbildung&nbsp;<span>3.3</span></a>):</p>
+<p>Übertragen auf den Dichtegraphen folgt (siehe <a href="#fig-stats-dist-sigma-int">Abbildung&nbsp;<span>3.12</span></a>):</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-stats-dist-sigma-int" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
 <p><img src="stats_distributions_files/figure-html/fig-stats-dist-sigma-int-1.png" class="img-fluid figure-img" width="672"></p>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;3.3: Dichtefunktion von <span class="math inline">\(\mathcal{N}(\mu,\sigma^2)\)</span></figcaption><p></p>
+<p></p><figcaption class="figure-caption">Abbildung&nbsp;3.12: Dichtefunktion von <span class="math inline">\(\mathcal{N}(\mu,\sigma^2)\)</span></figcaption><p></p>
 </figure>
 </div>
 </div>
 </div>
-<p>Wie in <a href="#tbl-stats-dist-sigma-int">Tabelle&nbsp;<span>3.1</span></a> zu sehen ist, hat der Bereich <span class="math inline">\([-2\sigma, 2\sigma]\)</span> eine Wahrscheinlichkeit von etwas über <span class="math inline">\(0.95\)</span>. Daher, wenn ich einen Bereich um den Erwartungswert <span class="math inline">\(\mu\)</span> auszeichnen möchte, der genau eine Wahrscheinlichkeit von <span class="math inline">\(0.95\)</span> hat, dann muss <span class="math inline">\(\sigma\)</span> mit einem kleineren Wert als <span class="math inline">\(2\)</span> multipliziert werden, nämlich <span class="math inline">\(1.96\)</span>. Das wird hier noch mal speziell erwähnt, da die Zahl <span class="math inline">\(1.96\)</span> später immer wieder auftaucht. Formal:</p>
+<p>Wie in <a href="#tbl-stats-dist-sigma-int">Tabelle&nbsp;<span>3.6</span></a> zu sehen ist, hat der Bereich <span class="math inline">\([-2\sigma, 2\sigma]\)</span> eine Wahrscheinlichkeit von etwas über <span class="math inline">\(0.95\)</span>. Daher, wenn ich einen Bereich um den Erwartungswert <span class="math inline">\(\mu\)</span> auszeichnen möchte, der genau eine Wahrscheinlichkeit von <span class="math inline">\(0.95\)</span> hat, dann muss <span class="math inline">\(\sigma\)</span> mit einem kleineren Wert als <span class="math inline">\(2\)</span> multipliziert werden, nämlich <span class="math inline">\(1.96\)</span>. Das wird hier noch mal speziell erwähnt, da die Zahl <span class="math inline">\(1.96\)</span> später immer wieder auftaucht. Formal:</p>
 <p><span class="math display">\[P(x\in[\mu-1.96\sigma, \mu+1.96\sigma]) = 0.95\]</span></p>
 <p>Anders herum, wenn es darum geht in Konfidenzintervall abzuschätzen, dann funktioniert auch die Faustregel, Teststatistik <span class="math inline">\(\pm 2\times\)</span> Standardfehler.</p>
-<section id="die-standardnormalverteilung" class="level3" data-number="3.1.1">
-<h3 data-number="3.1.1" class="anchored" data-anchor-id="die-standardnormalverteilung"><span class="header-section-number">3.1.1</span> Die Standardnormalverteilung</h3>
+<section id="die-standardnormalverteilung" class="level3" data-number="3.2.1">
+<h3 data-number="3.2.1" class="anchored" data-anchor-id="die-standardnormalverteilung"><span class="header-section-number">3.2.1</span> Die Standardnormalverteilung</h3>
 <p>Eine Sonderrolle in der Familie der Normalverteilungen spielt die Standardnormalverteilung mit <span class="math inline">\(\mu = 0\)</span> und <span class="math inline">\(\sigma^2 = 1\)</span>. Tatsächlich taucht diese so oft aus, dass die Mathematiker ihr ein eigenes Symbol spendiert haben <span class="math inline">\(\phi(x)\)</span></p>
 <p><span class="math display">\[
 \phi(x) = \mathcal{N}(\mu = 0, \sigma^2 = 1)
 \]</span></p>
-<p>Im Fall der Standardnormalverteilung nehmen <a href="#tbl-stats-dist-sigma-int">Tabelle&nbsp;<span>3.1</span></a> und <a href="#fig-stats-dist-sigma-int">Abbildung&nbsp;<span>3.3</span></a> besonders einfache Formen an da die Intervalle jeweils <span class="math inline">\([-1,1]\)</span>, <span class="math inline">\([-2,2]\)</span> und <span class="math inline">\([-3,3]\)</span> sind (siehe <a href="#fig-stats-dist-phi-int">Abbildung&nbsp;<span>3.4</span></a>).</p>
+<p>Im Fall der Standardnormalverteilung nehmen <a href="#tbl-stats-dist-sigma-int">Tabelle&nbsp;<span>3.6</span></a> und <a href="#fig-stats-dist-sigma-int">Abbildung&nbsp;<span>3.12</span></a> besonders einfache Formen an da die Intervalle jeweils <span class="math inline">\([-1,1]\)</span>, <span class="math inline">\([-2,2]\)</span> und <span class="math inline">\([-3,3]\)</span> sind (siehe <a href="#fig-stats-dist-phi-int">Abbildung&nbsp;<span>3.13</span></a>).</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-stats-dist-phi-int" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
 <p><img src="stats_distributions_files/figure-html/fig-stats-dist-phi-int-1.png" class="img-fluid figure-img" width="672"></p>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;3.4: Dichtefunktion der Standardnormalverteilung <span class="math inline">\(\phi(x)\)</span> mit <span class="math inline">\(\mu=0\)</span> und <span class="math inline">\(\sigma^2=1\)</span></figcaption><p></p>
+<p></p><figcaption class="figure-caption">Abbildung&nbsp;3.13: Dichtefunktion der Standardnormalverteilung <span class="math inline">\(\phi(x)\)</span> mit <span class="math inline">\(\mu=0\)</span> und <span class="math inline">\(\sigma^2=1\)</span></figcaption><p></p>
 </figure>
 </div>
 </div>
 </div>
 </section>
-<section id="z-transformation" class="level3" data-number="3.1.2">
-<h3 data-number="3.1.2" class="anchored" data-anchor-id="z-transformation"><span class="header-section-number">3.1.2</span> z-Transformation</h3>
+<section id="z-transformation" class="level3" data-number="3.2.2">
+<h3 data-number="3.2.2" class="anchored" data-anchor-id="z-transformation"><span class="header-section-number">3.2.2</span> z-Transformation</h3>
 <p>Es besteht mittels einer einfachen Möglichkeit jede beliebiege Normalverteilung <span class="math inline">\(\mathcal{N}(\mu,\sigma^2)\)</span> auf die Standardnormalverteilung <span class="math inline">\(\mathcal{N}(0,1)\)</span> abzubilden. Die Transformation wird als z-Transformation bezeichnet und hat die folgende Form:</p>
 <p><span id="eq-z-transformation"><span class="math display">\[
 z = \frac{X - \mu_X}{\sigma_X}
-\tag{3.1}\]</span></span></p>
+\tag{3.4}\]</span></span></p>
 <p>D.h. der Mittelwert der Verteilung von <span class="math inline">\(X\)</span> wird von X abgezogen und die Differenz wird durch die Standardabweichung der Population <span class="math inline">\(\sigma_X\)</span> geteilt. Die Umkehrfunktion ist dementsprechend:</p>
 <p><span id="eq-z-invtransformation"><span class="math display">\[
 X = \mu_X + z \sigma_X
-\tag{3.2}\]</span></span></p>
+\tag{3.5}\]</span></span></p>
 </section>
-<section id="zentraler-grenzwertsatz" class="level3" data-number="3.1.3">
-<h3 data-number="3.1.3" class="anchored" data-anchor-id="zentraler-grenzwertsatz"><span class="header-section-number">3.1.3</span> Zentraler Grenzwertsatz</h3>
+<section id="zentraler-grenzwertsatz" class="level3" data-number="3.2.3">
+<h3 data-number="3.2.3" class="anchored" data-anchor-id="zentraler-grenzwertsatz"><span class="header-section-number">3.2.3</span> Zentraler Grenzwertsatz</h3>
 <p>Die Normalverteilung spielt in der Wahrscheinlichkeitstheorie und der Statistik aus verschiedenen Gründen eine Spezialrolle. Ein Grund dafür ist der sogenannte Zentrale Grenzwertsatz, den wir hier nicht beweisen sondern nur kurz diskutieren.</p>
 <div id="prp-central-limit" class="theorem proposition">
 <p><span class="theorem-title"><strong>Aussage 3.1 (Zentraler Grenzwertsatz) </strong></span>Seien <span class="math inline">\(X_1, X_2, \ldots, X_n\)</span> n unabhängige, gleichverteilte Zufallsvariablen mit <span class="math inline">\(E[X_i]=\mu\)</span> und <span class="math inline">\(Var[X_i]=\sigma^2\)</span> endlich. <span class="math display">\[
@@ -416,7 +827,7 @@ X = \mu_X + z \sigma_X
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="stats_distributions_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="stats_distributions_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
 <p></p><figcaption class="figure-caption">Beispiel für verschiedene Dichtefunktionen der t-Verteilung</figcaption><p></p>
 </figure>
 </div>
@@ -429,7 +840,7 @@ X = \mu_X + z \sigma_X
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="stats_distributions_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="stats_distributions_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
 <p></p><figcaption class="figure-caption">Beispiele für verschiedene Dichtefunktion der <span class="math inline">\(\chi^2\)</span>-Verteilung.</figcaption><p></p>
 </figure>
 </div>
@@ -442,7 +853,7 @@ X = \mu_X + z \sigma_X
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="stats_distributions_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="stats_distributions_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
 <p></p><figcaption class="figure-caption">Beispiele für verschiedene Dichtefunktion der F-Verteilung.</figcaption><p></p>
 </figure>
 </div>
