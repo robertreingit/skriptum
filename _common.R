@@ -37,3 +37,20 @@ diff_dotplot <- function(df_1, df_2) {
     scale_x_continuous('Kraftwerte[N]', breaks = seq(1800, 3200, 200), limits=c(1800, 3200)) +
     scale_y_continuous('', breaks = NULL, limits=c(0.975, 1.025))
 }
+
+
+dnorm_plot <- function(mu = 0, sigma = 1, length.out = 100) {
+  # Plots a normal distribution
+  # Args:
+  #   mu: mu parameter
+  #   sigma: sigma parameter
+  #   length.out: number of graph support point
+  p1 <- tibble(
+    x = seq(mu - sigma*3, mu + sigma*3, length.out = length.out),
+    p = dnorm(x, mean = mu, sd = sqrt(sigma))) |> 
+    ggplot(aes(x,p)) +
+      geom_ribbon(aes(ymin = 0, ymax = p), fill = 'red', alpha=.3) +
+      geom_line(size=2, col='red') + 
+      labs(x = 'Werte', y = 'Dichte') 
+  p1
+}

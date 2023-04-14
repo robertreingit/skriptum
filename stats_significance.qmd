@@ -79,7 +79,7 @@ In @fig-sts-sig-dgp-1 ist wieder unser beobachteter Wert $D = `r D_obs$Kraft[1]`
 #| label: fig-sts-sig-dgp-2
 #| fig.height: 2
 
-tibble(x = x,
+p_which_dist <- tibble(x = x,
        d_0 = dnorm(x, 0, sd_lummer),
        d_100 = dnorm(x, 100, sd_lummer),
        d_350 = dnorm(x, 350, sd_lummer),
@@ -90,9 +90,10 @@ tibble(x = x,
   geom_line() +
   annotate('point', x = D_obs$Kraft, y = 0, color = 'red', size = 3) +
   labs(x = 'D[N]', y = 'Dichte')
+p_which_dist
 ```
 
-@fig-sts-sig-dgp-2 zeigt, dass selbst die Verteilung mit $\Delta = -250N$ und $\Delta = 350N$ nicht unplausibel sind den beobachteten Wert erzeugt zu haben. Warum aber bei diesen fünf Verteilungen aufhören, warum sollte $Delta$ nicht $-50$ oder $127$ sein. Und überhaupt, keiner kann behaupten die Natur kennt nur ganzzahlige Werte (siehe $\pi$). Warum sollte $D$ also nicht auch $123.4567N$ sein?
+@fig-sts-sig-dgp-2 zeigt, dass selbst die Verteilung mit $\Delta = -250N$ und $\Delta = 350N$ nicht unplausibel sind den beobachteten Wert erzeugt zu haben. Warum aber bei diesen fünf Verteilungen aufhören, warum sollte $\Delta$ nicht $-50$ oder $127$ sein. Und überhaupt, keiner kann behaupten die Natur kennt nur ganzzahlige Werte (siehe $\pi$). Warum sollte $D$ also nicht auch $123.4567N$ sein?
 
 Wenn diese Überlegung weitergeführt wird, dann wird schnell klar, dass letztendlich eine unendliche Anzahl von Verteilung in der Lage ist unseren beobachteten Wert plausibel zu generieren. D.h. wir haben ein Experiment durchgeführt und den ganzen Aufwand betrieben und haben wochenlang mit unseren ProbandInnen Krafttraining durchgeführt und sind hinterher eigentlich keinen Schritt weiter da wir immer noch nicht wissen was der datengenerierende Prozess ist. Also können wir selbst nach dem Experiment nicht sagen ob unser Krafttraining tatsächlich wirksam ist.
 
@@ -132,9 +133,11 @@ tibble(x = x,
 
 Diesen Ansatz können wir verwenden um mit Hilfe unseres Experiments doch etwas über den DGP auszusagen. Allerdings müssen wir uns noch einmal etwas eingehender mit Verteilungen auseinandersetzen um z.B. genauer zu bestimmen welche Ergebnisse uns überraschen würden. D.h. wir müssen uns erst ein mal ein paar neue Konzepte erarbeiten.
 
-### Lage- und Skalenparameter
+## Lage- und Skalenparameter
 
 In @fig-sts-sig-dgp-2 hatten wir mehrere Verteilungen abgebildet. Die Verteilung haben die gleiche Form sind aber gegeneinander verschoben. D.h. sie unterscheiden sich bezüglich ihrer Position bzw. Lage. Der Parameter der bei einer Verteilungen die Lage steuert ist der sogenannte Erwartungwerts $\mu$ der auch als Mittelwert bezeichnet wird. Dieser Mittelwert $\mu$ unterscheidet sich allerdings von dem uns bereits bekannten Mittelwert $\bar{x}$ in der Stichprobe. In einem späteren Abschnitt werden wir uns genauer anschauen wie der Mittelwert $\mu$ berechnet wird.
+
+### Mittelwert $\mu$ der Population
 
 Da der Mittelwert $\mu$ die Position der Verteilung bestimmt, ist $\mu$ ein Parameter der Verteilung. Die Beschreibung als Parameter der Verteilung bedeutet somit, dass die Verteilung von $\mu$ abhängt, oder formaler das die Verteilung eine Funktion von $\mu$ ist. Wenn wir uns an Funktionen aus der Schule zurück erinnen wo wir Funktionen $f$ von $x$ kennengelernt haben und als $f(x)$ dargestellt haben. Übertragen auf die Verteilung könnte dies mittels $f(\mu)$ dargestellt werden.
 
@@ -181,7 +184,9 @@ Wie bereits erwähnt, wird der Mittelwert $\mu$ der Verteilung auch als Erwartun
 
 An dieser Stelle nochmal der Unterschied zwischen $\mu$ und $\bar{x}$. Der Mittelwert $\mu$ ist eine Eigenschaft der Population, also letztendlich ein Wert den wir niemals kennen werden ohne die gesamte Population zu untersuchen. Der Mittelwert $\bar{x}$ ist eine Eigenschaft der Stichprobe aus der Population. Also der konkrete Wert den wir anhand der Stichprobe berechnen. In vielen Fällen versuchen wir über $\bar{x}$ einen Rückschluss auf $\mu$ zu ziehen.
 
-Als zweite Eigenschaft von Verteilungen schauen wir uns jetzt die Streuung in der Population an. Die Streuung in der Population wird als Varianz bezeichnet und wird mit dem Symbol $\sigma^2$ bezeichnet. Schauen wir uns zunächst an, welchen Einfluss $\sigma^2$ auf die Form der Verteilung hat. In @fig-sts-sig-dist-sigma sind wieder zwei Verteilungen abgetragen. Dieses Mal ist $\mu$ in beiden Fällen gleich, aber die Varianzen $\sigma$ sind mit $\sigma_1^2 = 2$ und $\sigma_2^2=1$ unterschiedlich.
+### Standardabweichung $\sigma$ der Population
+
+Als zweite Eigenschaft von Verteilungen schauen wir uns jetzt die Streuung in der Population an. Die Streuung in der Population wird als Varianz bezeichnet und wird mit dem Symbol $\sigma^2$ bezeichnet. Schauen wir uns zunächst an, welchen Einfluss $\sigma^2$ auf die Form der Verteilung hat. In @fig-sts-sig-dist-sigma sind wieder zwei Verteilungen abgetragen. Dieses Mal ist $\mu$ in beiden Fällen gleich, aber die Varianzen $\sigma^2$ sind mit $\sigma_1^2 = 2$ und $\sigma_2^2=1$ unterschiedlich.
 
 ```{r}
 #| fig.cap: "Verteilungen mit unterschiedlichen Varianzen"
@@ -205,19 +210,65 @@ ggplot(dat_2, aes(x,v,ymin=0, ymax=v,fill=type)) +
   )) 
 ```
 
-In @fig-sts-sig-dist-sigma ist zu sehen, dass beide Verteilungen ihren Mittelpunkt an der gleichen Stelle haben, aber die rote Verteilung mit $\sigma_1^2=2$ breiter ist als die andere Verteilung. Dies bedeutet das die Werte in der Verteilung stärker um den Mittelwert herum streuen.
+In @fig-sts-sig-dist-sigma ist zu sehen, dass beide Verteilungen ihren Mittelpunkt an der gleichen Stelle haben, aber die rote Verteilung mit $\sigma_1^2=2$ breiter ist als die andere Verteilung. Dies bedeutet das die Werte in der Verteilung stärker um den Mittelwert herum streuen. Wenn wir Werte aus der türkisen Verteilung ziehen, dann sollten diese näher um den Mittelwert $\mu = 0$ liegen, als dies bei der roten Verteilung der Fall ist. 
 
-Die Varianz $\sigma^2$ ist wiederum ein Parameter der Verteilung, da sie die Form der Verteilung bestimmt. D.h. wenn wir wieder unsere Schreibweise von eben verwenden und $f$ die Form der Verteilung bestimmt dann gilt $f(\sigma^2)$ oder eben zusammen mit dem Mittelwert $\mu$, $f(\mu, \sigma^2)$.
+Die Varianz $\sigma^2$ ist ebenfalls wie der Mittelwert ein Parameter der Verteilung. Sie bestimmt die die Form der Verteilung. D.h. wenn wir wieder unsere Schreibweise von eben verwenden und die Funktion $f$ die Verteilung beschreibt, dann gilt $f(\sigma^2)$ oder eben zusammen mit dem Mittelwert $\mu$, $f(\mu, \sigma^2)$.
 
-Wenn aus der Varianz $\sigma^2$ die Wurzel gezogen wird, dann wird der resultierende Wert $\sigma$ als Standardabweichung bezeichnet. In der Stichprobe wird die Standardabweichung $s$ mittels der folgenden Formel berechnet
+Wenn aus der Varianz $\sigma^2$ die Wurzel gezogen wird, dann wird der resultierende Wert $\sigma$ als Standardabweichung bezeichnet. Da die Varianz $\sigma^2$ nur positive Werte annehmen kann, ist die Wurzelfunktion bzw. deren Umkehrung die Quadierung eineindeutig. Wenn wir die Standardabweichung kennen, dann kennen wir auch die Varianz und umgekehrt.
+
+In der Stichprobe wird die Standardabweichung meistens mit dem Zeichen $s$ bezeichnet und mittels der folgenden Formel berechnet:
 
 \begin{equation}
 s = \sqrt{\frac{\sum_{i=1}^n (x_i - \bar{x})^2}{n-1}}
 \label{eq-std}
 \end{equation}
 
-D.h. die Standardabweichung ist die mittlere quadrierte Abweichung vom Mittelwert (siehe Formel \eqref{eq-std}). In den meisten Fällen wird die Standardabweichung verwendet um die Streuung der Daten zu dokumentieren und nicht die Varianz. Die Standardabweichung hat den Vorteil das sie die gleiche Einheit hat wie der Mittelwert. Da die Abweichungen quadriert werden, also die quadrierten Einheiten haben, hat die Standardabweichung $s$ die gleiche Einheit wie der Mittelwert $\bar{x}$, während die Varianz der Stichprobe $s^2$ eben die quadrierten Einheiten hat.
+D.h. die Standardabweichung ist die mittlere quadrierte Abweichung vom Mittelwert (siehe Formel \eqref{eq-std}). Die Standardabweichung wird verwendet um die Streuung der Daten zu beschreiben. Die Standardabweichung hat den Vorteil, dass sie die gleiche Einheit hat wie der Mittelwert. Da die Abweichungen quadriert werden, also die quadrierten Einheiten haben, hat die Standardabweichung $s$ die gleiche Einheit wie der Mittelwert $\bar{x}$. Da die Varianz die quadrierte Standardabweichung ist, hat die Varianz der Stichprobe $s^2$ daher die quadrierten Einheiten hat.
 
+```{r}
+id <- c(3, 8, 9)
+x_bar <- round(mean(world$Kraft[id]))
+sd_str <- paste("(",world$Kraft[id],"-",x_bar,")^2",sep='',collapse='+')
+x_sd <- round(sd(world$Kraft[id]))
+```
+
+Wenn wir uns an unsere erstes Beispiel aus der kleinen Welt erinnern, dort hatten wir in der Kontrollgruppe die Personen $i = \{`r paste(id, collapse=',') `\}$ gezogen, berechnen wir für diese Stichprobe die Standardabweichung erhalten mit dem Mittelwert $\bar{x} = `r x_bar`$:
+
+$$
+s = \sqrt{\frac{`r sd_str`}{2}} = `r x_sd`
+$$
+
+Wir erhalten einen Wert von $s = `r x_sd`N$. Wenn dieser Wert größer wird, dann streuen die Wert entsprechend weiter um den Mittelwert herum und entsprechend verringert sich die Streuung wenn die Standardabweichung $s$ abnimmt. 
+
+## Entscheidungen und $\mu$ und $\sigma$
+
+Zeichnen wir in eine Verteilung die Standardabweichung ein, ergibt sich vollgendes Bild (siehe @fig-stats-sig-norm-sigmas).
+
+```{r}
+#| fig.cap: "Verteilung mit verschiedenen mehrfachen der Standardabweichung $\\sigma$$"
+#| label: fig-stats-sig-norm-sigmas
+
+p <- dnorm_plot()
+p + 
+  geom_vline(xintercept = (-3:3)[-4], linetype='dashed') +
+  scale_x_continuous("Werte", breaks=-3:3,
+                     labels = c(
+                       expression(-3~sigma),expression(-2~sigma),expression(-1~sigma),
+                       expression(mu),
+                       expression(1~sigma),expression(2~sigma),expression(3~sigma)))
+                     
+```
+
+Ein großteil der Werte liegt in dem Bereich $\mu \pm 1\times\sigma$. Der Bereich $\mu \pm 2\times\sigma$ beinhaltet schon fast alle Werte, während der Bereich $\mu \pm 3\times\sigma$ fast alle Werte. Wenn wir die Verteilung noch etwas weiter nach links und rechts abtragen würden, würden wir sehen, dass auch noch Werte jenseits von $\mu \pm 3\times\sigma$ liegen, aber nur noch sehr wenige. Diese Einsicht können wir dazu benutzen umgekehrt zu denken, wenn wir annehmen, das unsere Statistik dieser Verteilung folgt, welche Werte würde uns den *überraschen*. Welche Werte würden wir als Evidenz sehen um zu folgern: *Ich glaube nicht, dass die beobachtete Statistik aus der angenommen Verteilung stammt*!?
+
+Nun, zum Beispiel wenn der Wert mehr als $3\times\sigma$ vom Mittelwert $\mu$ entfernt ist, dann wäre das zwar nicht unmöglich, aber es wäre schon ziemlich unwahrscheinlich so einen Wert zu beobachten. Vielleicht ist uns das aber ein zu schwer zu erreichender Wert, ein Kompromiss könnte ein Wert jenseits von $2\times\sigma$ von $\mu$ entfernt, könnte auch schon als überraschen bezeichnet werden. Tatsächlich ist, die Wahrscheinlichkeit einen Wert jenseits von $2\times\sigma$ zu beobachten etwas 5%. D.h. wir könnten einen Entscheidungsprozess erstellen bei dem wir sagen, wenn wir eine bestimmte Stichprobenverteilung für unsere Statistik annehmen. Wenn wir bei unserer Ausführung einen Wert beobachten der weiter als $2\times\sigma$ von $\mu$ entfernt sind. Dann sind wir überrascht und sehen das als Evidenz gegen die Verteilungsannahme an. 
+
+Oder als Liste:
+
+1) Setze eine Verteilung der Statistik mit definierten $\mu$ und $\sigma$ als Annahme an.
+2) Ziehe eine Zufallsstichprobe.
+3) Berechne die Statistik auf der Stichprobe.
+4) Überprüfe wie viele Standardabweichungen $\sigma$ die Statistik von $\mu$ entfernt liegt.
 
 \begin{table}[]
     \caption{Parameter einer Verteilung und deren Sch\"atzer}
@@ -233,7 +284,9 @@ D.h. die Standardabweichung ist die mittlere quadrierte Abweichung vom Mittelwer
     \end{tabular}
 \end{table}
 
-Der Mittelwert $\bar{x}$ der Stichprobe wird als sogenannter Schätzer verwendet. Diesen Begriff werden wir später noch genauer untersuchen. Im Moment reicht es sich zu merken, dass ein Schätzer eine Statistik ist, mit der wir einen Parameter der Population, z.B. $\mu$, abschätzen wollen. Wie schon mehrmals erwähnt, den wahren Wert $\mu$ aus der Population werden wir mittels unserer Stichprobe niemals 100% korrekt bestimmen wir können aber mittels geschickt gewählter Statistiken Schätzer konstruieren die bestimmte Eigeschaften haben.
+### Detour - Schätzer
+
+Schauen wir uns noch einmal den Mittelwert $\mu$ der Population und den Mittelwert $\bar{x}$ der Stichprobe und deren Zusammenhang an. Der Mittelwert $\bar{x}$ der Stichprobe wird als sogenannter Schätzer verwendet. Diesen Begriff werden wir später noch genauer untersuchen. Im Moment reicht es sich zu merken, dass ein Schätzer eine Statistik ist, mit der wir einen Parameter der Population, z.B. $\mu$, abschätzen wollen. Wie schon mehrmals erwähnt, den wahren Wert $\mu$ aus der Population werden wir mittels unserer Stichprobe niemals 100% korrekt bestimmen wir können aber mittels geschickt gewählter Statistiken Schätzer konstruieren die bestimmte Eigenschaften haben.
 
 Nehmen wir zum Beispiel den Mittelwert $\bar{x}$. In unserer kleinen Welt kennen wir den Mittelwert $\mu$ unserer Population. Der Wert beträgt $\mu = `r mean(world[["Kraft"]])`$. Schauen wir uns einmal an, was passiert, wenn wir alle möglichen Stichproben der Größe $N = 10$ unserer kleinen Welt bestimmen und die Verteilung der Mittelwert abtragen (siehe @fig-stats-sig-mean-n3).
 
@@ -264,7 +317,18 @@ ggplot(tibble(x=x_bars),aes(x)) +
 
 In @fig-stats-sig-mean-n3 sehen wir, dass im Mittel der Stichprobenmittelwert $\bar{x}$ tatsächlich um den wahren Populationsmittelwert $\mu$ herum zentriert ist. Einzelne Ausgänge des *Experiments* können zwar daneben liegen, der Großteil der Experiment gruppiert sich jedoch um $\mu$ herum. Der Stichprobenmittelwert $\bar{x}$ ist daher eine *gute* Statistik um den tatsächlichen Populationsmittelwert $\mu$ abzuschätzen.
 
-## Mit der Verteilung die annimmt das nichts passiert!
+## Welche Verteilung setzen wir an?
+
+Kommen wir aber wieder zurück zu unserem Ausgangsproblem, dass wir anhand unserer beobachteten Stichprobe etwas über die Effektivität der Kraftintervention aussagen wollen. Wie hilft uns jetzt die Kenntnis von Mittelwert $\mu$ oder $\bar{x}$ und der Standardabweichung $\sigma$ bzw. $s$ weiter? Wenn die Verteilung unserer Statistik der Form folgt wie sie bisher jetzt mehrmals beobachtet haben, dann können wir davon ausgehen, dass wenn wir eher Wert in der Nähe des Mittelpunkts erwarten würden. Wie werden selten genau den Mittelpunkt beobachten aber wir würde schon sehr überrascht sein, wenn wir Werte weit ab des Mittelwerts beobachten würden. Ab welcher Weite diese Werte als überraschen eingestuft werden hängt dabei von der Streuung der Verteilung an. Wenn $\sigma$ groß ist, überraschen uns weit entfernte Werte weniger als wenn $\sigma$ klein ist.
+
+```{r}
+#| fig.cap: "Welche Verteilung nehmen wir?"
+#| label: fig-stats-sig-which-dist
+
+p_which_dist
+```
+
+Spielen wir verschiedene Möglichkeiten einmal durch. Wir vernachläsigen zunächst einmal $\sigma$ und konzentrieren uns auf $\mu$.
 
 ```{r}
 #| fig.cap: "Verteilung wenn nichts passiert."
