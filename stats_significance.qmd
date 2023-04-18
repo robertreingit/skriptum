@@ -261,7 +261,7 @@ p +
 
 Ein großteil der Werte liegt in dem Bereich $\mu \pm 1\times\sigma$. Der Bereich $\mu \pm 2\times\sigma$ beinhaltet schon fast alle Werte, während der Bereich $\mu \pm 3\times\sigma$ fast alle Werte. Wenn wir die Verteilung noch etwas weiter nach links und rechts abtragen würden, würden wir sehen, dass auch noch Werte jenseits von $\mu \pm 3\times\sigma$ liegen, aber nur noch sehr wenige. Diese Einsicht können wir dazu benutzen umgekehrt zu denken, wenn wir annehmen, das unsere Statistik dieser Verteilung folgt, welche Werte würde uns den *überraschen*. Welche Werte würden wir als Evidenz sehen um zu folgern: *Ich glaube nicht, dass die beobachtete Statistik aus der angenommen Verteilung stammt*!?
 
-Nun, zum Beispiel wenn der Wert mehr als $3\times\sigma$ vom Mittelwert $\mu$ entfernt ist, dann wäre das zwar nicht unmöglich, aber es wäre schon ziemlich unwahrscheinlich so einen Wert zu beobachten. Vielleicht ist uns das aber ein zu schwer zu erreichender Wert, ein Kompromiss könnte ein Wert jenseits von $2\times\sigma$ von $\mu$ entfernt, könnte auch schon als überraschen bezeichnet werden. Tatsächlich ist, die Wahrscheinlichkeit einen Wert jenseits von $2\times\sigma$ zu beobachten etwas 5%. D.h. wir könnten einen Entscheidungsprozess erstellen bei dem wir sagen, wenn wir eine bestimmte Stichprobenverteilung für unsere Statistik annehmen. Wenn wir bei unserer Ausführung einen Wert beobachten der weiter als $2\times\sigma$ von $\mu$ entfernt sind. Dann sind wir überrascht und sehen das als Evidenz gegen die Verteilungsannahme an. 
+Nun, zum Beispiel wenn der Wert mehr als $3\times\sigma$ vom Mittelwert $\mu$ entfernt ist, dann wäre das zwar nicht unmöglich, aber es wäre schon ziemlich unwahrscheinlich so einen Wert zu beobachten. Vielleicht ist uns das aber ein zu schwer zu erreichender Wert, ein Kompromiss könnte ein Wert jenseits von $2\times\sigma$ von $\mu$ entfernt, könnte auch schon als überraschen bezeichnet werden. Tatsächlich ist, die Wahrscheinlichkeit einen Wert jenseits von $2\times\sigma$ zu beobachten etwa 5%. D.h. wir könnten einen Entscheidungsprozess erstellen bei dem wir sagen, wenn wir eine bestimmte Stichprobenverteilung für unsere Statistik annehmen. Wenn wir bei unserer Ausführung einen Wert beobachten der weiter als $2\times\sigma$ von $\mu$ entfernt sind. Dann sind wir überrascht und sehen das als Evidenz gegen die Verteilungsannahme an. 
 
 Oder als Liste:
 
@@ -328,10 +328,18 @@ Kommen wir aber wieder zurück zu unserem Ausgangsproblem, dass wir anhand unser
 p_which_dist
 ```
 
-Spielen wir verschiedene Möglichkeiten einmal durch. Wir vernachläsigen zunächst einmal $\sigma$ und konzentrieren uns auf $\mu$.
+Spielen wir verschiedene Möglichkeiten einmal durch. Wir vernachlässigen zunächst einmal $\sigma$ und konzentrieren uns auf $\mu$. Wir benötigen eine einzelne Referenzverteilung um unseren beobachteten Wert $\Delta$, den Unterschied zwischen den beiden Gruppen, mit der Verteilung in Beziehung zu setzen. Wir könnten zum Beispiel sagen, dass wir davon ausgehen, dass der Unterschied zwischen den beiden Gruppen $\Delta_{\text{wahr}} = 75N$ ist. D.h. dies wäre der *wahre* Unterschied zwischen den beiden Gruppen. Wir treffen ihn nicht genau, da wir eine Zufallsstichprobe gezogen haben und die Stichprobenvariabilität dazu führt, dass wir nicht genau den Unterschied treffen. Allerdings, wird wieder einmal etwas starren auf den Wert $75N$ zu der Einsicht führen, dass $75$ vollkommen willkürlich ist. Warum nicht $85N$ oder $25$ oder warum überhaupt ganzzahlig, $\pi$ ist schließlich auch keine ganzzahlige Zahl, also könnten wir genauso gut $74.1234N$ nehmen. Schnell wird daher klar, dass keine Zahl so richtig gut begründet werden kann. Wir brauchen aber eine Zahl um unseren Apparatus mit Verteilungen ansetzen zu können. Tatsächlich gibt es eine Zahl die zwar auch willkürlich ist, aber doch etwas besser begründet werden kann, nämlich die Zahl $\Delta_{\text{wahr}} = 0$. Warum ist der Wert $0$ in diesem Fall speziell. Nun, er bedeutet, dass wir davon ausgehen, dass zwischen den beiden Gruppen kein Unterschied besteht, also die Intervention überhaupt nichts gebracht hat. Dies ist zwar keine wirklich interessante Annahme, aber sie hat trotz ihr Willkürlichkeit doch etwas mehr Gewicht als eine beliebige andere Zahl. Wir bezeichnen diese Annahme jetzt auch noch als die $H_0$-Hypothese. Die $0$ bei $H$ bedeutet dabei nicht unbedingt, dass die $H_0$ davon ausgeht, dass nicht passiert, sondern nur, das das unsere Ausgangsannahme ist. In vielen Fällen hat die $H_0$ tatsächlich auch die Annahem das nichts passiert, dies muss aber nicht immer der Fall sein. Daher ist unsere Referenzverteilung für die Stichproben in unseren Fall die Hypothese (siehe Formel \eqref{eq-stats-sig-H0}):
+
+\begin{equation}
+H_0: \Delta = 0
+\label{eq-stats-sig-H0}
+\end{equation}
+
+oder graphisch (siehe @fig-stats-sig-H0-delta0)
 
 ```{r}
 #| fig.cap: "Verteilung wenn nichts passiert."
+#| label: fig-stats-sig-H0-delta0
 
 d_x <- 0.025
 x <- seq(-3, 3, d_x)
@@ -347,21 +355,11 @@ ggplot(dat_0, aes(x,v,ymin=0, ymax=v)) +
   labs(x = 'Werte', y = 'Dichte') 
 ```
 
-```{r}
-#| fig.cap: "Quantilefunktion wenn nichts passiert."
+Diese Referenzverteilung können wir jetzt verwenden um eine Entscheidung bezüglich unseres beobachteten Werts zu treffen.
 
-xx <- seq(0,1,0.01)
-n_pts <- length(xx)
-dat_4 <- tibble(
-  x = xx,
-  v = qnorm(xx) 
-)
-ggplot(dat_4, aes(x,v,ymin=0, ymax=v)) +
-  geom_line() +
-  labs(x = 'Quantile', y = 'Werte') 
-```
+## Statistisch *Signifikanter* Wert
 
-## *Signifikanter* Wert
+Jetzt haben wir eine Referenzverteilung, jetzt benötigen wir eine Kriterium um unseren beobachteten Wert in Bezug auf die Referenzverteilung, die angenommene Stichprobenverteilung, zu bewerten.
 
 ```{r}
 #| fig.cap: "Verteilung wenn nichts passiert und kritische Regionen."
@@ -411,7 +409,6 @@ ggplot(dat_0, aes(x,v,ymin=0, ymax=v)) +
   labs(x = 'Werte', y = 'Dichte') 
 ```
 
-## p-Werte
 
 Der p-Wert gibt die Wahrscheinlichkeit für den gefundenen oder einen noch extremeren Wert unter der $H_0$ an.
 
@@ -446,32 +443,27 @@ ggplot(dat_3, aes(x,v,ymin=0, ymax=v)) +
   theme(strip.text = element_text(size=8))
 ```
 
-## p-Werte
 
 *"[A] p-value is the probability under a specified statistical model that a statistical summary of the data (e.g., the sample mean difference between two compared groups) would be equal to or more extreme than its observed value."* [@wasserstein2016, p.131]
 
 *"[T]he P value is the probability of seeing data that are as weird or more weird than those that were
 actually observed."* [@christensen2018, p.38]
 
-## Signifikanter Wert - Das Kleingedruckte
+### Signifikanter Wert - Das Kleingedruckte
 
 - **Vor** dem Experiment wird für ein $H_0$ ein $\alpha$-Level angesetzt (per Konvention $\alpha=0,05 = 5\%$)
 - Anhand des $\alpha$-Levels können **kritische Werte** ($k_{lower}, k_{upper}$) bestimmt werden. Diese bestimmen die Grenzen der **kritischen Regionen**.
 - Wenn der gemessene Wert w der Statistik in die kritische Region fällt, also $w \leq k_{lower}$ oder $w \geq k_{upper}$ gilt, dann wird von einem **statistisch** signifikanten Wert gesprochen und die dazugehörige Hypothese wird **abgelehnt**. Äquivalent: Der p-Wert ist kleiner als $\alpha$.
 - Da in $\alpha$-Fällen ein Wert in der kritischen Region auftritt, auch wenn die $H_0$ zutrifft, wird in $\alpha$-Fällen ein $\alpha$-Fehler gemacht.
-
-## Signifikanter Wert - Das Kleingedruckte
-
 - Wenn der Wert w der Statistik nicht in den kritischen Regionen liegt, oder gleichwertig der p-Wert größer als $\alpha$ ist, wird die $H_0$ **beibehalten**. D.h. nicht, dass **kein Effekt** vorliegt, sondern lediglich, dass anhand der Daten keine Evidenz diesbezüglich gefunden werden konnte!
 - Die **statistische** Signifikanz sagt nichts über die Wahrscheinlichkeit der Theorie aus!
 - Ein p-Wert von $p = 0.0001$ heißt nicht, dass mit 99,99\% Wahrscheinlichkeit ein Effekt vorliegt!
 - *Statistisch* signifikant heißt nicht automatisch *praktisch* relevant!
 
-## Nochmal, wenn die $H_0$ nicht abgelehnt wird
 
 ![Ausschnitt aus @altman1995](pics/altman_1995.png){height=6cm}
 
-## Nochmal p-Wert (@wasserstein2016)
+Eine weitere Erklärung für den p-Wert nach @wasserstein2016
 
 1. P-values can indicate how incompatible the data are with a specified statistical model.
 2. P-values do not measure the probability that the studied hypothesis is true, or the probability that the data were produced by random chance alone.
@@ -602,7 +594,7 @@ ggplot(dat_k9, aes(x,y,fill=hypo, ymin=0, ymax=y)) +
 
 ## Standardfehler 
 
-Die Standardabweichung der Statistik wird als **Standardfehler** $s_e$ bezeichnet^[Der Standardfehler schätzt die Reliabilität der Statistik ab (@cohen1988)]. Der Standardfehler ist nicht gleich der Standardabweichung in der Population bzw. der Stichprobe. Es gilt für den Mittelwert:
+Die Standardabweichung der Stichprobenverteilung wird als **Standardfehler** $s_e$ bezeichnet^[Der Standardfehler schätzt die Reliabilität der Statistik ab (@cohen1988)]. Der Standardfehler ist nicht gleich der Standardabweichung in der Population bzw. der Stichprobe. Es gilt für den Mittelwert:
 
 
 \begin{table}[]
