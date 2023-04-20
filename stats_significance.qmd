@@ -223,7 +223,7 @@ s = \sqrt{\frac{\sum_{i=1}^n (x_i - \bar{x})^2}{n-1}}
 \label{eq-std}
 \end{equation}
 
-D.h. die Standardabweichung ist die mittlere quadrierte Abweichung vom Mittelwert (siehe Formel \eqref{eq-std}). Die Standardabweichung wird verwendet um die Streuung der Daten zu beschreiben. Die Standardabweichung hat den Vorteil, dass sie die gleiche Einheit hat wie der Mittelwert. Da die Abweichungen quadriert werden, also die quadrierten Einheiten haben, hat die Standardabweichung $s$ die gleiche Einheit wie der Mittelwert $\bar{x}$. Da die Varianz die quadrierte Standardabweichung ist, hat die Varianz der Stichprobe $s^2$ daher die quadrierten Einheiten hat.
+D.h. die Standardabweichung ist die mittlere quadrierte Abweichung vom Mittelwert (siehe Formel \eqref{eq-std}). Die Standardabweichung wird verwendet um die Streuung der Daten zu beschreiben. Die Standardabweichung hat den Vorteil, dass sie die gleiche Einheit hat wie der Mittelwert. Da die Abweichungen quadriert werden, also die quadrierten Einheiten haben, hat die Standardabweichung $s$ die gleiche Einheit wie der Mittelwert $\bar{x}$. Da die Varianz die quadrierte Standardabweichung ist, hat die Varianz der Stichprobe $s^2$ daher die quadrierten Einheiten.
 
 ```{r}
 id <- c(3, 8, 9)
@@ -338,7 +338,7 @@ H_0: \Delta = 0
 oder graphisch (siehe @fig-stats-sig-H0-delta0)
 
 ```{r}
-#| fig.cap: "Verteilung wenn nichts passiert."
+#| fig.cap: "Verteilung wenn nichts passiert mit den beiden Bereichen jenseits von zwei Standardfehlern ausgezeichnet."
 #| label: fig-stats-sig-H0-delta0
 
 d_x <- 0.025
@@ -347,24 +347,42 @@ dat_0 <- tibble(
   x = x,
   v = dnorm(x, 0, 1) 
 )
-
-ggplot(dat_0, aes(x,v,ymin=0, ymax=v)) +
-  #geom_area(data = low, fill='red', alpha=.8) +
-  #geom_area(data = up, fill='red', alpha=.8) +
-  geom_line() +
-  labs(x = 'Werte', y = 'Dichte') 
-```
-
-Diese Referenzverteilung können wir jetzt verwenden um eine Entscheidung bezüglich unseres beobachteten Werts zu treffen.
-
-## Statistisch *Signifikanter* Wert
-
-Jetzt haben wir eine Referenzverteilung, jetzt benötigen wir eine Kriterium um unseren beobachteten Wert in Bezug auf die Referenzverteilung, die angenommene Stichprobenverteilung, zu bewerten.
-
-```{r}
-#| fig.cap: "Verteilung wenn nichts passiert und kritische Regionen."
 low <- tibble(x = seq(-3, -2, length.out=50), v = dnorm(x))
 up <- tibble(x = seq(2, 3, length.out=50), v = dnorm(x))
+ggplot(dat_0, aes(x,v,ymin=0, ymax=v)) +
+  geom_area(data = low, fill='red', alpha=.5) +
+  geom_area(data = up, fill='red', alpha=.5) +
+  geom_line() +
+  scale_x_continuous('Wert', breaks = c(-2,0,2),
+                     labels = c(expression(-2~sigma),
+                                expression(mu),
+                                expression(+2~sigma))) +
+  scale_y_continuous('Dichte')
+```
+
+Diese Referenzverteilung können wir nun verwenden um eine Entscheidung bezüglich unseres beobachteten Werts zu treffen. Die Streuung in der Referenz- bzw. Stichprobenverteilung wird als Standardfehler bezeichnet im Gegensatz zur Streuung in der Population $\sigma$ und in der Stichprobe $s$.
+
+::: {#def-standard-error}
+## Standardfehler \item{Standardfehler}
+
+Die Streuung der Stichprobenverteilung wird als Standardfehler $\sigma_e$ bezeichnet. Wir dieser Wert anhand der Stichprobe abgeschätzt hat der Standardfehler das Symbol $s_e$.
+:::
+
+
+## Statistisch *signifikanter* Wert
+
+Kommen wir nun zu dem wichtigen Konzept des statistisch signifikanten Werts. Im vorhergehend Abschnitt haben wir eine Stichprobenverteilung für unsere Statistik, den Unterschied zwischen den Mittelwerten der beiden Gruppen, hergeleitet. Wir gehen von der Verteilung aus, bei der es keinen Unterschied $H_0: \Delta = 0$ zwischen den beiden Gruppen gibt. $\Delta=0$ hat somit die Bedeutung, das das Krafttraining nicht effektiv war. Dazu haben wir als Kriterium hergeleitet, dass wir Werte die mehr als $2$ Standardabweichungen von Mittelwert entfernt sind, als unwahrscheinlich ansehen, da diese Werte etwa eine Wahrscheinlichkeit von $5\%$ haben. Präziser, Werte die mehr als zwei Standardfehler vom Mittelwert entfernt sind. Da, unserer angenommenere Mittelwert mit $\Delta = 0$ zu $\mu = 0$ wird, bedeutet dies, das wir Werte die entweder kleiner als $-2\times$ Standardfehler oder größer als $2\times$ Standardfehler sind, als unwahrscheinlich unter der Annahme von $H_0: \mu = 0$ betrachten. Als Entscheidungsregel:
+
+$$
+|\text{beobachteter Wert }| > 2\times \sigma_e \Rightarrow \text{ Evidenz gegen } H_0
+$$
+
+In @fig-stats-sig-decision-regions ist die Entscheidungsregel noch einmal graphisch dargestellt. Wir haben unsere Stichprobenverteilung unter der $H_0: \mu = \Delta = 0$ und schneiden rechts und links jeweils einen Bereich der Verteilung ab. Diesen Bereich bezeichnen wir als kritischen Bereich. Wenn unser beobachteter Wert im kritischen Bereich liegt, sehen wir dies als Evidenz gegen die Korrektheit der Annahme $H_0$ an.
+
+```{r}
+#| fig.cap: "Die $H_0$ Verteilung wenn nichts passiert unterteilt in Regionen die zur Entscheidung für die $H_0$ (grün) und gegen die $H_0$ (rot, kritische Regionen) führen."
+#| label: fig-stats-sig-decision-regions
+
 ggplot(dat_0, aes(x,v,ymin=0, ymax=v)) +
   geom_area(fill='green', alpha=.5) +
   geom_area(data = low, fill='red', alpha=.8) +
@@ -375,10 +393,24 @@ ggplot(dat_0, aes(x,v,ymin=0, ymax=v)) +
                                     expression(k[upper]))),
              aes(x,v,label=labels), parse=T) +
   geom_line() +
-  labs(x = 'Werte', y = 'Dichte') 
+  scale_x_continuous('Wert', breaks = c(-2,0,2),
+                     labels = c(expression(-2~sigma[e]),
+                                expression(H[0]:mu==0),
+                                expression(+2~sigma[e]))) +
+  scale_y_continuous('Dichte')
 ```
 
-Wenn der Stichprobenwert der Statistik in der *kritischen* Region auftritt, dann wird von einem **statistisch** signifikanten Effekt gesprochen. *Unter der $H_0$ bin ich überrascht diesen Wert zu sehen!*
+Wenn der Stichprobenwert der Statistik in der *kritischen* Region auftritt, dann wird von einem **statistisch** signifikanten Effekt gesprochen. *Unter der $H_0$ bin ich überrascht diesen Wert zu sehen!* Allerdings, dieser Wert ist **nicht unmöglich**, sondern lediglich unwahrscheinlich unter der Annahme $H_0$. Unwahrscheinlich ist dabei kein absolutes Maß, sondern nur eine **willkürliche** Festsetzung die wir getroffen haben.
+
+Wir hatten vorhin vorhin gesagt, dass Werte jenseits von $2\times \sigma_e$ etwa eine Wahrscheinlichkeit von $5\%$ haben. Dies Bedeutet nun, dass die Wahrscheinlichkeit Werte aus dem kritischen Bereich zu beobachten bei etwas $5%$ liegt, wenn die $H_0$ zutrifft. Oder anders, wenn die $H_0$ in der Realität zutrifft, also den DGP korrekt beschreibt, und ich das Experiment $100\times$ wiederhole, dann würde ich etwa $5$ Experimente erwarten bei denen der beobachtete Wert im kritischen Bereich liegt. werde ich mich in $5$ Fällen, irrtümlich gegen die $H_0$ entscheiden, obwohl sie korrekt ist. D.h. in $5$ Fällen würde mich irren, da ich einen Wert im kritischen Bereich beobachtet habe, trotzdem die $H_0$ zutrifft. Daher wird die Wahrscheinlichkeit die ich benutze um einen kritschen Bereich ausweisen als Irrtumswahrscheinlichkeit bezeichnet. Da die Irrtumswahrscheinlichkeit ein zentrales Konzept in der Statistik ist, erhält sie auch ein eigenes Symbol $\alpha$.
+
+::: {#def-alpha-err}
+## Irrtumswahrscheinlichkeit $\alpha$ \index{Irrtumswahrscheinlichkeit}
+
+Die Wahrscheinlichkeit mit der fälschlicherweise eine korrekte $H_0$-Hypothese abgelehnt wird, wird als Irrtumswahrscheinlichkeit bezeichnet. Die Irrtumswahrscheinlichkeit wird mit Symbol $\alpha$ bezeichnet und auch als Fehler I. Art bezeichnet.
+:::
+
+Eines der grundlegenden Probleme, das oftmals nicht beachtet wird bei der Interpretation von **statistisch** signifikanten Ergebnis bezieht sich darauf, dass ich nicht weiß, welches der $100$ Experimente ich durchgeführt habe. Zusätzlich, dies ist keine Aussage über die Wahrscheinlichkeit mit der die $H_0$ in der Realität zutrifft. Ob die $H_0$ zutrifft hat die Wahrscheinlichkeit entweder $P(H_0) = 1$ oder $P(H_0) = 0$. Entweder sie trifft zu oder eben nicht. Darüber wir hier keine Aussage gemacht, sondern nur darüber ob unter der Annahme das $H_0$ zutrifft, der beobachtete Wert in einem *wahrscheinlichen* oder einem *unwahrscheinlichen* Bereich liegt. Nochmal, *wahrscheinlich* war eine willkürliche Festlegung unsererseits.  
 
 ## Der p-Wert
 
