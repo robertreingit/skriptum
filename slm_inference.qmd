@@ -351,11 +351,20 @@ summary(mod)
 
 In unserem Fall beobachten wir $`r round(sigma(mod), 2)`m$. Diesen Wert muss jetzt unsere Trainerin im Sinne der Weitsprungleistung der deren Varianz interpretieren und ein Abschätzung treffen zu können.
 
-Nach der Herleitung der Teststatistik für $\beta_1$, können wir jetzt auch weitere Teil der Ausgabe von `summary()` interpretieren. In der Tabelle stehen entsprechend die Standardfehler für $\hat{\beta}_1$ und $\hat{\beta}_0$. Für $\beta_0$ wird genau die gleiche Vorgehensweise wie auch bei \beta_1$ angewendet. Die Nullhypothese $H_0$ ist hier ebenfalls das der Parameter standardmäßig als Null angesetzt wird.
+Nach der Herleitung der Teststatistik für $\beta_1$, können wir jetzt auch weitere Teil der Ausgabe von `summary()` interpretieren. In der Tabelle stehen entsprechend die Standardfehler für $\hat{\beta}_1$ und $\hat{\beta}_0$. Für $\beta_0$ wird genau die gleiche Vorgehensweise wie auch bei $\beta_1$ angewendet. Die Nullhypothese $H_0$ ist hier ebenfalls das der Parameter standardmäßig als Null angesetzt wird. Der Standardfehler von $\beta_0$ errechnet sich nach:
+
+\begin{equation}
+\sigma^2[\beta_0] = \sigma^2\left(\frac{1}{n} + \frac{\bar{x}^2}{\sum_{i=1}^n (x_i - \bar{x})^2}\right)
+\label{eq-slm-inf-beta0-se}
+\end{equation}
+
+An Formel \eqref{eq-slm-inf-beta-0-se} ist zu erkennen, dass wenn die $X$-Werte den Mittelwert $0$ haben, dass $\sigma^2[\beta_0]$ gleich dem Standardfehler für den Mittelwert SEM wird. Was auch wiederum Sinn macht, da in diesem Fall $\beta_0 = \bar{y}$ gilt.
+
+Dies führt dies zu den beiden zu überprüfenden Hypothesen für $\beta_0$:
 
 \begin{align*}
 H_0: \beta_0 &= 0 \\
-H_1: \beta_0 &neq 0
+H_1: \beta_0 &\neq 0
 \end{align*}
 
 Dementsprechend überprüft die Hypothesentestung ob der $y$-Achsenabschnitt gleich Null ist. Hier sollte berücksichtigt werden, dass diese Hypothese in den seltensten Fällen tatsächlich auch von Interesse ist und lediglich besagt, dass entweder der $y$-Achsenabschnitt durch den Nullpunkt geht, oder dass wenn tatsächlich $\beta_1 = 0$ gilt, der Mittelwert von $y$ gleich Null ist, was ebenfalls in den seltensten Fällen von Interesse ist.
@@ -419,7 +428,7 @@ Wenden wir jetzt den Erwartungswert auf $Y_i$ an, dann werden die $k_i$ als kons
     &= \beta_0 \sum k_i + \beta_1 \sum k_i X_i = \beta_1
 \end{align*}
 
-D.h. @eq-slm-basics-norm1 ist ein erwartungstreuer Schätzer für $\beta_1$.
+D.h. @eq-slm-basics-norm1 ist ein erwartungstreuer Schätzer für $\beta_1$. Das gleiche gilt auch für den Schätzer $b_0$ für $\beta_0$.
 
 Leiten wir noch eine weitere Identität über die Summe der $k_i^2$ her:
 
@@ -432,9 +441,12 @@ Können wir auch noch die Varianz bzw. den Standardfehler unseres Schätzers fü
     \sigma^2[b_1] &= \sigma^2\left[\sum k_i Y_i\right] = \sum k_i^2 \sigma^2[Y_i] \\
     &= \sum k_i^2 \sigma^2 = \sigma^2 \sum k_i^2 \\
     &= \sigma^2 \frac{1}{\sum(X_i-\bar{X})^2}
+    \label{eq-slm-inf-beta1-deriv}
 \end{align*}
 
 Wir erhalten die bereits eingeführte Formel. Wiederum eine Einsicht aus der Herleitung der Formel folgt, dass die Varianz $\sigma^2$ als konstant angesehen wird, d.h. $\sigma_i^2 = \sigma^2$. Dies hat uns erlaubt im zweiten Schritt $\sigma^2$ aus der Summe heraus zu ziehen. Wenn die Varianz $\sigma^2$ nicht konstant ist, dann ist der berechnete Standardfehler für $\hat{\beta}_1 = b_1$ nicht korrekt.
+
+Eine interessante Eigenschaft des Standardfehler von $\hat{\beta}_1$ ist in Formel \eqref{eq-slm-inf-beta1-deriv} zu sehen. Im Nenner stehen die Abweichungen der $X$-Werte vom Mittelwert $\hat{X}$. D.h. wenn die $X$-Werte weiter auseinander sind, dann führt dies dazu, dass der Standardfehler $\sigma^2[b_1]$ kleiner wird. Intuitive macht dies auch Sinn, wenn ich eine Gerade bestimmen will, dann ist es einfacher die Gerade anhand weit auseinander liegenden Stütztwerten zu bestimmen im Vergleich zu wenn ich eng beinander liegende $X$-Werte verwende.
 
 ## Maximum-likelihood Methode bei der einfachen linearen Regression
 
@@ -511,19 +523,28 @@ Wenn dieser Ausdruck gleich Null gesetzt erhalten wir den gleichen Ausdruck wie 
 
 ## Konfidenzintervalle für die Koeffizienten
 
-### Formel
+Wie wir im oberen Abschnitt gesehen haben, sind unsere Schätzer für die Koeffizienten $\beta_0$ und $\beta_1$ mit Unsicherheiten behaftet die sich in Form der Standardfehler ausdrücken. Wir können nun, diese standardfehler wiederum verwenden um Konfidenzintervalle für die Koeffizienten zu bestimmen.
 
-$$
+\begin{equation}
 \hat{\beta_j} \pm q_{t_{\alpha/2,df=N-2}} \times \hat{\sigma}_{\beta_j}
-$$
+\label{eq-slm-inf-conf-0}
+\end{equation}
 
-### In R
+Wie in Formel\eqref{eq-slm-inf-conf-0} zu sehen berechnet sich das Konfidenzintervall nach dem üblichen Muster: Schätzer $\pm$ Quantile $\times$ Standardfehler. Im vorliegenden Falle wird die Quantile aus der $t$-Verteilung mit $N-2$ Freiheitsgarden bestimmt. Wie vorher bereits betont, das Konfidenzintervall erlaubt keine Aussage über die Wahrscheinlichkeit mit der der wahre Koeffizient in dem Intervall liegt, sondern gibt an welche $H_0$-Hypothesen mit den Daten kompatibel sind. Daher soll in der Ergebnisdokumentation das Konfidenzintervall angegeben und spätenstens in der Diskussion die obere und die untere Schranke diskutiert werden.
 
-```{r, echo=T}
+In `R` kann das Konfidenzintervall mit der Funktion `confint()` berechnet und ausgegeben werden.
+
+```{r}
+#| echo: true
+
 confint(mod)
 ```
 
-## Zum Nacharbeiten
+Wie die Koeffizienten haben die Konfidenzintervall die gleiche Einheit wie die abhängige Variable und können daher direkt interpretiert werden. Im vorliegenden Fall sollte daher besprochen werden welche Bedeutung ein Koeffizient von $\beta_1 = `r round(confint(mod)[2,1],1)`$  bzw. von $\beta_1 = `r round(confint(mod)[2,2],1)`$ für die Interpretation des Modell hat.
+
+Noch einmal zu erwähnen ist, dass die beiden Parameter $\hat{\beta}_0$ und $\hat{\beta}_1$ welche die Regressionsgerade beschreiben, Schätzer für die Parameter aus einer Population sind der die beiden Parameter $\beta_0$ und $\beta_1$ den zugrundeliegenden Zusammenhang zwischen den beiden Variablen beschreiben. Diese betrachtung ist parallel zu derjenigen, wenn wir z.B. anhand des Mittelwerts $\bar{x}$ den währenen Populationsmittelwert $\mu$ versuchen zu schätzen. D.h. wir haben eine Populationsregressionsgerade, die wir mit Hilfe der Daten versuchen zu schätzen. Die wahre Regressionsgerade werden wird aber niemals mit 100%-iger Sicherheit bestimmen, eben genausowenig wie wir den Populationsmittelwert $\mu$ nicht mittels $\bar{x}$ bestimmen können.
+
+## Weiteres Material 
 
 @pos_simple_regression und @kutner2005 [p.40-48]
 

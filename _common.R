@@ -54,3 +54,11 @@ dnorm_plot <- function(mu = 0, sigma = 1, length.out = 100) {
       labs(x = 'Werte', y = 'Dichte') 
   p1
 }
+
+rplot <- function(df) {
+  ggplot(df, aes(y_hat, resid)) +
+    geom_point() +
+    geom_hline(yintercept = 0, col = 'red', linetype = 'dashed') +
+    scale_x_continuous(expression(hat(y)[i])) +
+    scale_y_continuous(expression(e[i]))
+}

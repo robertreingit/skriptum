@@ -7,6 +7,8 @@
 source('_common.R')
 ```
 
+Nachdem ein Modell mittels einer einfachen linearen Regression an die Daten gefittet wurde. Sollte immer überprüft werden ob das Modell tatsächlich auch den Annahmen entspricht. Ein zentrales Mittel dazu ist eine Analyse der Residuen.
+
 ## Residuen
 
 ```{r defs_reg_resid}
@@ -14,44 +16,28 @@ adl <- readr::read_delim("adcs;adas\n4.05;50.01\n5.03;46.04\n5.03;39.03\n8.04;49
                          delim = ';',
                          col_types = 'dd')
 mod <- lm(adcs ~ adas, adl)
+adl <- adl %>% dplyr::mutate(
+  y_hat = predict(mod),
+  resid = resid(mod),
+  rstudent = rstudent(mod),
+  rstandard = rstandard(mod)
+)
+
 ```
 
+Dazu schauen wir uns zunächst noch einmal an, was überhaupt Residuen $e_i$ sind. Dazu gehen wir noch mal von den grundlegenden Modellannahmen aus (siehe Formel \eqref{eq-sim-model-lr}).
+ 
 
-## Was sind noch mal Residuen $\epsilon_i$ bzw. deren Schätzer $\hat{\epsilon}_i = e_i$
+\begin{equation}
+y_i = \beta_0 + \beta_1 \cdot x_i + \epsilon_i, \qquad \epsilon_i \sim \mathcal{N}(0,\sigma^2)
+\label{eq-sim-model-lr}
+\end{equation}
 
-$$
-y_i = \beta_0 + \beta_1 \times x_i + \epsilon_i
-$$
-
-```{r}
-#| fig.cap: "Spielzeugbeispiel mit Residuen $\\hat{\\epsilon}_i = e_i = y_i - \\hat{y}_i$"
-
-set.seed(12)
-simple <- tibble::tibble(x = 0:3,
-                 y = 2 + 0.5 * x + rnorm(4,0,.5))
-mod0 <- lm(y ~ x, simple)
-simple$y_hat <- predict(mod0)
-simple$epsilon <- paste0('hat(epsilon)[',1:4,']')
-simple$ys <- paste0('list(x[',1:4,'],y[',1:4,'])')
-simple$yshat <- paste('hat(y)[',1:4,']')
-p_res <- ggplot(simple, aes(x,y,label = epsilon)) + 
-  geom_point(size=3) +
-  geom_line(aes(y = y_hat), size=2, color = 'red') +
-  geom_point(aes(y = y_hat), size=3, color = 'red') +
-  geom_segment(aes(x = x, y = y_hat, xend = x, yend = y),
-               arrow = arrow(type='closed', length=unit(0.05, unit='npc')), size=1,
-               color = 'green') +  
-  geom_text(aes(x = x - 0.1, y=y_hat, label = yshat), parse=T,
-            size = 5, check_overlap = T) +
-  geom_text(aes(x = x + 0.14, y = (y_hat + y)/2), parse=T, size=5) + 
-  lims(x = c(-.3,3.3), y = c(1,3.8)) 
-print(p_res)
-```
-
-## Annahme: $\epsilon_i \sim \mathcal{N}(0, \sigma^2)$
+Wir gehen von einem linearen Zusammenhang in den Koeffizienten zwischen der Variablen $x_i$ und den Variablen $y_i$. Additiv dazu kommt ein normalverteilte Fehler $\epsilon_i$ die im Mittel den Wert $\mu = 0$ und eine Standardabweichung von $\sigma$. Dies führt dazu,  dass $y_i$ für jeden gegebenen Wert von $x_i$ einer Normalverteilung mit $\mathcal{N}(\beta_0 + beta_1 x_i, \sigma^2)$ folgen. Dies führt zu der bereits bekannten graphischen Darstellung (siehe @fig-slm-model-resid-1).
 
 ```{r}
-#| fig.cap="Verteilung der Werte für verschiedene x-Werte (rote Punkte) und die resultierende Regressionsgerade mit den Vorhersagewerte $\\hat{y}_i$ (schwarze Punkte)"
+#| fig.cap: "Beispiel einer Regressionsgeraden und der Verteilung der Residuen um den Vorhersagewert $\\hat{y_i}$"
+#| label: fig-slm-model-resid-1
 
 set.seed(123)
 xx <- seq(-3,3,0.05)
@@ -77,6 +63,216 @@ ggplot(df, aes(x, y, group=g)) +
   labs(x = 'x-Werte', y = 'y-Werte') 
 ```
 
+Für jeden gegebenen Wert von $X$ sind die $Y$-Werte Normalverteilt. Die Varianz dieser Normalverteilungen ist gleich, $\sigma$, während der Mittelwert $\mu$ immer um den Wert der Regressionsgeraden verschoben ist.
+
+Eine Möglichkeit die Residuen $\epsilon_i$ abschätzen ist die Abweichungen der beobachteten Werten $y_i$ von den vorhergesagten Werten $\hat{y}_i$ auf der Regressionsgeraden zu bestimmen (siehe Formel \eqref{eq-sim-model-res-1}).
+
+\begin{equation}
+\hat{\epsilon}_i = e_i = y_i - \hat{y_i}
+\label{eq-sim-model-res-1}
+\end{equation}
+
+Diese Abweichungen können als Schätzer für die wahren Residuen $\epsilon_i$ verwendet werden.
+
+```{r}
+#| label: fig-slm-model-resid-2
+#| fig.cap: Examplarische Darstellung der Berechnung der Residuen $e_i$ als Abweichung der beobachteten Werte $y_i$ von den vorhergesagten Werten $\hat{y}_i$
+
+set.seed(12)
+simple <- tibble::tibble(x = 0:3,
+                 y = 2 + 0.5 * x + rnorm(4,0,.5))
+mod0 <- lm(y ~ x, simple)
+simple$y_hat <- predict(mod0)
+simple$epsilon <- paste0('hat(epsilon)[',1:4,']')
+simple$ys <- paste0('list(x[',1:4,'],y[',1:4,'])')
+simple$yshat <- paste('hat(y)[',1:4,']')
+p_res <- ggplot(simple, aes(x,y,label = epsilon)) + 
+  geom_point(size=3) +
+  geom_line(aes(y = y_hat), size=2, color = 'red') +
+  geom_point(aes(y = y_hat), size=3, color = 'red') +
+  geom_segment(aes(x = x, y = y_hat, xend = x, yend = y),
+               arrow = arrow(type='closed', length=unit(0.05, unit='npc')), size=1,
+               color = 'green') +  
+  geom_text(aes(x = x - 0.1, y=y_hat, label = yshat), parse=T,
+            size = 5, check_overlap = T) +
+  geom_text(aes(x = x + 0.14, y = (y_hat + y)/2), parse=T, size=5) + 
+  lims(x = c(-.3,3.3), y = c(1,3.8)) 
+print(p_res)
+```
+
+
+Daraus ergibt sich auch eine erste Möglichkeit die Modellannahmen graphisch zu überprüfen indem die Residuen $e_i$ gegen die vorhergesagten Werte $\hat{y}_i$ abgetragen werden. In `R` können die Residuen mittels der Funktion `residuals()` bzw. der Kurzform `resid()` ermittelt werden. Als Parameter wird das gefittete `lm()`-Objekt übergeben.
+
+```{r}
+#| echo: true
+
+residuals(mod)
+```
+
+Die Vorhergesagten Werte $\hat{y_i}$ erhält man mit der Funktion `predict()` mit der wir uns im nächsten Kapitel noch ausführlich auseinandersetzen. Als Parameter wird wiederum das gefittete Modell übergeben.
+
+```{r}
+#| echo: true
+
+predict(mod)
+```
+
+Mit Hilfe dieser beiden Variablen kann nun ein Residuenplot erstellt werden (siehe @fig-sim-model-rplot-1).
+
+```{r}
+#| fig.cap: "Residuenplot der Residuen $e_i$ gegen die vorhergesagten Werte $\\hat{y}_i$"
+#| label: fig-sim-model-rplot-1
+
+ggplot(adl, aes(y_hat, resid)) +
+  geom_point() +
+  geom_hline(yintercept = 0, col = 'red', linetype = 'dashed') +
+  scale_x_continuous(expression(hat(y)[i])) +
+  scale_y_continuous(expression(e[i]))
+```
+
+Der Plot sollte jetzt am Besten so aussehen, dass die Residuen $e_i$ gleichmäßig sich oberhalb und unterhalb um die Nulllinie verteilen und keine weiteren Strukturen oder Muster in Bezug auf $\hat{y}_i$ zu erkennen sind.
+
+Problem im Residuenplot könnten Beispielsweise wie in den folgenden beiden Diagrammen auftreten (siehe @fig-sim-model-rplot-2)
+
+```{r}
+#| layout-ncol: 2
+#| fig-cap: "Residuenplots die Probleme anzeigen."
+#| fig-subcap:
+#|   - Parabelförmiger Zusammenhang zwischen $e_i$ und $\hat{y}_i$
+#|   - Ansteigende Streuung mit größer werdendem $\hat{y}_i$
+#| label: fig-sim-model-rplot-2
+#| fig-height: 5
+
+n <- 30
+tibble(
+  x = seq(0,10,length.out=n),
+  y = x*cos(seq(0,6*pi,length.out = n)/10) + 3*x + 2 + rnorm(n),
+  resid = resid(lm(y~x)),
+  y_hat = predict(lm(y~x))
+) |> rplot()
+
+n <- 40
+set.seed(125)
+tibble(
+  y_hat = runif(n, 0, 1),
+  resid = 3 * y_hat * rnorm(n, 0, 2),
+) |> rplot()
+```
+
+In @fig-sim-model-rplot-2-1 ist ein parabelförmiger Zusammenhang zwischen $e_i$ und $\hat{y}_i$ zu erkennen. Für kleine und große $\hat{y}_i$ Werte sind die Residuen $e_i$ negativ während für mittlere Werte von $\hat{y}_i$ die Residuen $e_i$ positiv sind. Diese deutet darauf hin, das zusäztliche Struktur in den Daten nicht im Modell erfasst wird und führt dazu dass die Modellannahmen der Normalverteilung der $\epsilon_i$ nicht erfüllt sind.
+
+In @fig-sim-model-rplot-2-2 ist dagegen eine anderes Problem zu beobachten, die Residuen $e_i$ zeigen zwar keine Struktur bezüglich positiv zu negativen Werten, allerdings werden die Abweichung von $0$ mit größer werdenen $\hat{y}_i$ immer stärker. Dies deutet darauf hin, das die Streuung der Daten nicht gleich ist. Dies wird als Heteroskedastizität bezeichnet und deutet wiederum auf eine Verletzung der Annahmen bei der Homoskedastitzität ausgegangen wird. D.h. die Streuung soll über den gesamten Bereich von $\hat{y}_i$ gleich bleiben.
+
+Eine weitere Möglichkeit die Residuen zu überprüfen ist die Anfertigung von sogenannten  qq-Plots. Dies ermöglichen etwas strukturierter die Verteilung der Residuen zu überprüfen.
+
+## Quantile-Quantile-Plots 
+
+qq-Plot ist die Kurzform von Quantile-Quantile-Plot. D.h. es werden die Quantilen von zwei Variablen gegeneinander abgetragen. Um die Funktionsweise besser zu verstehen schauen wir uns erst einmal ein Spielzeugbeispiel an. In @tbl-sim-model-toy-1 ist eine kleiner Datensatz mit $n = 5$ Datenpunkten angezeigt.
+
+```{r}
+#| tbl-cap: "Spielzeugbeispieldaten mit $n=5$"
+#| label: tbl-slm-model-toy-1
+
+df_qq <- tibble::tibble(y = c(-2, 5, -1.2, 0.1, 7))
+df_qq %>% knitr::kable(booktabs=T)
+```
+
+Wir wollen jetzt überprüfen ob dieser Datensatz einer Normalverteilung folgt (Wohlwissend das mit fünf Datenpunkten keine Verteilungsannahme überprüft werden kann). Dazu schauen wir uns auch noch einmal die wohlbekannte Standardnormalverteilung an (siehe @fig-slm-model-toy-1).
+
+```{r}
+#| fig.cap: "Dichtefunktion der Standardnormalverteilung"
+#| label: fig-slm-model-toy-1
+
+df_qq_2 <- tibble::tibble(
+  x = seq(-3,3,length.out=100),
+  y = dnorm(x)
+)
+ggplot(df_qq_2, aes(x,y)) +
+  geom_ribbon(aes(ymin = 0, ymax = y), fill='red', alpha=.5) +
+  geom_line() +
+  labs(x = 'Werte', y = 'Dichte') 
+```
+
+Im nächsten Schritt unterteilen wir die Standardnormalverteilung $\Phi(x)$ in $n+1 = 6$ Abschnitt, die alle die gleiche Wahrscheinlichkeit (=Fläche unter der Dichtefunktion haben) und bestimmen die jeweiligen Trennpunkte, die Quantilen.
+
+```{r}
+#| fig.cap: "Unterteilung der Standardnormalverteilung in sechs gleich große Flächen"
+#| label: fig-slm-model-toy-2
+
+n <- dim(df_qq)[1]
+df_qq_3 <- tibble::tibble(
+    x = qnorm(1/(n+1)*(1:n)),
+    y = dnorm(x)
+  )
+ggplot(df_qq_2, aes(x,y)) +
+  geom_ribbon(aes(ymin = 0, ymax = y), fill='red', alpha=.5) +
+  geom_line() +
+  geom_segment(data = df_qq_3, aes(x = x, xend = x, y = 0, yend = y)) +
+  scale_x_continuous(breaks = round(df_qq_3$x,2)) +
+  labs(x = NULL, y = 'Dichte') +
+  theme(axis.text.x = element_text(angle = 45, vjust=1, hjust=1))
+```
+
+In unserem Fall haben wir $n=5$ Datenpunkte, unterteilen also unsere Verteilung in $6$ Abschnitte die jeweils eine Fläche von $p = \frac{1}{6} = `r round(1/6,2)`$ haben. D.h. $\frac{1}{6}$ der Werte von $\Phi(x)$ liegen links des ersten Trennpunktes, $\frac{2}{6}$ der Werte von $\Phi(x)$ liegen links des zweiten Trennpunktes, usw. D.h. die Trennpunkte bestimmen die jeweiligen Quantilen, oder genauer die theoretischen Quantilen die unter der Verteilungsannahme erwartet werden.
+
+Als Nächstes sortieren wir unsere Datenpunkt (@tbl-slm-model-toy-1) aufsteigend nach der Größe (siehe @tbl-slm-model-toy-2). Diese Werte werden jetzt als empirische Quantilen bezeichnet. Unter der Annahme, dass die Werte eine repräsentative Stichprobe aus der Verteilung darstellen, würden wir erwarten, dass wenn wir weiter Werte ziehen würden, etwa $\frac{1}{6}$ der Werte kleiner als der kleinste Wert wären, $\frac{2}{6}$ der weiteren Werte kleiner als der 2. kleinste Wert wären und so weiter und so fort.
+
+
+| kleinster | 2.kleinster | mittlerer | 2.größter | größter |
+| --- | --- | --- | --- | --- |
+| `r df_qq$y[1]` |`r df_qq$y[3]` |`r df_qq$y[4]` | `r df_qq$y[2]` |`r df_qq$y[5]` |
+
+: Sortierte Datenwerte des Spielzeugbeispiels {#tbl-slm-model-toy-2}
+
+Die Idee hinter dem qq-Plot ist daher, die empirischen Quantilen gegen die theoretischen Quantilen abzutragen (siehe @fig-slm-model-toy-3). Wenn die beobachteten Werte der theoretischen Verteilung folgen, dann sollte der Graph nahezu einer Geraden folgen.
+
+```{r}
+#| fig-cap: "Streudiagramm der empirischen Werte gegen die theoretischen Quantilen"
+#| label: fig-slm-model-toy-3
+
+df_qq_3 %>% 
+  add_column(d = sort(df_qq$y)) %>% 
+  ggplot(aes(x, d)) + 
+  geom_point(size = 2) +
+  scale_x_continuous(breaks = round(df_qq_3$x,2)) +
+  labs(x = 'Theoretisch', y = 'Empirisch') 
+```
+
+In @fig-slm-model-toy ist es tatsächlich schwierig eine Gerade zu erkennen was aber auch vor allem damit zusammenhäng, dass bei $n=5$ eine realistische Verteilungsannahme nicht überprüft werden kann. Wie gesagt, dies diente nur um die Erstellung zu verstehen.
+
+
+```{r}
+#| layout-ncol: 2
+#| layout-nrow: 2
+#| label: fig-slm-model-qqplots
+#| fig-subcap:
+#|   - "Perfekt"
+#|   - "Enden schwer"
+#|   - "Enden leicht"
+#|   - "Rechtsschief"
+#| fig-cap: "Beispiele für verschiedenen qq-Plots"
+ 
+par(mar=c(1,1,1,1))
+pp <- ppoints(50)
+pp_norm <- qnorm(pp)
+pp_cauchy <- qcauchy(pp)
+pp_chisq <- qf(pp, 10, 8)
+
+qqplot(pp_norm, pp_norm, xlab='theoretical', ylab='empirical', main='Perfekt')
+qqline(pp_norm, col = 'steelblue', lwd=2) 
+
+
+qqplot(pp_norm, pp_cauchy, xlab='theoretical', ylab='empirical', main='Tails heavy')
+qqline(pp_cauchy, col = 'steelblue', lwd=2)
+
+
+qqplot(pp_cauchy, pp_norm, xlab='theoretical', ylab='empirical', main='Tails light')
+qqline(pp_norm, col = 'steelblue', lwd=2)
+
+
+qqplot(pp_norm, pp_chisq, xlab='theoretical', ylab='empirical', main='Rechtsschief')
+qqline(pp_chisq, col = 'steelblue', lwd=2)
+```
 
 
 ## Übersicht Residuen
@@ -92,25 +288,15 @@ Table: Übersicht über verschiedene Arten von Residuen^[$h_i$ = Influenz von Pu
 ## Residuen in `R` berechnen mit `residuals()` und Freunden
 
 ```{r, echo=T}
-residuals(mod)[1:5] # einfache Residuen
 rstandard(mod)[1:5] # standardisierte Residuen
 rstudent(mod)[1:5] # studentized Residuen
 ```
 
-```{r}
-adl <- adl %>% dplyr::mutate(
-  y_hat = predict(mod),
-  resid = resid(mod),
-  rstudent = rstudent(mod),
-  rstandard = rstandard(mod)
-)
-```
 
 ## Residuen in `R` inspizieren
 
 ```{r, eval=F, echo=T}
 y_hat <- predict(mod)
-plot(y_hat, residuals(mod))
 plot(y_hat, rstandard(mod))
 plot(y_hat, rstudent(mod))
 ```
@@ -149,121 +335,6 @@ plot(rstudent ~ y_hat, adl,
 abline(h = 0, lty = 2, col = 'red')
 ```
 
-## Diagnoseplot - Wie sehen Probleme aus?
-
-```{r}
-#| fig.cap="Beispielstreudiagramm"
-
-n <- 30
-df_res <- tibble(
-  x = seq(0,10,length.out=n),
-  y = x*cos(seq(0,6*pi,length.out = n)/10) + 3*x + 2 + rnorm(n),
-  resid = resid(lm(y~x)),
-  y_hat = predict(lm(y~x))
-)
-plot(resid~y_hat, df_res,
-     xlab = expression(paste('Vorhersagewerte ', hat(y)[i])),
-     ylab = expression(hat(epsilon)[i]))
-abline(h = 0, lty = 2, col = 'red')
-```
-
-## Diagnoseplot - Wie sehen Probleme aus?
-
-```{r}
-#| fig.cap="Beispielstreudiagramm"
-
-n <- 40
-set.seed(125)
-df_res_2 <- tibble(
-  y_hat = runif(n, 0, 1),
-  resid = 3 * y_hat * rnorm(n, 0, 2),
-)
-plot(resid~y_hat, df_res_2,
-     xlab = expression(paste('Vorhersagewerte ', hat(y)[i])),
-     ylab = expression(hat(epsilon)[i]))
-abline(h = 0, lty = 2, col = 'red')
-```
-
-## Wie kann die Verteilung der Residuen überprüft werden?
-
-```{r}
-df_qq <- tibble::tibble(y = c(-2, 5, -1.2, 0.1, 7))
-df_qq %>% knitr::kable(booktabs=T,
-                       caption="Spielzeugbeispieldaten mit $n=5$")
-```
-
-```{r, fig.cap="Dichtefunktion der Standardnormalverteilung", fig.height=4}
-df_qq_2 <- tibble::tibble(
-  x = seq(-3,3,length.out=100),
-  y = dnorm(x)
-)
-ggplot(df_qq_2, aes(x,y)) +
-  geom_ribbon(aes(ymin = 0, ymax = y), fill='red', alpha=.5) +
-  geom_line() +
-  labs(x = 'Werte', y = 'Dichte') 
-```
-
-## Konstruktion eines qq-Graphen
-
-```{r}
-n <- dim(df_qq)[1]
-df_qq_3 <- tibble::tibble(
-    x = qnorm(1/(n+1)*(1:n)),
-    y = dnorm(x)
-  )
-ggplot(df_qq_2, aes(x,y)) +
-  geom_ribbon(aes(ymin = 0, ymax = y), fill='red', alpha=.5) +
-  geom_line() +
-  geom_segment(data = df_qq_3, aes(x = x, xend = x, y = 0, yend = y)) +
-  scale_x_continuous(breaks = round(df_qq_3$x,2)) +
-  labs(x = NULL, y = 'Dichte') +
-  theme(axis.text.x = element_text(angle = 45, vjust=1, hjust=1))
-```
-
-Table: Sortierte Datenwerte
-
-| kleinster | 2.kleinster | mittlerer | 2.größter | größter |
-| --- | --- | --- | --- | --- |
-| `r df_qq$y[1]` |`r df_qq$y[3]` |`r df_qq$y[4]` | `r df_qq$y[2]` |`r df_qq$y[5]` |
-
-## Konstruktion eines qq-Graphen
-
-```{r, fig.cap = "Streudiagramm der empirischen Werte gegen die theoretischen Quantilen"}
-df_qq_3 %>% 
-  add_column(d = sort(df_qq$y)) %>% 
-  ggplot(aes(x, d)) + 
-  geom_point(size = 2) +
-  scale_x_continuous(breaks = round(df_qq_3$x,2)) +
-  labs(x = 'Theoretisch', y = 'Empirisch') 
-```
-
-
-## Beispiele für qq-Graphen mit `qqnorm()` und `qqline()`
-
-
-```{r}
-par(mfrow=c(2,2), mar=c(1,1,1,1))
-pp <- ppoints(50)
-pp_norm <- qnorm(pp)
-pp_cauchy <- qcauchy(pp)
-pp_chisq <- qf(pp, 10, 8)
-#pp_chisq <- qchisq(pp, df = 3)
-qqplot(pp_norm, pp_norm, xlab='theoretical', ylab='empirical', main='Perfekt')
-qqline(pp_norm, col = 'steelblue', lwd=2) 
-
-
-qqplot(pp_norm, pp_cauchy, xlab='theoretical', ylab='empirical', main='Tails heavy')
-qqline(pp_cauchy, col = 'steelblue', lwd=2)
-
-
-qqplot(pp_cauchy, pp_norm, xlab='theoretical', ylab='empirical', main='Tails light')
-qqline(pp_norm, col = 'steelblue', lwd=2)
-
-
-qqplot(pp_norm, pp_chisq, xlab='theoretical', ylab='empirical', main='Rechtsschief')
-qqline(pp_chisq, col = 'steelblue', lwd=2)
-par(mfrow=c(1,1))
-```
 
 
 
