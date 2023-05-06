@@ -219,8 +219,67 @@ ggplot(df_qq_2, aes(x,y)) +
 
 In unserem Fall haben wir $n=5$ Datenpunkte, unterteilen also unsere Verteilung in $6$ Abschnitte die jeweils eine Fläche von $p = \frac{1}{6} = `r round(1/6,2)`$ haben. D.h. $\frac{1}{6}$ der Werte von $\Phi(x)$ liegen links des ersten Trennpunktes, $\frac{2}{6}$ der Werte von $\Phi(x)$ liegen links des zweiten Trennpunktes, usw. D.h. die Trennpunkte bestimmen die jeweiligen Quantilen, oder genauer die theoretischen Quantilen die unter der Verteilungsannahme erwartet werden.
 
-Als Nächstes sortieren wir unsere beobachteten Datenpunkte aus @tbl-slm-model-toy-1 aufsteigend nach der Größe (siehe @tbl-slm-model-toy-2). Diese Werte konnen als *empirische* Quantilen bezeichnet. Unter der Annahme, dass die Werte eine repräsentative Stichprobe aus der Verteilung darstellen, erwarten wir, dass wenn wir weiter Werte ziehen würden, etwa $\frac{1}{6}$ der Werte kleiner als der kleinste Wert wären, $\frac{2}{6}$ der weiteren Werte kleiner als der 2. kleinste Wert wären und so weiter und so fort.
 
+Die Idee hinter dem qq-Plot besteht nun darin, die empirischen Quantilen gegen die theoretischen Quantilen abzutragen (siehe @fig-slm-model-qqconcept). Wenn die beobachteten Daten aus der gleichen Verteilung wie die theoretische Verteilung stammen, dann sollten die Punkte einer Geraden folgen. Die Steigung der Geraden ist $1$, wenn es sich um die identischen Verteilungen handelt. Wenn die Steigung $\neq1$ ist, dann kommen die Datenpunkte aus der gleichen Familie sind aber um einen Skalierungsfaktor unterschiedlich bzw. um den Mittelwert verschoben. Die Punkte sollten aber trotzdem auf einer Geraden liegen. 
+
+```{r}
+#| label: fig-slm-model-qqconcept
+#| fig-cap: "Skizze der theoretischen und der empirischen Verteilung mit unterschiedlicher Skalierung (Faktor $2\\times$) aber aus der gleichen Verteilungsfamilie. In beiden Graphen ist die gleiche Quartile markiert"
+
+foo_qq <- function() {
+  x <- seq(-5, 5, length.out = 200)
+  sigma <- 1.5
+  df <- tibble(
+    x = x,
+    y_1 = dnorm(x),
+    y_2 = dnorm(x, sd = sigma)
+  ) |> pivot_longer(-x)
+  
+  q_1_1 <- qnorm(0.05)
+  q_1_2 <- qnorm(0.05, sd = sigma)
+  d_1_1 <- dnorm(q_1_1)
+  d_1_2 <- dnorm(q_1_2, sd = sigma)
+  y_1 <- -0.1; y_2 <- -0.15
+  df_pts <- tibble(
+    x = c(q_1_1, q_1_2, q_1_1, q_1_2),
+    value = c(d_1_1, d_1_2, y_1, y_2),
+    name = c('y_1','y_2','y_1','y_2')
+  )
+  df_q_1 <- tibble(
+    x = seq(-5, q_1_1, length.out = 50),
+    value = dnorm(x),
+    name = 'y_1'
+  )
+  df_q_2 <- tibble(
+    x = seq(-5, q_1_2, length.out = 50),
+    value = dnorm(x, sd = sigma) ,
+    name = 'y_2'
+  )
+  ggplot(df, aes(x, value, color=name)) +
+    geom_line() +
+    geom_point(data = df_pts) +
+    geom_ribbon(data = df_q_1, aes(ymin = 0, ymax = value), fill = 'red', alpha = 0.3) +
+    geom_ribbon(data = df_q_2, aes(ymin = 0, ymax = value), fill = 'blue', alpha = 0.3) +
+    annotate('segment', x = -5, xend = 5, y = y_1, yend = y_1, color = 'red') +
+    annotate('segment', x = -5, xend = 5, y = y_2, yend = y_2, color = 'blue') +
+    annotate('segment', x = seq(-3, 3, length.out = 7),
+             xend = seq(-3, 3, length.out = 7), y = y_1, yend = y_1-0.02, color = 'red') +
+    annotate('segment', x = seq(-4, 4, length.out = 5),
+             xend = seq(-4, 4, length.out = 5), y = y_2, yend = y_2-0.02, color = 'blue') +
+    annotate('segment', x = q_1_1, xend = q_1_1, y = d_1_1, yend = y_1, linetype = 'dotted') +
+    annotate('segment', x = q_1_2, xend = q_1_2, y = d_1_2, yend = y_2, linetype = 'dotted') +
+    annotate('segment', x = q_1_1, xend = q_1_2, y = y_1, yend = y_2, linetype = 'dotted') +
+    annotate('text', x = 0, y = y_1-0.03, label = expression(mu)) +
+    annotate('text', x = 0, y = y_2-0.03, label = expression(mu)) +
+    scale_x_continuous('Werte', labels = NULL) +
+    scale_y_continuous('Dichte', limits = c(-.2, .45), labels = NULL) +
+    scale_color_manual('Verteilung',
+                       values = c('red', 'blue'), labels = c('Theoretisch', 'Empirisch'))
+}
+foo_qq()
+```
+
+Um die empirischen Quartilen zu bestimmen, werden dazu zunächst die beobachteten Datenpunkte aus @tbl-slm-model-toy-1 aufsteigend nach der Größe sortiert (siehe @tbl-slm-model-toy-2). Diese Werte können als *empirische* Quantilen bezeichnet werden. Unter der Annahme, dass die Werte eine repräsentative Stichprobe aus der Verteilung darstellen, erwarten wir, dass wenn wir weitere Werte beobachten würden, etwa $\frac{1}{6}$ der Werte kleiner als der kleinste Wert wären, $\frac{2}{6}$ der weiteren Werte kleiner als der 2. kleinste Wert wären und so weiter und so fort.
 
 | kleinster | 2.kleinster | mittlerer | 2.größter | größter |
 | --- | --- | --- | --- | --- |
@@ -228,7 +287,7 @@ Als Nächstes sortieren wir unsere beobachteten Datenpunkte aus @tbl-slm-model-t
 
 : Sortierte Datenwerte des Spielzeugbeispiels {#tbl-slm-model-toy-2}
 
-Die Idee hinter dem qq-Plot besteht nun darin, die empirischen Quantilen gegen die theoretischen Quantilen abzutragen (siehe @fig-slm-model-toy-3). Wenn die beobachteten Werte der theoretischen Verteilung folgen, dann sollte der resultierende Graph nahezu einer Geraden folgen.
+Daher, wenn die beobachteten Werte der angenommenen theoretischen Verteilung folgen, dann sollte ein Graph der empirischen Quartilen gegen die theoretischen Quartilen nahezu (Stichprobenvariabilität) einer Geraden folgen.
 
 ```{r}
 #| fig-cap: "Streudiagramm der empirischen Werte gegen die theoretischen Quantilen"
@@ -242,7 +301,7 @@ df_qq_3 %>%
   labs(x = 'Theoretisch', y = 'Empirisch') 
 ```
 
-In @fig-slm-model-toy-3 sind die empirischen Quartilen gegen die theoretischen Quantilen abgetragen. Tatsächlich ist es in diesem Beispiel schwierig eine Gerade zu erkennen bzw. on einer zu sprechen, da es sich nur um besagte fünf Wert handelt. Nochmals, mit $n=5$ kann eine realistische Verteilungsannahme nicht überprüft werden. 
+In @fig-slm-model-toy-3 sind die empirischen Quartilen gegen die theoretischen Quantilen für unser kleines Beispiel abgetragen. Tatsächlich ist es in diesem Fall schwierig eine Gerade zu erkennen bzw. von einer zu sprechen, da es sich nur um besagte fünf Wert handelt. Nochmals, mit $n=5$ kann eine realistische Verteilungsannahme nicht überprüft werden. 
 
 Wenn der Datensatz größer ist, dann eignet sich ein qq-Plot allerdings sehr gut Abweichungen zu erkennen. In @fig-slm-model-qqplots sind verschiedene Beispiele abgetragen.
 
@@ -299,7 +358,7 @@ Der Graph sieht zunächst einmal gar nicht so schlecht aus. Allerdings deutet di
 
 ### qq-Plot in `R`
 
-In `R` gibt es zwei einfache Methoden qq-Plot zu erstellen. Mittels des Standardgrafiksystem können mit den Funktionen `qqnorm()` und `qqline()` qq-Plots mit der dazugehörigen Gerade erstellt werden. Für das `ggplot()`-System stehen die `geom`s `geom_qq()` und `geom_qq_line()` zur Verfügung. Wichtig ist hierbei, das in `aes()` der Parameter `sample` belegt werden muss. Für unser Spielzeugbeispiel sieht dies folgendermaßen aus:
+In `R` gibt es zwei direkte Methoden einen qq-Plot zu erstellen. Mittels des Standardgrafiksystem können mit den Funktionen `qqnorm()` und `qqline()` qq-Plots mit der dazugehörigen Gerade erstellt werden. Für das `ggplot()`-System stehen die `geom`s `geom_qq()` und `geom_qq_line()` zur Verfügung. Wichtig ist hierbei, das in `aes()` der Parameter `sample` definiert werden muss. Für unser Spielzeugbeispiel sieht dies folgendermaßen aus:
 
 ```{r}
 #| echo: true
@@ -315,54 +374,45 @@ ggplot(df_toy, aes(sample=y)) +
 
 ## Standardisierte Residuen
 
-Eine Möglichkeit so einen Wert zu untersuchen, ist abzuschätzen wie *ungewöhnlich* der zu dem Residuen $e_i$ gehörende $y_i$-Wert ist. Ein Problem der einfachen Residuen $e_i$ ist, dass diese laut der Modellannahmen die gleiche Varianz $\sigma^2$ haben sollten. Allerdings, auf Grund der Art, wie die $e_i$ berechnet werden, folgt die Randbedingung, dass die Summe der $e_i$ gleich Null ist, $\sum_{i=1}^n e_i = 0$. Dies führt dazu, dass die einfachen Residuen nicht unanbhängig voneinander sind und nicht immer Homoskedastizität besitzen. Daher gibt es eine weitere Art Residuen anhand des Modell zu berechnen, die nicht unter diesen Beschränkungen leiden. Dies sind die standardisierten Residuen $e_{Si}$. Dazu müssen wir uns aber zunächst die sogenannten Hebelwerte $h_i$ anschauen.
+Eine Möglichkeit so einen Wert zu untersuchen, ist abzuschätzen wie *ungewöhnlich* der zu dem Residuen $e_i$ gehörende $y_i$-Wert ist. Ein Problem der einfachen Residuen $e_i$ ist, dass diese laut der Modellannahmen die gleiche Varianz $\sigma^2$ haben sollten. Allerdings, auf Grund der Art, wie die $e_i$ berechnet werden, folgt die Randbedingung, dass die Summe der $e_i$ gleich Null ist, $\sum_{i=1}^n e_i = 0$. Dies führt dazu, dass die einfachen Residuen nicht unanbhängig voneinander sind und nicht immer Homoskedastizität besitzen. Daher gibt es eine weitere Art Residuen anhand des Modell zu berechnen, die nicht unter diesen Beschränkungen leiden. Dies sind die standardisierten Residuen $e_{Si}$. Dazu müssen wir uns zunächst mit Hebelwerte $h_i$ beschäftigen.
 
 ### Hebelwerte
 
-```{r}
-adl <- adl %>% dplyr::mutate(
-  y_hat = predict(mod),
-  resid = resid(mod),
-  rstudent = rstudent(mod),
-  rstandard = rstandard(mod)
-)
-```
-
+Wenn ein Modell an die Daten gefittet wird, dann tragen nicht alle Werte gleichermaßen zu der Modellspezifikation bei. Manche Werte üben einen stärkeren Einfluss auf das Modell aus als andere Werte. In @fig-slm-model-outlier-1 ist ein Beispiel abgebildet für einen Datensatz bei dem ein einzelner Punkt einen übermäßig großen Einfluss auf das Modell ausübt.
 
 ```{r}
-#| fig.cap: "Streudiagramm der ADCS-MCI-ADL scores gegen ADAS-cos scores"
-
-ggplot(adl, aes(adas,adcs)) +
-  geom_point(size=2) +
-  labs(x = 'ADAS-cog score', y = 'ADCS-MCI-ADL score') 
+#| fig-cap: "Beispiel für einen Datenpunkt mit einem großen Einfluss auf das Modell. Die resultierenden Regressionsgeraden sind mit dem Punkt (rot) und ohne den Punkt (grün) abgetragen."
+#| label: fig-slm-model-outlier-1
+ 
+n <- 30
+df <- tibble(
+  x = c(runif(n, -1, 1),3),
+  y = c(runif(n, -1, 1),3),
+  g = rep(c('a','b'),c(n,1))) 
+mod1 <- lm(x ~ y, df)
+mod2 <- lm(x ~ y, df |> dplyr::filter(g == 'a'))
+ggplot(df, aes(x,y)) +
+  geom_point(aes(color=g)) +
+  geom_abline(intercept = coef(mod1)[1], slope = coef(mod1)[2], linetype = 'dashed', color='red') +
+  geom_abline(intercept = coef(mod2)[1], slope = coef(mod2)[2], linetype = 'dashed', color='green') +
+  guides(color = "none")
 ```
 
+Der einzelen Punkt rechts oben in @fig-slm-model-outlier-1 hat einen großen Einfluss auf die resultierende Regressionsgerade wie in der Abbildung zu sehen ist. Der Einfluss ist zu einem großen Teil durch den Abstand des jeweiligen $x_i$-Wertes vom Mittelwert der $x_i$-Werte $\bar{x}$ bestimmt. Die genaue Berechnung der Hebelwerte $h_i$ ist für das weitere Verständnis nicht wichtig, da sie ein Herleitung mittels Matrizenalgebra erforden. In `R` können die Hebelwerte mit der Funktion `hatvalues()` berechnet werden.
 
+Für unsere weitere Betrachtung der Residuen ist zunächst der Zusammenhang zwischen der Varianz der Residuen $\sigma^2(e_i)$ wichtig. Es gilt:
 
-```{r}
-#| fig.cap: "Hebelwerte der jeweiligen $x_i$s"
+\begin{equation}
+\sigma^2(e_i) = \sigma^2 (1 - h_i)
+\label{eq-slm-model-vare_i}
+\end{equation}
 
-adl_2 <- adl %>% dplyr::mutate(h = hatvalues(mod))
-ggplot(adl_2,
-       aes(adas, h)) +
-  geom_segment(aes(xend=adas, y=0, yend=h), size=1.3) +
-  geom_point(size=4) +
-  labs(x = 'ADAS-cog score',
-       y = 'Leverage') 
-```
+Dieser Zusammenhang kann dazu benutzt werden standardisierte Residuen\index{standardisierte Residuen} zu erstellen.
 
-```{r}
-#| fig.cap: "Hebelwerte der jeweiligen Datenpunkte"
-
-ggplot(adl_2, aes(adas, adcs)) +
-  geom_point(aes(size = h)) +
-  geom_point(col = 'red', size=.3) +
-  geom_vline(xintercept = mean(adl_2$adas), linetype = 'dashed',col='red') +
-  labs(x = 'ADAS-cog score',
-       y = 'ADCS-MCI-ADL score') +
-  scale_size_continuous(name = 'Leverage') 
-```
-
+\begin{equation}
+e_{Si} = \frac{e_i}{\hat{\sigma}\sqrt{1-h_i}}
+\label{eq-slm-model-stresid}
+\end{equation}
 
 Table: Übersicht über verschiedene Arten von Residuen^[$h_i$ = Influenz von Punkt $i$]
 
