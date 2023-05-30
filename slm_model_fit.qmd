@@ -378,7 +378,7 @@ Eine Möglichkeit so einen Wert zu untersuchen, ist abzuschätzen wie *ungewöhn
 
 ### Hebelwerte
 
-Wenn ein Modell an die Daten gefittet wird, dann tragen nicht alle Werte gleichermaßen zu der Modellspezifikation bei. Manche Werte üben einen stärkeren Einfluss auf das Modell aus als andere Werte. In @fig-slm-model-outlier-1 ist ein Beispiel abgebildet für einen Datensatz bei dem ein einzelner Punkt einen übermäßig großen Einfluss auf das Modell ausübt.
+Wenn ein Modell an die Daten gefittet wird, dann haben nicht alle Werte den gleichen Einfluss auf die Modellparameter. Manche Werte üben einen stärkeren Einfluss auf das Modell aus als andere Werte. In @fig-slm-model-outlier-1 ist ein Beispiel abgebildet für einen Datensatz bei dem ein einzelner Punkt einen übermäßig großen Einfluss auf das Modell ausübt.
 
 ```{r}
 #| fig-cap: "Beispiel für einen Datenpunkt mit einem großen Einfluss auf das Modell. Die resultierenden Regressionsgeraden sind mit dem Punkt (rot) und ohne den Punkt (grün) abgetragen."
@@ -391,6 +391,7 @@ df <- tibble(
   g = rep(c('a','b'),c(n,1))) 
 mod1 <- lm(x ~ y, df)
 mod2 <- lm(x ~ y, df |> dplyr::filter(g == 'a'))
+df <- df |> mutate(hat = round(hatvalues(mod1),2))
 ggplot(df, aes(x,y)) +
   geom_point(aes(color=g)) +
   geom_abline(intercept = coef(mod1)[1], slope = coef(mod1)[2], linetype = 'dashed', color='red') +
@@ -398,23 +399,62 @@ ggplot(df, aes(x,y)) +
   guides(color = "none")
 ```
 
-Der einzelen Punkt rechts oben in @fig-slm-model-outlier-1 hat einen großen Einfluss auf die resultierende Regressionsgerade wie in der Abbildung zu sehen ist. Der Einfluss ist zu einem großen Teil durch den Abstand des jeweiligen $x_i$-Wertes vom Mittelwert der $x_i$-Werte $\bar{x}$ bestimmt. Die genaue Berechnung der Hebelwerte $h_i$ ist für das weitere Verständnis nicht wichtig, da sie ein Herleitung mittels Matrizenalgebra erforden. In `R` können die Hebelwerte mit der Funktion `hatvalues()` berechnet werden.
+Der einzelen Punkt rechts oben in @fig-slm-model-outlier-1 hat einen großen Einfluss auf die resultierende Regressionsgerade wie in der Abbildung zu sehen ist. Der Einfluss ist zum Teil durch den großen Abstand des $x_i$-Wertes vom Mittelwert der $x_i$-Werte $\bar{x}$ bestimmt. Der Einfluss jedes einzelnen $x$-Wertes wird mittels der sogenannten Hebelwerte $h_i$ bestimmt. Die genaue Berechnung der Hebelwerte $h_i$ ist für das weitere Verständnis allerdings nicht wichtig, sondern mehr das Verständnis des Konzepts. Die Hebelwerte $h_i$ können Werte in $h_i \in \[0,1\]$ annehmen. In `R` können die Hebelwerte mit der Funktion `hatvalues()` berechnet werden.
 
-Für unsere weitere Betrachtung der Residuen ist zunächst der Zusammenhang zwischen der Varianz der Residuen $\sigma^2(e_i)$ wichtig. Es gilt:
+Tragen wir in die Grafik die Hebelwerte in die Grafik @fig-slm-model-outlier-1 ein (siehe @fig-slm-model-outlier-2), dann ist zu sehen, dass der abgesetzte Wert auch den größten Hebelwert hat.
+
+```{r}
+#| fig-cap: "Beispiel für einen Datenpunkt mit einem großen Einfluss auf das Modell. Die Werte geben die jeweiligen Hebelwerte $h_i$ der Datenpunkte wieder."
+#| label: fig-slm-model-outlier-2
+ 
+ggplot(df, aes(x,y)) +
+  geom_point(aes(color=g)) +
+  geom_abline(intercept = coef(mod1)[1], slope = coef(mod1)[2], linetype = 'dashed', color='red') +
+  geom_label(aes(label = hat), alpha=.5) +
+  guides(color = "none") 
+```
+
+Nach diesem kurzen Exkurs zu den Hebelwerten $h_i$, schauen wir uns für unsere weitere Betrachtung der Residuen zunächst den Zusammenhang zwischen der Varianz der Residuen in der Population $\sigma^2$ und der Varianz der geschätzten Residuen $\sigma^2(\hat{\epsilon}_i) = \sigma^2(e_i)$ an. Es gilt:
 
 \begin{equation}
 \sigma^2(e_i) = \sigma^2 (1 - h_i)
 \label{eq-slm-model-vare_i}
 \end{equation}
 
-Dieser Zusammenhang kann dazu benutzt werden standardisierte Residuen\index{standardisierte Residuen} zu erstellen.
+D.h. wenn ein Datenpunkt $x_i$ einen kleineren Einfluss auf das Modell ausübt und dementsprechend einen kleinen Hebelwert $h_i$, dann wird die Varianz für diesen Wert nahezu korrekt eingeschätzt. Hat der Wert $x_i$ allerdings, einen großen Hebelwert $h_i$, führt die dazu, dass die Varianz für diesen Wert stärker unterschützt wird. Dieser Zusammenhang kann dazu benutzt werden standardisierte Residuen\index{standardisierte Residuen} zu erstellen.
 
 \begin{equation}
 e_{Si} = \frac{e_i}{\hat{\sigma}\sqrt{1-h_i}}
 \label{eq-slm-model-stresid}
 \end{equation}
 
-Table: Übersicht über verschiedene Arten von Residuen^[$h_i$ = Influenz von Punkt $i$]
+Die standardisierten Residuen $e_{Si}$ haben dazu die Eigenschaft, dass sie eine Varianz und damit Standardabweichung von $\sigma^2(e_{Si}) = 1$ haben, also Standardnormalverteilt $\Phi(z)$ sein sollten. Dadurch können Abweichungen von den Modellannahmen leichter Identifiziert werden, da die Skala normiert ist. In `R` kann die standardiserten Residuen $e_{Si}$ mittels der Funktion `rstandard()` berechnet werden. Eine Standardgrafik zum inspizieren der standardisierten Residuen ist wiederum eine Abbildung der $e_{Si}$ gegen die $\hat{y}_i$.
+
+```{r}
+#| fig-cap: "Grafik der standardisierten Residuen $e_{Si}$ gegen die Vorhersagewerte $\\hat{y}_i$ für das ADL-Modell."
+#| label: fig-slm-model-rstandard
+
+ggplot(adl, aes(y_hat, rstandard)) +
+  geom_point() +
+  geom_hline(yintercept = c(-2,-1,0,1,2),
+             linetype= c('dotted','dotted','dashed','dotted','dotted'),
+             color = c('red','red','green','red','red')) +
+  labs(x = expression(hat(y)[i]), y = expression(e[Si]))
+```
+
+Die @fig-slm-model-rstandard sieht relativ ähnlich zu @fig-sim-model-rplot-1 aus. Durch die Änderung der Skala ist jetzt aber leichter abschätzbar ob die Verteilung der erwarteten Normalverteilung folgt. D.h. etwa $\frac{2}{3}$ der Werte sollten zwischen $-1$ und $1$ liegen und etwa $95\%$ zwischen $-2$ und $2$. Bis auf den einen Punkt oben rechts, sieht alles soweit unauffällig aus.
+
+### Studentized Residuals
+
+Die letzte Art von Residuen sind die sogenannten Studentized Residuals $e_{Ti}$, die mittels der folgenden Formel berechnet werden.
+
+\begin{equation}
+e_{Ti} = \frac{e_i}{\hat{\sigma}_{(-i)}\sqrt{1-h_i}}
+\label{eq-slm-model-rstudent}
+\end{equation}
+
+
+In @tbl-slm-model-resids sind noch einmal die drei Arten von Residuen aufgelistet.
 
 | Typ | Berechnung | Ziel |
 | --- | --- | --- |
@@ -422,78 +462,17 @@ Table: Übersicht über verschiedene Arten von Residuen^[$h_i$ = Influenz von Pu
 | Standardisierte Residuen |  $e_{Si} = \frac{e_i}{\hat{\sigma}\sqrt{1-h_i}}$ | Verteilungsannahme |
 | Studentized Residuen |  $e_{Ti} = \frac{e_i}{\hat{\sigma}_{(-i)}\sqrt{1-h_i}}$ | Einfluss  auf Modell |
 
-## Residuen in `R` berechnen mit `residuals()` und Freunden
-
-```{r, echo=T}
-rstandard(mod)[1:5] # standardisierte Residuen
-rstudent(mod)[1:5] # studentized Residuen
-```
+: Übersicht über verschiedene Arten von Residuen {#tbl-slm-model-resids}
 
 
-## Residuen in `R` inspizieren
+### `summary()`
 
-```{r, eval=F, echo=T}
-y_hat <- predict(mod)
-plot(y_hat, rstandard(mod))
-plot(y_hat, rstudent(mod))
-```
-
-
-## Diagnoseplot - Einfache Residuen $\hat{\epsilon_i} \sim \hat{y_i}$
-```{r}
-#| fig.cap="Streudiagramm der Residuen $\\hat{\\epsilon_i}$ gegen die Vorhersagewerte $\\hat{y}_i$"
-
-plot(resid ~ y_hat, adl, ylab=expression(e[i]),
-     xlab=expression(paste(hat(y)[i], '-ADCS-MCI-ADL score')),
-     ylim=c(-20,20)) 
-abline(h = 0, lty = 2, col = 'red')
-```
-
-## Diagnoseplot - Standardisierte Residuen $\hat{\epsilon}_{Si} \sim \hat{y_i}$
-
-```{r}
-#| fig.align='center', fig.cap="Streudiagramm der standardisierten Residuen $\\hat{\\epsilon}_{Si}$ gegen die Vorhersagewerte $\\hat{y}_i$"
-
-plot(rstandard ~ y_hat, adl, ylim=c(-4,4),
-     xlab = expression(paste(hat(y)[i], '-ADCS-MCI-ADL score')),
-     ylab = expression(e[Si])) 
-abline(h = 0, lty = 2, col = 'red')
-abline(h = c(-2,-1,1,2), lty=3, col = 'gray')
-```
-
-## Diagnoseplot - Studentized Residuen $\hat{\epsilon}_{Ti} \sim \hat{y_i}$
-```{r}
-#| fig.cap="Streudiagramm der studentized Residuals $\\hat{\\epsilon}_{Ti}$ gegen die Vorhersagewerte $\\hat{y}_i$"
-
-plot(rstudent ~ y_hat, adl, 
-     xlab = expression(paste(hat(y)[i], '-ADCS-MCI-ADL score')),
-     ylab = expression(e[Ti]),
-     ylim=c(-4,4))
-abline(h = 0, lty = 2, col = 'red')
-```
-
-
-
-
-
-
-## `summary()`
-
-\scriptsize
 ```{r}
 summary(mod)
 ```
 
-## Neue Idee zu Residuen
 
-```{r}
-#| fig.cap: "Spielzeugbeispiel mit Residuen $\\hat{\\epsilon}_i = e_i = y_i - \\hat{y}_i$"
-
-print(p_res)
-```
-
-
-## Zum Nacharbeiten
+## Zum Nachlesen
 
 @kutner2005 [p.100-114] \newline
 @pos_residuals \newline
