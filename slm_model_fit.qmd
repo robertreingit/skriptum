@@ -162,14 +162,14 @@ In @fig-sim-model-rplot-2-2 ist dagegen eine anderes Problem zu beobachten, die 
 
 ::: {#def homoscedasticity}
 
-## Homoskedastizität\index{Homoskedastizität}
+### Homoskedastizität\index{Homoskedastizität}
 
 Wenn die Varianz der Residuen $\epsilon_i$ in einem Regressionsmodell unabhängig von der Größe der Vorhersagevariable $X_i$ gleich ist, wird die als Homoskedastizität bezeichnet. Die Streuung der Residuen ist dann für alle Werte $X_i$ gleich. Wenn dies nicht der Fall ist, wird von Heteroskedastizität\index{Heteroskedastizität} gesprochen.
 :::
 
 Eine weitere Möglichkeit die Residuen zu überprüfen ist die Anfertigung von sogenannten  qq-Plots. Dies ermöglichen etwas strukturierter die Verteilung der Residuen zu überprüfen.
 
-## Quantile-Quantile-Plots 
+### Quantile-Quantile-Plots 
 
 qq-Plot ist die Kurzform von Quantile-Quantile-Plot. D.h. es werden die Quantilen von zwei Variablen gegeneinander abgetragen. Um die Funktionsweise besser zu verstehen schauen wir uns erst einmal ein Spielzeugbeispiel an. In @tbl-slm-model-toy-1 ist eine kleiner Datensatz mit $n = 5$ Datenpunkten angezeigt.
 
@@ -372,11 +372,11 @@ ggplot(df_toy, aes(sample=y)) +
 ```
 
 
-## Standardisierte Residuen
+### Standardisierte Residuen
 
 Eine Möglichkeit so einen Wert zu untersuchen, ist abzuschätzen wie *ungewöhnlich* der zu dem Residuen $e_i$ gehörende $y_i$-Wert ist. Ein Problem der einfachen Residuen $e_i$ ist, dass diese laut der Modellannahmen die gleiche Varianz $\sigma^2$ haben sollten. Allerdings, auf Grund der Art, wie die $e_i$ berechnet werden, folgt die Randbedingung, dass die Summe der $e_i$ gleich Null ist, $\sum_{i=1}^n e_i = 0$. Dies führt dazu, dass die einfachen Residuen nicht unanbhängig voneinander sind und nicht immer Homoskedastizität besitzen. Daher gibt es eine weitere Art Residuen anhand des Modell zu berechnen, die nicht unter diesen Beschränkungen leiden. Dies sind die standardisierten Residuen $e_{Si}$. Dazu müssen wir uns zunächst mit Hebelwerte $h_i$ beschäftigen.
 
-### Hebelwerte
+#### Hebelwerte
 
 Wenn ein Modell an die Daten gefittet wird, dann haben nicht alle Werte den gleichen Einfluss auf die Modellparameter. Manche Werte üben einen stärkeren Einfluss auf das Modell aus als andere Werte. In @fig-slm-model-outlier-1 ist ein Beispiel abgebildet für einen Datensatz bei dem ein einzelner Punkt einen übermäßig großen Einfluss auf das Modell ausübt.
 
@@ -399,7 +399,7 @@ ggplot(df, aes(x,y)) +
   guides(color = "none")
 ```
 
-Der einzelen Punkt rechts oben in @fig-slm-model-outlier-1 hat einen großen Einfluss auf die resultierende Regressionsgerade wie in der Abbildung zu sehen ist. Der Einfluss ist zum Teil durch den großen Abstand des $x_i$-Wertes vom Mittelwert der $x_i$-Werte $\bar{x}$ bestimmt. Der Einfluss jedes einzelnen $x$-Wertes wird mittels der sogenannten Hebelwerte $h_i$ bestimmt. Die genaue Berechnung der Hebelwerte $h_i$ ist für das weitere Verständnis allerdings nicht wichtig, sondern mehr das Verständnis des Konzepts. Die Hebelwerte $h_i$ können Werte in $h_i \in \[0,1\]$ annehmen. In `R` können die Hebelwerte mit der Funktion `hatvalues()` berechnet werden.
+Der einzelen Punkt rechts oben in @fig-slm-model-outlier-1 hat einen großen Einfluss auf die resultierende Regressionsgerade wie in der Abbildung zu sehen ist. Der Einfluss ist zum Teil durch den großen Abstand des $x_i$-Wertes vom Mittelwert der $x_i$-Werte $\bar{x}$ bestimmt. Der Einfluss jedes einzelnen $x$-Wertes wird mittels der sogenannten Hebelwerte $h_i$ bestimmt. Die genaue Berechnung der Hebelwerte $h_i$ ist für das weitere Verständnis allerdings nicht wichtig, sondern mehr das Verständnis des Konzepts. Die Hebelwerte $h_i$ können Werte in $h_i \in \[1/n,1\]$ annehmen. In `R` können die Hebelwerte mit der Funktion `hatvalues()` berechnet werden.
 
 Tragen wir in die Grafik die Hebelwerte in die Grafik @fig-slm-model-outlier-1 ein (siehe @fig-slm-model-outlier-2), dann ist zu sehen, dass der abgesetzte Wert auch den größten Hebelwert hat.
 
@@ -413,6 +413,8 @@ ggplot(df, aes(x,y)) +
   geom_label(aes(label = hat), alpha=.5) +
   guides(color = "none") 
 ```
+
+Eine Daumenregel für die Hebelwerte ist der Schwellenwert von $(2k+2)/n$, wobei $k$ die Anzahl der unabhängigen Variablen ist. Für den Beispieldatensatz in @fig-slm-model-outlier-2 würde sich daher ein Wert von $(2\cdot 1+2)/30 = 0.13$ ergeben. Entsprechend wäre der abgesetzte Wert mit einem Hebelwert von $h_i = `r max(df$hat)`$ als problematisch einzustufen.
 
 Nach diesem kurzen Exkurs zu den Hebelwerten $h_i$, schauen wir uns für unsere weitere Betrachtung der Residuen zunächst den Zusammenhang zwischen der Varianz der Residuen in der Population $\sigma^2$ und der Varianz der geschätzten Residuen $\sigma^2(\hat{\epsilon}_i) = \sigma^2(e_i)$ an. Es gilt:
 
@@ -453,6 +455,20 @@ e_{Ti} = \frac{e_i}{\hat{\sigma}_{(-i)}\sqrt{1-h_i}}
 \label{eq-slm-model-rstudent}
 \end{equation}
 
+Die Formel \eqref{eq-slm-model-rstudent} ist sehr ähnlich zu derer für die standardisierten Residuen, der einzige Unterschied ist der Term $\hat{\sigma}_{(-i)}$. Dieser bezeichnet die Residualvarianz wenn dass Modell ohne den Datenpunkt $i$ gefittet wird. D.h. wie stark verändert sich die Schätzung der Varianz wenn ein Datenpunkt weggelassen wird. Normalerweise sollte eine einzelner Punkt keinen übermäßigen Einfluss auf die geschätzte Varianz haben, daher können die Studentized Residuals dazu verwendet werden problematische Datenpunkte zu identifizieren. Wenn die tatsächlichen Residuen einer Normalverteilung folgen, dann kann gezeigt werden, dass die Studentized Residuals einer $t$-Verteilung mit $N-k-2$ Freiheitsgeraden folgen. Daher könnte sogar ein formaler statistischer Test durchgeführt werden. In `R` können die Studentized Residuals $e_{Ti}$ mittels der Funktion `rstudent()` berechnet werden und werden entsprechend den anderen Residuen in dem üblichen Graphen gegen die vorhergesagten Werte $\hat{y}_i$ abgetragen.
+
+```{r}
+#| label: fig-slm-model-restudent-1
+#| fig-cap: "Graph der Studentized Residuals $S_{Ti}$ gegen die vorhergesagten Werte $\\hat{y}_i$ vor das `adl`-Modell"
+
+ggplot(adl, aes(y_hat, rstudent)) +
+  geom_hline(yintercept = 0, linetype = 'dashed', color = 'red') +
+  geom_point() +
+  labs(x = expression(hat(y)[i]), y = expression(e[Ti]))
+```
+
+### Übersicht über die Residuenarten
+
 
 In @tbl-slm-model-resids sind noch einmal die drei Arten von Residuen aufgelistet.
 
@@ -464,32 +480,39 @@ In @tbl-slm-model-resids sind noch einmal die drei Arten von Residuen aufgeliste
 
 : Übersicht über verschiedene Arten von Residuen {#tbl-slm-model-resids}
 
-
 ### `summary()`
+
+Nach dieser Betrachtung der Residuen, die nach jedem Modellfit inspiziert werden sollten um zu überprüfen ob die Modellannahmen angemessen sind schauen wir uns noch einmal kurz die Ausgabe von `summary()` an.
 
 ```{r}
 summary(mod)
 ```
 
+Nach der Wiedergabe des gefitten Modells erfolgt direkt eine Zusammenfassung der Residuen über Minimum und Maximum, Q1 und Q3 und den Median. Jetzt sollte daher auch besser nachvollziehbar sein, warum es sinnvoll ist diese Statistiken über die Residuen direkt anzugeben. Die beiden Extremwerte geben einen ersten Überblick auf mögliche Ausreißer, während die erste Quartile Q1 und die dritte Quartile Q3 möglich Asymmetrien in der Verteilung der Residuen anzeigen. Laut der Annahem der Residuen als Normalverteilt mit $\mu = 0$, sollten diese beiden Werte etwa gleich weit von Null entfernt sein. Dementsprechend sollte der Median nahe an Null dran sein. Was nah ist, kommt dabei immer auf die Einheit der abhängigen Variablen an, wenn der Abstand in Kilometern ist kann ein kleiner Wert schon problematisch sein, während wenn eine Sprungweite in Mikrometern angeben wird eine großer Wert unbedenklich sein kann. Der Schätzerwert für $\sigma$ selbst, wir unten mit `Residual standard error` angegeben.
 
-## Zum Nachlesen
+Im vorliegenden Fall des Modells für die `adl`-Daten ist der Median dementsprechend doch etwas weit von Null entfernt und der geschätzte Residualfehler $\hat{\sigma} = `r round(sigma(mod),2)`$ ebenfalls relativ groß. $\hat{\sigma}$ kann mittels der Funktion `sigma()` erhalten werden.
+
+### Zum Nachlesen
 
 @kutner2005 [p.100-114] \newline
 @pos_residuals \newline
 @fox2011 [p.285-296]
 
 
+## Einflussmetriken
 
+Im folgenden schauen wir uns verschiedene Einflussmetriken auf das Modell an. Die Idee ist dabei die gleiche wie schon bei den Studentized Residuals. Der Einfluss der Datenpunkte auf den Modellfit wird interpretiert indem ein Modell mit und ein Modell ohne den jeweiligen Datenpunkt gefittet wird. Der Einfluss auf verschiedene Modellparameter wird dann bestimmt und dementsprechend als möglicherweise bedenklich eingestuft. In den Meisten dieser Ansatz kommen die Hebelwerte $h_i$ die wir bereits kennegelernt haben. 
 
-## DFFITS
+### DFFITS
 
-Mit Hilfe der Hebelwerte lassen sich verschiedene Maße erstellen um den Einfluss von Datenpunkten auf das Modell zu überprüfen. Ein Maß wird als \index{DFFITS} bezeichnet (siehe @eq-dffits)
+Das erst Maß, daß wir uns anschauen ist DFFITS \index{DFFITS}. Dabei wird für jeden Datenpunkt getrennt ein Wert berechnet. Formal:
 
-$$
-(DFFITS)_i = \frac{\hat{y}_i - \hat{y}_{i(i)}}{\sqrt{\hat{\sigma}^2h_i}}
-$${#eq-dffits}
+\begin{equation}
+(DFFITS)_i = \frac{\hat{y}_i - \hat{y}_{i(i)}}{\hat{\sigma}\sqrt{h_i}}
+\label{eq-slm-model-dffits}
+\end{equation}
 
-Im Zähler kommen vin @eq-dffits zweimal vorhergesagte $y$-Werte vor. $\hat{y}_i$ ist dabei der ganz normale Vorhersagewert der uns mittlerweile schon mehrfach begegnet ist. Der zweite Wert $\hat{y}_{i(i)}$ bezeichnet den vorhergesagten Wert aus dem Modell aus dem der Wert $y_i$ weggelassen wurde. D.h, dass Modell ist mit einem Wert weniger gefittet worden. Daher misst die Differenz $\hat{y}_i - \hat{y}_{i(i)}$ den Unterschied in den Vorhersagewerte zwischen zwei Modellen bei denen einmal der Wert $y_i$ zum fitten verwendet wurde und einmal wenn $y_i$ nicht zum fitten verwendet wurde. Umso größer der Unterschied zwischen diesen beiden Werte umso größer ist der Einfluss des Wertes $y_i$ auf den Modellfit. Den Nenner von @eq-dffits lassen wir mal fallen, da es sich dabei nur um einen Normierungswert handelt. Dementsprechend, wird mittels DFFITS für jeden Datenpunkt ein Wert ermittelt und umso größer dieser Wert ist umso größer ist der Einfluss des jeweiligen Datenpunktes auf den Modellfit.
+Im Zähler kommen von Formel\eqref{eq-slm-model-dffits} kommen zweimal die vorhergesagte $y$-Werte vor. $\hat{y}_i$ ist dabei der ganz normale Vorhersagewert der uns mittlerweile schon mehrfach begegnet ist. Der zweite Wert $\hat{y}_{i(i)}$ bezeichnet den vorhergesagten Wert aus dem Modell aus dem der Wert $y_i$ weggelassen wurde. D.h, dass Modell ist mit einem Wert weniger gefittet worden. Daher misst die Differenz $\hat{y}_i - \hat{y}_{i(i)}$ den Unterschied in den Vorhersagewerte zwischen den zwei Modellen bei denen einmal der Wert $y_i$ zum fitten verwendet wurde und einmal wenn $y_i$ weggelassen wurde. Umso größer der Unterschied zwischen diesen beiden Werte umso größer ist der Einfluss des Wertes $y_i$ auf den Modellfit. Im Nenner von Formel\eqref{eq-slm-model-dffits} wird wieder ein ähnlicher Normierungswert wie bei den Studentizied Residuals angewendet. Insgesamt, wird mittels DFFITS daher für jeden Datenpunkt ein Wert ermittelt und umso größer dieser Wert ist umso größer ist der Einfluss des jeweiligen Datenpunktes auf den Modellfit.
 
 Im idealen Fall sollte alle Datenpunkt ungefähr den gleichen Einfluss haben und einzelne Datenpunkte die einen übermäßig großen Einfluss auf das Modell haben sollten noch einmal genauer inspiziert werden.
 
@@ -504,47 +527,46 @@ Wenn ein Wert außerhalb der Daumenregel liegt, heißt das nicht, dass er automa
 In `R` können die DFFITS werden mittels der `dffits()`-Funktion berechnet werden. Als Parameter erwartet `dffits()` das gefittete `lm()`-Objekt. Ähnlich wie bei den Residuen, werden die DFFITS-Werte gegen die vorhergesagten $y_i$-Werte graphisch abgetragen um die Wert zu inspizieren und Probleme in der Modellspezifikation zu identifizieren.
 
 ```{r}
-#| echo: true
-#| fig.cap: "Beispiel für DFFITS gegen $\\hat{y}_i$"
-#| label: fig-dffits
+#| fig.cap: "Graph der DFFITS-Werte gegen $\\hat{y}_i$ für das `adl`-Modell."
+#| label: fig-slm-model-dffits
 
-plot(adl$y_hat, dffits(mod),
-     ylim=c(-2,2),
-     xlab=expression(hat(y)[i]),
-     ylab='DFFIT-Wert')
-abline(h=c(-1,1), col='red', lty=2)
+
+adl <- adl |> mutate(dffits = dffits(mod))
+ggplot(adl, aes(y_hat, dffits)) +
+  geom_hline(yintercept = c(-1,1), col = 'red', linetype = 'dashed') +
+  geom_point() +
+  labs(x = expression(hat(y)[i]), y = 'dffits')
 ```
 
-In @fig-dffits sind die DFFITS-Werte gegen die vorhergesagten Werte $\hat{y}_i$ abgetragen und zusätzlich die Daumenregel $\pm1$ eingezeichnet. Hier ist ein Wert nur gerade so außerhalb des vorgeschlagenen Bereichs. Hier könnte daher sich dieser Datenpunkt noch einmal genauer angeschaut werden, ob bei Ausschluß des Wertes es zu einer qualitativ anderen Interpretation der Daten kommt oder ob bespielsweise Übertragungsfehler für diesen Wert vorliegen oder sonstige Gründe.
+In @fig-slm-model-dffits sind die DFFITS-Werte gegen die vorhergesagten Werte $\hat{y}_i$ abgetragen und zusätzlich die Daumenregel $\pm1$ eingezeichnet. Hier ist ein Wert nur gerade so außerhalb des vorgeschlagenen Bereichs. Hier könnte daher sich dieser Datenpunkt noch einmal genauer angeschaut werden, ob bei Ausschluß des Wertes es zu einer qualitativ anderen Interpretation der Daten kommt oder ob bespielsweise Übertragungsfehler für diesen Wert vorliegen oder sonstige Gründe.
 
-## Cooks-Abstand
+### Cook-Abstand
 
-Ein Maß um den Einfluss von einzelnen Datenpunkten auf die Vorhersagewerte $\hat{y}_i$ über alle Werte abzuschätzen.
+Während DFFITS den Einfluss des Datenpunktes $i$ auf den jeweiligen Datenpunkt abschätzt, wird bei dem sogenanten Cook-Abstand\index{Cook-Abstand} der Einfluss des $i$-ten Datenpunktes auf alle $n$ vorhergesagten Werte $\hat{y}_i$. Formal:
 
-$$
+\begin{equation}
 D_i = \frac{\sum_{j=1}^N(\hat{y_j} - \hat{y}_{j(i)})}{k\hat{\sigma}^2}
-$$
+\label{eq-slm-model-cook}
+\end{equation}
 
-### Daumenregel
+Hier bedeutet die Syntax $\hat{y}_{j(i)}$ der vorhergesagte Wert für den Datenpunkt $j$ wenn der $i$-te Datenpunkt ausgelassen wird. In `R` können die Cook-Abstände mit Hilfe der Funktion `cooks.distance()` berechnet werden.
 
-$D_i > 1$
-
-### In `R`
-
-`cooks.distance()`
-
-## Cooks-Abstand plot
+::: {.callout-tip}
+Eine Daumenregel um einen *möglichen* Ausreißer zu identifzieren kann über  $D_i > 1$ abgeschätzt werden.
+:::
 
 ```{r}
-#| fig.cap: "Cook's $D_i$ gegen $\\hat{y}_i$"
+#| fig-cap: "Cook's $D_i$ gegen $\\hat{y}_i$ für das `adl`-Modell."
+#| label: fig-slm-model-cook
 
-plot(adl$y_hat, cooks.distance(mod), ylim=c(-2,2),
-     xlab=expression(hat(y)[i]),
-     ylab="Cook's D")
-abline(h=c(-1,1), col='red', lty=2)
+adl <- adl |> mutate(cook = cooks.distance(mod))
+ggplot(adl, aes(y_hat, cook)) +
+  geom_hline(yintercept = c(-1,1), col = 'red', linetype = 'dashed') +
+  geom_point() +
+  labs(x = expression(hat(y)[i]), y = 'Cook-Abstand')
 ```
 
-## DFBETAS
+### DFBETAS
 
 Ein Maß für die Veränderung der $\beta$-Koeffizienten durch einzelne Datenpunkte $i$. 
 
