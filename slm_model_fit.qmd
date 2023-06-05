@@ -555,6 +555,8 @@ Hier bedeutet die Syntax $\hat{y}_{j(i)}$ der vorhergesagte Wert für den Datenp
 Eine Daumenregel um einen *möglichen* Ausreißer zu identifzieren kann über  $D_i > 1$ abgeschätzt werden.
 :::
 
+In @fig-slm-model-cook ist wiederum der übliche Graph gegen die vorhergesagten Werte $\hat{y}_i$ zu sehen. Anhand der abgebildeten Wert ist keiner der Datenpunkte als problematisch zu identifizieren.
+
 ```{r}
 #| fig-cap: "Cook's $D_i$ gegen $\\hat{y}_i$ für das `adl`-Modell."
 #| label: fig-slm-model-cook
@@ -568,39 +570,41 @@ ggplot(adl, aes(y_hat, cook)) +
 
 ### DFBETAS
 
-Ein Maß für die Veränderung der $\beta$-Koeffizienten durch einzelne Datenpunkte $i$. 
+Als letztes Maß schauen wir uns noch DFBETAS\index{DFBETAS} an. DFBETAS berechnet ein Maß für die Veränderung der $\beta$-Koeffizienten auf Grund der einzelnen Datenpunkte $i$. D.h. es wird jetzt nicht nur ein Wert für jeden Wert berechnet, sondern ein Wert für den jeden Datenpunkt und jeden $\beta$-Koeffizienten. In unseren Fall mit einem y-Achsenabschnitt $\beta_0$ und einem Steigungskoeffizienten $\beta_1$ werden entsprechend $2 \times x$ Werte berechnet. Formal:
 
-$$
+\begin{equation}
 (DFBETAS)_{k(i)} = \frac{\hat{\beta}_k - \hat{\beta}_{k(i)}}{\sqrt{\hat{\sigma}^2c_{kk}}}
-$$
+\label{eq-slm-model-dfbetas}
+\end{equation}
 
-### Daumenregel
+Wie aus Formel \eqref{eq-slm-model-dfbetas} ersichtlich wird, wird die Veränderungen der Koeffizienten $\beta_i$ bei weglassen des $i$-ten Datenpunktes abgeschätzt. Den Wert $c_{kk}$ lassen wir unberücksichtigt, da er wiederum nur einen Normierungsfaktor darstellt.
 
-Für kleine bis mittlere Datensätze $\approx 1$ \
-Für große Datensätze $\approx 2/\sqrt{N}$
+::: {.callout-tip}
+Als Daumenregel gilt für kleine bis mittlere Datensätze $\approx 1$, bzw. für große Datensätze $\approx 2/\sqrt{N}$ 
+:::
 
-### In `R`
-
-`dfbeta()`^[Es wird eine Matrize mit $k$-Spalten zurückgegeben.]
-
-## DFBETAS
+Wiederum gibt es eine spezielle Funktion in `R` um die DFBETAS zu berechnen `dfbeta()`. Dabei ist jedoch zu beachten das eine Matrize mit $k$-Spalten von `dfbeta()` zurück gegeben wird. Jede Spalte gibt den Wert für den jeweiligen $\beta$-Koeffizienten an.
 
 ```{r}
 #| fig.cap: "DFBETA-Werte für $\\beta_0$ und $\\beta_1$ gegen $\\hat{y}_i$"
+#| label: fig-slm-model-dfbeta
 
-adl <- adl %>% dplyr::mutate(`dfbetas[1]` = dfbeta(mod)[,1],
-                      `dfbetas[2]` = dfbeta(mod)[,2])
-adl %>% dplyr::select(y_hat, `dfbetas[1]`, `dfbetas[2]`) %>%
+adl <- adl %>% dplyr::mutate(`dfbeta[1]` = dfbeta(mod)[,1],
+                      `dfbeta[2]` = dfbeta(mod)[,2])
+adl %>% dplyr::select(y_hat, `dfbeta[1]`, `dfbeta[2]`) %>%
   tidyr::pivot_longer(-y_hat) %>%
   ggplot(aes(y_hat, value)) +
+  geom_hline(yintercept = c(1,-1), col = 'red', linetype = 'dashed') +
   geom_point() +
   facet_grid(~name, labeller = label_parsed) + 
-  labs(x = expression(hat(y)[i]), y = 'Veränderung')
+  labs(x = expression(hat(y)[i]), y = 'DFBETA')
 ```
 
-## Zusammenfassung
+In @fig-slm-model-dfbeta sind die DFBETAS für die beiden Koeffizienten $\hat{beta}_0$ und $\hat{beta}_1$ abgetragen. Hier ist zu sehen, dass die Wert für den Steigunsgkoeffizienten $\beta_1$ alle als unproblematisch anzusehen sind, während in Bezug auf $\beta_0$ ein paar wenige Fälle eine weiter Inspektion nach sich ziehen könnten. Allerdings sollte berücksichtigt werden, dass der y-Achsenabschnitt sehr stark durch die Verteilung der Datenpunkte in Bezug auf die $x$-Werte beeinflusst ist, da der Mittelwert der $x$-Werte bei $\bar{x} = `r round(mean(adl[['adas']]),1)`$ liegt.
 
-Table: Übersicht über die verschiedene Einflussmaße zur Bewertung der Modellgüte
+### Zusammenfassung
+
+In @tbl-slm-model-influence sind noch einmal die verschiedenen Methoden tabellarisch dargestellt.
 
 | Typ | Veränderung | Daumenregel |
 | --- | ---  | ---  |
@@ -609,27 +613,27 @@ Table: Übersicht über die verschiedene Einflussmaße zur Bewertung der Modellg
 | $(DFBETAS)_{k(i)}$ |  Koeffizient i | $2\sqrt{N}$ |
 | $e_{Ti}$ | Residuum i  | t-Verteilung(n-k-2)|
 
+: Übersicht über die verschiedene Einflussmaße zur Bewertung der Modellgüte {#tbl-slm-model-influence}
 
-## Diagnoseplots in R mit `plot(mod)`
+## Diagnoseplots in `R`
 
+Da die Diagnose eines gefitten Modell in jedem Fall durchgeführt werden sollte, gibt es mit `plot(mod)` einen short-cut um eine Reihe von Diagnoseplots einfach erstellen zu können.
 
 ```{r, echo=T, eval=F}
 plot(mod)
 ```
 ```{r}
-par(mfrow=c(2,2))
-par(mar=c(1,1,1,1))
+#| fig-height: 5
+mar <- par()$mar
+par(mfrow=c(2,2), mar=c(3,4,5,3))
 plot(mod)
-par(mfrow=c(1,1))
+par(mfrow=c(1,1), mar=mar)
 ```
 
-## Zum Nacharbeiten
+### Zum Nacharbeiten
 
-@pos_diagnostics\newline
-@fox2011 [p.294-302]
+@pos_diagnostics, @fox2011 [p.294-302], @young2019
 
-### Weiterführendes
 
-@young2019
 
 
