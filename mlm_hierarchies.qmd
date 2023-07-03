@@ -41,60 +41,55 @@ rt_tbl <- tibble::tibble(
 )
 ```
 
+Bisher waren wir damit beschäftigt unsere Modelle immer komplizierter zu machen, angefangen haben dem einfachen linearen Modell, das dann zum multiplen linearen Modell wurde mit mehreren $x$-Variablen. Die konnten im nächsten Schritt miteinander interagieren und dann im letzten Schritt wurde die Anforderung aufgehoben, das die $x$-Variablen kontinuierlich sein mussten. Letztendlich konnte aber immer das einfache Modell, die Punkt-Steigungsform, aus der Schule beibehalten werden. Nun werden wir noch eine direkte Verbindung zwischen dem Regressionsmodell und der Varianzanalyse aufzeigen.
+
 ## Einfaches Modell
 
-\scriptsize
+Wir beginnen mit einem einfachen Modell, das wiederum nur eine $x$ und eine $y$-Variable hat.
+
 ```{r, echo=T}
 mod0 <- lm(y ~ x, simple)
 summary(mod0)
 ```
 
 
+Hier ist jetzt zunächst einmal nichts Neues. Setzen wir uns aber noch einmal genauer mit den Abweichungen mit den Residuen auseinander. In der Besprechung des Determinationskoeffizienten $R^2$ haben wir schon die Unterteilung der Quadratsummen kennengelernt. Hier hatten wird auf die Aufteilung der Varianz von $Y$ SSTO in die beiden Komponenten Regressionsvarianz $SSR$ und Fehlervarianz $SSE$. Es gilt.
 
-## Einfaches Modell
+\begin{equation}
+SSTO = SSR + SSE
+\end{equation}
 
-```{r}
-#| echo: true
+Die Fehlerquadratsumme SSE ist definiert nach:
 
-mod0 <- lm(y ~ x, simple)
-summary(mod0)
-```
-
-## Abweichungen ... noch mal
-
-### Sum of squares of error
-
-$$
+\begin{equation}
 SSE = \sum_{i=1}^n (y_i - \hat{y}_i)^2
-$$
+\end{equation}
 
-Typischerweise beinhaltet ein Modell zum berechnen der $\hat{y}_i$ verschiedene Parameter. Bei der einfachen Regression zum Beispiel $\beta_0$ und $\beta_1$ (#Modellparameter $p$ = 2) .
+Als die Summe der quadrierten Abweichungen der vorhergesagten Werte $\hat{y}_i$ von den tatsächlich beobachteten Werten $y_i$.
 
-### Freiheitsgrade (degrees of freedom) von SSE
+Um die Werte $\hat{y}_i$ berechnen zu können, benötigen wir unser Modell. Dieses Modell hat zwei Parameter, die beiden Koeffizienten $\beta_0$ und $\beta_1$. Die Anzahl der Parameter in dem Modell wird meistens per Konvention mit dem Symbol $p$ bezeichnet. In unserem Fall ist gilt daher $p = 2$. Die Anzahl der Parameter $p$ ist verknüpft mit den sogenannten Freiheitsgraden $df$ (degrees of freedom). Die Freiheitsgrade von SSE berechnen sich nach $N-p$, wobei $N$ die Anzahl der Beobachtungen, der Datenpunkte ist. In unseren Fall also $N-2$
 
-$$
-dfE := n - p
-$$
+\begin{equation}
+df_E := n - p
+\end{equation}
 
-Die *effektive* Anzahl der Beobachtungen um die Varianz $\sigma^2$ abzuschätzen.
+Die Frheitsgerade bestimmen die *effektive* Anzahl der Beobachtungen die zur Verfügung stehen um die Varianz $\sigma^2$ des Modells abzuschätzen. Dadurch, dass zwei Parameter anhand der Daten für das Modell bestimt werden, fallen zwei Datenpunkt raus als unabhängige Informationsquellen. Anders ausgedrückt, wenn ich die beiden Modellparameter, in unseren Fall $\beta_0$ und $\beta_1$ kenne, dann sind nur noch $N-2$ Datenpunkt frei variierbar. Sobald ich die Werte von $N-2$ Datenpunkten und die beiden Parameter kenne, kann ich die verbleibenden beiden Werte berechnen. Daher die Begriff der Freiheitsgrade.
 
-## MSE als Schätzer für $\sigma^2$
+Wir nun SSE durch die Anzahl der Freiheitsgerade teilen, dann lässt sich zeigen, das dieser Wert ein erwartungstreuer Schätzer für die Residualvarianz $\sigma^2$ in Bezug auf die Verteilungsannahme zu den $\epsilon_i \sim \mathcal{N}(0,\sigma^2)$ der Daten ist. Das Verhältnis von SSE zu $df$ wird als Mean squared error MSE bezeichnet.
 
-### Mean squared error MSE
+\begin{equation}
+MSE = \frac{SSE}{df_{E}} = \frac{\sum_{i=1}^n (y_i - \hat{y}_i)^2}{n-p} = \hat{\sigma}^2
+\end{equation}
 
-$$
-MSE = \frac{SSE}{dfE} = \frac{\sum_{i=1}^n (y_i - \hat{y}_i)^2}{n-p}
-$$
+Im ersten Moment erscheint diese Begründung etwas undurchsichtig, aber tatsächlich ist diese Formel schon eine alte Bekannte die uns in Form der Stichprobenvarianz begegnet ist.
 
-Als Schätzer $\hat{\sigma}^2$ für $\sigma^2$ aus $\epsilon_i \sim \mathcal{N}(0,\sigma^2)$
+Wenn wir eine Stichprobe der Größe $N$ mit Werten $y_i$ haben, dann haben wir gelernt die Varianz mittels der Formel:
 
-### Parallel zur Berechnung der Stichprobenvarianz
-
-$$
+\begin{equation}
 \hat{\sigma}^2 = s^2 = \frac{1}{n-1}\sum_{i=1}^2(y_i - \bar{y})^2
-$$
+\end{equation}
 
-wo $s^2$ ein Schätzer für die Varianz von $y$ ist.
+zu berechnen. Was bei dieser Formel schon immer etwas quer gesessen hat, ist der Nenner mit $N-1$ anstatt einfach $N$ wie wir es vom Mittelwert kennen. Aber, um die Varianz zu berechnen benötigen wir einen Parameter, eben den Mittelwert. Dies führt wiederum dazu, dass nur $N-1$ Werte frei variiert werden können und wir sobald wir, neben dem Mittelwert $\bar{y}$, $N-1$ Werte kennen, den verbleibenden Wert berechnen können.
 
 ## Genereller Linearer Modell Testansatz^[@kutner2005, p.72]
 ### Idee
