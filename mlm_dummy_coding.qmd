@@ -22,20 +22,27 @@ data <- tibble::tibble(
 )
 ```
 
-## Beispiel: Körpergröße bei Frauen und Männern
+Bisher haben wir nur kontinuierliche, beziehungsweise metrische, Variablen in unsere lineares Modell aufgenommen. Im Folgenden werden wir sehen, dass wir mit einem kleinem Trick genause nominale Variablen in das Modell integrieren können, ohne dass wir fundamental etwas neues lernen müssen.
+
+## Vergleich von zwei Gruppen
+
+Beginnen wir mit einem einfachen Beispiel. Wir wollen die Unterschiede zwischen Männern und Frauen in Bezug auf die Körpergröße untersuchen. In @fig-mlm-dummy-gender ist ein hypothetischer Datensatz von Körpergrößen von Frauen und Männern abgebildet. Wenig überraschen, da der Datensatz so erstellt wurde, sind Männer im Mittel größer als Frauen.
 
 ```{r}
-#| fig.cap: "Simulierte Daten: Verteilung von Körpergrößen nach Geschlecht"
+#| fig-cap: "Simulierte Daten: Verteilung von Körpergrößen nach Geschlecht für Männer (m) und Frauen (f)"
+#| label: fig-mlm-dummy-gender
 
 ggplot(height, aes(gender,cm)) + 
   see::geom_violindot(size_dots=20, fill_dots='red') +
   labs(x = 'Gender', y = 'Körpergröße[cm]') 
 ```
 
-## Datensatz
-
+In @tbl-mlm-dummy-gender ist eine Ausschnit aus den Daten tabellarisch dargestellt. Wenig überraschend, haben wir zwei Datenspalten. In der ersten Spalte stehen die Körpergrößen, während in der zweiten Spalte eine Indikatorvariable steht die entweder den Wert $m$ für Männer oder $f$ für Frauen annimmt.
 
 ```{r}
+#| label: tbl-mlm-dummy-gender
+#| tbl-cap: "Ausschnitt aus den Daten."
+
 height[c(1:3,31:33),] |> 
   knitr::kable(
     booktabs = T,
@@ -45,17 +52,23 @@ height[c(1:3,31:33),] |>
   )
 ```
 
+In @tbl-mlm-dummy-gender-desc sind dann auch noch einmal die deskriptiven Statistiken der Körpergrößendaten abgebildet die auch noch einmal den Eindruck aus @fig-mlm-dummy-gender bestätigen.
+
 ```{r}
+#| label: tbl-mlm-dummy-gender-desc
+#| tbl-cap: "Deskriptive Statistiken der Körpergrößendaten."
+ 
 x_hat <- height |> dplyr::group_by(gender) |>
   dplyr::summarize(m = round(mean(cm),1), sd = round(sd(cm),1))
-knitr::kable(x_hat, format ='latex', booktabs=TRUE,
+knitr::kable(x_hat, booktabs=TRUE,
              caption = "Deskriptive Werte")
 ```
 
+Wir müssen jetzt allerdings erst einmal eine kurze Detour nehmen und verstehen, wie nominale Werte in `R` repräsentiert werden.
 
-## Nominale Variablen in `R`
+## Nominale Variablen in `R` (detour)
 
-Nominale Variablen werden in `R` als `factor()` dargestellt.
+Nominale Variablen werden in `R` mit einen speziellen Typ repräsentiert dem sogenannten `factor`. Erstellt werden kann ein Faktor mit der `factor()`-Funktion. Die Funktion hat drei wichtige Parameter. Der erste Parameter bezeichnet die Werte, der zweite die möglichen Faktorstufen (`levels`) und der dritte Parameter die dazugehörigen Bezeichnungen (`labels`). Ein einfaches Beispiel sieht dann so aus:
 
 ```{r}
 #| echo: true
@@ -64,19 +77,116 @@ gender <- factor(c(0,0,1,1),
                  labels = c('m','f'))
 gender
 ```
-^[Viele Funktionen in `R` transformieren eine Vektor mit Zeichenketten in einen `factor()` um. z.B. `factor(c('m','m','f','f'))`]
 
-## t-Test in `R` mit `t.test()`
+D.h. wir haben einen Datenvektor mit den Elemente $(0,0,1,1)$. Wir spezifizieren die `levels` dementsprechend mit $0$ und $1$ und definieren die dazugehörigen `labels` mit $m$ und $f$. Dabei sind jeweils Vektoren übergeben worden (siehe `c()`). Wenn wir die neue Variable `gender` aufrufen erhalten wird der Datenvektor mit den entsprechenden `labels` ausgegeben und zusätzlich gibt `R` die möglichen `labels` an.
+
+Wenn wir den Parameter `levels` nicht angegeben hätten, dann extrahiert `factor()` die eineindeutigen Werte selbst und führt die Abbidlung auf die `labels` entsprechend der Sortierung aus.
 
 ```{r}
 #| echo: true
-#| eval: false
-t.test(cm ~ gender, data=height, var.equal=T)
-```
-```{r}
-nice_ttest(t.test(cm ~ gender, data=height, var.equal=T))
+gender <- factor(c(0,0,1,1),
+                 labels = c('m','f'))
+gender
+str(gender)
 ```
 
+Dabei muss darauf geachtet werden, dass die Abbildung auch tatsächlich diejenige ist, die gewünscht ist.
+
+```{r}
+#| echo: true
+gender <- factor(c(0,0,1,1),
+                 labels = c('f','m'))
+gender
+```
+
+Daher ist es fast immer sinnvoll `labels` und `levels` immer zusammen zu nehmen. Wenn die Parameter nicht angegeben werden, dann führt `factor` die Abbildung wiederum automatisch durch und für die `labels` werden die Datenwerte übernommen. 
+
+```{r}
+#| echo: true
+gender <- factor(c(0,0,1,1))
+gender
+```
+
+::: {.callout-warning}
+Achtung, die Variable `gender` sieht zwar aus wie ein numerischer Vektor, sie ist es aber nicht.
+
+```{r}
+#| echo: true
+
+is.numeric(gender)
+```
+
+Intern wird eine Faktorvariable von `R` zwar als ein numerischer Vektor abgelegt. Aber die "sichtbaren" Werte sind nun die Zeichenketten der `labels`, die daher auch angezeigt werden. Die interne numerische Repräsentation muss auch nicht mehr den ursprünglichen Datenwerten entsprechen.
+
+```{r}
+#| echo: true
+
+as.numeric(gender)
+```
+
+Die Datenwerte waren ursprünglich $(0,1)$ und sind jetzt auf $(1,2)$ abgebildet worden. Erinnert euch an die Eigenschaft von nominalen Variablen. Nominale Variablen sind einfach voneinander unterscheidbare Werte die jedoch in keiner Ordnung stehen.
+:::
+
+Die automatische Konvertierung von `factor()` funktioniert am intuitivsten mit Zeichenkettenvektoren.
+
+```{r}
+#| echo: true
+
+gender <- factor(c('m','f','m','f'))
+gender
+str(gender)
+```
+
+`factor()` ermittelt zunächst die eineindeutigen Werte und sortiert diese dann entsprechend des Typen. In diesem Fall wird die Zeichenkette alphabetisch sortiert. Dann erfolgt die Abbildung der Werte auf die `labels`. Dies führt in diesem Fall dazu, dass die Werte `m` intern den Wert $2$ zugeordnet bekommen, obwohl der erste Wert in den Daten `m` ist. Diese Sortierung der Daten wird später noch einmal von Bedeutung werden.
+
+Die Abfolge der `levels` kann durch eine explizite Angabe der Reihenfolge selbst bestimmt werden.
+
+```{r}
+#| echo: true
+
+gender <- factor(c('m','f','m','f'),
+                 levels = c('m','f'))
+gender
+str(gender)
+gender <- factor(c('m','f','m','f'),
+                 levels = c('f','m'))
+gender
+str(gender)
+```
+
+::: {.callout-tip}
+Im package `forcats` sind eine Reihe von Funktionen hinterlegt, mit denen die Eigenschaften von `factor`-Variablen einfach manipuliert werden können. Zum Beispiel, wenn die Reihenfolge von Faktorstufen geändert werden soll kann die Funktion `fct_relevel()` verwendet.
+
+```{r}
+gender <- factor(c('m','f','m','f'),
+                 levels = c('f','m'))
+gender
+forcats::fct_relevel(gender, 'm')
+```
+
+Schaut euch die ausführliche Dokumentation der Funktionen und die Beispiel an, wenn ihr auf Probleme mit `factor`-Variablen stoßt.
+
+:::
+
+::: {.callout-tip}
+Viele Funktionen in `R`, wie z.B. `lm()`, transformieren Vektoren mit Zeichenketten automatisch in einen `factor()` um. Wird in `lm()` in der Formel beispielsweise `y ~ gender` benutzt und `gender` ist eine Datenspalte die aus den Zeichenketten `c('m','m','f','f')` besteht, dann ruft `lm()` intern die Funktion `factor()` für diese Daten auf und führt dann die Berechnung mit dem Faktor durch.
+
+Dies erleichtert natürlich oft den Umgang mit den Daten, hat aber den Nachteil das immer klar sein muss, dass die automatische Konvertierung auch tatsächlich diejenige ist, dich auch gewünscht ist.
+:::
+
+
+
+## Vergleich von zwei Gruppen (continued)
+
+Kommen wir zurück zum Körpergrößenvergleich. Normalerweise würden wir die Unterschiede zwischen den beiden Gruppen mit einem t-Test für unabhängige Stichproben untersuchen. In `R` können wird dies mit der `t.test()`-Funktion durchführen.
+
+```{r}
+#| echo: true
+
+t.test(cm ~ gender, data=height, var.equal=T)
+```
+
+Wenig überraschend finden wir ein statisch signifikantes Ergebnis.
 
 ## Modellformulierung beim t-Test $(n_w = n_m)$
 

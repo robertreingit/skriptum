@@ -515,7 +515,7 @@
     "href": "slm_prediction.html#vorhergesagte-werte-haty_i",
     "title": "8  Vorhersage",
     "section": "8.1 Vorhergesagte Werte \\(\\hat{y}_i\\)",
-    "text": "8.1 Vorhergesagte Werte \\(\\hat{y}_i\\)\nWenn ein einfaches lineares Modell gefittet wurde ist eine zentrale Frage welche Vorhersagen anhand des Modell getroffen werden können. Die Vorhersagen \\(\\hat{y}_i\\) liegen auf der vorhergesagten Regressionsgerade und berechnen sich nach dem Modell für einen gegeben \\(x\\)-Wert.\n\\[\n\\hat{y} = \\hat{\\beta_0} + \\hat{\\beta_0} x\n\\]\nWie schon mehrfach besprochen unterliegt die Regressionsgerade inherent der Unsicherheit bezüglich der geschätzen Modellkoeffizienten \\(\\hat{\\beta}_0\\) und \\(\\hat{\\beta}_1\\). Diese Unsicherheit überträgt sich auf die geschätzen Werte \\(\\hat{y}_i\\) und muss daher bei deren Interpretation berücksichtigt werden.\nIn Abbildung 8.1 sind die bereits behandelten Sprungdaten gegen die Anlaufgeschwindigkeiten zusammen mit der Regressionsgeraden und vorhergesagten Werten (rot) abgetragen.\n\n\n\n\n\nAbbildung 8.1: Vorhersagewerte \\(\\hat{y}_i\\) (rote Punkte) für die Sprungdaten.\n\n\n\n\nIn R können die vorhergesagten Werte des mittels lm() gefitteten Modells mit der Hilfsfunktion predict() bestimmt werden. Wenn der Funktion predict() keine weiteren Parameter außer dem lm-Objekt übergeben werden, berechnet predict() die vorhergesagten Werte \\(\\hat{y}_i\\) für alle die \\(x\\)-Werte die auch zum fitten des Modells benutzt wurden. Die Reihenfolge der Werte \\(\\hat{y}_i\\) enspricht dabei den Werten im Original-data.frame().\n\npredict(mod)[1:5] \n\n       1        2        3        4        5 \n4.523537 4.725140 4.856256 4.761778 5.416207 \n\n\nWir haben uns hier nur die ersten fünf Werte ausgeben lassen, da nur demonstriert werden soll wie die predict()-Funktion angewendet werden kann. Um eine Anwendung zu geben, so können mittels predict() die Residuen auch von Hand ohne die resid()-Funktion erhalten werden.\n\n(jump$jump_m - predict(mod))[1:5]\n\n          1           2           3           4           5 \n-0.16267721 -0.41248842 -0.29359256 -0.01047071  0.09927500 \n\nresid(mod)[1:5]\n\n          1           2           3           4           5 \n-0.16267721 -0.41248842 -0.29359256 -0.01047071  0.09927500 \n\n\nWiederum nur zur Demonstration die ersten fünf Wert um die Äquivalenz der beiden Methoden zu demonstrieren.\nMeistens liegt das Interesse jedoch weniger auf den vorhergesagten Werten \\(\\hat{y}_i\\) für die gemessenen Werte, sondern es sollen Werte vorhergesagt werden für \\(x\\)-Werte die nicht im Datensatz enthalten sind. Operational ändert sich nichts, es wird immer noch das gefittete Modell verwendetet und es müssen lediglich neue \\(x\\)-Werte übergeben werden.\nIn R kann dies mittels des zweite Parameter in predict() erreicht werden. Soll zum Beispiel die Sprungweite für eine Anlaufgeschwindigkeit von \\(v = 11.5[m/s]\\) berechnen werden, muss zunächst ein neues tibble() erstellt werden, welches den gewünschten \\(x\\)-Wert enthält. Dabei muss der Spaltenname in dem neuen tibble() demjenigen im Original-tibble() entsprechen. Ansonsten funktioniert die Anwendung von predict() nicht.\n\ndf &lt;- tibble(v_ms = 11.5)\ndf\n\n# A tibble: 1 × 1\n   v_ms\n  &lt;dbl&gt;\n1  11.5\n\n\nDieses tibble() kann nun zusammen mit dem lm()-Objekt an predict() übergeben werden.\n\npredict(mod, newdata = df)\n\n       1 \n8.614136 \n\n\nD.h., bei einer Anlaufgeschwindigkeit von \\(v = 11.5[m/s]\\) ist anhand des Modells eine Sprungweite von \\(8.6m\\) zu erwarten."
+    "text": "8.1 Vorhergesagte Werte \\(\\hat{y}_i\\)\nWenn ein einfaches lineares Modell gefittet wurde ist eine zentrale Frage welche Vorhersagen anhand des Modell getroffen werden können. Die Vorhersagen \\(\\hat{y}_i\\) liegen auf der vorhergesagten Regressionsgerade und berechnen sich nach dem Modell für einen gegeben \\(x\\)-Wert.\n\\[\n\\hat{y} = \\hat{\\beta_0} + \\hat{\\beta_0} x\n\\]\nWie schon mehrfach besprochen unterliegt die Regressionsgerade inherent der Unsicherheit bezüglich der geschätzen Modellkoeffizienten \\(\\hat{\\beta}_0\\) und \\(\\hat{\\beta}_1\\). Diese Unsicherheit überträgt sich auf die geschätzen Werte \\(\\hat{y}_i\\) und muss daher bei deren Interpretation berücksichtigt werden.\nIn Abbildung 8.1 sind die bereits behandelten Sprungdaten gegen die Anlaufgeschwindigkeiten zusammen mit der Regressionsgeraden und vorhergesagten Werten (rot) abgetragen.\n\n\n\n\n\nAbbildung 8.1: Vorhersagewerte \\(\\hat{y}_i\\) (rote Punkte) für die Sprungdaten.\n\n\n\n\nIn R können die vorhergesagten Werte des mittels lm() gefitteten Modells mit der Hilfsfunktion predict() bestimmt werden. Wenn der Funktion predict() keine weiteren Parameter außer dem lm-Objekt übergeben werden, berechnet predict() die vorhergesagten Werte \\(\\hat{y}_i\\) für alle die \\(x\\)-Werte die auch zum fitten des Modells benutzt wurden. Die Reihenfolge der Werte \\(\\hat{y}_i\\) enspricht dabei den Werten im Original-data.frame().\n\npredict(mod)[1:5] \n\n       1        2        3        4        5 \n4.523537 4.725140 4.856256 4.761778 5.416207 \n\n\nWir haben uns hier nur die ersten fünf Werte ausgeben lassen, da nur demonstriert werden soll wie die predict()-Funktion angewendet werden kann. Um eine Anwendung zu geben, so können mittels predict() die Residuen auch von Hand ohne die resid()-Funktion erhalten werden.\n\n(jump$jump_m - predict(mod))[1:5]\n\n          1           2           3           4           5 \n-0.16267721 -0.41248842 -0.29359256 -0.01047071  0.09927500 \n\nresid(mod)[1:5]\n\n          1           2           3           4           5 \n-0.16267721 -0.41248842 -0.29359256 -0.01047071  0.09927500 \n\n\nWiederum nur zur Demonstration die ersten fünf Wert um die Äquivalenz der beiden Methoden zu demonstrieren.\nMeistens liegt das Interesse jedoch weniger auf den vorhergesagten Werten \\(\\hat{y}_i\\) für die gemessenen Werte, sondern es sollen Werte vorhergesagt werden für \\(x\\)-Werte die nicht im Datensatz enthalten sind. Operational ändert sich nichts, es wird immer noch das gefittete Modell verwendetet und es müssen lediglich neue \\(x\\)-Werte übergeben werden.\nIn R kann dies mittels des zweite Parameter in predict() erreicht werden. Soll zum Beispiel die Sprungweite für eine Anlaufgeschwindigkeit von \\(v = 11.5[m/s]\\) berechnen werden, muss zunächst ein neues tibble() erstellt werden, welches den gewünschten \\(x\\)-Wert enthält. Dabei muss der Spaltenname in dem neuen tibble() demjenigen im Original-tibble() entsprechen. Ansonsten funktioniert die Anwendung von predict() nicht.\n\ndf &lt;- tibble(v_ms = 11.5)\ndf\n\n# A tibble: 1 x 1\n   v_ms\n  &lt;dbl&gt;\n1  11.5\n\n\nDieses tibble() kann nun zusammen mit dem lm()-Objekt an predict() übergeben werden.\n\npredict(mod, newdata = df)\n\n       1 \n8.614136 \n\n\nD.h., bei einer Anlaufgeschwindigkeit von \\(v = 11.5[m/s]\\) ist anhand des Modells eine Sprungweite von \\(8.6m\\) zu erwarten."
   },
   {
     "objectID": "slm_prediction.html#unsicherheit-in-der-vorhersage",
@@ -920,197 +920,197 @@
     "objectID": "mlm_dummy_coding.html#nominale-variablen-in-r",
     "href": "mlm_dummy_coding.html#nominale-variablen-in-r",
     "title": "11  Integration von nominale Variablen",
-    "section": "11.3 Nominale Variablen in R",
-    "text": "11.3 Nominale Variablen in R\nNominale Variablen werden in R als factor() dargestellt.\n\ngender &lt;- factor(c(0,0,1,1),\n                 levels = c(0,1),\n                 labels = c('m','f'))\ngender\n\n[1] m m f f\nLevels: m f\n\n\n1"
+    "section": "11.2 Nominale Variablen in R",
+    "text": "11.2 Nominale Variablen in R\nNominale Variablen werden in R mit einen speziellen Typ repräsentiert dem sogenannten factor. Erstellt werden kann ein Faktor mit der factor()-Funktion. Die Funktion hat drei wichtige Parameter. Der erste Parameter bezeichnet die Werte, der zweite die möglichen Faktorstufen (levels) und der dritte Parameter die dazugehörigen Bezeichnungen (labels`). Ein einfaches Beispiel sieht dann so aus:\n\ngender &lt;- factor(c(0,0,1,1),\n                 levels = c(0,1),\n                 labels = c('m','f'))\ngender\n\n[1] m m f f\nLevels: m f\n\n\nD.h. wir haben einen Datenvektor mit den Elemente \\((0,0,1,1)\\). Wir spezifizieren die levels dementsprechend mit \\(0\\) und \\(1\\) und definieren die dazugehörigen labels mit \\(m\\) und \\(f\\). Dabei sind jeweils Vektoren übergeben worden (siehe c()). Wenn wir die neue Variable gender aufrufen erhalten wird der Datenvektor mit den entsprechenden labels ausgegeben und zusätzlich gibt R die möglichen labels an.\nWenn wir den Parameter levels nicht angegeben hätten, dann extrahiert factor() die eineindeutigen Werte selbst und führt die Abbidlung auf die labels entsprechend der Sortierung aus.\n\ngender &lt;- factor(c(0,0,1,1),\n                 labels = c('m','f'))\ngender\n\n[1] m m f f\nLevels: m f\n\n\nDabei muss darauf geachtet werden, dass die Abbildung auch tatsächlich diejenige ist, die gewünscht ist.\n\ngender &lt;- factor(c(0,0,1,1),\n                 labels = c('f','m'))\ngender\n\n[1] f f m m\nLevels: f m\n\n\nDaher ist es fast immer sinnvoll labels und levels immer zusammen zu nehmen. Wenn die Parameter nicht angegeben werden, dann führt factor die Abbildung wiederum automatisch durch und für die labels werden die Datenwerte übernommen.\n\ngender &lt;- factor(c(0,0,1,1))\ngender\n\n[1] 0 0 1 1\nLevels: 0 1\n\n\n\n\n\n\n\n\nWarnung\n\n\n\nAchtung, die Variable gender sieht zwar aus wie ein numerischer Vektor, sie ist es aber nicht.\n\nis.numeric(gender)\n\n[1] FALSE\n\n\nIntern wird ein Faktor zwar als ein numerischer Vektor abgelegt, aber die “sichtbaren” Werte sind Zeichenketten die anstelle der Werte angezeigt werden. Die interne numerische Repräsentation muss auch nicht mehr den ursprünglichen Datenwerten entsprechen.\n\nas.numeric(gender)\n\n[1] 1 1 2 2\n\n\n\n\nDie automatische Konvertierung funktioniert am intuitivsten mit Zeichenkettenvektoren.\n\ngender &lt;- factor(c('m','f','m','f'))\ngender\n\n[1] m f m f\nLevels: f m\n\n\n\n\n\n\n\n\nWarnung\n\n\n\nViele Funktionen in R, wie z.B. lm(), transformieren Vektoren mit Zeichenketten in einen factor() um. Wir in lm() in der Formel beispielsweise y ~ gender benutzt und gender ist eine Datenspalte die aus c('m','m','f','f') besteht, dann ruft lm() intern die Funktion factor() auf. Dies erleichtert natürlich oft den Umgang mit den Daten, hat aber den Nachteil das immer klar sein muss, dass die automatische Konvertierung auch tatsächlich diejenige ist, dich auch gewünscht ist."
   },
   {
     "objectID": "mlm_dummy_coding.html#t-test-in-r-mit-t.test",
     "href": "mlm_dummy_coding.html#t-test-in-r-mit-t.test",
     "title": "11  Integration von nominale Variablen",
-    "section": "11.4 t-Test in R mit t.test()",
-    "text": "11.4 t-Test in R mit t.test()\n\nt.test(cm ~ gender, data=height, var.equal=T)\n\n\n\n\n Two Sample t-test\n\ndata: cm by gender\nt = -4.57, df = 58, p-value = &lt;0.001\nd = -10.75, s_e = 2.35\n95 percent confidence interval\n[-15.45, -6.04]"
+    "section": "11.3 t-Test in R mit t.test()",
+    "text": "11.3 t-Test in R mit t.test()\n\nt.test(cm ~ gender, data=height, var.equal=T)\n\n\n\n\n Two Sample t-test\n\ndata: cm by gender\nt = -4.57, df = 58, p-value = &lt;0.001\nd = -10.75, s_e = 2.35\n95 percent confidence interval\n[-15.45, -6.04]"
   },
   {
     "objectID": "mlm_dummy_coding.html#modellformulierung-beim-t-test-n_w-n_m",
     "href": "mlm_dummy_coding.html#modellformulierung-beim-t-test-n_w-n_m",
     "title": "11  Integration von nominale Variablen",
-    "section": "11.5 Modellformulierung beim t-Test \\((n_w = n_m)\\)",
-    "text": "11.5 Modellformulierung beim t-Test \\((n_w = n_m)\\)\n\\[\\begin{align*}\nY_{if} &= \\mu_{f} + \\epsilon_{if}, \\quad \\epsilon_{if} \\sim \\mathcal{N}(0,\\sigma^2) \\\\\nY_{im} &= \\mu_{m} + \\epsilon_{im}, \\quad \\epsilon_{im} \\sim \\mathcal{N}(0,\\sigma^2)\n\\end{align*}\\]\n\n11.5.1 Hypothesen\n\\[\\begin{align*}\nH_0&: \\delta = 0 \\\\\nH_1&: \\delta \\neq 0\n\\end{align*}\\]\n\n\n11.5.2 Teststatistik\n\\[\nt = \\frac{\\bar{y}_m - \\bar{y}_w}{\\sqrt{\\frac{s_m^2 + s_w^2}{2}}\\sqrt{\\frac{2}{n}}}\n\\]\n\n\n11.5.3 Referenzverteilung\n\\[\nt \\sim t_{df=2n-2}\n\\]\n\n\n\n\n\nt-Verteilung mit \\(df=58\\)"
+    "section": "11.4 Modellformulierung beim t-Test \\((n_w = n_m)\\)",
+    "text": "11.4 Modellformulierung beim t-Test \\((n_w = n_m)\\)\n\\[\\begin{align*}\nY_{if} &= \\mu_{f} + \\epsilon_{if}, \\quad \\epsilon_{if} \\sim \\mathcal{N}(0,\\sigma^2) \\\\\nY_{im} &= \\mu_{m} + \\epsilon_{im}, \\quad \\epsilon_{im} \\sim \\mathcal{N}(0,\\sigma^2)\n\\end{align*}\\]\n\n11.4.1 Hypothesen\n\\[\\begin{align*}\nH_0&: \\delta = 0 \\\\\nH_1&: \\delta \\neq 0\n\\end{align*}\\]\n\n\n11.4.2 Teststatistik\n\\[\nt = \\frac{\\bar{y}_m - \\bar{y}_w}{\\sqrt{\\frac{s_m^2 + s_w^2}{2}}\\sqrt{\\frac{2}{n}}}\n\\]\n\n\n11.4.3 Referenzverteilung\n\\[\nt \\sim t_{df=2n-2}\n\\]\n\n\n\n\n\nt-Verteilung mit \\(df=58\\)"
   },
   {
     "objectID": "mlm_dummy_coding.html#kann-ich-aus-dem-t-test-ein-lineares-modell-machen",
     "href": "mlm_dummy_coding.html#kann-ich-aus-dem-t-test-ein-lineares-modell-machen",
     "title": "11  Integration von nominale Variablen",
-    "section": "11.6 Kann ich aus dem t-Test ein lineares Modell machen?",
-    "text": "11.6 Kann ich aus dem t-Test ein lineares Modell machen?\n\n11.6.1 t-Test\n\\[\\begin{align*}\nY_{if} &= \\mu_{f} + \\epsilon_{if}, \\quad \\epsilon_{if} \\sim \\mathcal{N}(0,\\sigma^2) \\\\\nY_{im} &= \\mu_{m} + \\epsilon_{im}, \\quad \\epsilon_{im} \\sim \\mathcal{N}(0,\\sigma^2) \\\\\nt &= \\frac{\\bar{y}_m - \\bar{y}_w}{\\sqrt{\\frac{s_m^2 + s_w^2}{2}}\\sqrt{\\frac{2}{n}}} \\\\\nt &\\sim t_{df=2n-2}\n\\end{align*}\\]\n\n\n11.6.2 Lineares Modell\n\\[\\begin{align*}\nY_i &= \\beta_0 + \\beta_1 \\times x_i + \\epsilon_i \\\\\n\\Delta_m &= \\mu_m - \\mu_f \\\\\nY_i &= \\beta_0 + \\beta_1 \\times x_{??} + \\epsilon_i \\\\\nY_i &= \\mu_f + \\Delta_{m} \\times x_{??} + \\epsilon_i\n\\end{align*}\\]"
+    "section": "11.5 Kann ich aus dem t-Test ein lineares Modell machen?",
+    "text": "11.5 Kann ich aus dem t-Test ein lineares Modell machen?\n\n11.5.1 t-Test\n\\[\\begin{align*}\nY_{if} &= \\mu_{f} + \\epsilon_{if}, \\quad \\epsilon_{if} \\sim \\mathcal{N}(0,\\sigma^2) \\\\\nY_{im} &= \\mu_{m} + \\epsilon_{im}, \\quad \\epsilon_{im} \\sim \\mathcal{N}(0,\\sigma^2) \\\\\nt &= \\frac{\\bar{y}_m - \\bar{y}_w}{\\sqrt{\\frac{s_m^2 + s_w^2}{2}}\\sqrt{\\frac{2}{n}}} \\\\\nt &\\sim t_{df=2n-2}\n\\end{align*}\\]\n\n\n11.5.2 Lineares Modell\n\\[\\begin{align*}\nY_i &= \\beta_0 + \\beta_1 \\times x_i + \\epsilon_i \\\\\n\\Delta_m &= \\mu_m - \\mu_f \\\\\nY_i &= \\beta_0 + \\beta_1 \\times x_{??} + \\epsilon_i \\\\\nY_i &= \\mu_f + \\Delta_{m} \\times x_{??} + \\epsilon_i\n\\end{align*}\\]"
   },
   {
     "objectID": "mlm_dummy_coding.html#dummy--oder-indikatorkodierung",
     "href": "mlm_dummy_coding.html#dummy--oder-indikatorkodierung",
     "title": "11  Integration von nominale Variablen",
-    "section": "11.7 Dummy- oder Indikatorkodierung",
-    "text": "11.7 Dummy- oder Indikatorkodierung\n\\[\\begin{align*}\nY_i &= \\mu_f + \\Delta_{m} \\times x_{1i} + \\epsilon_i \\\\\n\\Delta_m &= \\mu_m - \\mu_f \\\\\nx_1 &=\n\\begin{cases}\n0\\text{ wenn weiblich}\\\\\n1\\text{ wenn männlich}\n\\end{cases}\n\\end{align*}\\]\nFür eine nominale Variable wird eine Indikatorvariablen (Dummyvariable) definiert. Über diese Indikatorvariable kann die Zugehörigkeit eines Messwerts \\(Y_i\\) zu einer Faktorstufe \\(k\\) bestimmt werden. Eine Faktorstufe ist dabei immer die Referenzstufe bei der die Indikatorvariable gleich \\(0\\) ist."
+    "section": "11.6 Dummy- oder Indikatorkodierung",
+    "text": "11.6 Dummy- oder Indikatorkodierung\n\\[\\begin{align*}\nY_i &= \\mu_f + \\Delta_{m} \\times x_{1i} + \\epsilon_i \\\\\n\\Delta_m &= \\mu_m - \\mu_f \\\\\nx_1 &=\n\\begin{cases}\n0\\text{ wenn weiblich}\\\\\n1\\text{ wenn männlich}\n\\end{cases}\n\\end{align*}\\]\nFür eine nominale Variable wird eine Indikatorvariablen (Dummyvariable) definiert. Über diese Indikatorvariable kann die Zugehörigkeit eines Messwerts \\(Y_i\\) zu einer Faktorstufe \\(k\\) bestimmt werden. Eine Faktorstufe ist dabei immer die Referenzstufe bei der die Indikatorvariable gleich \\(0\\) ist."
   },
   {
     "objectID": "mlm_dummy_coding.html#einfach-mal-stumpf-in-lm-eingeben",
     "href": "mlm_dummy_coding.html#einfach-mal-stumpf-in-lm-eingeben",
     "title": "11  Integration von nominale Variablen",
-    "section": "11.8 Einfach mal stumpf in lm() eingeben",
-    "text": "11.8 Einfach mal stumpf in lm() eingeben\n\nmod &lt;- lm(cm ~ gender, height)\n\n\n\n\nModellfit\n\n\n\n\\(\\hat{\\beta}\\)\n\\(s_e\\)\nt\np\n\n\n\n\n(Intercept)\n168.783\n1.663\n101.477\n&lt;0.001\n\n\ngenderm\n10.746\n2.352\n4.568\n&lt;0.001\n\n\n\n\n\n2"
+    "section": "11.7 Einfach mal stumpf in lm() eingeben",
+    "text": "11.7 Einfach mal stumpf in lm() eingeben\n\nmod &lt;- lm(cm ~ gender, height)\n\n\n\n\nModellfit\n\n\n\n\\(\\hat{\\beta}\\)\n\\(s_e\\)\nt\np\n\n\n\n\n(Intercept)\n168.783\n1.663\n101.477\n&lt;0.001\n\n\ngenderm\n10.746\n2.352\n4.568\n&lt;0.001\n\n\n\n\n\n1"
   },
   {
     "objectID": "mlm_dummy_coding.html#vergleich-der-konfidenzintervalle",
     "href": "mlm_dummy_coding.html#vergleich-der-konfidenzintervalle",
     "title": "11  Integration von nominale Variablen",
-    "section": "11.9 Vergleich der Konfidenzintervalle",
-    "text": "11.9 Vergleich der Konfidenzintervalle\n\n11.9.1 Lineares Modell\n\nconfint(mod)\n\n                2.5 %    97.5 %\n(Intercept) 165.45401 172.11276\ngenderm       6.03713  15.45403\n\n\n\n\n11.9.2 t-Test\n\nt.test(cm ~ gender,\n       data = height,\n       var.equal=T)$conf\n\n[1] -15.45403  -6.03713\nattr(,\"conf.level\")\n[1] 0.95\n\n\n3"
+    "section": "11.8 Vergleich der Konfidenzintervalle",
+    "text": "11.8 Vergleich der Konfidenzintervalle\n\n11.8.1 Lineares Modell\n\nconfint(mod)\n\n                2.5 %    97.5 %\n(Intercept) 165.45401 172.11276\ngenderm       6.03713  15.45403\n\n\n\n\n11.8.2 t-Test\n\nt.test(cm ~ gender,\n       data = height,\n       var.equal=T)$conf\n\n[1] -15.45403  -6.03713\nattr(,\"conf.level\")\n[1] 0.95\n\n\n2"
   },
   {
     "objectID": "mlm_dummy_coding.html#auf-welchen-werten-wird-ein-lineares-modell-gerechnet",
     "href": "mlm_dummy_coding.html#auf-welchen-werten-wird-ein-lineares-modell-gerechnet",
     "title": "11  Integration von nominale Variablen",
-    "section": "11.10 Auf welchen Werten wird ein lineares Modell gerechnet???",
-    "text": "11.10 Auf welchen Werten wird ein lineares Modell gerechnet???\n\n\n\nRepräsentation der Faktorvariablen\n\n\ncm\ngender\n\\(x_1\\)\n\n\n\n\n174.40\nm\n1\n\n\n177.70\nm\n1\n\n\n195.59\nm\n1\n\n\n160.05\nf\n0\n\n\n164.92\nf\n0\n\n\n154.35\nf\n0"
+    "section": "11.9 Auf welchen Werten wird ein lineares Modell gerechnet???",
+    "text": "11.9 Auf welchen Werten wird ein lineares Modell gerechnet???\n\n\n\nRepräsentation der Faktorvariablen\n\n\ncm\ngender\n\\(x_1\\)\n\n\n\n\n174.40\nm\n1\n\n\n177.70\nm\n1\n\n\n195.59\nm\n1\n\n\n160.05\nf\n0\n\n\n164.92\nf\n0\n\n\n154.35\nf\n0"
   },
   {
     "objectID": "mlm_dummy_coding.html#residuen",
     "href": "mlm_dummy_coding.html#residuen",
     "title": "11  Integration von nominale Variablen",
-    "section": "11.11 Residuen",
-    "text": "11.11 Residuen\n\n\n\n\n\nResiduen"
+    "section": "11.10 Residuen",
+    "text": "11.10 Residuen\n\n\n\n\n\nResiduen"
   },
   {
     "objectID": "mlm_dummy_coding.html#wens-interessiert---t-wert",
     "href": "mlm_dummy_coding.html#wens-interessiert---t-wert",
     "title": "11  Integration von nominale Variablen",
-    "section": "11.12 Wen’s interessiert - t-Wert",
-    "text": "11.12 Wen’s interessiert - t-Wert\nSeien beide Gruppen gleich groß (\\(n\\)) mit \\(N = n_m + n_w = 2 \\times n\\). Der t-Wert für \\(\\beta_1\\) berechnet sich aus \\(t = \\frac{b_1}{s_b}\\) mit:\n\\[\ns_b = \\sqrt{\\frac{\\sum_{i=1}^N (y_i - \\bar{y})^2}{N-2}\\frac{1}{\\sum_{i=1}^N(x_i-\\bar{x})^2}}\n\\] Dadurch, das die \\(x_i\\) entweder gleich \\(0\\) oder \\(1\\) sind, ist \\(\\bar{x}=0.5\\) und die Abweichungsquadrate im zweiten Term sind alle gleich \\(\\frac{1}{4}\\).\n\\[\n\\sum_{i=1}^N(x_i - \\bar{x})^2=\\sum_{i=1}^N\\left(x_i - \\frac{1}{2}\\right)^2 = \\sum_{i=1}^N\\frac{1}{4}=\\frac{N}{4}=\\frac{2n}{4}=\\frac{n}{2}\n\\]\nDer ersten Term kann mit etwas Algebra und der Definition für die Stichprobenvarianz \\(s^2\\) auf die gewünschte Form gebracht werden.\n\\[\n\\frac{\\sum_{i=1}^N(y_i-\\hat{y})^2}{N-2}=\\frac{\\sum_{i=1}^n(\\overbrace{y_{im} - \\bar{y}_m}^{Männer})^2+\\sum_{i=1}^n(\\overbrace{y_{iw}-\\bar{y}_w}^{Frauen})^2}{2(n-1)}=\\frac{(n-1)s_m^2+(n-1)s_w^2}{2(n-1)}=\\frac{s_m^2+s_w^2}{2}\n\\]"
+    "section": "11.11 Wen’s interessiert - t-Wert",
+    "text": "11.11 Wen’s interessiert - t-Wert\nSeien beide Gruppen gleich groß (\\(n\\)) mit \\(N = n_m + n_w = 2 \\times n\\). Der t-Wert für \\(\\beta_1\\) berechnet sich aus \\(t = \\frac{b_1}{s_b}\\) mit:\n\\[\ns_b = \\sqrt{\\frac{\\sum_{i=1}^N (y_i - \\bar{y})^2}{N-2}\\frac{1}{\\sum_{i=1}^N(x_i-\\bar{x})^2}}\n\\] Dadurch, das die \\(x_i\\) entweder gleich \\(0\\) oder \\(1\\) sind, ist \\(\\bar{x}=0.5\\) und die Abweichungsquadrate im zweiten Term sind alle gleich \\(\\frac{1}{4}\\).\n\\[\n\\sum_{i=1}^N(x_i - \\bar{x})^2=\\sum_{i=1}^N\\left(x_i - \\frac{1}{2}\\right)^2 = \\sum_{i=1}^N\\frac{1}{4}=\\frac{N}{4}=\\frac{2n}{4}=\\frac{n}{2}\n\\]\nDer ersten Term kann mit etwas Algebra und der Definition für die Stichprobenvarianz \\(s^2\\) auf die gewünschte Form gebracht werden.\n\\[\n\\frac{\\sum_{i=1}^N(y_i-\\hat{y})^2}{N-2}=\\frac{\\sum_{i=1}^n(\\overbrace{y_{im} - \\bar{y}_m}^{Männer})^2+\\sum_{i=1}^n(\\overbrace{y_{iw}-\\bar{y}_w}^{Frauen})^2}{2(n-1)}=\\frac{(n-1)s_m^2+(n-1)s_w^2}{2(n-1)}=\\frac{s_m^2+s_w^2}{2}\n\\]"
   },
   {
     "objectID": "mlm_dummy_coding.html#wens-interessiert---beta_1-mu_w---mu_m",
     "href": "mlm_dummy_coding.html#wens-interessiert---beta_1-mu_w---mu_m",
     "title": "11  Integration von nominale Variablen",
-    "section": "11.13 Wen’s interessiert - \\(\\beta_1 = \\mu_w - \\mu_m\\)",
-    "text": "11.13 Wen’s interessiert - \\(\\beta_1 = \\mu_w - \\mu_m\\)\nMit \\(s_x^2 = \\frac{N\\frac{1}{4}}{N-1} = \\frac{N}{4(N-1)}\\) \\[\\begin{align*}\n    b_1 &= \\frac{cov(x,y)}{s_x^2} \\\\\n    &= \\frac{\\sum_{i=1}^N(y_i - \\bar{y})(x_i - \\bar{x})}{N-1} \\frac{4(N-1)}{N} \\\\\n    &= 4\\frac{\\sum_{i=1}^n(y_{im}-\\bar{y})\\frac{-1}{2}+\\sum(y_{iw}-\\bar{y})\\frac{1}{2}}{N} \\\\\n    &= \\frac{4}{2}\\frac{\\sum_{i=1}^n(y_{iw}-\\bar{y}) - \\sum_{i=1}^n(y_{im}-\\bar{y})}{2n} \\\\\n    &= \\frac{\\sum_{i=1}^n y_{iw}}{n} - \\frac{n\\bar{y}}{n} - \\frac{\\sum_{i=1}^n y_{im}}{n} + \\frac{n\\bar{y}}{n} \\\\\n    &= \\bar{y}_w - \\bar{y}_m = \\Delta\n\\end{align*}\\]"
+    "section": "11.12 Wen’s interessiert - \\(\\beta_1 = \\mu_w - \\mu_m\\)",
+    "text": "11.12 Wen’s interessiert - \\(\\beta_1 = \\mu_w - \\mu_m\\)\nMit \\(s_x^2 = \\frac{N\\frac{1}{4}}{N-1} = \\frac{N}{4(N-1)}\\) \\[\\begin{align*}\n    b_1 &= \\frac{cov(x,y)}{s_x^2} \\\\\n    &= \\frac{\\sum_{i=1}^N(y_i - \\bar{y})(x_i - \\bar{x})}{N-1} \\frac{4(N-1)}{N} \\\\\n    &= 4\\frac{\\sum_{i=1}^n(y_{im}-\\bar{y})\\frac{-1}{2}+\\sum(y_{iw}-\\bar{y})\\frac{1}{2}}{N} \\\\\n    &= \\frac{4}{2}\\frac{\\sum_{i=1}^n(y_{iw}-\\bar{y}) - \\sum_{i=1}^n(y_{im}-\\bar{y})}{2n} \\\\\n    &= \\frac{\\sum_{i=1}^n y_{iw}}{n} - \\frac{n\\bar{y}}{n} - \\frac{\\sum_{i=1}^n y_{im}}{n} + \\frac{n\\bar{y}}{n} \\\\\n    &= \\bar{y}_w - \\bar{y}_m = \\Delta\n\\end{align*}\\]"
   },
   {
     "objectID": "mlm_dummy_coding.html#wens-interessiert---beta_0-mu_m",
     "href": "mlm_dummy_coding.html#wens-interessiert---beta_0-mu_m",
     "title": "11  Integration von nominale Variablen",
-    "section": "11.14 Wen’s interessiert - \\(\\beta_0 = \\mu_m\\)",
-    "text": "11.14 Wen’s interessiert - \\(\\beta_0 = \\mu_m\\)\nMit \\(b_1 = \\Delta = \\bar{y}_w - \\bar{y}_m\\): \\[\\begin{align*}\nb_0 &= \\bar{y} - \\Delta \\times \\bar{x} \\\\\n&= \\frac{\\sum_{i=1}^N y_i}{N} - \\Delta \\times \\frac{1}{2} \\\\\n&= \\frac{\\sum_{i=1}^n y_{im} + \\sum_{i=1}^n y_{iw}}{2n} - \\frac{1}{2}(\\bar{y}_w - \\bar{y}_m)  \\\\\n&= \\frac{1}{2}\\frac{\\sum_{i=1}^ny_{im}}{n} + \\frac{1}{2}\\frac{\\sum_{i=1}^ny_{iw}}{n} - \\frac{1}{2}\\bar{y}_w + \\frac{1}{2}\\bar{y}_m \\\\\n&= \\frac{1}{2}\\bar{y}_m + \\frac{1}{2}\\bar{y}_w - \\frac{1}{2}\\bar{y}_w + \\frac{1}{2}\\bar{y}_m \\\\\n&= \\bar{y}_m\n\\end{align*}\\]"
+    "section": "11.13 Wen’s interessiert - \\(\\beta_0 = \\mu_m\\)",
+    "text": "11.13 Wen’s interessiert - \\(\\beta_0 = \\mu_m\\)\nMit \\(b_1 = \\Delta = \\bar{y}_w - \\bar{y}_m\\): \\[\\begin{align*}\nb_0 &= \\bar{y} - \\Delta \\times \\bar{x} \\\\\n&= \\frac{\\sum_{i=1}^N y_i}{N} - \\Delta \\times \\frac{1}{2} \\\\\n&= \\frac{\\sum_{i=1}^n y_{im} + \\sum_{i=1}^n y_{iw}}{2n} - \\frac{1}{2}(\\bar{y}_w - \\bar{y}_m)  \\\\\n&= \\frac{1}{2}\\frac{\\sum_{i=1}^ny_{im}}{n} + \\frac{1}{2}\\frac{\\sum_{i=1}^ny_{iw}}{n} - \\frac{1}{2}\\bar{y}_w + \\frac{1}{2}\\bar{y}_m \\\\\n&= \\frac{1}{2}\\bar{y}_m + \\frac{1}{2}\\bar{y}_w - \\frac{1}{2}\\bar{y}_w + \\frac{1}{2}\\bar{y}_m \\\\\n&= \\bar{y}_m\n\\end{align*}\\]"
   },
   {
     "objectID": "mlm_dummy_coding.html#können-auch-mehr-als-zwei-stufen-verwendet-werden",
     "href": "mlm_dummy_coding.html#können-auch-mehr-als-zwei-stufen-verwendet-werden",
     "title": "11  Integration von nominale Variablen",
-    "section": "11.15 Können auch mehr als zwei Stufen verwendet werden?",
-    "text": "11.15 Können auch mehr als zwei Stufen verwendet werden?\n\n\n\n\n\nEin Reaktionszeitexperiment mit vier Stufen A, B, C und D"
+    "section": "11.14 Können auch mehr als zwei Stufen verwendet werden?",
+    "text": "11.14 Können auch mehr als zwei Stufen verwendet werden?\n\n\n\n\n\nEin Reaktionszeitexperiment mit vier Stufen A, B, C und D"
   },
   {
     "objectID": "mlm_dummy_coding.html#deskriptive-daten",
     "href": "mlm_dummy_coding.html#deskriptive-daten",
     "title": "11  Integration von nominale Variablen",
-    "section": "11.16 Deskriptive Daten",
-    "text": "11.16 Deskriptive Daten"
+    "section": "11.15 Deskriptive Daten",
+    "text": "11.15 Deskriptive Daten"
   },
   {
     "objectID": "mlm_dummy_coding.html#reaktionszeitexperiment-als-lineares-modell",
     "href": "mlm_dummy_coding.html#reaktionszeitexperiment-als-lineares-modell",
     "title": "11  Integration von nominale Variablen",
-    "section": "11.17 Reaktionszeitexperiment als lineares Modell",
-    "text": "11.17 Reaktionszeitexperiment als lineares Modell\n\n11.17.1 Modell\n\\[\ny_i = \\mu_A + \\Delta_{B-A} x_1 + \\Delta_{C-A} x_2 + \\Delta_{D-A} x_3 + \\epsilon_i\n\\]\n\n\n11.17.2 Dummyvariablen"
+    "section": "11.16 Reaktionszeitexperiment als lineares Modell",
+    "text": "11.16 Reaktionszeitexperiment als lineares Modell\n\n11.16.1 Modell\n\\[\ny_i = \\mu_A + \\Delta_{B-A} x_1 + \\Delta_{C-A} x_2 + \\Delta_{D-A} x_3 + \\epsilon_i\n\\]\n\n\n11.16.2 Dummyvariablen"
   },
   {
     "objectID": "mlm_dummy_coding.html#nochmal-allgemeiner",
     "href": "mlm_dummy_coding.html#nochmal-allgemeiner",
     "title": "11  Integration von nominale Variablen",
-    "section": "11.18 Nochmal allgemeiner",
-    "text": "11.18 Nochmal allgemeiner\nMit \\(K\\) Faktorstufen werden (K-1) Dummyvariablen \\(x_1, x_2, \\ldots, x_{K-1}\\) benötigt. Eine Stufe wird als Referenz definiert. Die \\(x_1\\) bis \\(x_{K-1}\\) kodieren die Abweichungen der anderen Stufen von dieser Stufe.4"
+    "section": "11.17 Nochmal allgemeiner",
+    "text": "11.17 Nochmal allgemeiner\nMit \\(K\\) Faktorstufen werden (K-1) Dummyvariablen \\(x_1, x_2, \\ldots, x_{K-1}\\) benötigt. Eine Stufe wird als Referenz definiert. Die \\(x_1\\) bis \\(x_{K-1}\\) kodieren die Abweichungen der anderen Stufen von dieser Stufe.3"
   },
   {
     "objectID": "mlm_dummy_coding.html#reaktionszeitexperiment-mit-lm",
     "href": "mlm_dummy_coding.html#reaktionszeitexperiment-mit-lm",
     "title": "11  Integration von nominale Variablen",
-    "section": "11.19 Reaktionszeitexperiment mit lm()",
-    "text": "11.19 Reaktionszeitexperiment mit lm()\n\nmod &lt;- lm(rt ~ group, data)\n\n\n\n\nModellfit\n\n\n\n$\\hat{\\beta}$\n$s_e$\nt\np\n\n\n\n\n(Intercept)\n509.526\n10.235\n49.784\n&lt;0.001\n\n\ngroupB\n90.150\n14.474\n6.228\n&lt;0.001\n\n\ngroupC\n197.414\n14.474\n13.639\n&lt;0.001\n\n\ngroupD\n295.561\n14.474\n20.420\n&lt;0.001"
+    "section": "11.18 Reaktionszeitexperiment mit lm()",
+    "text": "11.18 Reaktionszeitexperiment mit lm()\n\nmod &lt;- lm(rt ~ group, data)\n\n\n\n\nModellfit\n\n\n\n$\\hat{\\beta}$\n$s_e$\nt\np\n\n\n\n\n(Intercept)\n509.526\n10.235\n49.784\n&lt;0.001\n\n\ngroupB\n90.150\n14.474\n6.228\n&lt;0.001\n\n\ngroupC\n197.414\n14.474\n13.639\n&lt;0.001\n\n\ngroupD\n295.561\n14.474\n20.420\n&lt;0.001"
   },
   {
     "objectID": "mlm_dummy_coding.html#ausblick",
     "href": "mlm_dummy_coding.html#ausblick",
     "title": "11  Integration von nominale Variablen",
-    "section": "11.20 Ausblick",
-    "text": "11.20 Ausblick\n\nanova(mod)\n\n\n\n\nANOVA-Tabelle\n\n\n\nDf\nSSQ\nMSQ\nF\np\n\n\n\n\ngroup\n3\n988935.1\n329645.04\n157.35\n&lt;0.001\n\n\nResiduals\n76\n159221.0\n2095.01"
+    "section": "11.19 Ausblick",
+    "text": "11.19 Ausblick\n\nanova(mod)\n\n\n\n\nANOVA-Tabelle\n\n\n\nDf\nSSQ\nMSQ\nF\np\n\n\n\n\ngroup\n3\n988935.1\n329645.04\n157.35\n&lt;0.001\n\n\nResiduals\n76\n159221.0\n2095.01"
   },
   {
     "objectID": "mlm_dummy_coding.html#kombination-von-kontinuierlichen-und-nominalen-variablen",
     "href": "mlm_dummy_coding.html#kombination-von-kontinuierlichen-und-nominalen-variablen",
     "title": "11  Integration von nominale Variablen",
-    "section": "11.21 Kombination von kontinuierlichen und nominalen Variablen",
-    "text": "11.21 Kombination von kontinuierlichen und nominalen Variablen\n\n\n\n\n\nHypothetische Leistungsentwicklung in Abhängigkeit vom Alter und Gender"
+    "section": "11.20 Kombination von kontinuierlichen und nominalen Variablen",
+    "text": "11.20 Kombination von kontinuierlichen und nominalen Variablen\n\n\n\n\n\nHypothetische Leistungsentwicklung in Abhängigkeit vom Alter und Gender"
   },
   {
     "objectID": "mlm_dummy_coding.html#modellansatz",
     "href": "mlm_dummy_coding.html#modellansatz",
     "title": "11  Integration von nominale Variablen",
-    "section": "11.22 Modellansatz",
-    "text": "11.22 Modellansatz\n\nAus gender (K = 2) wird eine Dummyvariable\nFrauen werden (zufällig) als Referenz genommen\n\n\\[\\begin{align*}\nY_i &= \\beta_{ta = 0,x_1=0} + \\Delta_m \\times x_1 + \\beta_{ta} \\times ta + \\epsilon_i \\\\\nx_1 &=\n\\begin{cases}\n0\\text{ wenn weiblich}\\\\\n1\\text{ wenn männlich}\n\\end{cases} \\\\\n\\end{align*}\\]"
+    "section": "11.21 Modellansatz",
+    "text": "11.21 Modellansatz\n\nAus gender (K = 2) wird eine Dummyvariable\nFrauen werden (zufällig) als Referenz genommen\n\n\\[\\begin{align*}\nY_i &= \\beta_{ta = 0,x_1=0} + \\Delta_m \\times x_1 + \\beta_{ta} \\times ta + \\epsilon_i \\\\\nx_1 &=\n\\begin{cases}\n0\\text{ wenn weiblich}\\\\\n1\\text{ wenn männlich}\n\\end{cases} \\\\\n\\end{align*}\\]"
   },
   {
     "objectID": "mlm_dummy_coding.html#modellieren-mit-lm",
     "href": "mlm_dummy_coding.html#modellieren-mit-lm",
     "title": "11  Integration von nominale Variablen",
-    "section": "11.23 Modellieren mit lm()",
-    "text": "11.23 Modellieren mit lm()\n\nmod &lt;- lm(perf ~ gender_f + ta, lew)\n\n\n\n\nModellfit\n\n\n\n$\\hat{\\beta}$\n$s_e$\n\n\n\n\n(Intercept)\n41.181\n1.083\n\n\ngender\\_fm\n-10.877\n0.805\n\n\nta\n1.927\n0.145\n\n\n$\\hat{\\sigma}$\n2.845"
+    "section": "11.22 Modellieren mit lm()",
+    "text": "11.22 Modellieren mit lm()\n\nmod &lt;- lm(perf ~ gender_f + ta, lew)\n\n\n\n\nModellfit\n\n\n\n$\\hat{\\beta}$\n$s_e$\n\n\n\n\n(Intercept)\n41.181\n1.083\n\n\ngender\\_fm\n-10.877\n0.805\n\n\nta\n1.927\n0.145\n\n\n$\\hat{\\sigma}$\n2.845"
   },
   {
     "objectID": "mlm_dummy_coding.html#die-resultierenden-graden",
     "href": "mlm_dummy_coding.html#die-resultierenden-graden",
     "title": "11  Integration von nominale Variablen",
-    "section": "11.24 Die resultierenden Graden",
-    "text": "11.24 Die resultierenden Graden\n\n\n\n\n\nLeistungsentwicklung in Abhängigkeit vom Alter und Gender"
+    "section": "11.23 Die resultierenden Graden",
+    "text": "11.23 Die resultierenden Graden\n\n\n\n\n\nLeistungsentwicklung in Abhängigkeit vom Alter und Gender"
   },
   {
     "objectID": "mlm_dummy_coding.html#interaktion-zwischen-kontinuierlichen-und-nominalen-variablen",
     "href": "mlm_dummy_coding.html#interaktion-zwischen-kontinuierlichen-und-nominalen-variablen",
     "title": "11  Integration von nominale Variablen",
-    "section": "11.25 Interaktion zwischen kontinuierlichen und nominalen Variablen",
-    "text": "11.25 Interaktion zwischen kontinuierlichen und nominalen Variablen\n\n\n\n\n\nLeistungsentwicklung in Abhängigkeit vom Alter und Gender"
+    "section": "11.24 Interaktion zwischen kontinuierlichen und nominalen Variablen",
+    "text": "11.24 Interaktion zwischen kontinuierlichen und nominalen Variablen\n\n\n\n\n\nLeistungsentwicklung in Abhängigkeit vom Alter und Gender"
   },
   {
     "objectID": "mlm_dummy_coding.html#ansatz-für-ein-interaktionsmodell",
     "href": "mlm_dummy_coding.html#ansatz-für-ein-interaktionsmodell",
     "title": "11  Integration von nominale Variablen",
-    "section": "11.26 Ansatz für ein Interaktionsmodell",
-    "text": "11.26 Ansatz für ein Interaktionsmodell\nDas vorhergehendes Modell wird um einen Interaktionsterm erweitert.\n\\[\ny_i = \\beta_{ta=0,x_1=0} + \\Delta_m \\times x_1 + \\beta_{ta} \\times ta + \\beta_{ta \\times gender} \\times x_1 \\times ta + \\epsilon_i\n\\]"
+    "section": "11.25 Ansatz für ein Interaktionsmodell",
+    "text": "11.25 Ansatz für ein Interaktionsmodell\nDas vorhergehendes Modell wird um einen Interaktionsterm erweitert.\n\\[\ny_i = \\beta_{ta=0,x_1=0} + \\Delta_m \\times x_1 + \\beta_{ta} \\times ta + \\beta_{ta \\times gender} \\times x_1 \\times ta + \\epsilon_i\n\\]"
   },
   {
     "objectID": "mlm_dummy_coding.html#interaktionsmodell-mit-lm",
     "href": "mlm_dummy_coding.html#interaktionsmodell-mit-lm",
     "title": "11  Integration von nominale Variablen",
-    "section": "11.27 Interaktionsmodell mit lm()",
-    "text": "11.27 Interaktionsmodell mit lm()\n\nmod &lt;- lm(perf ~ gender_f * ta, lew)\n\n\n\n\nModellfit\n\n\n\n$\\hat{\\beta}$\n$s_e$\n\n\n\n\n(Intercept)\n31.354\n1.370\n\n\ngender\\_fm\n8.575\n2.010\n\n\nta\n1.763\n0.195\n\n\ngender\\_fm:ta\n2.362\n0.290\n\n\n$\\hat{\\sigma}$\n2.828"
+    "section": "11.26 Interaktionsmodell mit lm()",
+    "text": "11.26 Interaktionsmodell mit lm()\n\nmod &lt;- lm(perf ~ gender_f * ta, lew)\n\n\n\n\nModellfit\n\n\n\n$\\hat{\\beta}$\n$s_e$\n\n\n\n\n(Intercept)\n31.354\n1.370\n\n\ngender\\_fm\n8.575\n2.010\n\n\nta\n1.763\n0.195\n\n\ngender\\_fm:ta\n2.362\n0.290\n\n\n$\\hat{\\sigma}$\n2.828"
   },
   {
     "objectID": "mlm_dummy_coding.html#regressionsgeraden",
     "href": "mlm_dummy_coding.html#regressionsgeraden",
     "title": "11  Integration von nominale Variablen",
-    "section": "11.28 Regressionsgeraden",
-    "text": "11.28 Regressionsgeraden\n\n\n\n\n\nLeistungsentwicklung in Abhängigkeit vom Alter und Gender"
+    "section": "11.27 Regressionsgeraden",
+    "text": "11.27 Regressionsgeraden\n\n\n\n\n\nLeistungsentwicklung in Abhängigkeit vom Alter und Gender"
   },
   {
     "objectID": "mlm_dummy_coding.html#zum-nacharbeiten",
     "href": "mlm_dummy_coding.html#zum-nacharbeiten",
     "title": "11  Integration von nominale Variablen",
-    "section": "11.29 Zum Nacharbeiten",
-    "text": "11.29 Zum Nacharbeiten\nKutner u. a. (2005, p.313–319) \n\n\n\n\nKutner, Michael H, Christopher J Nachtsheim, John Neter, und William Li. 2005. Applied Linear Statistical Models. 5. Aufl. McGraw-Hill Irwin New York."
+    "section": "11.28 Zum Nacharbeiten",
+    "text": "11.28 Zum Nacharbeiten\nKutner u. a. (2005, p.313–319) \n\n\n\n\nKutner, Michael H, Christopher J Nachtsheim, John Neter, und William Li. 2005. Applied Linear Statistical Models. 5. Aufl. McGraw-Hill Irwin New York."
   },
   {
     "objectID": "mlm_dummy_coding.html#footnotes",
     "href": "mlm_dummy_coding.html#footnotes",
     "title": "11  Integration von nominale Variablen",
     "section": "",
-    "text": "Viele Funktionen in R transformieren eine Vektor mit Zeichenketten in einen factor() um. z.B. factor(c('m','m','f','f'))↩︎\nR gibt die Faktorstufe nach dem Namen des Faktors an. Im Beispiel steht genderm für Stufe m im Faktor gender.↩︎\nMit t.test()$conf.int kann auf das berechnete Konfidenzintervall zugegriffen werden.↩︎\nDiese Art der Kodierung wird auch als treatment Kodierung bezeichnet.↩︎"
+    "text": "R gibt die Faktorstufe nach dem Namen des Faktors an. Im Beispiel steht genderm für Stufe m im Faktor gender.↩︎\nMit t.test()$conf.int kann auf das berechnete Konfidenzintervall zugegriffen werden.↩︎\nDiese Art der Kodierung wird auch als treatment Kodierung bezeichnet.↩︎"
   },
   {
     "objectID": "mlm_hierarchies.html#einfaches-modell",
@@ -1377,5 +1377,26 @@
     "title": "7  Modellfit",
     "section": "7.3 Diagnoseplots in R",
     "text": "7.3 Diagnoseplots in R\nDa die Diagnose eines gefitten Modell in jedem Fall durchgeführt werden sollte, gibt es mit plot(mod) einen short-cut um eine Reihe von Diagnoseplots einfach erstellen zu können.\n\nplot(mod)\n\n\n\n\n\n\n\n7.3.1 Zum Nacharbeiten\nAltman und Krzywinski (2016a), Fox (2011, p.294–302), Young (2019)\n\n\n\n\nAltman, Naomi, und Martin Krzywinski. 2016a. „Points of significance: Analyzing outliers: influential or nuisance“. Nature Methods 13 (4): 281–82.\n\n\n———. 2016b. „Points of significance: regression diagnostics“. Nature Methods 13 (5): 385–86.\n\n\nFox, John. 2011. An R companion to applied regression. 2. Aufl. SAGE Publication Inc., Thousand Oaks.\n\n\nKutner, Michael H, Christopher J Nachtsheim, John Neter, und William Li. 2005. Applied Linear Statistical Models. 5. Aufl. McGraw-Hill Irwin New York.\n\n\nYoung, Alwyn. 2019. „Channeling fisher: Randomization tests and the statistical insignificance of seemingly significant experimental results“. The Quarterly Journal of Economics 134 (2): 557–98."
+  },
+  {
+    "objectID": "mlm_dummy_coding.html#vergleich-von-zwei-gruppen",
+    "href": "mlm_dummy_coding.html#vergleich-von-zwei-gruppen",
+    "title": "11  Integration von nominale Variablen",
+    "section": "11.1 Vergleich von zwei Gruppen",
+    "text": "11.1 Vergleich von zwei Gruppen\nBeginnen wir mit einem einfachen Beispiel. Wir wollen die Unterschiede zwischen Männern und Frauen in Bezug auf die Körpergröße untersuchen. In Abbildung 11.1 ist ein hypothetischer Datensatz von Körpergrößen von Frauen und Männern abgebildet. Wenig überraschen, da der Datensatz so erstellt wurde, sind Männer im Mittel größer als Frauen.\n\n\n\n\n\nAbbildung 11.1: Simulierte Daten: Verteilung von Körpergrößen nach Geschlecht für Männer (m) und Frauen (f)\n\n\n\n\nIn Tabelle 11.1 ist eine Ausschnit aus den Daten tabellarisch dargestellt. Wenig überraschend, haben wir zwei Datenspalten. In der ersten Spalte stehen die Körpergrößen, während in der zweiten Spalte eine Indikatorvariable steht die entweder den Wert \\(m\\) für Männer oder \\(f\\) für Frauen annimmt.\n\n\n\n\nTabelle 11.1: Ausschnitt aus den Daten.\n\n\ncm\ngender\n\n\n\n\n174.4\nm\n\n\n177.7\nm\n\n\n195.6\nm\n\n\n171.3\nf\n\n\n164.0\nf\n\n\n176.0\nf\n\n\n\n\n\n\nIn Tabelle 11.2 sind dann auch noch einmal die deskriptiven Statistiken der Körpergrößendaten abgebildet die auch noch einmal den Eindruck aus Abbildung 11.1 bestätigen.\n\n\n\n\nTabelle 11.2: Deskriptive Statistiken der Körpergrößendaten.\n\n\ngender\nm\nsd\n\n\n\n\nf\n168.8\n8.4\n\n\nm\n179.5\n9.8\n\n\n\n\n\n\nWir müssen jetzt allerdings erst einmal eine kurze Detour nehmen und verstehen, wie nominale Werte in R repräsentiert werden."
+  },
+  {
+    "objectID": "mlm_dummy_coding.html#nominale-variablen-in-r-detour",
+    "href": "mlm_dummy_coding.html#nominale-variablen-in-r-detour",
+    "title": "11  Integration von nominale Variablen",
+    "section": "11.2 Nominale Variablen in R (detour)",
+    "text": "11.2 Nominale Variablen in R (detour)\nNominale Variablen werden in R mit einen speziellen Typ repräsentiert dem sogenannten factor. Erstellt werden kann ein Faktor mit der factor()-Funktion. Die Funktion hat drei wichtige Parameter. Der erste Parameter bezeichnet die Werte, der zweite die möglichen Faktorstufen (levels) und der dritte Parameter die dazugehörigen Bezeichnungen (labels). Ein einfaches Beispiel sieht dann so aus:\n\ngender &lt;- factor(c(0,0,1,1),\n                 levels = c(0,1),\n                 labels = c('m','f'))\ngender\n\n[1] m m f f\nLevels: m f\n\n\nD.h. wir haben einen Datenvektor mit den Elemente \\((0,0,1,1)\\). Wir spezifizieren die levels dementsprechend mit \\(0\\) und \\(1\\) und definieren die dazugehörigen labels mit \\(m\\) und \\(f\\). Dabei sind jeweils Vektoren übergeben worden (siehe c()). Wenn wir die neue Variable gender aufrufen erhalten wird der Datenvektor mit den entsprechenden labels ausgegeben und zusätzlich gibt R die möglichen labels an.\nWenn wir den Parameter levels nicht angegeben hätten, dann extrahiert factor() die eineindeutigen Werte selbst und führt die Abbidlung auf die labels entsprechend der Sortierung aus.\n\ngender &lt;- factor(c(0,0,1,1),\n                 labels = c('m','f'))\ngender\n\n[1] m m f f\nLevels: m f\n\nstr(gender)\n\n Factor w/ 2 levels \"m\",\"f\": 1 1 2 2\n\n\nDabei muss darauf geachtet werden, dass die Abbildung auch tatsächlich diejenige ist, die gewünscht ist.\n\ngender &lt;- factor(c(0,0,1,1),\n                 labels = c('f','m'))\ngender\n\n[1] f f m m\nLevels: f m\n\n\nDaher ist es fast immer sinnvoll labels und levels immer zusammen zu nehmen. Wenn die Parameter nicht angegeben werden, dann führt factor die Abbildung wiederum automatisch durch und für die labels werden die Datenwerte übernommen.\n\ngender &lt;- factor(c(0,0,1,1))\ngender\n\n[1] 0 0 1 1\nLevels: 0 1\n\n\n\n\n\n\n\n\nWarnung\n\n\n\nAchtung, die Variable gender sieht zwar aus wie ein numerischer Vektor, sie ist es aber nicht.\n\nis.numeric(gender)\n\n[1] FALSE\n\n\nIntern wird eine Faktorvariable von R zwar als ein numerischer Vektor abgelegt. Aber die “sichtbaren” Werte sind nun die Zeichenketten der labels, die daher auch angezeigt werden. Die interne numerische Repräsentation muss auch nicht mehr den ursprünglichen Datenwerten entsprechen.\n\nas.numeric(gender)\n\n[1] 1 1 2 2\n\n\nDie Datenwerte waren ursprünglich \\((0,1)\\) und sind jetzt auf \\((1,2)\\) abgebildet worden. Erinnert euch an die Eigenschaft von nominalen Variablen. Nominale Variablen sind einfach voneinander unterscheidbare Werte die jedoch in keiner Ordnung stehen.\n\n\nDie automatische Konvertierung von factor() funktioniert am intuitivsten mit Zeichenkettenvektoren.\n\ngender &lt;- factor(c('m','f','m','f'))\ngender\n\n[1] m f m f\nLevels: f m\n\nstr(gender)\n\n Factor w/ 2 levels \"f\",\"m\": 2 1 2 1\n\n\nfactor() ermittelt zunächst die eineindeutigen Werte und sortiert diese dann entsprechend des Typen. In diesem Fall wird die Zeichenkette alphabetisch sortiert. Dann erfolgt die Abbildung der Werte auf die labels. Dies führt in diesem Fall dazu, dass die Werte m intern den Wert \\(2\\) zugeordnet bekommen, obwohl der erste Wert in den Daten m ist. Diese Sortierung der Daten wird später noch einmal von Bedeutung werden.\nDie Abfolge der levels kann durch eine explizite Angabe der Reihenfolge selbst bestimmt werden.\n\ngender &lt;- factor(c('m','f','m','f'),\n                 levels = c('m','f'))\ngender\n\n[1] m f m f\nLevels: m f\n\nstr(gender)\n\n Factor w/ 2 levels \"m\",\"f\": 1 2 1 2\n\ngender &lt;- factor(c('m','f','m','f'),\n                 levels = c('f','m'))\ngender\n\n[1] m f m f\nLevels: f m\n\nstr(gender)\n\n Factor w/ 2 levels \"f\",\"m\": 2 1 2 1\n\n\n\n\n\n\n\n\nTipp\n\n\n\nIm package forcats sind eine Reihe von Funktionen hinterlegt, mit denen die Eigenschaften von factor-Variablen einfach manipuliert werden können. Zum Beispiel, wenn die Reihenfolge von Faktorstufen geändert werden soll kann die Funktion fct_relevel() verwendet.\n\n\n[1] m f m f\nLevels: f m\n\n\n[1] m f m f\nLevels: m f\n\n\nSchaut euch die ausführliche Dokumentation der Funktionen und die Beispiel an, wenn ihr auf Probleme mit factor-Variablen stoßt.\n\n\n\n\n\n\n\n\nTipp\n\n\n\nViele Funktionen in R, wie z.B. lm(), transformieren Vektoren mit Zeichenketten automatisch in einen factor() um. Wird in lm() in der Formel beispielsweise y ~ gender benutzt und gender ist eine Datenspalte die aus den Zeichenketten c('m','m','f','f') besteht, dann ruft lm() intern die Funktion factor() für diese Daten auf und führt dann die Berechnung mit dem Faktor durch.\nDies erleichtert natürlich oft den Umgang mit den Daten, hat aber den Nachteil das immer klar sein muss, dass die automatische Konvertierung auch tatsächlich diejenige ist, dich auch gewünscht ist."
+  },
+  {
+    "objectID": "mlm_dummy_coding.html#vergleich-von-zwei-gruppen-continued",
+    "href": "mlm_dummy_coding.html#vergleich-von-zwei-gruppen-continued",
+    "title": "11  Integration von nominale Variablen",
+    "section": "11.3 Vergleich von zwei Gruppen (continued)",
+    "text": "11.3 Vergleich von zwei Gruppen (continued)\nKommen wir zurück zum Körpergrößenvergleich. Normalerweise würden wir die Unterschiede zwischen den beiden Gruppen mit einem t-Test für unabhängige Stichproben untersuchen. In R können wird dies mit der t.test()-Funktion durchführen.\n\nt.test(cm ~ gender, data=height, var.equal=T)\n\n\n    Two Sample t-test\n\ndata:  cm by gender\nt = -4.5683, df = 58, p-value = 2.617e-05\nalternative hypothesis: true difference in means between group f and group m is not equal to 0\n95 percent confidence interval:\n -15.45403  -6.03713\nsample estimates:\nmean in group f mean in group m \n       168.7834        179.5290 \n\n\nWenig überraschend finden wir ein statisch signifikantes Ergebnis."
   }
 ]
