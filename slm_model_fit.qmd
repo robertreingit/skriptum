@@ -160,14 +160,16 @@ In @fig-sim-model-rplot-2-1 ist ein parabelförmiger Zusammenhang zwischen $e_i$
 
 In @fig-sim-model-rplot-2-2 ist dagegen eine anderes Problem zu beobachten, die Residuen $e_i$ zeigen zwar keine Struktur bezüglich positiv zu negativen Werten, allerdings werden die Abweichung von $0$ mit größer werdenen $\hat{y}_i$ immer stärker. Dies deutet darauf hin, das die Streuung der Daten nicht gleich ist. Dies wird als Heteroskedastizität bezeichnet und deutet wiederum auf eine Verletzung der Annahmen bei der Homoskedastitzität ausgegangen wird. D.h. die Streuung soll über den gesamten Bereich von $\hat{y}_i$ gleich bleiben.
 
-::: {#def homoscedasticity}
+::: {#def-homoscedasticity}
 
 ### Homoskedastizität\index{Homoskedastizität}
 
-Wenn die Varianz der Residuen $\epsilon_i$ in einem Regressionsmodell unabhängig von der Größe der Vorhersagevariable $X_i$ gleich ist, wird die als Homoskedastizität bezeichnet. Die Streuung der Residuen ist dann für alle Werte $X_i$ gleich. Wenn dies nicht der Fall ist, wird von Heteroskedastizität\index{Heteroskedastizität} gesprochen.
+Wenn die Größe der Varianz der Residuen $\epsilon_i$ in einem Regressionsmodell unabhängig von der Größe der Vorhersagevariable $X_i$ ist, wird dies als Homoskedastizität bezeichnet. Die Streuung der Residuen ist dann für alle Werte $X_i$ gleich. Wenn dies nicht der Fall ist, wird von Heteroskedastizität\index{Heteroskedastizität} gesprochen.
 :::
 
-Eine weitere Möglichkeit die Residuen zu überprüfen ist die Anfertigung von sogenannten  qq-Plots. Dies ermöglichen etwas strukturierter die Verteilung der Residuen zu überprüfen.
+Da die Varianz also konstant für alle Werte von $X_i$ ist, trifft dies ebenfalls für die vorhergesagten Werte $\hat{Y}_i$ zu. Daher werden bei vielen der Plots die Residuen $\hat{\epsilon}_i$ gegen die $\hat{Y_i}$ abgetragen. Dies hat den Vorteil, dass später bei der multiplen Regression die gleiche Art von Graphen benutzt werden kann, um Homoskeastizität zu analysieren.
+
+Eine weitere Möglichkeit die Verteilung der Residuen zu überprüfen ist die Anfertigung von sogenannten  qq-Plots. Dies ermöglichen etwas strukturierter die Verteilung der Residuen zu überprüfen.
 
 ### Quantile-Quantile-Plots 
 
@@ -399,7 +401,7 @@ ggplot(df, aes(x,y)) +
   guides(color = "none")
 ```
 
-Der einzelen Punkt rechts oben in @fig-slm-model-outlier-1 hat einen großen Einfluss auf die resultierende Regressionsgerade wie in der Abbildung zu sehen ist. Der Einfluss ist zum Teil durch den großen Abstand des $x_i$-Wertes vom Mittelwert der $x_i$-Werte $\bar{x}$ bestimmt. Der Einfluss jedes einzelnen $x$-Wertes wird mittels der sogenannten Hebelwerte $h_i$ bestimmt. Die genaue Berechnung der Hebelwerte $h_i$ ist für das weitere Verständnis allerdings nicht wichtig, sondern mehr das Verständnis des Konzepts. Die Hebelwerte $h_i$ können Werte in $h_i \in \[1/n,1\]$ annehmen. In `R` können die Hebelwerte mit der Funktion `hatvalues()` berechnet werden.
+Der einzelen Punkt rechts oben in @fig-slm-model-outlier-1 hat einen großen Einfluss auf die resultierende Regressionsgerade wie in der Abbildung zu sehen ist. Der Einfluss ist zum Teil durch den großen Abstand des $x_i$-Wertes vom Mittelwert der $x_i$-Werte $\bar{x}$ bestimmt. Der Einfluss jedes einzelnen $x$-Wertes wird mittels der sogenannten Hebelwerte $h_i$ bestimmt. Die genaue Berechnung der Hebelwerte $h_i$ ist für das weitere Verständnis allerdings nicht wichtig, sondern mehr das Verständnis des Konzepts. Die Hebelwerte $h_i$ können Werte in $h_i \in [1/n,1]$ annehmen. In `R` können die Hebelwerte mit der Funktion `hatvalues()` berechnet werden.
 
 Tragen wir in die Grafik die Hebelwerte in die Grafik @fig-slm-model-outlier-1 ein (siehe @fig-slm-model-outlier-2), dann ist zu sehen, dass der abgesetzte Wert auch den größten Hebelwert hat.
 
@@ -480,7 +482,7 @@ In @tbl-slm-model-resids sind noch einmal die drei Arten von Residuen aufgeliste
 
 : Übersicht über verschiedene Arten von Residuen {#tbl-slm-model-resids}
 
-### `summary()`
+### Ausgabe von `summary()` (continued)
 
 Nach dieser Betrachtung der Residuen, die nach jedem Modellfit inspiziert werden sollten um zu überprüfen ob die Modellannahmen angemessen sind schauen wir uns noch einmal kurz die Ausgabe von `summary()` an.
 
@@ -494,18 +496,17 @@ Im vorliegenden Fall des Modells für die `adl`-Daten ist der Median dementsprec
 
 ### Zum Nachlesen
 
-@kutner2005 [p.100-114] \newline
-@pos_residuals \newline
-@fox2011 [p.285-296]
-
+Zum weiteren Vertiefen der Inhalte findet ihr in @kutner2005 [p.100-114], @pos_residuals und 
+@fox2011 [p.285-296] noch einmal gute Zusammenfassungen.
 
 ## Einflussmetriken
 
-Im folgenden schauen wir uns verschiedene Einflussmetriken auf das Modell an. Die Idee ist dabei die gleiche wie schon bei den Studentized Residuals. Der Einfluss der Datenpunkte auf den Modellfit wird interpretiert indem ein Modell mit und ein Modell ohne den jeweiligen Datenpunkt gefittet wird. Der Einfluss auf verschiedene Modellparameter wird dann bestimmt und dementsprechend als möglicherweise bedenklich eingestuft. In den Meisten dieser Ansatz kommen die Hebelwerte $h_i$ die wir bereits kennegelernt haben. 
+Um das gefittet Modell zu diagnostizieren reicht es allerdings nicht aus, sich nur die Residuen anzuschauen. Ein weiterer wichtiger Punkt ist die Analyse des Einflusses der einzelnen Datenpunkte auf das Modell. Wenn alles gut läuft sollte es keine einzelnen Datenpunkte geben, die einen übermäßig großen Einfluss auf das Modell ausüben. Anders ausgedrückt, die Anwesenheit bzw. Abwesenheit von einzelnen Datenpunkte sollte nicht dazu führen, dass die Aussage des Modells sich stark verändert. Im folgenden schauen wir uns dazu verschiedene Einflussmetriken die den Einfluss der Datenpunkte auf das Modell abschätzen.
+Die Idee der Einflussmetriken ist dabei die Gleiche wie schon bei den Studentized Residuals. Der Einfluss der Datenpunkte auf den Modellfit wird interpretiert indem ein Modell mit und ein Modell ohne den jeweiligen Datenpunkt gefittet wird. Der Einfluss auf verschiedene Modellparameter wird dann bestimmt und dementsprechend als möglicherweise bedenklich eingestuft. Die Meisten der im folgenden vorgestellten Ansätze verwenden in der einen oder anderen Form die Hebelwerte $h_i$ die wir bereits kennengelernt haben. 
 
-### DFFITS
+### DFFITS (difference in fits)
 
-Das erst Maß, daß wir uns anschauen ist DFFITS \index{DFFITS}. Dabei wird für jeden Datenpunkt getrennt ein Wert berechnet. Formal:
+Das erst Maß, daß wir uns anschauen ist DFFITS \index{DFFITS} (kurz für difference in fits). Das DFFITS-Maß wird getreent für jeden einzelnen Datenpunkt berechnet und der Einfluss des Datenpunkts auf den gefitteten Werte $\hat{y}_i$ für den jeweiligen Datenpunkt berechnet. Formal:
 
 \begin{equation}
 (DFFITS)_i = \frac{\hat{y}_i - \hat{y}_{i(i)}}{\hat{\sigma}\sqrt{h_i}}
@@ -602,7 +603,7 @@ adl %>% dplyr::select(y_hat, `dfbeta[1]`, `dfbeta[2]`) %>%
 
 In @fig-slm-model-dfbeta sind die DFBETAS für die beiden Koeffizienten $\hat{beta}_0$ und $\hat{beta}_1$ abgetragen. Hier ist zu sehen, dass die Wert für den Steigunsgkoeffizienten $\beta_1$ alle als unproblematisch anzusehen sind, während in Bezug auf $\beta_0$ ein paar wenige Fälle eine weiter Inspektion nach sich ziehen könnten. Allerdings sollte berücksichtigt werden, dass der y-Achsenabschnitt sehr stark durch die Verteilung der Datenpunkte in Bezug auf die $x$-Werte beeinflusst ist, da der Mittelwert der $x$-Werte bei $\bar{x} = `r round(mean(adl[['adas']]),1)`$ liegt.
 
-### Zusammenfassung
+### Übersicht über die Einflussmetriken 
 
 In @tbl-slm-model-influence sind noch einmal die verschiedenen Methoden tabellarisch dargestellt.
 
@@ -615,9 +616,15 @@ In @tbl-slm-model-influence sind noch einmal die verschiedenen Methoden tabellar
 
 : Übersicht über die verschiedene Einflussmaße zur Bewertung der Modellgüte {#tbl-slm-model-influence}
 
+Nochmal, die Daumenregeln sind wirklich auch nur Daumenregeln und identifzieren nicht automatisch ein Problem im Datensatz.
+
+### Zum Nacharbeiten
+
+Noch mal weitere Informationen findet Ihr in @pos_diagnostics, @fox2011 [p.294-302] und @young2019.
+
 ## Diagnoseplots in `R`
 
-Da die Diagnose eines gefitten Modell in jedem Fall durchgeführt werden sollte, gibt es mit `plot(mod)` einen short-cut um eine Reihe von Diagnoseplots einfach erstellen zu können.
+Da die Diagnose eines gefitten Modell in jedem Fall durchgeführt werden soll und es sich dabei also um eine alltägliche Aufgabe handelt, gibt es mit `plot(mod)` einen short-cut um eine Reihe von Diagnoseplots direkt erstellen zu können.
 
 ```{r, echo=T, eval=F}
 plot(mod)
@@ -630,10 +637,7 @@ plot(mod)
 par(mfrow=c(1,1), mar=mar)
 ```
 
-### Zum Nacharbeiten
-
-@pos_diagnostics, @fox2011 [p.294-302], @young2019
-
+Eine weitere Möglichkeit ist das package `performance` das zahlreiche Funktion enthält rund um die Analyse von Modellfits (siehe beispielweise `performance::check_model()`).
 
 
 
