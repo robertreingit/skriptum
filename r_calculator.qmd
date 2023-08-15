@@ -1,8 +1,185 @@
-# R als Taschenrechner
+# `R` im Schnelldurchgang 
 
-R kann als Taschenrechner benutzt werden.
+## Konzeption und Programmierparadigmen
+
+Bei der Programmiersprache `R` handelt es sich um eine interpretierte Programmiersprache. Inpretiert bedeutet, dass `R` Programmierbefehle direkt ausführt, intepretiert. Dies steht im Gegensatz zu kompilierten Programmiersprachen (z.B. C++) bei denen gesamte Programm zunächst von einem Compiler in Maschinenbefehle übersetzt wird. Wenn eine Programmiersprache interpretiert wird, hat dies den Vorteil, dass die Arbeit besser interaktiv durchgeführt werden kann. D.h. als Anwenderin können, je nach Bedarf, einzelne Befehle oder größere zusammenhängende Befehle, an `R` übergeben werden und sie werden direkt ausgeführt und `R` liefert das Ergebnis zurück. Insbesondere bei der Datenverarbeitung vereinfacht diese Vorgehensweise die Arbeit ungemein. So können Daten per trial-and-error schnell angepasst, transformiert oder graphisch bzw. deskriptiv dargestellt werden. Der Hauptnachteil von interpretierten Programmiersprachen ist, dass durch die Abarbeitung der einzelnen Befehle bestimmte Ausführungsoptimierungen durch `R` nicht angewendet werden können. Dies hat zur Folge, dass die Ausführungszeit, d.h. die Zeit die ein Programm benötigt um seine Aufgaben zu erledigen im Vergleich zu kompilierten Programmiersprachen zum Teil deutlich länger sein kann. In `R` kann dieser Nachteil jedoch durch die Einbindung von bestimmten Paketen (was ein Paket ist werden wir gleich sehen), die in anderen Programmiersprachen erstellt wurden und entsprechend optimiert wurden, in vielen Fällen umgegangen werden.
+
+## Ressourcen und Hilfestellungen zu `R` finden
+
+War es in den Anfangszeiten von `R` noch teilweise schwierig Hilfe bei auftretenden Problemen zu bekommen, hat sich dies in den letzten 10-15 Jahren glücklicherweise dramatisch geändert. Durch die etwas unglückliche Namensgebung `R` gab es beispielweise zunächst Probleme bei der Suche nach Problemlösungen, da die Suchmaschinen mit dem Buchstaben `R` wenig anfangen konnten. Im Internet finden sich jetzt allerdings zahllose überaus aktive Communities rund um R, mit ausführlichen Blogs, Podcasts, Youtube-Sammlungen und Programmierhilfen für alle möglichen Fragen und Probleme. Zwei sehr gute Quellen sind Stack Overflow bei denen oft schon mittels eines Google ein Treffer gefunden wird oder ChatGPT. Zudem ist die Menge an Büchern um und über `R` in den letzten Jahren geradezu explodiert. Mit eigenen Serien zur Datenanalyse mit R (Springer Use R!, CRC The R-Series) und zahllosen weiteren wissenschaftlichen Büchern mit mindestens Code-Beispielen in R bis hin zu frei verfügbaren Sammlungen hochqualitativer, wissenschaftlicher Bücher zu R (bookdown.org) lassen sich heutzutage relativ niedrigschwellig sehr gute `R`-skills aufbauen.
+
+## R Community und Pakete
+
+Eine treibende Kraft bei der Weiterentwicklung und Weiterverbreitung von R ist die riesige Gemeinschaft von Anwenderinnen und Programmiererinnen. Dadurch das R im Kern eine vollständige Programmiersprache ist, kann die Funktionalität von R ständig erweitert und individuellen Bedürfnissen angepasst werden. Neue Funktionalität wird in R im Rahmen von sogenannten Paketen (alternativ Bibliotheken) gebündelt. Durch diese Pakete können neue Befehle durch neudefinierte Funktionen in R zugänglich gemacht werden.
+
+R Pakete werden über das Comprehensive `R` Archive Network (kurz CRAN) verteilt. CRAN ist ein internationales Netzwerk von Webservern auf denen `R` Pakete gespeichert werden und das das einfache Herunterladen aus `R` heraus ermöglicht. Die auf CRAN gespeicherte Pakete folgen alle einer streng definierten Struktur und durchlaufen eine Qualitätskontrolle. Die Weiterentwicklung bzw. weitere Anpassung wird durch sogenannte Maintainer (Entwickler) sichergestellt. Während die Anzahl an Zusatzpaketen am Anfang von `R` noch relativ übersichtlich war, liegt die derzeitige Anzahl an `R` Paketen auf CRAN bei 19900 (Stand 08.2023) mit Tendenz steigend. Da sich Datenanalysen über verschiedenen Disziplinen und Anwendungsfälle im Grund genommen immer wieder ähneln besteht daher eine hohe Wahrscheinlichkeit das auch für ungewöhnliche Anwendungsfälle bereits bestehende Pakete und Zusatzfunktionen in `R` zur Verfügung stehen. Daher besteht für den Großteil von Anwenderinnen oftmals gar nicht mehr die Notwendigkeit kompliziertere Programmieraufgaben selbst durchzuführen. Sondern, durch die Suche nach einem geeigneten Paket, können auftauchende Problem schnell gelöst werden. Dies führt ebenfalls dazu, dass die Einstiegshürde für den Umgang mit `R` sehr niedrig ist.
+
+## Einstieg in `R`
+
+Der Umgang mit `R` wird mittels spezifische Befehle durchgeführt. Die Befehler werden von `R` eingelesen und entsprechend ausgeführt. Im einfachsten Fall, kann `R` beispielsweise als ein überproportionierter Taschenrechner verwendet werden. Die Befehle weden auf der Kommandozeile eingegeben. Beispielsweise führt auf der `R` Kommandozeile der folgende Befehl 2 + 2 gefolgt von einem ENTER zu folgender Ausgabe:
 
 ```{r}
-1 + 1
+2 + 2
 ```
 
+Das `>` steht für die Kommandozeile und `[1]` kennzeichnet die erste Zeile, daher die `1 ` der Ausgabe von `R`.
+
+Die Kommandozeile in `R` funktioniert nach dem Prinzip einer sogenannten *REPL*. *REPL* ist eine Abkürzung für die englischen Begriffe read-eval-print loop. Die Eingabe wird durch `R` eingelesen (R), im Rahmen der Programmiersprache evaluiert (E), das Ergebnis wird ausgegeben (P) und anschließend geht die Kommandozeile zurück zum Ausgangszustand (L). `R` liest die Eingabe `2 + 2`, evaluiert diese Eingabe, dies führt zu dem Ergebnis `4`, das Ergebnis wird auf der Kommandozeile ausgegeben, und `R` wartet nun wieder auf die nächste Eingabe `>`.
+
+Die im Beispiel berechnete `4` steht jetzt allerdings für die weitere Bearbeitung nicht mehr zur Verfügung. Da R die REPL ausgeführt hat und die Ausgabe nicht automatisch gespeichert wird. Um den Rückgabewerte eines Ausdrucks weiter zu bearbeiten muss dieser Wert in irgendeiner Form zugänglich gemacht werden. Um berechnete Werte weiter verwenden zu kommen, muss diesen Werten ein Bezeichner (Name) zugewiesen werden. Dies zieht das Konzept einer Variablen nach sich. Erfahrungsgemäß stellt dieses Konzept eine erste Größe Hürde dar für den Umstieg von beispielweise Tabellenkalkulationsprogrammen bei denen die Berechnungen scheinbar direkt auf den zu sehenden Daten stattfindet. Um in R einem Ausdruck bzw. dessen Rückgabewert einen Namen zuzuweisen wird der Zuweisungsoperator <- benutzt. Möchte ich beispielsweise das Ergebnis der „komplexen“ Berechnung 2 + 2 * 4 einem Namen geben, so würde dies wie folgt aussehen:
+
+```{r}
+x <- 2 + 2 * 4
+```
+
+In diesem Falle gibt R keinen Ausdruck zurück, sondern hat intern dem Ergebnis von 2 + 2 * 4 den Bezeichner x gegeben. Ein Aufruf x von auf der Kommandozeile führt dann zu:
+
+```{r}
+x
+```
+
+D.h. im internen Speicher von R ist der Wert 10 abgespeichert und der Wert kann über den Bezeichner x aufgerufen bzw. ausgegeben werden. Darin besteht ein grundlegender Unterschied in der Arbeitsweise mit Tabellenprogrammen. In R werden Berechnungen, die Rückgabewerte von Ausdrücken, Bezeichner zugewiesen und können dann in späteren Schritten wieder aufgerufen werden. Anders herum, wenn Zwischenergebnisse keinen Bezeichner haben, können sie auch nicht wiederverwendet werden.
+
+Zwei weitere Erläuterungen zu den bisherigen Beispielen sind notwendig. In den bisherigen Ausdrücken sind Leerzeichen zwischen die einzelnen Teile der Ausdrücke gesetzt worden. Diese Leerzeichen dienen lediglich der Leserlichkeit und haben keinen Einfluss auf die Evaluierung des Ausdrucks durch R. Daher sind die Ausdrücke 2 + 2 * 4 und 2+2*4 äquivalent und führen zum gleichen Ergebnis. Bei der Ausgabe des Wertes ist wahrscheinlich auch aufgefallen, das R nicht den Wert 16 berechnet hat, der korrekt wäre, wenn die Evaluierung des Ausdrucks streng von links nach rechts durchgeführt wird. R hat jedoch die korrekte mathematischen Regel Punkt-vor-Strich angewendet und ist daher zum Ergebnis 10 gekommen.
+
+Bei der weiteren Bearbeitung von Bezeichnern in R ist beachten, dass R zwischen Groß- und Kleinschreibung unterscheidet. Daher führt der Aufruf des Bezeichners:
+
+```{r, error=TRUE}
+X
+```
+
+zu einem Fehler. Das Auftreten von Fehler führt bei R Neueinsteigerinnen oft zu großer Verwirrung ist aber im Programmieralltag ein vollkommen normales Ereignis und sollte daher niemanden aus der Ruhe bringen. Im vorliegenden Fall bemängelt R lediglich das es den Bezeichner X nicht finden kann und dementsprechend nicht weiß wie es weiter verfahren soll.
+Die Arbeit mit R beruht in großen Teilen auf der Anwendung von Funktionen auf Werten. In R werden Funktionen nach dem Muster <NAME>(<PAR1>,<PAR2>,...,<PARk>) gebraucht (Die Zeichen <> zeigen einen beliebigen Bezeichner). D.h. sobald ein rundes Klammerpaar auf einen Bezeichner folgt, geht R davon aus, dass eine Funktion aufgerufen werden soll. Über <PAR1>,<PAR2>,...,<PARk> können der Funktion durch Komma getrennte Parameter übergeben werden. Die Anzahl der Parameter hängt dabei von der Definition der Funktion ab. Ein einfaches Beispiel ist die Anwendung der Wurzel auf einen numerischen Wert.
+
+```{r}
+y <- 9
+sqrt(y)
+```
+
+Die mathematische Wurzelfunktion wird in R mittels der Funktion sqrt() abgebildet. Im Beispiel wird zunächst dem Wert 9 der Bezeichner y zugewiesen und auf diesen Bezeichner wird dann die Wurzelfunktion sqrt() angewendet. Ein etwas näher an der Anwendung liegendes Beispiel wäre beispielsweise die Berechnung des Mittelwerts oder die Summe der Datenreihe (3, 5, 7) sein. In R wird eine solche geordnete Reihe von Zahlen als Vektor repräsentiert. Um einen solchen Vektor zu erstellen wird wiederum eine Funktion (c()für concatenation) verwendet. Anschließend kann auf den erstellen Vektor die Mittelwertsfunktion mean() bzw. die Funktion sum() angewendet werden.
+
+```{r}
+z <- c(3, 5, 7)
+mean(z)
+sum(z)
+```
+
+Der große Vorteil von R besteht nun darin, dass problemlos eigene Funktion definiert werden können. Beispielsweise eine Funktion welche das Minimum und das Maximum eines Vektors als einen Vektor mit zwei Einträgen zurückgibt.
+
+```{r}
+my_min_max <- function(x) {
+  c(min(x), max(x))
+}
+my_min_max(z)
+```
+
+Hier wird mittels des Schlüsselworts function() R angezeigt dass einen neue Funktion definiert werden. Auf das Schlüsselwort folgen die beiden runden Klammern mit den benötigten Parametern. Im Beispiel wird nur ein Parameter benötigt der den Bezeichner x bekommt. Die Namensgebung ist dabei vollkommen willkürlich und muss nur dann im folgenden Funktionskörper, der durch die geschweiften Klammern {} Bereich, passend verwendet werden. Bei Aufrufen der Funktion wird der Parameter entsprechend des übergegebenen Wertes in den Klammern im Funktionskörper ersetzt.
+
+Wird eine Funktion aus einem R Paket benötigt. Dann muss dieses zunächst in der R-Umgebung auf dem Rechner installiert werden, wenn dies nicht schon in einer vorhergehenden Session geschehen ist. Dazu wird wiederum eine Funktion verwendet. Beispielsweise um interaktive Karten mit R zu generieren ist das Paket leaflet notwendig. Der folgende Befehl installiert das Paket im R-System:
+
+```{r, eval=F}
+install.packages("leaflet")
+```
+
+R kontaktiert im Hintergrund den CRAN-Server und lädt das entsprechende Paket und benötigte Abhängigkeiten herunter. Die Funktionalität des Paket steht dann noch nicht direkt zur Verfügung, sondern das Paket muss zunächst mit einem weiteren Befehl in die derzeit aktive Arbeitsumgebung geladen werden.
+
+```{r, eval=F}
+library(leaflet)
+```
+
+Diese Beispiele dienen nur um einen allerersten Überblick über die Arbeit mit R zu gewinnen und die ersten Konzepte im Umgang mit R kennenzulernen. Wie bereits an diesem einfachen Beispiel ersichtlich besteht eine der Herausforderungen darin die notwendigen Befehle und Funktionen zu erlernen. Der Einstieg in R ähnelt daher dem Erlernen einer neuen Sprache. Diese Anfangshürde wird heutzutage durch die deutlich verbesserten Suchfunktionen der Internetsuchmaschinen sehr erleichtert. So reicht meistens eine Suche die mit einem R startet und dem Problem um Lösungsvorschläge zu finden. Auf diese Weise kann eine schnelle Produktivität in R erreicht werden, ohne das tiefergehende Programmierkenntnisse benötigt werden. Daher eignet sich R sehr gut als eine erste Programmiersprache bei der nach und nach weiterführende Programmierkonzepte nach Bedarf erarbeitet werden können. Gute Anfangsquellen für den Einstieg sind (Chambers, 2008; Dalgaard, 2020; Peng, 2016; Wickham & Grolemund, 2016). 
+
+Im Folgenden wird ein etwas umfangreicheres Beispiel mit nur kurzen Erklärungen exemplarisch vorgeführt. Eingehende Erläuterungen zu den verwendeten Befehlen kann in R mittels der Hilfedokumentation aufgerufen werden. Dazu wird lediglich ein ? vor den Funktionsnamen gestellt und R öffnet die dazu gehörende Hilfedatei.
+
+```{r, eval=F}
+?mean
+```
+
+## Ein Beispielworkflow in R
+
+Sei der folgende Datensatz aus Tabelle XY gegeben. In zwei unabhängigen Gruppen A und B wurde der Körperfettgehalt bestimmt und nun soll untersucht werden, ob ein statistisch signifikanter Unterschied zwischen den beiden Gruppen besteht. Dies ist natürlich nur ein synthetisches Beispiel und sollte in dieser Form daher nicht im Rahmen einer tatsächlichen wissenschaftlichen Arbeit durchgeführt werden, sondern dient lediglich der Anschauung.
+
+```{r, echo=F, warning=F, message=F}
+bfp <- readr::read_csv(file = 'data/bfp_data.txt')
+knitr::kable(bfp,
+             booktabs=T,
+             caption = 'Prozentualer Körperfettgehalt in zwei Gruppen')
+```
+
+Um eine Datenanalyse durchzuführen, müssen die Daten zunächst in R eingeladen werden. In der Rohform (Supplementary Material: XYZ) liegen die Daten in Form einer Textdatei vor. Die erste Spalte der Datei zeigt die Gruppenzugehörigkeit an, während die zweite Spalte den jeweiligen Fettgehalt beinhaltet. Die Spalten sind durch ein Komma voneinander getrennt und als Dezimaltrennzeichen, der internationalen Konvention folgend, wird ein Punkt verwendet. Um die Daten in R zu laden wird aus dem Paket readr die Funktion read_csv() verwendet. Zunächst muss jedoch das derzeitige Arbeitsverzeichnis von R auf den entsprechende Ordner unter dem die Datei abgelegt gesetzt werden. Dazu wird die Funktion setwd() (kurz für set working directory) verwendet. Da Pfadangeben in R immer relativ zu Arbeitsverzeichnis bestimmt werden, erleichtert dieser Schritt die weitere Arbeit da keine langen Dateipfade angegeben werden müssen und.
+
+```{r, eval=F, error=T}
+setwd(PFAD)
+```
+
+Nun wird das Paket readr geladen und die Datei mittels der Funktion read_csv eingeladen.
+
+```{r, eval=F}
+library(readr)
+bfp <- read_csv(file = 'bfp_data.txt')
+bfp
+```
+
+
+Die Daten stehen nun unter dem Bezeichner bfp in R zur Verfügung. Der Name ist dabei wieder willkürlich gewählt und der Einfachheit halber kurz gehalten.
+
+Die Daten sind in einem sogenannten data.frame-Objekt (bzw. der neueren Version tibble) abgelegt und können nun weiter verarbeitet werden. Beispielsweise kann mittels der Funktion summary() ein Überblick über deskriptiven Statistiken der Daten erzeugt werden.
+
+```{r}
+summary(bfp)
+```
+
+Hier ist bereits zu sehen, dass einer der Datenpunkt wahrscheinlich fehlerhaft ist, da der Wert > 100 ist, was bei für einen prozentualen Körperfettanteil nicht möglich ist. Im nächsten Schritt sollen die Daten dann graphisch mittels eines Boxplots dargestellt werden. R stellt von Haus aus zahlreiche Funktion zur einfachen graphischen Darstellung bereit. Wir wollen hier aber auf das Paket ggplot2 zurückgreifen, welches die Erstellung moderner Graphiken in Publikationsqualität ermöglicht (Healy, 2018; Wickham, 2016). Vor der Verwendung muss das Paket wiederum zunächst geladen werden.
+
+```{r}
+#| fig.cap="Darstellung der Beispieldaten mittels eines Boxplots mit dem problematischen Datenpunkt."
+library(ggplot2)
+ggplot(bfp, aes(Group, BFP)) + geom_boxplot()
+```
+
+Abbildung 2: Darstellung der Beispieldaten mittels eines Boxplots nach Ausschluss des Ausreißers.
+
+Im Boxplot in Abbildung XY ist der problematische Datenpunkt noch klarer ersichtlich und er verhindert auch gleichzeitig eine Analyse der Daten. Da wir keine weitere Information haben, schließen wir den Datenpunkt aus. Dazu benutzen wir aus dem Paket dplyr die Funktion filter.
+
+```{r, message=F, warning=F}
+library(dplyr)
+bfp_clean <- filter(bfp, BFP <= 100)
+bfp_clean
+ggplot(bfp_clean, aes(Group, BFP)) + geom_boxplot()
+```
+
+
+Die graphische Darstellung mittels eine Boxplots ist jetzt schon deutlich nachvollziehbarer (siehe Abbildung XY). Ohne jetzt weiter auf statistische Voraussetzungen einzugehen führen wir jetzt einen unabhängigen t-Test für Gruppen mit unterschiedlichen Varianzen. Dazu benutzen wir wieder eine Funktion aus R.
+
+```{r}
+t.test(BFP ~ Group, data = bfp_clean)
+```
+
+Wir dieses Beispiel zeigt, lässt sich in R mittels weniger Befehle eine Datenanalyse realisieren. Die Entwickler von R haben dabei darauf geachtet, dass die Namensgebung von Funktionen möglichst nahe an der gewünschten Tätigkeit liegt, so dass einen der englische Begriff meist schnell die Funktion herleiten lässt. 
+Im Beispiel haben wir alle Befehlt direkt auf der Kommandozeile eingegeben und die Daten interaktiv analysiert. Bei einer tatsächlichen Analyse wird die Datenanalyse aus einer Kombination von interaktiven Arbeiten und permanenten Skripten bestehen. Beispielsweise würde diejenigen finalen Befehl die auf die Daten angewendet werden sollen in eine Skriptdatei geschrieben werden, so dass die Analyse zu einem späteren Zeitpunkt wieder aufgegriffen bzw. nachvollziehbar ist. So könnte der gezeigte Workflow in das folgende Skript münden:
+
+```{r, eval=F}
+setwd(PFAD)
+
+# Notwendige Bibliotheken
+library(readr)
+library(ggplot2)
+library(dplyr)
+
+# Daten einlesen
+bfp <- read_csv(file = 'bfp_data.txt')
+
+# Daten bearbeiten
+bfp_clean <- filter(bfp, BFP <= 100)
+
+# Deskriptiv
+summary(bfp_clean)
+
+# Graphiken
+ggplot(bfp_clean, aes(Group, BFP)) + geom_boxplot()
+
+# Analyse
+t.test(BFP~Group, data = bfp_clean)
+```
+
+Die verwendeten Befehle sind durch die Verwendung von Kommentaren, die in R mit einem # signalisiert werden, noch besser nachvollziehbar.

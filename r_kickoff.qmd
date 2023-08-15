@@ -1,0 +1,282 @@
+# `R` Kickoff 
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+source('_common.R')
+knitr::opts_chunk$set(
+  prompt=TRUE
+)
+```
+
+Der Umgang mit `R` wird mittels spezifische Befehle durchgeführt. Die Befehler werden von `R` eingelesen und entsprechend ausgeführt. Im einfachsten Fall, kann `R` beispielsweise als ein überproportionierter Taschenrechner verwendet werden. Die Befehle weden auf der Kommandozeile eingegeben. Beispielsweise führt auf der `R` Kommandozeile der folgende Befehl 2 + 2 gefolgt von einem ENTER zu folgender Ausgabe:
+
+```{r}
+#| echo: true
+
+2 + 2
+```
+
+Das `>` steht für die Kommandozeile und `[1]` kennzeichnet die erste Zeile, daher die `1 ` der Ausgabe von `R`.
+
+Die Kommandozeile in `R` funktioniert nach dem Prinzip einer sogenannten *REPL*. *REPL* ist eine Abkürzung für die englischen Begriffe read-eval-print loop. Die Eingabe wird durch `R` eingelesen (R), im Rahmen der Programmiersprache evaluiert (E), das Ergebnis wird ausgegeben (P) und anschließend geht die Kommandozeile zurück zum Ausgangszustand (L). `R` liest die Eingabe `2 + 2`, evaluiert diese Eingabe, dies führt zu dem Ergebnis `4`, das Ergebnis wird auf der Kommandozeile ausgegeben, und `R` wartet nun wieder auf die nächste Eingabe `>`. Wenig überraschend, führt die Eingabe `3 * 3` zu folgenden Ablauf.
+
+```{r}
+#| echo: true
+
+3 * 3
+```
+
+Die Anweisungen `2 + 2` oder `3 * 3` werden allgemein als **Ausdrücke** bezeichnet. Wir könnten die Beispiele jetzt mit den üblichen Grundrechenarten `+-/*` weiterführen, aber es würde nichts Neues dazukommen. Daher schauen wir uns jetzt an, wie wir komplexere, mehrstufige Berechnungen durchführen können. Dazu schauen wir uns ein zentrales Konzept von Programmiersprachen an: Variablen.
+
+## Variablen in `R`
+
+Nehmen wir, wir wollen das Ergebnis der letzten komplexen Berechnung, in irgendeiner Form weiter verwenden. Die im Beispiel berechnete `9` steht jetzt allerdings für die weitere Bearbeitung nicht mehr zur Verfügung. `R` hat die REPL ausgeführt, die Berechnung der `9`, und da jetzt mit dieser Ausgabe nichts weiteres durchgeführt wurde, ist die Ausgabe auch nirgends gespeichert worden. Die Ausgabe bzw. das Ergebnis eines Befehlt wird als Rückgabewert\index{Rückgabewert} bezeichnet. Um den Rückgabewert eines Ausdrucks weiter zu bearbeiten, muss dieser Wert in irgendeiner Form `R` zugänglich gemacht werden, d.h. der Rückgabewert muss irgendwie gespeichert werden. Um Werte weiter verwenden zu kommen, wird den Werten daher ein Bezeichner, ein Name, zugewiesen. Es wird eine Variable eingeführt. Erfahrungsgemäß stellt dieses Konzept eine erste Größe Hürde im Umgang mit `R`da, das diese Konzept beispielweise in Tabellenkalkulationsprogrammen, bei denen die Berechnungen scheinbar direkt auf den zu sehenden Daten stattfindet, nicht vorhanden ist. Letztendlich ist eine Variable aber nichts als ein Wert in `R` dem ein Name zugewiesen wurde.
+
+Um in `R` einem Ausdruck bzw. dessen Rückgabewert einen Namen zuzuweisen wird ein spezieller in `R` definierter Befehl verwendet, der Zuweisungsoperator `<-`. Möchte ich beispielsweise das Ergebnis der „komplexen“ Berechnung `3 * 3` später weiter verwenden, dann verwende ich den Zuweisungsoperator `->` um dem Rückgabewert einen Namen zu geben. 
+```{r}
+#| echo: true
+
+wert_1 <- 3 * 3
+```
+
+`R` jetzte keinen Ausdruck mehr zurück, da das Ergebnis des Zuweisungsoperator die Zuweisung eines Namens ist, was keinen Wert zurückgibt mehr ergibt. Intern hat `R` die Berechnung durchgeführt und dem Rückgabewert den Namen `wert_1` zugewiesen. Der Name ist dabei, im Rahmen bestimmter Konventionen vollkommen willkührlich und `R` hätte mich nicht daran gehindert `wert_2`, `wert_123`, `thomas`, `steffie` oder einen anderen Namen zu verwenden. 
+
+Dies Frage stellt sich jetzt natürlich, wie komme ich meinen berechneten Wert wieder heran. Einfach indem ich den Bezeichner, den Namen, `wert_1` an `R` übergebe.
+
+```{r}
+#| echo: true
+
+wert_1
+```
+
+In R-Studio, gibt es oben-rechts einen Reiter mit der Aufschrift **Environment**, hier sollte jetzt auch ein Eintrag zu finden sein mit dem Bezeichner `wert_1` und dem angehängten Wert $9$.
+
+Dieser Prozess funktionert genau gleich mit einem komplexeren Ausdruck wie `2 + 2 * 4`.
+
+```{r}
+#| echo: true 
+
+x <- 2 + 2 * 4
+```
+
+Aufruf des Bezeichners `x` von auf der Kommandozeile führt dann entsprechend wieder zu der Ausgabe des Wertes.
+
+```{r}
+#| echo: true
+x
+```
+
+Konzeptionell stellt sich der Vorgang der Zuweisung in etwa so dar. Im internen Speicher von `R` wird der Wert $10$ an einer passen Stelle abgespeichert und in einer Tabelle wird ein Eintrag mit dem Bezeichner `x` zusammen mit der Adresse des Wertes $10$ abgelegt. Wenn `R` dann auf den Bezeichner `x` trifft, dann schaut es in der Tabelle nach, an welcher Stellt sich der Wert befindet und gibt diesen aus. Dies hat zur Folge, dass Bezeichner genauso wieder in Ausdrücken verwendet werden können wie Werte. `R` ersetzt den jeweiligen Bezeichner mit dem hinterlegten Wert und führt den Ausdruck aus.
+
+```{r}
+#| echo: true
+
+x + wert_1
+```
+
+`R` ersetzt den Bezeichner `x` mit dem Wert $10$ und den Bezeichner `wert_1` mit dem Wert $9$ und addiert die beiden Werte zusammen.
+
+In dieser Vorgehensweise besteht ein grundlegender Unterschied zur der Arbeitsweise mit Tabellenprogrammen bei denen immer direkt auf den jeweiligen Zellen gearbeitet wird. In `R` werden Berechnungen, die Rückgabewerte von Ausdrücken, Bezeichner zugewiesen und können dann in späteren Ausdrücken (Befehlen) wieder aufgerufen werden. Anders herum, wenn Zwischenergebnisse keinen Bezeichner haben, können sie auch nicht wiederverwendet werden.
+
+Zwei weitere Erläuterungen zu den bisherigen Beispielen sind notwendig. In den bisherigen Ausdrücken sind Leerzeichen zwischen die einzelnen Teile der Ausdrücke gesetzt worden. Diese Leerzeichen dienen lediglich der Leserlichkeit und haben keinen Einfluss auf die Evaluierung des Ausdrucks durch `R`. Daher sind die Ausdrücke `2 + 2 * 4` und `2+2*4` äquivalent und führen zum gleichen Ergebnis. Bei der Ausgabe des Wertes ist wahrscheinlich auch aufgefallen, das `R` nicht den Wert $16$ berechnet hat, der korrekt wäre, wenn die Evaluierung des Ausdrucks streng von links nach rechts durchgeführt wird `2 + 2 * 4 = 4 * 4 = 16`. `R` hat jedoch die korrekte mathematischen Regel Punkt-vor-Strich angewendet und ist daher zum korrekten Ergebnis `10` gekommen.
+
+::: {.callout-important}
+In `R` wird bei Bezeichnern zwischen Groß- und Kleinschreibung unterscheidet. Daher führt der Aufruf des Bezeichners `X` zu einem Fehler.
+
+```{r}
+#| echo: true
+#| error: true
+
+X
+```
+
+Die Fehlermeldung von `R` gibt auch direkt an, was das Problem ist, das nämlich kein Objekt mit der Bezeichnung `X` gefunden werden kann.
+
+:::
+
+::: {.callout-tip}
+Das Auftreten von Fehler führt bei R Neueinsteigerinnen oft zu großer Verwirrung ist aber im Programmieralltag ein vollkommen normales Ereignis und sollte daher niemanden aus der Ruhe bringen. Im vorliegenden Fall bemängelt R lediglich das es den Bezeichner X nicht finden kann und dementsprechend nicht weiß wie es weiter verfahren soll.
+:::
+
+Damit haben wir jetzt das erste große Konzept in `R`, bzw. in allen Programmiersprachen, das der **Variable** kennengelernt. Als nächstes wenden wir uns dem Konzept der Funktionen in `R` zu.
+
+
+## Funktionen in `R`
+
+Ein gutes Template für Funktionen in Programmiersprachen sind Funktionen aus der Mathematik.
+
+\begin{equation*}
+y = f(x)
+\end{equation*}
+
+Wir haben eine Funktion $f()$, dieser Funktion übergeben wir ein Argument (auch Parameter) $x$. Die Funktion $f()$ macht dann etwas mit diesem Parameter und gibt einen Rückgabewert $y$ zurück. Sei zum Beispiel die folgenden Funktion definiert.
+
+\begin{equation*}
+f(x) = x^2
+\end{equation*}
+
+D.h. der Funktion $f()$ wird der Parameter $x$ übergeben. Dieser Wert wird anschließend quadriert und das Ergebnis der Berechnung wird zurück gegeben.
+
+In `R` werden Funktionen nach dem Muster <NAME>(<PAR1>,<PAR2>,...,<PARk>) aufgerufen (die Zeichen <> stehen für einen beliebigen Bezeichner). D.h. sobald ein rundes Klammerpaar auf einen Bezeichner folgt, geht `R` davon aus, dass die Anwenderin eine Funktion aufrufen möchte. Über <PAR1>,<PAR2>,...,<PARk> können der Funktion durch Komma getrennte Parameter übergeben werden. Die Anzahl der Parameter hängt dabei von der Definition der Funktion ab. In der Mathematik wäre ein Beispiel eine Funktion mit zwei Argumenten.
+
+\begin{equation*}
+f(x,y) = x^2 + y^2
+\end{equation*}
+
+### Funktionen anwenden
+
+Ein einfaches Beispiel ist die Anwendung der Wurzelfunktion auf einen numerischen Wert. In `R` gibt es schon eine vordefinierte Funktion mit dem Bezeichner `sqrt()`, welche die Wurzel des übergebenen Parameters berechnet.
+
+```{r}
+#| echo: true
+
+y <- 9
+sqrt(y)
+```
+
+Im Beispiel wird zunächst dem Wert $9$ der Bezeichner `y` zugewiesen. Dieser wird dann an die Wurzelfunktion `sqrt()` übergeben.
+
+Ein etwas näher an der Anwendung liegendes Beispiel wäre beispielsweise die Berechnung des Mittelwerts oder die Summe der Datenreihe $(3, 5, 7)$ sein. In `R` wird eine solche geordnete Reihe von Zahlen als Vektor repräsentiert. Um einen solchen Vektor zu erstellen wird wiederum eine Funktion `c()` (für concatenation) verwendet.
+
+```{r}
+#| echo: true
+ 
+z <- c(3, 5, 7)
+```
+
+Mit dieser Anweisung hat `R` einen Vektor mit den drei Einträgen erstellt. Wir können jetzt den Mittelwert $\bar{z} = \frac{1}{3}\sum_{i=1}^3z_i$ mittels der Funktion `mean()` berechnen.
+
+```{r}
+#| echo: true
+
+mean(z)
+```
+
+Vielleicht interessiert uns jetzt nicht der Mittelwert sondern die Summe $\bar{z} = \sum_{i=1}^3z_i$. Dafür können wir die `sum()` Funktion verwenden.
+
+```{r}
+#| echo: true
+
+sum(z)
+```
+
+Dies sind jetzt nur einige wenige Beispiele und einer der Skills im Umgang mit `R` besteht darin die Namen der Funktion sich zu merken. Dies kann am schnellesten durch den täglichen Umgang mit `R` erlernt werden. Am Besten ab heute.
+
+### Funktionen in `R`-Paketen
+
+Sollte sich der Fall ergeben, dass keine geeignete Funktion mit `R` mitgeliefert wird, dann können Zusatzfunktionen mittels sogenannter Pakete installiert werden. Ein Paket kann dabei als eine Sammlung von Funktionen und Anweisungen angesehen werden mit deren Hilfe die Funktionalität von `R` erweitert werden kann. Daher wird zunächst Information darüber benötigt, in welchem Paket die gewünschte Funktionalität vorhanden ist. Hierfür reicht meistens eine kurze Suche mittels Google aus.
+
+Ist das Paket nun bekannt, dann sind zwei Schritte zunächst durchzuführen. Wobei der 1. Schritt nur beim ersten Mal durchgeführt werden muss. Zunächst muss das benötigte Paket in der lokalen, d.h. derjenigen auf dem Rechner laufenden, `R`-Umgebung installiert werden, wenn es noch nicht bereits vorher installiert wurde (in R-Studio: Reiter unten-links **Packages**).
+
+Ein Paket kann mittels des Befehlt `install.packages()` installiert werden. Der Name des Paket muss in Gänsefüßchen an die Funktion übergeben werden. Wollen wir beispielsweise das Paket `performance` installieren, führen wir den folgenden Befehl aus.
+
+```{r}
+#| echo: true
+#| eval: false
+
+install.packages("performance")
+```
+
+`R` kontaktiert im Hintergrund den CRAN-Server und lädt das Paket sowie benötigte Abhängigkeiten automatisch herunter. Wenn alles gut läuft, dann ist das Paket nun in der lokalen Umgebung *installiert*. Die Funktionalität des Paket steht jedoch noch nicht direkt zur Verfügung! Sondern, das Paket muss mit einem weiteren Befehl in die derzeit aktive Arbeitsumgebung geladen werden.
+
+Um das Paket in die aktive Arbeitsumgebung zu laden wird gibt es zwei Befehle in `R`, `library()` und `require()`. Bei `require()` überprüft `R` zunächst ob das Paket schon geladen wurde, während bei `library()` das Paket einfach geladen wird. Um die Funktionalität von `performance` jetzt in der aktiven Session zu nutzen, kann dementsprechend `library()` benutzt werden.
+
+```{r}
+#| echo: true
+#| eval: false
+
+library(performance)
+```
+
+Dieser zweite Schritt des Paket laden, muss jedes mal nach einen Neustart von `R` wieder durchgeführt werden. Zusatzpakete werden durch `R` beim Start nicht automatisch geladen.
+
+::: {.callout-tip}
+Neue Pakete müssen nur beim ersten Mal neu installiert werden. Danach immer nur noch entweder mit `library()` oder `require()` geladen werden.
+:::
+
+Der große Vorteil von `R`, beziehungsweise von jeder vollwertigen Programmiersprache, besteht nun darin, dass problemlos eigene Funktion definiert werden können sollten sich keine bereits fertigen Funktionen finden lassen. Dies führt dazu, dass ständig neue Funktionalität zu `R` hinzugefügt werden kann und mittlerweile kaum eine Disziplin nicht mit eigenen, spezialisierten Paketen aufwarten kann.
+
+### Eigene Funktionen schreiben
+
+Im folgenden wird nur kurz examplarisch das Schreiben eigener Funktionen gezeigt, da damit deutlich tiefer in die Programmierung mit `R` eingestiegen werden muss, als dass zum jetzigen Zeitpunkt notwendig ist.
+
+Wollen wir zum Beispiel eine Funktion schreiben die den gewichteten Mittelwert aus zwei Werten berechnet mit den Gewichten $(\frac{1}{3},\frac{2}{3})$:
+
+\begin{equation*}
+f(x,y) = \frac{1}{3}x + \frac{2}{3}y
+\end{equation*}
+
+Dann könnten wir das in `R` wie folgt ausdrücken.
+
+```{r}
+#| echo: true
+
+mein_gewichteter_mittelwert <- function(x,y) { 
+  x/3 + 2*y/3 
+}
+```
+
+Um eine eigene Funktion zu defineren, muss das *Schlüsselworts* `function()` verwendet werden. Wenn `R` den Ausdruck `function` sieht, dann interpretiert es den Ausdruck als Definition einer neuen Funktion. Auf das Schlüsselwort folgen runde Klammern `()` die die benötigten Parameter der Funktion umschließen. Im Beispiel werden zwei Parameter definiert $x$ und $y$. Die Namen der Parameter sind dabei vollkommen willkürlich und müssen lediglich zu späteren Ausdruck in der Funktion passen. Es folgen dann zwei geschweifte Klammern `{}` die den sogenannten Funktionskörper definieren. Im Funktionskörper ist die Funktionalität der Funktion hinterlegt. Konkret stehen hier die Ausdrücke mit derer die Funktion ihren Ergebniswert berechnen kann. Um die Funktion aufrufbar zu machen, braucht sie wieder einen Bezeichner. Dieser wird mittels des Zuweisungsoperators  `<-` definiert. In R-Studio sollte in der **Environment** nach dem Ausführen der Anweisung nun ein Eintrag mit dem Namen `mein_gewichteter_mittelwert` stehen. Der Name ist wiederum vollkommen willkürlich und es `R` kontrolliert nicht ob mein Bezeichner semantisch dem entspricht was die Funktion berechnet.
+
+Nachdem ich die Funktion definiert habe, kann ich sie wie jeder andere Funktion aufrufen. Bei Aufrufen der Funktion werden die Parameter entsprechend der übergegebenen Werte in den Klammern im Funktionskörper ersetzt. Und `R` führt die Anweisungen im Funktionskörper aus. Der Rückgabewert der Funktion ist die letzte Anweisung des Funktionskörpers. Im vorliegenden Beispiel, da es nur eine Anweisung gibt, wird dieser Wert zurück gegeben.
+
+```{r}
+#| echo: true
+
+mein_gewichteter_mittelwert(3,6)
+```
+
+::: {.callout-note}
+Was die letzte Anweisung für den Rückgabewert bedeutet ist etwas einfacher zu sehen, wenn wir die Funktion etwas kompliziert schreiben.
+
+```{r}
+#| echo: true
+
+mein_gewichteter_mittelwert_2 <- function(x,y) { 
+  a <- x/3
+  b <- 2*y/3
+  a + b
+}
+mein_gewichteter_mittelwert_2(3,6)
+```
+
+Hier haben wir mit `a` und `b` zunächst zwei Zwischenberechnung durchgeführt und dann in der letzten Anweisung das Ergebnis für den Rückgabewert berechnet.
+
+:::
+
+Wer tiefer in die Programmierung von Funktion in `R` einsteigen möchte, sollte sich [R4DS](https://r4ds.hadley.nz/functions.html) und [Advanced R](https://adv-r.hadley.nz/functions.html) anschauen.
+
+## Datentypen
+
+In der Programmiersprache R gibt es eine Vielzahl von Datentypen, die es Entwicklern ermöglichen, Daten auf effiziente und strukturierte Weise zu verarbeiten. Ein Verständnis dieser Datentypen ist von entscheidender Bedeutung, um effektiv mit R zu arbeiten. Einige der wichtigsten Datentypen in R sind:
+
+### Vektoren
+
+Vektoren sind grundlegende Datentypen in R und können sowohl numerische als auch nicht-numerische Werte speichern. Sie können als eine geordnete Sammlung von Elementen betrachtet werden. Vektoren können mit der Funktion `c()` erstellt werden und unterstützen Element-zu-Element-Operationen.
+
+### Matrizen
+
+Matrizen sind zweidimensionale Datenstrukturen, die aus Zeilen und Spalten bestehen. Sie werden häufig für numerische Berechnungen, wie lineare Algebra, verwendet. Matrizen können mit der Funktion `matrix()` erstellt werden.
+
+### Zeichenfolgen (Strings)
+
+Zeichenfolgen repräsentieren Textdaten und werden oft für die Manipulation von Texten und die Verarbeitung von Zeichenketten verwendet. Sie können mit einfachen Anführungszeichen (`'`) oder doppelten Anführungszeichen (`"`) erstellt werden.
+
+### Logische (Boolean) Werte
+
+Logische Werte (`TRUE` oder `FALSE`) werden verwendet, um Wahrheitswerte darzustellen. Sie sind entscheidend für Bedingungen und logische Ausdrücke in R.
+
+### `data.frame()` oder `tibble()`
+
+Dataframes sind ähnlich wie Matrizen, aber sie ermöglichen die Speicherung verschiedener Datentypen (z. B. numerisch, Zeichenfolgen, Faktoren) in den Spalten. Data Frames sind besonders nützlich für die Verarbeitung und Analyse von tabellarischen Daten und können mit der Funktion `data.frame()` erstellt werden.
+
+Diese Datentypen bilden das Grundgerüst für die Datenverarbeitung und Analyse in R. Ihr Verständnis ist unerlässlich, um effektiv mit Daten zu arbeiten und komplexe Analysen durchzuführen. R bietet zudem zahlreiche Funktionen zur Manipulation und Umwandlung dieser Datentypen, was die Flexibilität und Leistungsfähigkeit der Sprache weiter erhöht.
+
+## Ablaufkontrolle
+
+
+
+
+

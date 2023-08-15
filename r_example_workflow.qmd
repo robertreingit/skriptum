@@ -1,0 +1,123 @@
+# Ein Beispielworkflow und Skripte in `R`
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+source('_common.R')
+knitr::opts_chunk$set(
+  prompt=TRUE
+)
+```
+
+Im Folgenden wird ein etwas umfangreicheres Beispiel mit nur kurzen Erklärungen exemplarisch vorgeführt. Eingehende Erläuterungen zu den verwendeten Befehlen kann in R mittels der Hilfedokumentation aufgerufen werden. Dazu wird lediglich ein ? vor den Funktionsnamen gestellt und R öffnet die dazu gehörende Hilfedatei.
+
+```{r}
+#| echo: true
+#| eval: false
+
+?mean
+```
+
+
+Sei der folgende Datensatz aus Tabelle XY gegeben. In zwei unabhängigen Gruppen A und B wurde der Körperfettgehalt bestimmt und nun soll untersucht werden, ob ein statistisch signifikanter Unterschied zwischen den beiden Gruppen besteht. Dies ist natürlich nur ein synthetisches Beispiel und sollte in dieser Form daher nicht im Rahmen einer tatsächlichen wissenschaftlichen Arbeit durchgeführt werden, sondern dient lediglich der Anschauung.
+
+```{r, echo=F, warning=F, message=F}
+bfp <- readr::read_csv(file = 'data/bfp_data.txt')
+knitr::kable(bfp,
+             booktabs=T,
+             caption = 'Prozentualer Körperfettgehalt in zwei Gruppen')
+```
+
+Um eine Datenanalyse durchzuführen, müssen die Daten zunächst in R eingeladen werden. In der Rohform (Supplementary Material: XYZ) liegen die Daten in Form einer Textdatei vor. Die erste Spalte der Datei zeigt die Gruppenzugehörigkeit an, während die zweite Spalte den jeweiligen Fettgehalt beinhaltet. Die Spalten sind durch ein Komma voneinander getrennt und als Dezimaltrennzeichen, der internationalen Konvention folgend, wird ein Punkt verwendet. Um die Daten in R zu laden wird aus dem Paket readr die Funktion read_csv() verwendet. Zunächst muss jedoch das derzeitige Arbeitsverzeichnis von R auf den entsprechende Ordner unter dem die Datei abgelegt gesetzt werden. Dazu wird die Funktion setwd() (kurz für set working directory) verwendet. Da Pfadangeben in R immer relativ zu Arbeitsverzeichnis bestimmt werden, erleichtert dieser Schritt die weitere Arbeit da keine langen Dateipfade angegeben werden müssen und.
+
+```{r}
+#| eval: false
+#| error: true
+
+setwd(PFAD)
+```
+
+Nun wird das Paket `readr` geladen in dem zahlreiche Funktionen zum einlesen verschiedener Dateiarten hinterlegt sind. Wir laden die Datei mittels der Funktion `read_csv()` ein. `read_csv()` ist spezialisiert auf das einlesen von Komma-separierten Textfiles (**c**omma-**s**eparated**-**v**alues).
+
+```{r}
+#| echo: true
+#| eval: false
+
+library(readr)
+bfp <- read_csv(file = 'bfp_data.txt')
+bfp
+```
+
+Die Daten stehen nun unter dem Bezeichner `bfp` in `R` zur Verfügung. Der Name ist dabei wieder willkürlich gewählt und der Einfachheit halber kurz gehalten.
+
+Die Daten sind in einem sogenannten data.frame-Objekt (bzw. der neueren Version tibble) abgelegt und können nun weiter verarbeitet werden. Beispielsweise kann mittels der Funktion summary() ein Überblick über deskriptiven Statistiken der Daten erzeugt werden.
+
+```{r}
+#| echo: true
+
+summary(bfp)
+```
+
+Hier ist bereits zu sehen, dass einer der Datenpunkt wahrscheinlich fehlerhaft ist, da der Wert > 100 ist, was bei für einen prozentualen Körperfettanteil nicht möglich ist. Im nächsten Schritt sollen die Daten dann graphisch mittels eines Boxplots dargestellt werden. R stellt von Haus aus zahlreiche Funktion zur einfachen graphischen Darstellung bereit. Wir wollen hier aber auf das Paket ggplot2 zurückgreifen, welches die Erstellung moderner Graphiken in Publikationsqualität ermöglicht (Healy, 2018; Wickham, 2016). Vor der Verwendung muss das Paket wiederum zunächst geladen werden.
+
+```{r}
+#| echo: true
+#| fig-cap: "Darstellung der Beispieldaten mittels eines Boxplots mit dem problematischen Datenpunkt."
+
+library(ggplot2)
+ggplot(bfp, aes(Group, BFP)) + geom_boxplot()
+```
+
+Abbildung 2: Darstellung der Beispieldaten mittels eines Boxplots nach Ausschluss des Ausreißers.
+
+Im Boxplot in Abbildung XY ist der problematische Datenpunkt noch klarer ersichtlich und er verhindert auch gleichzeitig eine Analyse der Daten. Da wir keine weitere Information haben, schließen wir den Datenpunkt aus. Dazu benutzen wir aus dem Paket dplyr die Funktion filter.
+
+```{r}
+#| echo: true
+
+library(dplyr)
+bfp_clean <- filter(bfp, BFP <= 100)
+bfp_clean
+ggplot(bfp_clean, aes(Group, BFP)) + geom_boxplot()
+```
+
+Die graphische Darstellung mittels eine Boxplots ist jetzt schon deutlich nachvollziehbarer (siehe Abbildung XY). Ohne jetzt weiter auf statistische Voraussetzungen einzugehen führen wir jetzt einen unabhängigen t-Test für Gruppen mit unterschiedlichen Varianzen. Dazu benutzen wir wieder eine Funktion aus R.
+
+```{r}
+#| echo: true
+
+t.test(BFP ~ Group, data = bfp_clean)
+```
+
+Wir dieses Beispiel zeigt, lässt sich in R mittels weniger Befehle eine Datenanalyse realisieren. Die Entwickler von R haben dabei darauf geachtet, dass die Namensgebung von Funktionen möglichst nahe an der gewünschten Tätigkeit liegt, so dass einen der englische Begriff meist schnell die Funktion herleiten lässt. 
+Im Beispiel haben wir alle Befehlt direkt auf der Kommandozeile eingegeben und die Daten interaktiv analysiert. Bei einer tatsächlichen Analyse wird die Datenanalyse aus einer Kombination von interaktiven Arbeiten und permanenten Skripten bestehen. Beispielsweise würde diejenigen finalen Befehl die auf die Daten angewendet werden sollen in eine Skriptdatei geschrieben werden, so dass die Analyse zu einem späteren Zeitpunkt wieder aufgegriffen bzw. nachvollziehbar ist. So könnte der gezeigte Workflow in das folgende Skript münden:
+
+```{r}
+#| echo: true
+#| eval: false
+
+setwd(PFAD)
+
+# Notwendige Bibliotheken
+library(readr)
+library(ggplot2)
+library(dplyr)
+
+# Daten einlesen
+bfp <- read_csv(file = 'bfp_data.txt')
+
+# Daten bearbeiten
+bfp_clean <- filter(bfp, BFP <= 100)
+
+# Deskriptiv
+summary(bfp_clean)
+
+# Graphiken
+ggplot(bfp_clean, aes(Group, BFP)) + geom_boxplot()
+
+# Analyse
+t.test(BFP~Group, data = bfp_clean)
+```
+
+Die verwendeten Befehle sind durch die Verwendung von Kommentaren, die in R mit einem # signalisiert werden, noch besser nachvollziehbar.
