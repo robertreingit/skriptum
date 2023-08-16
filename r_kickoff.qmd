@@ -254,7 +254,7 @@ Um mit `R` effektiv zu arbeiten ist ein zumindest oberflächliches Verständnis 
 
 ### Numerisch
 
-Wie bereits beschreiben, ist einer der einfachsten Datentypen ein numerischer Wert wie `1`, `123345` `12.3456`. Es gibt noch eine Unterscheidung in `R` zwischen ganzzahligen Werten (integer) und Dezimalzahlen (float), wobei für die meisten Anwendungsfälle die Unterscheidung nicht von großer Bedeutung ist. 
+Wie bereits beschreiben, ist einer der einfachsten Datentypen ein numerischer Wert wie `1`, `123345` `12.3456`. Es gibt noch eine Unterscheidung in `R` zwischen ganzzahligen Werten (integer) und Dezimalzahlen (float), wobei für die meisten Anwendungsfälle die Unterscheidung nicht von großer Bedeutung ist. Das Dezimaltrennzeichen in `R` ist ein Punkt `.`.
 
 ```{r}
 #| echo: true
@@ -301,7 +301,7 @@ s_2 <- 'Er sagte: "Nein"!'
 s_2
 ```
 
-Um Operationen mit Zeichenketten durchzuführen gibt es in `R` ein ganze Reihe von Funktionen. Möchte ich zum Beispiel einen Teil der Zeichen aus einer Zeichenkette extrahieren, kann ich die `substring()`-Funktion verwenden.
+Um Operationen auf Zeichenketten anzuwenden gibt es in `R` eine ganze Reihe von spezialisierten Funktionen. Möchte ich zum Beispiel einen Teil der Zeichen aus einer Zeichenkette extrahieren, kann ich die `substring()`-Funktion verwenden.
 
 ```{r}
 #| echo: true
@@ -310,6 +310,13 @@ s_3 <- "DasisteinelangeZeichenkette"
 substring(s_3, 4, 6)
 ```
 
+Der erste Parameter übergibt die Zeichenkette an `substring()` während der zweiter Parameter den Startposition und der dritte Parameter die Endposition des zu extrahierenden Strings angibt.
+
+Die Länge einer Zeichenkette kann mit der Funktion `nchar()` bestimmt werden.
+
+```{r}
+nchar(s_3)
+```
 
 ::: {.callout-tip}
 Das Paket `stringr` bietet eine große Sammlung von Funktion die den Umgang und die Manipulation von Zeichenketten stark vereinfachen.
@@ -317,7 +324,70 @@ Das Paket `stringr` bietet eine große Sammlung von Funktion die den Umgang und 
 
 ### Logische (Boolean) Werte
 
-Logische Werte (`TRUE` oder `FALSE`) werden verwendet, um Wahrheitswerte darzustellen. Sie sind entscheidend für Bedingungen und logische Ausdrücke in R.
+Der nächste Datentyp sind sogenannte logische Werte oder Wahrheitswerte. Logische Werte können nur einen von zwei Werten annehmen, entweder WAHR oder FALSCH. Logische Ausdrücke kennt ihr wahrscheinlich aus der Schule in Form von Wahrheitstabellen bei denen boolesche Werte entweder mit **und** $\cap$ oder **oder** $\cup$ verknüpft werden (siehe @tbl-r-kickoff-bool).
+
+::: {#tbl-r-kickoff-bool layout-ncol=2}
+| $\cap$ | TRUE | FALSE |
+| --- | --- | --- |
+| TRUE | TRUE | FALSE |
+| TRUE | FALSE | FALSE |
+
+: Verknüpfung mit $\cap$
+
+| $\cup$ | TRUE | FALSE |
+| --- | --- | --- |
+| TRUE | TRUE | TRUE |
+| TRUE | TRUE | FALSE |
+
+: Verknüpfung mit $\cup$
+
+Verknüpfung von Wahrheitswerten mit und ($\cap$) bzw. oder ($\cup$). 
+:::
+
+In `R` werden die beiden Werte mit `TRUE` und `FALSE` oder in der abgekürzten Form `T` und `F` dargestellt.
+
+```{r}
+#| echo: true
+
+wahr <- TRUE
+wahr
+falsch <- FALSE
+falsch
+```
+
+Die beiden Verknüpfungen werden mit `&` für $\cap$ und `|` für $\cup$.
+
+```{r}
+#| echo: true
+
+wahr & wahr
+wahr & falsch
+falsch & falsch
+wahr | wahr
+wahr | falsch
+falsch | falsch
+```
+
+Logische Werte sind vor allem bei der Ablaufkontrolle und beim Indexieren wichtig.
+
+Logische Werte können in numerische Werte konvergiert werden, dabei wird `FALSE` zu $0$ und `TRUE` zu $1$. Mit der Funktion `as.numeric()` können wir Objekte von einem Typ in einen numerischen Typ konvergieren.
+
+```{r}
+#| echo: true
+
+as.numeric(wahr)
+as.numeric(falsch)
+```
+
+Die umgekehrte Richtung, von numerisch zum logischen Wert, kann mittels der Funktion `as.logical()` durchgeführt werden. Dabei werden alle Werte $\neq0$ zu WAHR und $0$ zu FALSCH. 
+
+```{r}
+#| echo: true
+
+as.logical(123)
+as.logical(1.23)
+as.logical(0)
+```
 
 
 ### Vektoren
