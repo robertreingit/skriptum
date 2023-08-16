@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -136,13 +170,13 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./r_example_workflow.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Ein Beispielworkflow und Skripte in <code>R</code></span></span></a>
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Ein Beispielworkflow mit Skripten in <code>R</code></span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./r_basics.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title"><code>R</code> basics</span></span></a>
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Einfache Datenbearbeitung und Visualisierung in <code>R</code></span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -291,7 +325,7 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Inhaltsverzeichnis</h2>
    
   <ul>
-  <li><a href="#r-projekte" id="toc-r-projekte" class="nav-link active" data-scroll-target="#r-projekte"><span class="header-section-number">5.1</span> `R Projekte</a></li>
+  <li><a href="#r-projekte" id="toc-r-projekte" class="nav-link active" data-scroll-target="#r-projekte"><span class="header-section-number">5.1</span> <code>R</code> Projekte</a></li>
   <li><a href="#quarto-dokumente" id="toc-quarto-dokumente" class="nav-link" data-scroll-target="#quarto-dokumente"><span class="header-section-number">5.2</span> Quarto-Dokumente</a></li>
   </ul>
 </nav>
@@ -317,12 +351,95 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 <p>Literate programming ist eine Methode, um Programmcode und Dokumentation in einer natürlichen Sprache miteinander zu verbinden. Dabei wird der Programmiercode in kleine, verständliche Einheiten (sogenannte Chunks) unterteilt, die mit Kommentaren und Erklärungen versehen werden. Diese Einheiten werden dann in einer logischen Reihenfolge angeordnet, die dem Leser den Zweck und die Funktionsweise des Programms vermittelt. Literate programming fördert die Wiederverwendbarkeit, Lesbarkeit und Wartbarkeit von Code. Dies bietet darüber hinaus auch die Möglichkeit dynamische Dokumente aus <code>R</code> heraus zu generieren bei denen Daten, deren Verarbeitung und die Dokumentation und Interpretation in einer Einheit integriert sind. Letztendlich entsteht so die Möglichkeit auch direkt fertig formatierte Publikationen aus <code>R</code> heraus zu generieren.</p>
-<p>In <code>R</code> gibt es derzeit drei, eigentlich zweieinhalb, verschiedene Methoden um literatue programming durchzuführen. Das klassische RSweave-Format, dass auf der Integration von <code>R</code>-Code und <em>LaTex</em> beruht, das modernere RMarkdown bei dem <code>R</code>-Code und Markdown-Syntax miteinander verbunden werden und die überarbeitete Version von RMarkdown auf der Basis von Quarto-Dokumenten, bei denen <code>R</code>-Code mit Markdown verbunden wird und mittels einer YAML-Syntax gesteuert wird. Wir werden uns mit der neuesten Variante, den Quarto-Dokumenten beschäftigen.</p>
+<p>In <code>R</code> gibt es derzeit drei, eigentlich zweieinhalb, verschiedene Methoden um literatue programming durchzuführen. Das klassische RSweave-Format, dass auf der Integration von <code>R</code>-Code und <em>LaTex</em> beruht, das modernere RMarkdown bei dem <code>R</code>-Code und Markdown-Syntax miteinander verbunden werden und die überarbeitete Version von RMarkdown genannt Quarto-Dokumenten, bei denen ebenfalls <code>R</code>-Code mit Markdown integriert wird und mittels einer YAML-Syntax gesteuert wird. Wir werden uns mit der neuesten Variante, den Quarto-Dokumenten beschäftigen.</p>
 <section id="r-projekte" class="level2" data-number="5.1">
-<h2 data-number="5.1" class="anchored" data-anchor-id="r-projekte"><span class="header-section-number">5.1</span> `R Projekte</h2>
+<h2 data-number="5.1" class="anchored" data-anchor-id="r-projekte"><span class="header-section-number">5.1</span> <code>R</code> Projekte</h2>
 </section>
 <section id="quarto-dokumente" class="level2" data-number="5.2">
 <h2 data-number="5.2" class="anchored" data-anchor-id="quarto-dokumente"><span class="header-section-number">5.2</span> Quarto-Dokumente</h2>
+<p>Bei Quarto-Dokumenten handelt es sich um Dateien mit der Endung <code>.qmd</code>, die gleichzeitig Text wie auch <code>R</code>-Code enthalten können. Die Textsegmente sind dabei nicht nur einfache Kommentare (<code>#</code>) im Code, sondern vollständig formatierte Textsegmente, wie wir sie aus Word und ähnlichen Programmen kennen. Die Formatierung der Textkomponenten erfolgt mit der sogenannten Markdown-Syntax. Markdown ist eine einfache Auszeichnungssprache die es erlaubt Formatierungsanweisungen in den Text zu integrieren.</p>
+<p>Soll zum Beispiel eine Wort fett gedruckt werden, dann wird das Wort mit zwei <code>**</code> eingeschlossen. In <a href="#tbl-markdown-text-formatting">Tabelle&nbsp;<span>5.1</span></a> sind ein paar Beispiel angezeigt.</p>
+<div id="tbl-markdown-text-formatting" class="anchored">
+<table class="table">
+<caption>Tabelle&nbsp;5.1: Beispiele für Textformatierung mit Markdown</caption>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Markdown Syntax</th>
+<th>Formatierung</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><div class="sourceCode" id="cb1"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>*kursiv*, **fett**, ***fett kursiv***</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div></td>
+<td><em>kursiv</em>, <strong>fett</strong>, <strong><em>fett kursiv</em></strong></td>
+</tr>
+<tr class="even">
+<td><div class="sourceCode" id="cb2"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>hochgestellt^2^ / tiefgestellt~2~</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div></td>
+<td>hochgestellt<sup>2</sup> / tiefgestellt<sub>2</sub></td>
+</tr>
+<tr class="odd">
+<td><div class="sourceCode" id="cb3"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>~~durchgestrichen~~</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div></td>
+<td><del>durchgestrichen</del></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Überschriften werden in Markdown mittels des <code>#</code> Zeichens definiert. Die Zeile wird dabei mit einem <code>#</code> begonnen, und per default sind sechs Stufen definiert, die dann auch entsprechend abgstuft nummeriert werden. In <a href="#tbl-markdown-header">Tabelle&nbsp;<span>5.2</span></a> sind ein paar Beispiel (ohne die Nummerierung) abgebildet.</p>
+<div id="tbl-markdown-header" class="anchored">
+<table class="table">
+<caption>Tabelle&nbsp;5.2: Beispiel für Überschriftenformatierung mit Markdown</caption>
+<colgroup>
+<col style="width: 26%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Markdown Syntax</th>
+<th>Formatierung</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><div class="sourceCode" id="cb4"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Überschrift 1</span></span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div></td>
+<td><h1 id="überschrift-1" class="unnumbered">Überschrift 1</h1></td>
+</tr>
+<tr class="even">
+<td><div class="sourceCode" id="cb5"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">## Überschrift 2</span></span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div></td>
+<td><h2 id="überschrift-2" class="unnumbered anchored">Überschrift 2</h2></td>
+</tr>
+<tr class="odd">
+<td><div class="sourceCode" id="cb6"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">### Überschrift 3</span></span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div></td>
+<td><h3 id="überschrift-3" class="unnumbered anchored">Überschrift 3</h3></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Die Formatierungsmöglichkeiten in Quarte sind überaus umfangreich und können daher an dieser Stelle nicht alle zusammen gefasst werden. Da immer wieder neue Features dazu kommen ist die erste Adresse die sehr gute Dokumentation von <a href="https://quarto.org/docs/guide/">Quarto</a>.</p>
+<p><code>R</code> Code der ausgeführt werden soll wird in ein Quarto-Dokument mittels sogenannter Chunks oder Code blocks integriert.</p>
+<p>Codeblöcke werden mittels spezieller Formatierungszeichen angezeigt. Am Anfang stehen drei backticks (SHIFT+´) gefolgt von <code>{r}</code>, während der Codeblock mittels dreier backticks geschlossen wird. <code>```{r} R Code</code>). Diese Codeblöcke werden während des rendern, also des Formatierens von Quarto ausgeführt.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tipp
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In R-Studio gibt es glücklicherweise einen short-cut um einen Codeblock einzufügen (STRG+SHIFT+i).</p>
+</div>
+</div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="dv">4</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>a <span class="sc">+</span> b</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Die Variablen die in den jeweiligen Codeblöcken definiert werden stehen in weiteren nachfolgenden Codeblöcken in dem Quartodokument zur Verfügung.</p>
 
 
 </section>
@@ -564,7 +681,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="./r_basics.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title"><code>R</code> basics</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Einfache Datenbearbeitung und Visualisierung in <code>R</code></span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">

@@ -250,7 +250,75 @@ Wer tiefer in die Programmierung von Funktion in `R` einsteigen möchte, sollte 
 
 ## Datentypen
 
-In der Programmiersprache R gibt es eine Vielzahl von Datentypen, die es Entwicklern ermöglichen, Daten auf effiziente und strukturierte Weise zu verarbeiten. Ein Verständnis dieser Datentypen ist von entscheidender Bedeutung, um effektiv mit R zu arbeiten. Einige der wichtigsten Datentypen in R sind:
+Um mit `R` effektiv zu arbeiten ist ein zumindest oberflächliches Verständnis von sogenannten Datentypen notwendig. Konzeptionell sind Datentypen Eigenschaften von Werten die bestimmen welche Operationen mit diesem Wert möglich sind. Der einfachste Datentyp numerisch erlaubt zum Beispiel die üblichen mathematischen Operationen `+-/*` die wir bereits kennengelernt haben. Eine Zeichenkette `"Haus"` lässt sich dagegen nicht dividieren. Die Werte können auch als Objekte bezeichnet werden, was konzeptionell einfacher nachzuvollziehen. Den Datentypen eines Objektes kann mittels der Funktion `typeof()` bestimmt werden. Ein Objekt hat einen Typ und einen Wert. Wir beginnen mit den grundlegendsten, den atomaren (atomic), Datentypen: Numerisch, Zeichenketten und logische Werte.
+
+### Numerisch
+
+Wie bereits beschreiben, ist einer der einfachsten Datentypen ein numerischer Wert wie `1`, `123345` `12.3456`. Es gibt noch eine Unterscheidung in `R` zwischen ganzzahligen Werten (integer) und Dezimalzahlen (float), wobei für die meisten Anwendungsfälle die Unterscheidung nicht von großer Bedeutung ist. 
+
+```{r}
+#| echo: true
+
+dezimal_zahl <- 12.345
+dezimal_zahl
+typeof(dezimal_zahl)
+typeof(12.345)
+```
+Integer Werte werden `R` mit einem angehängtem `L` spezifiziert. Wir kein `L` angehängt geht `R` per default bei Zahlen immer von einer Dezimalzahl aus.
+
+```{r}
+#| echo: true
+
+ganz_zahl <- 12345L
+ganz_zahl
+typeof(ganz_zahl)
+typeof(12345)
+typeof(12345L)
+```
+
+Die numerischen Werte erlauben die üblichen mathematischen Operationen.
+
+### Zeichenketten (Strings)
+
+Der nächste Datentyp sind Zeichenketten (strings). Zeichenketten repräsentieren Textdaten und werden oft für die Manipulation von Texten und die Verarbeitung von Zeichen verwendet. Zeichenketten können mit einfachen Anführungszeichen (`'`) oder doppelten Anführungszeichen (`"`) erstellt werden.
+
+```{r}
+#| echo: true
+
+s_1 <- "Haus"
+s_1
+typeof(s_1)
+```
+
+In `R` wird der Typ von Zeichenketten als `character` bezeichnet.
+
+Bezüglich der Anführungszeiche, besteht semantisch kein Unterschied zwischen den einfachen und den doppelten Anführungszeichen und es ist mehr ein Zeichen persönlicher Präferenz welche Art benutzt werden. Ein Anwendungsfall wo die Art von Bedeutung ist, erfolgt wenn innerhalb der Zeichenketten Anführungszeichen benötigt werden. Dann müssen die äußeren Zeichenketten der jeweils andere Typ sein, da ansonsten `R` die Zeichenkette nicht als solche erkennt. Also zum Beispiel wenn ich als Zeichenkette den Wert: `Er sagte: "Nein"!`, benötige, verwende ich die einfachen Anführungszeichen um `R` zu signalisieren das ich eine Zeichenkette benötige.
+
+```{r}
+#| echo: true
+
+s_2 <- 'Er sagte: "Nein"!'
+s_2
+```
+
+Um Operationen mit Zeichenketten durchzuführen gibt es in `R` ein ganze Reihe von Funktionen. Möchte ich zum Beispiel einen Teil der Zeichen aus einer Zeichenkette extrahieren, kann ich die `substring()`-Funktion verwenden.
+
+```{r}
+#| echo: true
+
+s_3 <- "DasisteinelangeZeichenkette"
+substring(s_3, 4, 6)
+```
+
+
+::: {.callout-tip}
+Das Paket `stringr` bietet eine große Sammlung von Funktion die den Umgang und die Manipulation von Zeichenketten stark vereinfachen.
+:::
+
+### Logische (Boolean) Werte
+
+Logische Werte (`TRUE` oder `FALSE`) werden verwendet, um Wahrheitswerte darzustellen. Sie sind entscheidend für Bedingungen und logische Ausdrücke in R.
+
 
 ### Vektoren
 
@@ -260,13 +328,6 @@ Vektoren sind grundlegende Datentypen in R und können sowohl numerische als auc
 
 Matrizen sind zweidimensionale Datenstrukturen, die aus Zeilen und Spalten bestehen. Sie werden häufig für numerische Berechnungen, wie lineare Algebra, verwendet. Matrizen können mit der Funktion `matrix()` erstellt werden.
 
-### Zeichenfolgen (Strings)
-
-Zeichenfolgen repräsentieren Textdaten und werden oft für die Manipulation von Texten und die Verarbeitung von Zeichenketten verwendet. Sie können mit einfachen Anführungszeichen (`'`) oder doppelten Anführungszeichen (`"`) erstellt werden.
-
-### Logische (Boolean) Werte
-
-Logische Werte (`TRUE` oder `FALSE`) werden verwendet, um Wahrheitswerte darzustellen. Sie sind entscheidend für Bedingungen und logische Ausdrücke in R.
 
 ### `data.frame()` oder `tibble()`
 
@@ -276,7 +337,97 @@ Diese Datentypen bilden das Grundgerüst für die Datenverarbeitung und Analyse 
 
 ## Ablaufkontrolle
 
+### Vergleiche 
+
+```{r}
+#| echo: true
+m <- 1:6  # <1>
+m[m < 3]  # <2>
+```
+
+1. Der Variable `m` wird mit einem Vektor mit den Werten $[1,2, \dots, 6]$ gefüllt.
+2. Mittels eines Vergleichs werden alle Werte kleiner $3$ ausgegeben.
+
+### Bedingte Anweisungen und Verzweigungen 
+
+```{mermaid}
+flowchart
+A[condition] --> B[TRUE]
+A[condition] --> C[FALSE]
+B --> D[Ausdruck A]
+C --> E[Ausdruck B]
+```
 
 
+`if () {} else {}`
+
+```{r}
+#| eval: false
+#| echo: true
+
+if (condition) { # <1>
+  AusdruckA      # <2>
+} else {         # <3>
+  AusdruckB      # <4> 
+}
+
+```
+
+1. `condition` wird zu einem truth-Wert (`true,false`) evaluiert
+2. Wenn `condition` `TRUE` ist, wird `AusdruckA` ausgeführt.
+3. Wenn `condition` `FALSE` ist, wird der `else` Zweig ausgeführt.
+4. Im `else`-Zweig wird `AusdruckB` ausgeführt.
+
+Beispiel
+
+```{r}
+#| echo: true
+m <- 0
+a <- 10
+b <- 20
+if (a < b) {
+  m <- 10
+} else {
+  m <- 20
+}
+m
+```
 
 
+### Schleifen
+
+```{mermaid}
+%%| fig-height: 4
+
+stateDiagram-v2
+[*] --> item
+item --> Vector
+Vector --> item
+item --> Ausdruck
+item --> [*]
+```
+
+
+```{r}
+#| eval: false
+#| echo: true
+
+for (item in vector) { # <1>
+  Ausdruck             # <2>
+}
+
+```
+
+1. In der Klammer werden zwei Ausdrücke benötigt. `item` ist ein Zähler der die Einträge des Vektors `vector` durchläuft.
+2. Jedes Mal wenn `item` mit einem neuen Wert belegt worden ist, wird `Ausdruck` ausgeführt und der jeweilige Wert von `item` steht im Ausdruck zur Verfügung.
+
+Beispiel
+
+```{r}
+#| echo: true
+
+vec <- c('mama','papa','daughter','son') 
+for (i in 1:4) {
+  cat(i, ': ', vec[i], '\n')
+}
+```

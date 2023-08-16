@@ -102,6 +102,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     }
   };
 </script>
+<script src="site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -172,13 +175,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./r_example_workflow.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Ein Beispielworkflow und Skripte in <code>R</code></span></span></a>
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Ein Beispielworkflow mit Skripten in <code>R</code></span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./r_basics.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title"><code>R</code> basics</span></span></a>
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Einfache Datenbearbeitung und Visualisierung in <code>R</code></span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -336,13 +339,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </ul></li>
   <li><a href="#datentypen" id="toc-datentypen" class="nav-link" data-scroll-target="#datentypen"><span class="header-section-number">2.3</span> Datentypen</a>
   <ul class="collapse">
-  <li><a href="#vektoren" id="toc-vektoren" class="nav-link" data-scroll-target="#vektoren"><span class="header-section-number">2.3.1</span> Vektoren</a></li>
-  <li><a href="#matrizen" id="toc-matrizen" class="nav-link" data-scroll-target="#matrizen"><span class="header-section-number">2.3.2</span> Matrizen</a></li>
-  <li><a href="#zeichenfolgen-strings" id="toc-zeichenfolgen-strings" class="nav-link" data-scroll-target="#zeichenfolgen-strings"><span class="header-section-number">2.3.3</span> Zeichenfolgen (Strings)</a></li>
-  <li><a href="#logische-boolean-werte" id="toc-logische-boolean-werte" class="nav-link" data-scroll-target="#logische-boolean-werte"><span class="header-section-number">2.3.4</span> Logische (Boolean) Werte</a></li>
-  <li><a href="#data.frame-oder-tibble" id="toc-data.frame-oder-tibble" class="nav-link" data-scroll-target="#data.frame-oder-tibble"><span class="header-section-number">2.3.5</span> <code>data.frame()</code> oder <code>tibble()</code></a></li>
+  <li><a href="#numerisch" id="toc-numerisch" class="nav-link" data-scroll-target="#numerisch"><span class="header-section-number">2.3.1</span> Numerisch</a></li>
+  <li><a href="#zeichenketten-strings" id="toc-zeichenketten-strings" class="nav-link" data-scroll-target="#zeichenketten-strings"><span class="header-section-number">2.3.2</span> Zeichenketten (Strings)</a></li>
+  <li><a href="#logische-boolean-werte" id="toc-logische-boolean-werte" class="nav-link" data-scroll-target="#logische-boolean-werte"><span class="header-section-number">2.3.3</span> Logische (Boolean) Werte</a></li>
+  <li><a href="#vektoren" id="toc-vektoren" class="nav-link" data-scroll-target="#vektoren"><span class="header-section-number">2.3.4</span> Vektoren</a></li>
+  <li><a href="#matrizen" id="toc-matrizen" class="nav-link" data-scroll-target="#matrizen"><span class="header-section-number">2.3.5</span> Matrizen</a></li>
+  <li><a href="#data.frame-oder-tibble" id="toc-data.frame-oder-tibble" class="nav-link" data-scroll-target="#data.frame-oder-tibble"><span class="header-section-number">2.3.6</span> <code>data.frame()</code> oder <code>tibble()</code></a></li>
   </ul></li>
-  <li><a href="#ablaufkontrolle" id="toc-ablaufkontrolle" class="nav-link" data-scroll-target="#ablaufkontrolle"><span class="header-section-number">2.4</span> Ablaufkontrolle</a></li>
+  <li><a href="#ablaufkontrolle" id="toc-ablaufkontrolle" class="nav-link" data-scroll-target="#ablaufkontrolle"><span class="header-section-number">2.4</span> Ablaufkontrolle</a>
+  <ul class="collapse">
+  <li><a href="#vergleiche" id="toc-vergleiche" class="nav-link" data-scroll-target="#vergleiche"><span class="header-section-number">2.4.1</span> Vergleiche</a></li>
+  <li><a href="#bedingte-anweisungen-und-verzweigungen" id="toc-bedingte-anweisungen-und-verzweigungen" class="nav-link" data-scroll-target="#bedingte-anweisungen-und-verzweigungen"><span class="header-section-number">2.4.2</span> Bedingte Anweisungen und Verzweigungen</a></li>
+  <li><a href="#schleifen" id="toc-schleifen" class="nav-link" data-scroll-target="#schleifen"><span class="header-section-number">2.4.3</span> Schleifen</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -580,33 +589,244 @@ Hinweis
 </section>
 <section id="datentypen" class="level2" data-number="2.3">
 <h2 data-number="2.3" class="anchored" data-anchor-id="datentypen"><span class="header-section-number">2.3</span> Datentypen</h2>
-<p>In der Programmiersprache R gibt es eine Vielzahl von Datentypen, die es Entwicklern ermöglichen, Daten auf effiziente und strukturierte Weise zu verarbeiten. Ein Verständnis dieser Datentypen ist von entscheidender Bedeutung, um effektiv mit R zu arbeiten. Einige der wichtigsten Datentypen in R sind:</p>
-<section id="vektoren" class="level3" data-number="2.3.1">
-<h3 data-number="2.3.1" class="anchored" data-anchor-id="vektoren"><span class="header-section-number">2.3.1</span> Vektoren</h3>
-<p>Vektoren sind grundlegende Datentypen in R und können sowohl numerische als auch nicht-numerische Werte speichern. Sie können als eine geordnete Sammlung von Elementen betrachtet werden. Vektoren können mit der Funktion <code>c()</code> erstellt werden und unterstützen Element-zu-Element-Operationen.</p>
+<p>Um mit <code>R</code> effektiv zu arbeiten ist ein zumindest oberflächliches Verständnis von sogenannten Datentypen notwendig. Konzeptionell sind Datentypen Eigenschaften von Werten die bestimmen welche Operationen mit diesem Wert möglich sind. Der einfachste Datentyp numerisch erlaubt zum Beispiel die üblichen mathematischen Operationen <code>+-/*</code> die wir bereits kennengelernt haben. Eine Zeichenkette <code>"Haus"</code> lässt sich dagegen nicht dividieren. Die Werte können auch als Objekte bezeichnet werden, was konzeptionell einfacher nachzuvollziehen. Den Datentypen eines Objektes kann mittels der Funktion <code>typeof()</code> bestimmt werden. Ein Objekt hat einen Typ und einen Wert. Wir beginnen mit den grundlegendsten, den atomaren (atomic), Datentypen: Numerisch, Zeichenketten und logische Werte.</p>
+<section id="numerisch" class="level3" data-number="2.3.1">
+<h3 data-number="2.3.1" class="anchored" data-anchor-id="numerisch"><span class="header-section-number">2.3.1</span> Numerisch</h3>
+<p>Wie bereits beschreiben, ist einer der einfachsten Datentypen ein numerischer Wert wie <code>1</code>, <code>123345</code> <code>12.3456</code>. Es gibt noch eine Unterscheidung in <code>R</code> zwischen ganzzahligen Werten (integer) und Dezimalzahlen (float), wobei für die meisten Anwendungsfälle die Unterscheidung nicht von großer Bedeutung ist.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> dezimal_zahl <span class="ot">&lt;-</span> <span class="fl">12.345</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> dezimal_zahl</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 12.345</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">typeof</span>(dezimal_zahl)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "double"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">typeof</span>(<span class="fl">12.345</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "double"</code></pre>
+</div>
+</div>
+<p>Integer Werte werden <code>R</code> mit einem angehängtem <code>L</code> spezifiziert. Wir kein <code>L</code> angehängt geht <code>R</code> per default bei Zahlen immer von einer Dezimalzahl aus.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> ganz_zahl <span class="ot">&lt;-</span> 12345L</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> ganz_zahl</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 12345</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">typeof</span>(ganz_zahl)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "integer"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">typeof</span>(<span class="dv">12345</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "double"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">typeof</span>(12345L)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "integer"</code></pre>
+</div>
+</div>
+<p>Die numerischen Werte erlauben die üblichen mathematischen Operationen.</p>
 </section>
-<section id="matrizen" class="level3" data-number="2.3.2">
-<h3 data-number="2.3.2" class="anchored" data-anchor-id="matrizen"><span class="header-section-number">2.3.2</span> Matrizen</h3>
-<p>Matrizen sind zweidimensionale Datenstrukturen, die aus Zeilen und Spalten bestehen. Sie werden häufig für numerische Berechnungen, wie lineare Algebra, verwendet. Matrizen können mit der Funktion <code>matrix()</code> erstellt werden.</p>
+<section id="zeichenketten-strings" class="level3" data-number="2.3.2">
+<h3 data-number="2.3.2" class="anchored" data-anchor-id="zeichenketten-strings"><span class="header-section-number">2.3.2</span> Zeichenketten (Strings)</h3>
+<p>Der nächste Datentyp sind Zeichenketten (strings). Zeichenketten repräsentieren Textdaten und werden oft für die Manipulation von Texten und die Verarbeitung von Zeichen verwendet. Zeichenketten können mit einfachen Anführungszeichen (<code>'</code>) oder doppelten Anführungszeichen (<code>"</code>) erstellt werden.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> s_1 <span class="ot">&lt;-</span> <span class="st">"Haus"</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> s_1</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Haus"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">typeof</span>(s_1)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "character"</code></pre>
+</div>
+</div>
+<p>In <code>R</code> wird der Typ von Zeichenketten als <code>character</code> bezeichnet.</p>
+<p>Bezüglich der Anführungszeiche, besteht semantisch kein Unterschied zwischen den einfachen und den doppelten Anführungszeichen und es ist mehr ein Zeichen persönlicher Präferenz welche Art benutzt werden. Ein Anwendungsfall wo die Art von Bedeutung ist, erfolgt wenn innerhalb der Zeichenketten Anführungszeichen benötigt werden. Dann müssen die äußeren Zeichenketten der jeweils andere Typ sein, da ansonsten <code>R</code> die Zeichenkette nicht als solche erkennt. Also zum Beispiel wenn ich als Zeichenkette den Wert: <code>Er sagte: "Nein"!</code>, benötige, verwende ich die einfachen Anführungszeichen um <code>R</code> zu signalisieren das ich eine Zeichenkette benötige.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> s_2 <span class="ot">&lt;-</span> <span class="st">'Er sagte: "Nein"!'</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> s_2</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Er sagte: \"Nein\"!"</code></pre>
+</div>
+</div>
+<p>Um Operationen mit Zeichenketten durchzuführen gibt es in <code>R</code> ein ganze Reihe von Funktionen. Möchte ich zum Beispiel einen Teil der Zeichen aus einer Zeichenkette extrahieren, kann ich die <code>substring()</code>-Funktion verwenden.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> s_3 <span class="ot">&lt;-</span> <span class="st">"DasisteinelangeZeichenkette"</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">substring</span>(s_3, <span class="dv">4</span>, <span class="dv">6</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "ist"</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tipp
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Das Paket <code>stringr</code> bietet eine große Sammlung von Funktion die den Umgang und die Manipulation von Zeichenketten stark vereinfachen.</p>
+</div>
+</div>
 </section>
-<section id="zeichenfolgen-strings" class="level3" data-number="2.3.3">
-<h3 data-number="2.3.3" class="anchored" data-anchor-id="zeichenfolgen-strings"><span class="header-section-number">2.3.3</span> Zeichenfolgen (Strings)</h3>
-<p>Zeichenfolgen repräsentieren Textdaten und werden oft für die Manipulation von Texten und die Verarbeitung von Zeichenketten verwendet. Sie können mit einfachen Anführungszeichen (<code>'</code>) oder doppelten Anführungszeichen (<code>"</code>) erstellt werden.</p>
-</section>
-<section id="logische-boolean-werte" class="level3" data-number="2.3.4">
-<h3 data-number="2.3.4" class="anchored" data-anchor-id="logische-boolean-werte"><span class="header-section-number">2.3.4</span> Logische (Boolean) Werte</h3>
+<section id="logische-boolean-werte" class="level3" data-number="2.3.3">
+<h3 data-number="2.3.3" class="anchored" data-anchor-id="logische-boolean-werte"><span class="header-section-number">2.3.3</span> Logische (Boolean) Werte</h3>
 <p>Logische Werte (<code>TRUE</code> oder <code>FALSE</code>) werden verwendet, um Wahrheitswerte darzustellen. Sie sind entscheidend für Bedingungen und logische Ausdrücke in R.</p>
 </section>
-<section id="data.frame-oder-tibble" class="level3" data-number="2.3.5">
-<h3 data-number="2.3.5" class="anchored" data-anchor-id="data.frame-oder-tibble"><span class="header-section-number">2.3.5</span> <code>data.frame()</code> oder <code>tibble()</code></h3>
+<section id="vektoren" class="level3" data-number="2.3.4">
+<h3 data-number="2.3.4" class="anchored" data-anchor-id="vektoren"><span class="header-section-number">2.3.4</span> Vektoren</h3>
+<p>Vektoren sind grundlegende Datentypen in R und können sowohl numerische als auch nicht-numerische Werte speichern. Sie können als eine geordnete Sammlung von Elementen betrachtet werden. Vektoren können mit der Funktion <code>c()</code> erstellt werden und unterstützen Element-zu-Element-Operationen.</p>
+</section>
+<section id="matrizen" class="level3" data-number="2.3.5">
+<h3 data-number="2.3.5" class="anchored" data-anchor-id="matrizen"><span class="header-section-number">2.3.5</span> Matrizen</h3>
+<p>Matrizen sind zweidimensionale Datenstrukturen, die aus Zeilen und Spalten bestehen. Sie werden häufig für numerische Berechnungen, wie lineare Algebra, verwendet. Matrizen können mit der Funktion <code>matrix()</code> erstellt werden.</p>
+</section>
+<section id="data.frame-oder-tibble" class="level3" data-number="2.3.6">
+<h3 data-number="2.3.6" class="anchored" data-anchor-id="data.frame-oder-tibble"><span class="header-section-number">2.3.6</span> <code>data.frame()</code> oder <code>tibble()</code></h3>
 <p>Dataframes sind ähnlich wie Matrizen, aber sie ermöglichen die Speicherung verschiedener Datentypen (z. B. numerisch, Zeichenfolgen, Faktoren) in den Spalten. Data Frames sind besonders nützlich für die Verarbeitung und Analyse von tabellarischen Daten und können mit der Funktion <code>data.frame()</code> erstellt werden.</p>
 <p>Diese Datentypen bilden das Grundgerüst für die Datenverarbeitung und Analyse in R. Ihr Verständnis ist unerlässlich, um effektiv mit Daten zu arbeiten und komplexe Analysen durchzuführen. R bietet zudem zahlreiche Funktionen zur Manipulation und Umwandlung dieser Datentypen, was die Flexibilität und Leistungsfähigkeit der Sprache weiter erhöht.</p>
 </section>
 </section>
 <section id="ablaufkontrolle" class="level2" data-number="2.4">
 <h2 data-number="2.4" class="anchored" data-anchor-id="ablaufkontrolle"><span class="header-section-number">2.4</span> Ablaufkontrolle</h2>
+<section id="vergleiche" class="level3" data-number="2.4.1">
+<h3 data-number="2.4.1" class="anchored" data-anchor-id="vergleiche"><span class="header-section-number">2.4.1</span> Vergleiche</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="annotated-cell-27"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><a class="code-annotation-anchor" data-target-cell="annotated-cell-27" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-27-1" class="code-annotation-target"><a href="#annotated-cell-27-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> m <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-27" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-27-2" class="code-annotation-target"><a href="#annotated-cell-27-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> m[m <span class="sc">&lt;</span> <span class="dv">3</span>]</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-annotation">
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-27" data-target-annotation="1">1</dt>
+<dd>
+<span data-code-cell="annotated-cell-27" data-code-annotation="1" data-code-lines="1">Der Variable <code>m</code> wird mit einem Vektor mit den Werten <span class="math inline">\([1,2, \dots, 6]\)</span> gefüllt.</span>
+</dd>
+<dt data-target-cell="annotated-cell-27" data-target-annotation="2">2</dt>
+<dd>
+<span data-code-cell="annotated-cell-27" data-code-annotation="2" data-code-lines="2">Mittels eines Vergleichs werden alle Werte kleiner <span class="math inline">\(3\)</span> ausgegeben.</span>
+</dd>
+</dl>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1 2</code></pre>
+</div>
+</div>
+</section>
+<section id="bedingte-anweisungen-und-verzweigungen" class="level3" data-number="2.4.2">
+<h3 data-number="2.4.2" class="anchored" data-anchor-id="bedingte-anweisungen-und-verzweigungen"><span class="header-section-number">2.4.2</span> Bedingte Anweisungen und Verzweigungen</h3>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<div>
+<pre class="mermaid mermaid-js">flowchart
+A[condition] --&gt; B[TRUE]
+A[condition] --&gt; C[FALSE]
+B --&gt; D[Ausdruck A]
+C --&gt; E[Ausdruck B]
+</pre>
+</div>
+</div>
+</div>
+</div>
+<p><code>if () {} else {}</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="annotated-cell-28"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><a class="code-annotation-anchor" data-target-cell="annotated-cell-28" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-28-1" class="code-annotation-target"><a href="#annotated-cell-28-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="cf">if</span> (condition) {</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-28" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-28-2" class="code-annotation-target"><a href="#annotated-cell-28-2" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   AusdruckA</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-28" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-28-3" class="code-annotation-target"><a href="#annotated-cell-28-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> } <span class="cf">else</span> {</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-28" data-target-annotation="4" onclick="event.preventDefault();">4</a><span id="annotated-cell-28-4" class="code-annotation-target"><a href="#annotated-cell-28-4" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   AusdruckB</span>
+<span id="annotated-cell-28-5"><a href="#annotated-cell-28-5" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-annotation">
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-28" data-target-annotation="1">1</dt>
+<dd>
+<span data-code-cell="annotated-cell-28" data-code-annotation="1" data-code-lines="1"><code>condition</code> wird zu einem truth-Wert (<code>true,false</code>) evaluiert</span>
+</dd>
+<dt data-target-cell="annotated-cell-28" data-target-annotation="2">2</dt>
+<dd>
+<span data-code-cell="annotated-cell-28" data-code-annotation="2" data-code-lines="2">Wenn <code>condition</code> <code>TRUE</code> ist, wird <code>AusdruckA</code> ausgeführt.</span>
+</dd>
+<dt data-target-cell="annotated-cell-28" data-target-annotation="3">3</dt>
+<dd>
+<span data-code-cell="annotated-cell-28" data-code-annotation="3" data-code-lines="3">Wenn <code>condition</code> <code>FALSE</code> ist, wird der <code>else</code> Zweig ausgeführt.</span>
+</dd>
+<dt data-target-cell="annotated-cell-28" data-target-annotation="4">4</dt>
+<dd>
+<span data-code-cell="annotated-cell-28" data-code-annotation="4" data-code-lines="4">Im <code>else</code>-Zweig wird <code>AusdruckB</code> ausgeführt.</span>
+</dd>
+</dl>
+</div>
+</div>
+<p>Beispiel</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> m <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> a <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> b <span class="ot">&lt;-</span> <span class="dv">20</span></span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="cf">if</span> (a <span class="sc">&lt;</span> b) {</span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   m <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> } <span class="cf">else</span> {</span>
+<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   m <span class="ot">&lt;-</span> <span class="dv">20</span></span>
+<span id="cb52-8"><a href="#cb52-8" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span>
+<span id="cb52-9"><a href="#cb52-9" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> m</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 10</code></pre>
+</div>
+</div>
+</section>
+<section id="schleifen" class="level3" data-number="2.4.3">
+<h3 data-number="2.4.3" class="anchored" data-anchor-id="schleifen"><span class="header-section-number">2.4.3</span> Schleifen</h3>
+<div class="cell" data-fig-height="4">
+<div class="cell-output-display">
+<div>
+<div>
+<pre class="mermaid mermaid-js">stateDiagram-v2
+[*] --&gt; item
+item --&gt; Vector
+Vector --&gt; item
+item --&gt; Ausdruck
+item --&gt; [*]
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="annotated-cell-30"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><a class="code-annotation-anchor" data-target-cell="annotated-cell-30" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-30-1" class="code-annotation-target"><a href="#annotated-cell-30-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="cf">for</span> (item <span class="cf">in</span> vector) {</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-30" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-30-2" class="code-annotation-target"><a href="#annotated-cell-30-2" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   Ausdruck</span>
+<span id="annotated-cell-30-3"><a href="#annotated-cell-30-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-annotation">
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-30" data-target-annotation="1">1</dt>
+<dd>
+<span data-code-cell="annotated-cell-30" data-code-annotation="1" data-code-lines="1">In der Klammer werden zwei Ausdrücke benötigt. <code>item</code> ist ein Zähler der die Einträge des Vektors <code>vector</code> durchläuft.</span>
+</dd>
+<dt data-target-cell="annotated-cell-30" data-target-annotation="2">2</dt>
+<dd>
+<span data-code-cell="annotated-cell-30" data-code-annotation="2" data-code-lines="2">Jedes Mal wenn <code>item</code> mit einem neuen Wert belegt worden ist, wird <code>Ausdruck</code> ausgeführt und der jeweilige Wert von <code>item</code> steht im Ausdruck zur Verfügung.</span>
+</dd>
+</dl>
+</div>
+</div>
+<p>Beispiel</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> vec <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'mama'</span>,<span class="st">'papa'</span>,<span class="st">'daughter'</span>,<span class="st">'son'</span>) </span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>) {</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   <span class="fu">cat</span>(i, <span class="st">': '</span>, vec[i], <span class="st">'</span><span class="sc">\n</span><span class="st">'</span>)</span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>1 :  mama 
+2 :  papa 
+3 :  daughter 
+4 :  son </code></pre>
+</div>
+</div>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
@@ -851,7 +1071,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   </div>
   <div class="nav-page nav-page-next">
       <a href="./r_example_workflow.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Ein Beispielworkflow und Skripte in <code>R</code></span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Ein Beispielworkflow mit Skripten in <code>R</code></span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
