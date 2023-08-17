@@ -4,9 +4,16 @@ Literate programming ist eine Methode, um Programmcode und Dokumentation in eine
 
 In `R` gibt es derzeit drei, eigentlich zweieinhalb, verschiedene Methoden um literatue programming durchzuführen. Das klassische RSweave-Format, dass auf der Integration von `R`-Code und *LaTex* beruht, das modernere RMarkdown bei dem `R`-Code und Markdown-Syntax miteinander verbunden werden und die überarbeitete Version von RMarkdown genannt Quarto-Dokumenten, bei denen ebenfalls `R`-Code mit Markdown integriert wird und mittels einer YAML-Syntax gesteuert wird. Wir werden uns mit der neuesten Variante, den Quarto-Dokumenten beschäftigen.
 
+Bei den Quarto-Dokumenten handelt es sich um äußerst umfangreiches System, dass die Erstellung von einer ganzen Reihe von unterschiedlichen Dokumenten erlaubt. Tatsächlich ist auch das vorliegende Skriptum mit Quarto erstellt worden.
+
 ## `R` Projekte
+Bevor wir jedoch mit Quarto anfangen, lernen wir noch `R`-Projekte kennen, da diese eine deutliche Vereinfachung des Arbeitsprozesses ermöglichen.
+
+
 
 ## Quarto-Dokumente
+
+### Markdown
 
 Bei Quarto-Dokumenten handelt es sich um Dateien mit der Endung `.qmd`, die gleichzeitig Text wie auch `R`-Code enthalten können. Die Textsegmente sind dabei nicht nur einfache Kommentare (`#`) im Code, sondern vollständig formatierte Textsegmente, wie wir sie aus Word und ähnlichen Programmen kennen. Die Formatierung der Textkomponenten erfolgt mit der sogenannten Markdown-Syntax. Markdown ist eine einfache Auszeichnungssprache die es erlaubt Formatierungsanweisungen in den Text zu integrieren.
 
@@ -48,16 +55,41 @@ Soll zum Beispiel eine Wort fett gedruckt werden, dann wird das Wort mit zwei `*
 | ```              |                        |
 +------------------+------------------------+
 
-: Beispiel für Überschriftenformatierung mit Markdown {#tbl-markdown-header}
+: Beispiele für Überschriftenformatierung mit Markdown {#tbl-markdown-header}
+
+Listen können werden ebenfalls über einfache Formatierungen definiert (siehe @tbl-markdown-lists).
+
++-----------------------------------+-----------------------------------+
+| Markdown Syntax                   | Formatierung                      |
++===================================+===================================+
+| ``` markdown                      |                                   |
+| * ungeordnete Liste               | * ungeordnete Liste               |
+|     + Unterelement 1              |     + Unterelement 1              |
+|     + Unterelement 2              |     + Unterelement 2              |
+|         - Unterunterelment 1      |         - Unterunterelement 1     |
+| ```                               |                                   |
++-----------------------------------+-----------------------------------+
+| ``` markdown                      |                                   |
+| 1. geordente Liste                |  1. geordenete Liste              |
+| 2. Element 2                      |  2. Element 2                     |
+|     i) Unterelement 1             |      i) Unterelement 1            |
+|          A.  Unterunterelement 1  |           A.  Unterunterelement 1 |
+| ```                               |                                   |
+|                                   |                                   |
++-----------------------------------+-----------------------------------+
+
+: Beispiele für Listenformatierungen mit Markdown {#tbl-markdown-lists}
 
 Die Formatierungsmöglichkeiten in Quarte sind überaus umfangreich und können daher an dieser Stelle nicht alle zusammen gefasst werden. Da immer wieder neue Features dazu kommen ist die erste Adresse die sehr gute Dokumentation von [Quarto](https://quarto.org/docs/guide/).
+
+### `R`-Code in Quarto-Dokumenten
 
 `R` Code der ausgeführt werden soll wird in ein Quarto-Dokument mittels sogenannter Chunks oder Code blocks integriert.
 
 Codeblöcke werden mittels spezieller Formatierungszeichen angezeigt. Am Anfang stehen drei backticks (SHIFT+´) gefolgt von `{r}`, während der Codeblock mittels dreier backticks geschlossen wird. ```` ```{r} R Code````). Diese Codeblöcke werden während des rendern, also des Formatierens von Quarto ausgeführt. 
 
 ::: {.callout-tip}
-In R-Studio gibt es glücklicherweise einen short-cut um einen Codeblock einzufügen (STRG+SHIFT+i).
+In R-Studio gibt es glücklicherweise einen short-cut um einen Codeblock einzufügen {{< kbd win=STRG+SHIFT+i >}}.
 :::
 
 ```` markdown
@@ -68,4 +100,61 @@ a + b
 ```
 ````
 
-Die Variablen die in den jeweiligen Codeblöcken definiert werden stehen in weiteren nachfolgenden Codeblöcken in dem Quartodokument zur Verfügung.
+Die Variablen die in den jeweiligen Codeblöcken definiert werden stehen in weiteren nachfolgenden Codeblöcken in dem Quartodokument zur Verfügung. 
+
+::: {.callout-info}
+Einzelne Codeblöcke können in R-Studio getrennt ausgeführt werden. Dazu muss der Cursor in dem Block sein und entweder mit PLAY-Button oben-recht im Block oder mit dem short-cut {{< kbd win=STRG+SHIFT+ENTER >}}.
+Um das ganze Dokument zu rendern kann entweder der Render-Button oberhalb des Dokuments verwendet werden oder wiederum der short-cut {{< kbd win=STRG+SHIFT+k >}}. 
+:::
+
+Wenn wir unseres vorhergehendes Workflow-Beispiel nehmen, dann könnte ein gekürztes Quarto-Dokument wie folgt aussehen.
+
+```` markdown
+---
+title: "Analyse des Körperfettgehalts in zwei Gruppen"
+author: "Martina Muster"
+---
+# Einleitung
+
+Nach Schmidt et al. (2023) ist davon auszugehen, dass eine Manipulation von XYZ dazu führt, dass ... . Diese Hypothese soll anhand einer neuen Stichprobe überprüft werden.
+
+# Methodik
+
+...
+
+# Analyse
+
+## Bibliotheken
+
+Für die Bearbeitung der Daten, werden die folgenden Bibliotheken benötigt.
+```{{r}}
+library(readr)
+library(ggplot2)
+library(dplyr)
+```
+
+## Daten einlesen
+
+Die Rohdaten befinden sich in einer Textdatei mit der Bezeichnung "bfp_data.txt". **Achtung**, darauf achten, dass der Dateipfad korrekt ist.
+```{{r}}
+bfp <- read_csv(file = 'bfp_data.txt')
+```
+
+## Daten bearbeiten
+Ein Datenpunkt ist ~fehlerhaft~, und zeigt einen Wert von $BFP > 100$, was nicht physiologisch plausibel. Daher wird dieser Wert ausgeschlossen.
+```{{r}}
+bfp_clean <- filter(bfp, BFP <= 100)
+```
+Die Daten zur Analyse befinden sich jetzt in der Variablen `bfp_clean`.
+
+# Diskussion
+
+...
+
+# Zusammenfassung
+
+...
+````
+
+Zu Beginn des Quarto-Dokuments findet sich ein Abschnitt der mit ```` --- ```` abgegrenzt ist. Dies ist der sogenannte YAML-Header. YAML ist eine ebenfalls Auszeichnungssprache (**yet** **a**another **m**arkup **l*anguage). In dem Header werden verschiedene Einstellung für das Quarto-Dokument eingestellt. Hier können zum Beispiel auch weitere Dokumente wie Zitationsbibliotheken und Zitationsstyle eingebunden werden, da Quarte Referenzen und Zitationen innerhalb der Dokumente unterstützt. 
+
