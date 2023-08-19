@@ -240,6 +240,19 @@ $$
 
 Wir erhalten einen Wert von $s = `r x_sd`N$. Wenn dieser Wert größer wird, dann streuen die Wert entsprechend weiter um den Mittelwert herum und entsprechend verringert sich die Streuung wenn die Standardabweichung $s$ abnimmt. 
 
+### Mittelwert und Standardabweichung in `R`
+
+Um den Mittelwert und die Standardabweichung bzw. die Varianz zu berechnen gibt in `R` entsprechende Funktionen die auf die Namen `mean()`, `sd()` und `var()`.
+
+```{r}
+#| echo: true
+x <- c(1,2,3,4,5)
+mean(x)
+sd(x)
+var(x)
+```
+
+
 ## Entscheidungen und $\mu$ und $\sigma$
 
 Zeichnen wir in eine Verteilung die Standardabweichung ein, ergibt sich vollgendes Bild (siehe @fig-stats-sig-norm-sigmas).
@@ -360,18 +373,17 @@ ggplot(dat_0, aes(x,v,ymin=0, ymax=v)) +
   scale_y_continuous('Dichte')
 ```
 
-Diese Referenzverteilung können wir nun verwenden um eine Entscheidung bezüglich unseres beobachteten Werts zu treffen. Die Streuung in der Referenz- bzw. Stichprobenverteilung wird als Standardfehler bezeichnet im Gegensatz zur Streuung in der Population $\sigma$ und in der Stichprobe $s$.
+Diese Referenzverteilung können wir nun verwenden um eine Entscheidung bezüglich unseres beobachteten Werts zu treffen. Die Streuung in der Referenz- bzw. Stichprobenverteilung wird als Standardfehler bezeichnet im Gegensatz zur Streuung in der Population $\sigma$ und in der Stichprobe $s$. Letztendlich ist der Standardfehler $s_e$ nichts anderes als die Standardabweichung der Statistik.
 
-::: {#def-standard-error}
-## Standardfehler \item{Standardfehler}
+::: {#def-standarderror}
+## Standardfehler \index{Standardfehler}
 
-Die Streuung der Stichprobenverteilung wird als Standardfehler $\sigma_e$ bezeichnet. Wir dieser Wert anhand der Stichprobe abgeschätzt hat der Standardfehler das Symbol $s_e$.
+Die theoretische Streuung einer berechneten Statistik wird als Standardfehler bezeichnet und mit dem Symbol $\sigma_e$ gekennzeichnet. Wird dieser Wert anhand der Stichprobe abgeschätzt, dann hat der Standardfehler das Symbol $s_e$.
 :::
-
 
 ## Statistisch *signifikanter* Wert
 
-Kommen wir nun zu dem wichtigen Konzept des statistisch signifikanten Werts. Im vorhergehend Abschnitt haben wir eine Stichprobenverteilung für unsere Statistik, den Unterschied zwischen den Mittelwerten der beiden Gruppen, hergeleitet. Wir gehen von der Verteilung aus, bei der es keinen Unterschied $H_0: \Delta = 0$ zwischen den beiden Gruppen gibt. $\Delta=0$ hat somit die Bedeutung, das das Krafttraining nicht effektiv war. Dazu haben wir als Kriterium hergeleitet, dass wir Werte die mehr als $2$ Standardabweichungen von Mittelwert entfernt sind, als unwahrscheinlich ansehen, da diese Werte etwa eine Wahrscheinlichkeit von $5\%$ haben. Präziser, Werte die mehr als zwei Standardfehler vom Mittelwert entfernt sind. Da, unserer angenommenere Mittelwert mit $\Delta = 0$ zu $\mu = 0$ wird, bedeutet dies, das wir Werte die entweder kleiner als $-2\times$ Standardfehler oder größer als $2\times$ Standardfehler sind, als unwahrscheinlich unter der Annahme von $H_0: \mu = 0$ betrachten. Als Entscheidungsregel:
+Kommen wir nun zu dem wichtigen Konzept des statistisch signifikanten Werts. Im vorhergehend Abschnitt haben wir eine Stichprobenverteilung für unsere Statistik, den Unterschied zwischen den Mittelwerten der beiden Gruppen, hergeleitet. Wir gehen von der Verteilung aus, bei der es keinen Unterschied $H_0: \Delta = 0$ zwischen den beiden Gruppen gibt. $\Delta=0$ hat somit die Bedeutung, das das Krafttraining nicht effektiv war. Dazu haben wir als Kriterium hergeleitet, dass wir Werte die mehr als $2$ Standardabweichungen von Mittelwert entfernt sind, als unwahrscheinlich ansehen, da diese Werte etwa eine Wahrscheinlichkeit von $5\%$ haben. Präziser, Werte die mehr als zwei Standardfehler vom Mittelwertsunterschied $\Delta = 0$ entfernt sind. Da, unserer angenommener Mittelwertsunterschied, die gemessene Statistik, mit $\Delta = 0$ zu $\mu = 0$ wird, bedeutet dies, das wir Werte die entweder kleiner als $-2\times$ Standardfehler oder größer als $2\times$ Standardfehler sind, als unwahrscheinlich unter der Annahme von $H_0: \mu = 0$ betrachten. Als Entscheidungsregel folgt somit:
 
 $$
 |\text{beobachteter Wert }| > 2\times \sigma_e \Rightarrow \text{ Evidenz gegen } H_0
@@ -389,7 +401,7 @@ flowchart TD
     F --> G[H0 ablehnen]
 ```
 
-In @fig-stats-sig-decision-regions ist die Entscheidungsregel noch einmal graphisch anhand der Verteilung dargestellt. Wir haben unsere Stichprobenverteilung unter der $H_0: \mu = \Delta = 0$ und schneiden rechts und links jeweils einen Bereich der Verteilung ab. Diesen Bereich bezeichnen wir als kritischen Bereich. Wenn unser beobachteter Wert im kritischen Bereich liegt, sehen wir dies als Evidenz gegen die Korrektheit der Annahme $H_0$ an.
+In @fig-stats-sig-decision-regions ist die Entscheidungsregel noch einmal graphisch dargestellt. Wir bestimmen eine Stichprobenverteilung unter der $H_0$, beispielsweise $H_0: \mu = \Delta = 0$ und schneiden nun rechts und links jeweils einen Bereich der Verteilung ab, den wir als *unwahrscheinlich* unter dieser speziellen $H_0$ ansehen. Diesen Bereich bezeichnen wir als kritischen Bereich. Wenn unser beobachteter Wert im kritischen Bereich liegt, dann sehen wir diese Beobachtung als Evidenz gegen die Korrektheit der Annahme , dass die $H_0$ gilt, an.
 
 ```{r}
 #| fig.cap: "Die $H_0$ Verteilung wenn nichts passiert unterteilt in Regionen die zur Entscheidung für die $H_0$ (grün) und gegen die $H_0$ (rot, kritische Regionen) führen."
@@ -412,9 +424,9 @@ ggplot(dat_0, aes(x,v,ymin=0, ymax=v)) +
   scale_y_continuous('Dichte')
 ```
 
-Wenn der Stichprobenwert der Statistik in der *kritischen* Region auftritt, dann wird von einem **statistisch** signifikanten Effekt gesprochen. *Unter der $H_0$ bin ich überrascht diesen Wert zu sehen!* Allerdings, dieser Wert ist **nicht unmöglich**, sondern lediglich unwahrscheinlich unter der Annahme $H_0$. Unwahrscheinlich ist dabei kein absolutes Maß, sondern nur eine **willkürliche** Festsetzung die wir getroffen haben.
+Wenn der Stichprobenwert der Statistik in der *kritischen* Region auftritt, dann wird von einem **statistisch** signifikanten Effekt gesprochen. *Unter der $H_0$ bin ich überrascht diesen Wert zu sehen!* Allerdings, dieser Wert ist **nicht unmöglich**, sondern lediglich unwahrscheinlich wenn die Annahme $H_0$ korrekt ist. Unwahrscheinlich ist dabei kein absolutes Maß, sondern nur eine **willkürliche** Festsetzung die wir selbst getroffen haben.
 
-Wir hatten vorhin vorhin gesagt, dass Werte jenseits von $2\times \sigma_e$ etwa eine Wahrscheinlichkeit von $5\%$ haben. Dies Bedeutet nun, dass die Wahrscheinlichkeit Werte aus dem kritischen Bereich zu beobachten bei etwas $5%$ liegt, wenn die $H_0$ zutrifft. Oder anders, wenn die $H_0$ in der Realität zutrifft, also den DGP korrekt beschreibt, und ich das Experiment $100\times$ wiederhole, dann würde ich etwa $5$ Experimente erwarten bei denen der beobachtete Wert im kritischen Bereich liegt. werde ich mich in $5$ Fällen, irrtümlich gegen die $H_0$ entscheiden, obwohl sie korrekt ist. D.h. in $5$ Fällen würde mich irren, da ich einen Wert im kritischen Bereich beobachtet habe, trotzdem die $H_0$ zutrifft. Daher wird die Wahrscheinlichkeit die ich benutze um einen kritschen Bereich ausweisen als Irrtumswahrscheinlichkeit bezeichnet. Da die Irrtumswahrscheinlichkeit ein zentrales Konzept in der Statistik ist, erhält sie auch ein eigenes Symbol $\alpha$.
+Wir hatten vorhin vorhin gesagt, dass Werte jenseits von $2\times \sigma_e$ etwa eine Wahrscheinlichkeit von $5\%$ unter der $H_0$ haben. Dies Bedeutet, dass die Wahrscheinlichkeit Werte im kritischen Bereich zu beobachten bei etwas $5%$ liegt, wenn die $H_0$ zutrifft. Oder anders, wenn die $H_0$ in der Realität zutrifft, also den DGP korrekt beschreibt, und ich das Experiment $100\times$ wiederhole, dann würde ich etwa $5$ Experimente erwarten bei denen der beobachtete Wert im kritischen Bereich liegt. Anhand unserer Entscheidungsregel entscheide ich mich in diesen $5$ Fällen nun gegen die $H_0$, obwohl diese zutrifft. D.h. in diesen $5$ Fällen würde mich irren. Daher wird die Wahrscheinlichkeit die ich benutze um einen kritschen Bereich ausweisen als Irrtumswahrscheinlichkeit bezeichnet. Da die Irrtumswahrscheinlichkeit ein zentrales Konzept in der Statistik ist, erhält sie ein eigenes Symbol $\alpha$.
 
 ::: {#def-alpha-err}
 ## Irrtumswahrscheinlichkeit $\alpha$ \index{Irrtumswahrscheinlichkeit}
@@ -422,12 +434,27 @@ Wir hatten vorhin vorhin gesagt, dass Werte jenseits von $2\times \sigma_e$ etwa
 Die Wahrscheinlichkeit mit der fälschlicherweise eine korrekte $H_0$-Hypothese abgelehnt wird, wird als Irrtumswahrscheinlichkeit bezeichnet. Die Irrtumswahrscheinlichkeit wird mit Symbol $\alpha$ bezeichnet und auch als Fehler I. Art bezeichnet.
 :::
 
-Eines der grundlegenden Probleme, das oftmals nicht beachtet wird bei der Interpretation von **statistisch** signifikanten Ergebnis bezieht sich darauf, dass ich nicht weiß, welches der $100$ Experimente ich durchgeführt habe. Zusätzlich, dies ist keine Aussage über die Wahrscheinlichkeit mit der die $H_0$ in der Realität zutrifft. Ob die $H_0$ zutrifft hat die Wahrscheinlichkeit entweder $P(H_0) = 1$ oder $P(H_0) = 0$. Entweder sie trifft zu oder eben nicht. Darüber wird hier keine Aussage gemacht, sondern nur ob unter der Annahme das $H_0$ zutrifft, der beobachtete Wert in einem *wahrscheinlichen* oder einem *unwahrscheinlichen* Bereich liegt. Und nochmal, *wahrscheinlich* war eine willkürliche Festlegung unsererseits.  
+Eines der grundlegenden Probleme, das oftmals nicht beachtet wird bei der Interpretation von **statistisch** signifikanten Ergebnis bezieht sich darauf, dass ich nicht weiß, welches der $100$ Experimente ich gerade durchgeführt habe. Es ist durchaus möglich, dass ich *Pech* gehabt habe und ausgerechnet mein Experiment eines der fünf Experimente ist.
+
+Eine weitere Missinterpretation ist der Irrtumswahrscheinlichkeit ist, dass Sie eine Ausage über die Wahrscheinlichkeit des Zutreffens der $H_0$ erlaubt. Die Irrtumswahrscheinlichkeit ermöglichst dies allerdings nicht. Ob die $H_0$ zutrifft hat die Wahrscheinlichkeit entweder $P(H_0) = 1$ oder $P(H_0) = 0$. Entweder sie trifft zu oder eben nicht. Darüber wird hier keine Aussage gemacht, sondern nur ob unter der Annahme das $H_0$ zutrifft, der beobachtete Wert in einem *wahrscheinlichen* oder einem *unwahrscheinlichen* Bereich liegt. Nochmal, was *wahrscheinlich* ist wurde durch eine willkürliche Festlegung bestimmt. Die gewählte Grenze ist keine physikalische Realität!
+
+Kommen wir nun zum nächsten oft missverstandenen Term, dem p-Wert.
 
 ## Der p-Wert
 
+Fangen wir dieses Mal mit der Definition an. Da wir mittlerweile hoffentlich schon einiges an Intuition aufgebaut haben, sollte die Definition einigermaßen verständlich sein. 
+
+::: {#def-p-value}
+## p-Wert \index{p-Wert}
+
+Der p-Wert gibt die Wahrscheinlichkeit für den beobachteten oder einen noch extremeren Wert unter der $H_0$ an.
+:::
+
+In @fig-stats-sig-p-value-01 ist eine Verteilung unter der $H_0$ eingzeichnet, zusammen mit den kritischen Bereichen für gegebenes $\alpha$ und der beobachtete Wert.
+
 ```{r}
-#| fig.cap: "Der gelben Flächen zeigen den p-Wert für den Wert der Statistik von d = 2,5 an."
+#| fig.cap: "Der beobachtete Wert der Statistik (schwarzer Punkt) zusammen mit der Verteilung unter der $H_0$. Die gelben Flächen zeigen den p-Wert für den Wert der beobachteten Statistik an."
+#| label: fig-stats-sig-p-value-01
 
 p_val <- 2.5
 p_dat_up <- tibble(
@@ -453,12 +480,13 @@ ggplot(dat_0, aes(x,v,ymin=0, ymax=v)) +
   labs(x = 'Werte', y = 'Dichte') 
 ```
 
+Der p-Wert ist die Wahrscheinlichkeit (gelbe Fläche), unter der $H_0$, für den beobachteten oder einen extremeren Wert. Ein extremere Wert bedeutet in diesem Fall einen größeren Wert, also alle Werte rechts vom beobachteten Wert. Jetzt irritiert allerdings, dass wir auf der linken Seite ebenfalls eine gelbe Fläche haben. Was hier passiert ist, ist dass der beobachtete Wert an $\mu$ in den anderen kritischen Bereich *gespiegelt* (salopp) wurde. Jetzt wird wieder das gleiche Prinzip mit dem extremeren Wert angewendet. Hier bedeutet allerdings extremer links vom beobachteten Wert. Wir erhalten dann wieder eine Fläche und somit eine Wahrscheinlichkeit. Die beiden gelben Flächen zusammen ergeben dann den p-Wert. Das die Wahrscheinlichkeit für eine Seite dazugenommen wird bei der wir gar keinen Wert beobachtet haben wird später verständlich wenn wir den unterschied zwischen gerichteten und ungerichteten Hypothesen uns anschauen. Zur Begrifflichkeit extrem nochmal können wir aber schon mal zusammenfassen, dass extrem immer in Bezug auf das $\mu$ der Stichprobenverteilung zu verstehen ist.
 
-Der p-Wert gibt die Wahrscheinlichkeit für den gefundenen oder einen noch extremeren Wert unter der $H_0$ an.
-
+In @fig-stats-sig-p-value-02 sind verschiedene Beispiele für beobachtete Werte und den dazugehörenden p-Werten und deren Flächen abgebildet.
 
 ```{r}
-#| fig.cap="Verschiedene P-Werte"
+#| fig-cap: "Verschiedene P-Werte und die dazugehörenden Flächen."
+#| label: fig-stats-sig-p-value-02
 
 foo <- function(p, lo=-3, up=3, d_x=0.025) {
   len <- 40
@@ -487,6 +515,9 @@ ggplot(dat_3, aes(x,v,ymin=0, ymax=v)) +
   theme(strip.text = element_text(size=8))
 ```
 
+Können wir eigentlich den p-Wert und die Irrtumswahrscheinlichkeit in irgendeiner Form zusammenbringen? Ja, ganz klar wenn wir wissen das die beobachtete Statistik einen p-Wert von kleiner $\alpha$ hat, dann haben wir ein statistisch signifikanten Ergebnis. Wenn euch das nicht auf anhieb klar ist, dann schaut euch noch mal @fig-stats-sig-p-value-01 an.
+
+Da der p-Wert eines der am meisten missverstandenen Konzepte ist, hier noch mal ein paar Statements und Erklärungen.
 
 *"[A] p-value is the probability under a specified statistical model that a statistical summary of the data (e.g., the sample mean difference between two compared groups) would be equal to or more extreme than its observed value."* [@wasserstein2016, p.131]
 
@@ -504,10 +535,7 @@ actually observed."* [@christensen2018, p.38]
 - Ein p-Wert von $p = 0.0001$ heißt nicht, dass mit 99,99\% Wahrscheinlichkeit ein Effekt vorliegt!
 - *Statistisch* signifikant heißt nicht automatisch *praktisch* relevant!
 
-
-![Ausschnitt aus @altman1995](pics/altman_1995.png){height=6cm}
-
-Eine weitere Erklärung für den p-Wert nach @wasserstein2016
+Und noch ein paar weitere Erklärung für den p-Wert nach @wasserstein2016
 
 1. P-values can indicate how incompatible the data are with a specified statistical model.
 2. P-values do not measure the probability that the studied hypothesis is true, or the probability that the data were produced by random chance alone.
@@ -515,6 +543,18 @@ Eine weitere Erklärung für den p-Wert nach @wasserstein2016
 4. Proper inference requires full reporting and transparency
 5. A p-value, or statistical significance, does not measure the size of an effect or the importance of a result.
 6. By itself, a p-value does not provide a good measure of evidence regarding a model or hypothesis.
+
+In @fig-stats-sig-altman ist ein kurzer Abschnitt aus @altman1995 abgebildet, der noch mal auf eine weiter Missinterpretation eines statisisch signifikanten Ergebnisses eingeht.
+
+```{r}
+#| out-width: 80%
+#| fig-cap: "Ausschnitt aus Altman et al. (1995)"
+#| label: fig-stats-sig-altman
+
+knitr::include_graphics("pics/altman_1995.png")
+```
+
+Kurz gesagt, wenn wir kein statistisches Ergebnisse gefunden haben, bedeutet dies nicht, das es keinen Unterschied gibt. Tatsächlich wird der beobachtete Wert praktisch nie exakt $=0$ sein. Der die Abwesenheit von Evidenz ist nicht gleich die Evidenz für Abwesenheit. 
 
 ## Was passiert nun aber wenn die "andere" Hypothese zutrifft? 
 
