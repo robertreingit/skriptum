@@ -1,0 +1,208 @@
+# Parameterschätzung 
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+source('_common.R')
+```
+
+```{r stats_significance_defs}
+n <- 20
+set.seed(123)
+world <- tibble(ID = paste0('P',stringr::str_pad(1:n, width=2, pad="0")),
+                Kraft = sample(2000:2500, n))
+world$Kraft[13] <- 1800
+world$Kraft[17] <- 3200
+d_gr <- 100
+d_x <- 2 
+mu_lummer <- 0
+sd_lummer <- 230
+sample_k9 <- readr::read_csv('data/sample_k9.csv')
+```
+
+# Parameterschätzung 
+
+## Problem bei einer dichotomen Betrachtung der Daten
+
+```{r}
+#| fig.cap: "Auszug aus @cumming2013 [p.1]"
+#| label: fig-sts-sig-cumming
+ 
+include_graphics('pics/cumming_luck.png')
+```
+
+
+## Wie groß ist der Effekt? 
+
+```{r}
+#| fig.cap: "Stichprobenverteilungen der Differenz unter $H_0$ und $H_1:\\delta=500$N bei einer Stichprobengröße von n = 9"
+
+d_x <- 2 
+sigma <- sample_k9$sd[1]
+d <- sample_k9$m[2]
+xx = seq(-4*sigma,d+4*sigma)
+n_pts = length(xx)
+dat_k9 <- tibble(
+  x = rep(xx,2),
+  y = c(dnorm(xx, 0, sigma), dnorm(xx, d, sigma)),
+  hypo = rep(c('H0','H500'), c(n_pts, n_pts))
+)
+ggplot(dat_k9, aes(x,y,fill=hypo, ymin=0, ymax=y)) +
+  geom_ribbon(alpha=0.5) +
+  geom_line() +
+  scale_fill_discrete("Hypothese", labels=c(
+    expression(H[0]  ), expression(H[500])
+  )) +  
+  lims(x = c(-750, 1250)) +
+  labs(x = 'Differenzen[N]', y = 'relative Häufigkeiten') 
+```
+
+
+## Schätzung der Populationsparameter
+
+```{r}
+alpha <- 0.05
+delta <- 500
+mu <- delta
+d_hat <- 350
+s_hat <- 132
+s_e <- round(s_hat/sqrt(9))
+c_i <- d_hat + c(-1,1)*qnorm(1-alpha/2)*s_e
+```
+
+Kleine Welt: Experiment wird einmal mit n = 9 durchgeführt 
+
+### Beobachtete Stichprobenkennwerte
+
+\begin{align*}
+d = \bar{x}_{treat} - \bar{x}_{con} &= `r d_hat` \\
+s &= `r s_hat` \\
+s_e &= `r s_e`
+\end{align*}
+
+Wie präzise ist meine Schätzung und welche anderen Unterschiedswerte sind anhand der beobachteten Daten noch plausibel?
+
+## Welche $\delta$s sind plausibel für $d = `r d_hat`$? 
+
+```{r}
+#| fig.cap: "Verschiedene Verteilungen von Gruppendifferenzen, beobachteter Unterschied (rot)"
+
+cut_h <- 0.00002
+dat_con <- tibble(
+  x = seq(-500, 1000, length.out=200),
+  d0 = dnorm(x, 0, s_e),
+  dm75 = dnorm(x, -75, s_e),
+  d500 = dnorm(x, 500, s_e),
+  d350 = dnorm(x, 350, s_e),
+  d250 = dnorm(x, 250, s_e)
+) %>% tidyr::pivot_longer(-x, names_to="x_bar", values_to="v") %>% 
+  dplyr::filter(v > cut_h)
+ggplot(dat_con, aes(x,v,ymin=cut_h, ymax=v, fill=x_bar)) + 
+  geom_line() +
+  geom_ribbon(alpha=0.3) +
+  geom_vline(xintercept = d_hat, col = 'red', linetype='dashed') +
+  scale_fill_discrete("Verteilungen",
+                      breaks = c('d0', 'd500', 'd350', 'dm75', 'd250'),
+                      labels = c(expression(delta==0),
+                                 expression(delta==500),
+                                 expression(delta==350),
+                                 expression(delta==-75),
+                                 expression(delta==250))) +
+  labs(x = "Differenz", y = "Dichte") 
+```
+
+Plausibel unter einem gegebenem **$\alpha$-Level**!
+
+
+## Alle möglichen $\delta$s die plausibel sind
+
+```{r}
+#| fig.cap: "Konfidenzintervall (grün), Populationsparameter $\\delta$ und $\\alpha$-Level für die beobachtete Differenz (gelb)."
+
+mu_s <- seq(150, 550, length.out=25) 
+q_s <- qnorm(alpha, mu_s, s_e)
+df <- tibble(mu_s = mu_s,
+             lu = qnorm(alpha/2,mu_s, s_e),
+             up = qnorm(1-alpha/2, mu_s, s_e)) %>%
+  dplyr::mutate(inside = dplyr::if_else(mu_s >= c_i[1] & mu_s <= c_i[2], 'ja', 'nein'))
+ggplot(df, aes(x = mu_s, y = mu_s, ymin = lu, ymax = up, color = inside)) +
+  geom_hline(yintercept = d_hat, color = 'yellow') +
+  geom_hline(yintercept = c_i, color = 'green') +
+  geom_hline(yintercept = delta, color = 'black') +
+  geom_pointrange(size=0.3) +
+  labs(x = bquote('Mögliche'~delta), y = "") +
+  scale_color_manual("plausibel", values = c('green','red')) +
+  scale_y_continuous(breaks = seq(50,700,50)) +
+  scale_x_continuous(breaks = NULL) +
+  annotate("text", y=550,x=100,label=expression(delta==500), size=4) +
+  annotate("text", y=400,x=100,label=expression(d==350), size=4) +
+  coord_flip() 
+```
+
+## Was passiert wenn ich das Experiment ganz oft wiederhole?
+
+```{r}
+#| fig.cap: "Simulation von $n = 100$ Konfidenzintervallen."
+#| cache: true
+
+foo <- function(mu = 500, se = 132, n = 20, alpha = 0.05) {
+  sam <- rnorm(n, mu, se)
+  x_hat <- mean(sam)
+  s_e <- sd(sam)/sqrt(n)
+  q <- qnorm(alpha/2)
+  c(x_hat, x_hat + c(1,-1) * q * s_e)
+}
+N <- 100
+set.seed(2)
+c_is <- t(replicate(N, foo(mu, sigma, 20)))
+colnames(c_is) <- c("x_hat","lo","up")
+df_2 <- as_tibble(c_is) %>% dplyr::mutate(id = dplyr::row_number(),
+                                   inside = dplyr::if_else((mu >= lo) & (mu <= up), 'ja','nein'))
+ggplot(df_2, aes(id, x_hat, color = inside)) + 
+  geom_pointrange(aes(ymin = lo, ymax = up), size=0.3) +
+  geom_hline(yintercept = mu, color = 'black') +
+  scale_color_manual("enthalten", values = c('green','red')) +
+  labs(x = 'Experiment[#]', y = "d") +
+  coord_flip()
+```
+
+## Konfidenzintervall - Das Kleingedruckte
+
+- Das Konfidenzintervall für ein gegebenes $\alpha$-Niveau gibt nicht die Wahrscheinlichkeit an mit der der *wahre* Parameter in dem Intervall liegt.
+- Das Konfidenzintervall gibt alle mit den Daten kompatiblen Populationsparameter an.
+- Das $\alpha$-Niveau des Konfidenzintervalls gibt an bei welchem Anteil von Wiederholungen davon auszugehen ist, das das Konfidenzintervall den wahren Populationsparameter enthält. 
+
+## Konfidenzintervall herleiten nach @spiegelhalter2019 [p.241]
+
+1. We use probability theory to tell us, for any particular population
+parameter, an interval in which we expect the observed statistic to lie
+with 95% probability.
+2. Then we observe a particular statistic.
+3. Finally (and this is the difficult bit) we work out the range of possible
+population parameters for which our statistic lies in their 95\%
+intervals. This we call a "95\% confidence interval".
+4. This resulting confidence interval is given the label "95\%" since, with
+repeated application, 95% of such intervals should contain the true
+value.^[Strictly speaking, a 95\% confidence interval does ***not*** mean there is a 95\% probability that this particular interval contains the true value [...]]
+
+All clear? If it isn’t, then please be reassured that you have joined
+generations of baffled students.
+
+
+## Konfidenzintervall berechnen (Vorschau)
+
+$$
+\textrm{CI}_{1-\alpha} = \bar{x} \pm z_{\alpha/2} \times s_e 
+$$
+
+
+## Dualität von Signifikanztests und Konfidenzintervall
+
+Wenn das Konfidenzintervall mit Niveau $1-\alpha\%$ die $H_0$ nicht beinhaltet, dann wird auch bei einem Signifikanztest die $H_0$ bei einer Irrtumswahrscheinlichkeit von $\alpha$ abgelehnt.
+
+
+
+
+
+
