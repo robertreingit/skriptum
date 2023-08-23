@@ -323,6 +323,30 @@ Die Länge einer Zeichenkette kann mit der Funktion `nchar()` bestimmt werden.
 nchar(s_3)
 ```
 
+Eine Funktion die oft mit Zeichenketten eine Anwendung findet ist die `paste()` bzw. die Spezialform `paste0()`. Mit `paste()` können Zeichenkette zusammengesetzt werden.
+
+```{r}
+paste('Ich', 'bin', 'ein', 'Berliner')
+```
+
+Per default fügt `paste()` ein Leerzeichen zwischen die Zeichenketten ein. Dies kann entsprechend angepasst werden.
+
+```{r}
+paste('Ich', 'bin', 'ein', 'Kölner', sep = '--')
+```
+
+Die Argumente an `paste()` müssen nicht alle Zeichenketten sein, werden aber dann in Zeichenketten konvertiert.
+
+```{r}
+paste(3, 2, '-mal', sep='')
+```
+
+`paste0()` ist eine Spezielform von `paste()` bei der das Argument `sep` auf `""` gesetzt ist. Das heißt, die Zeichenketten werden direkt aneinander gehängt.
+
+```{r}
+paste0('kein','zwischen','raum')
+```
+
 ::: {.callout-tip}
 Das Paket `stringr` bietet eine große Sammlung von Funktion die den Umgang und die Manipulation von Zeichenketten stark vereinfachen.
 :::
@@ -427,7 +451,7 @@ Wir können auf einzelne Elemente oder Teil eines Vektor zugriffen mittels des s
 length(v_2)
 ```
 
-Mit eckigen Klammern `[]` können wir Teilelemente des Vektor extrahieren. Zum Beispiel das zweite Element von $v_1$.
+Mit eckigen Klammern `[]` können wir Teilelemente des Vektors extrahieren. Zum Beispiel das zweite Element von $v_1$.
 
 ```{r}
 v_1[2]
@@ -460,6 +484,73 @@ Numerische Vektoren verstehen als mathematischen Operatoren, diese werden jedoch
 
 ```{r}
 v_1 * 3
+```
+
+Dementsprechend können Vektoren auch addiert werden, wenn die Längen gleich sind. Die Addition erfolgt dann ebenfalls elementweise.
+
+```{r}
+v_3 <- c(1,2,3)
+v_4 <- c(4,5,6)
+v_3 + v_4
+```
+
+
+Eine etwas unglückliche gewählte Eigenschaft von `R`, dass auch Vektoren mit unterschiedlichen Längen addiert (subtrahiert, multipliziert, dividiert) werden können, allerdings nur wenn die Länge des längeren Vektors eine Vielfaches des kürzeren ist.
+
+```{r}
+v_5 <- c(1,2)
+v_6 <- c(1,2,3,4,5,6)
+v_5 + v_6
+```
+
+Dieses Verhalten ist wie gesagt etwas unglücklich gewählt, das sich schnell subtile Fehler in den Code einschleichen können, die dann nur sehr schwer zu identifzieren sind. Daher sollte auf diese Feature möglichst verzichtet werden.
+
+Per default werden Vektoren in `R` nicht als Spaltenvektoren wie in der Mathematik angesehen. Das kann manchmal zu zu Problemen in Rechnungen führen, wenn die Rechnung von der üblichen Algebra bei Vektoren und Matrizen ausgeht. Dies sollte daher im Hinterkopf behalten werden.
+
+Wenn das Skalarprodukt $\|v_x v_y\|^2 = \sum_{i=1}^nv_{xi}v_{yi}$ zweier Vektoren berechnet werden soll, dann muss ein spezieller Matrizenmultiplikator benutzt werden `%*%`.
+
+```{r}
+v_3 %*% v_4
+```
+
+In `R` gibt es verschiedene Funktion um schnell Vektoren mit bestimmten Strukturen zu erstellen. Wir ein Vektor mit aufeinanderfolgenden Ganzzahlen benötigt kann der `:` Operator verwendet werden. Es wird ein Vektor nach dem Muster `a:b` = $(a,a+1,\ldots,b-1,b)$ erstellt.
+
+```{r}
+1:3
+10:15
+```
+
+Soll die Zahlenfolgen nicht ganzzahlig sein sondern andere Intervalle haben, dannn kann die `seq()` Funktion verwendet werden.
+
+```{r}
+seq(from = 1, to = 10, by = 2) # <1>
+seq(0, 2, 0.25)  # <2>
+seq(0, 2*pi, length.out = 10) # <3>
+```
+
+1. Erstelle eine Sequenz von 1 bis 10 in Intervallen der Größe 2
+2. Erstelle eines Sequenz von 0 bis 0 in Intervallen der Größe $0.25$
+3. Erstelle eiene Sequenz von 0 bis $2\pi$ die die Länge 10 hat.
+
+Eine weitere Funktion die oft einen Einsatz findet ist die `rep()` Funktion mit der Vektoren mit bestimmten Wiederholungsmustern erstellt werden können.
+
+```{r}
+rep(3, 5) # <1>
+rep(c(1,2), 3)  # <2>
+rep(c(1,2), each=3) # <3>
+```
+
+1. Wiederhole die Zahl 3 fünfmal.
+2. Wiederhole den Vektor $(1,2)$ dreimal.
+3. Wiederhole jedes Element des Vektor $(1,2)$ dreimal.
+
+Wie in dem Beispiel ersichtlich, kann so schnell beliebige Wiederholungen erzeugt werden.
+
+Eine praktische Funktion im Zusammenhang mit Vektoren ist wiederum die Funktion `paste()` die wir im Zusammenhang mit Zeichenketten kennengelernt haben. Werden Vektoren an `paste()` übergeben, werden die kürzeren Werte so oft wiederholt bis die Länge des längsten Vektors erreicht wird und dann erfolgt die Zusammensetzung. Daher wird dann ein Vektor zurückgegeben.
+
+```{r}
+paste('Participant', 1:3, sep = '_')
+paste(c('A','B'), 1:4, sep = 'x')
 ```
 
 
