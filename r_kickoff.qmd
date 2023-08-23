@@ -421,70 +421,98 @@ as.logical(0)
 
 ### Vektoren
 
-Vektoren sind grundlegende Datentypen in `R` und können sowohl numerische als auch nicht-numerische Werte speichern. Allerdings kann immer nur ein Typ von Werten in einem Vektor gespeichert werden. Da Vektoren eine typische Art wie Daten organisiert sind, werden sien entsprechend in `R` unterstützt. Vektoren können als eine geordnete Sammlung von Elementen betrachtet werden. 
+Vektoren sind ein grundlegender Datentypein `R` und können sowohl numerische als auch nicht-numerische Werte speichern. Allerdings kann immer nur eine Datentyp in einem Vektor gespeichert werden. Da Vektoren sehr oft bei Datenanalysen verwendet werden und oft zur Datenrepräsentation verwendet werden, werden sie entsprechend direkt in `R` unterstützt. Etwas allgemeiner betrachtet können Vektoren als eine geordnete Sammlung von Elementen betrachtet werden. Geordnet bedeutet dabei, dass sie ein feststehende Abfolge haben.
 
-Die Hauptart und Weise wie Vektoren in `R` erstellt werden, ist mit der Funktion `c()` \index{c()} von combine. Wollen wir zum Beispiel einen numerischen Vektor mit den Zahlen
+Die direkteste Art einen Vektoren in `R` zu erstellen, ist mittels der `c()` Funktion \index{c()} (`c` von combine). Wollen wir zum Beispiel einen numerischen Vektor mit den folgenden Einträgen erstellen. 
 
 \begin{equation}
 v_1 = \begin{pmatrix}3\\7\\8\end{pmatrix}
 \end{equation}
 
-erstellen, dann sieht das in `R` vollgendermaßen aus.
+Dann sieht dies in `R` folgendermaßen aus.
 
 ```{r}
 v_1 <- c(3,7,8)
 v_1
 ```
 
-Wollen wir einen Vektor mit Zeichenketten erstellen, verwenden wir entsprechend.
+Das gleiche Prinzip funktioniert auch mit anderen Typen. Beispielweise mit einem Zeichenkettenvektor.
 
 ```{r}
-#| echo: true
-
 v_2 <- c('mama','papa','tochter')
 v_2
 ```
 
-Wir können auf einzelne Elemente oder Teil eines Vektor zugriffen mittels des sogenannten subsettings zugreifen. Dazu zunächst einmal hat jeder Vektor eine Länge die wir mit `length()` bestimmen können.
+Oder einem logischen Vektor.
+```{r}
+v_bool <- c(TRUE, TRUE, FALSE, TRUE)
+```
+
+Auf einzelne Elemente oder Teile eines Vektor kann mittels des sogenannten subsettings zugegriffen werden. Jeder Vektor hat eine definierte Länge die wir mit `length()` bestimmen können.
 
 ```{r}
 length(v_2)
 ```
 
-Mit eckigen Klammern `[]` können wir Teilelemente des Vektors extrahieren. Zum Beispiel das zweite Element von $v_1$.
+Mit eckigen Klammern `[]` können wir Teilelemente des Vektors extrahieren. Die Indizierung geht dabei von $1$ bis $n = $ `length(Vektor)`. Wollen wir zum Beispiel das zweite Element aus $v_1$ extrahieren, dann verwenden wir.
 
 ```{r}
 v_1[2]
 ```
 
-In `R` kann auch wiederum ein Vektor zum subsetten übergeben werden, beispielweise um das 1. und 3. Element aus $v_2$ zu extrahieren.
+Wenn der Index außerhalb des erlaubten Bereichs ist, dann wird ein `NA` für `(N)ot (A)vailable` von `R` zurückgegeben.
+
+```{r}
+#| error: true
+v_1[10]
+```
+
+`R` erlaubt die Verwendung von Vektoren zum subsetten. Beispielweise wenn ich das 1. und 3. Element aus $v_2$ extrahieren möchte, kann ich einen Vektor mit den beiden Elemente $1$ und $3$, $v_{\text{index}} = (1,3)$ und übergebe diesen an `[]`.
+
+```{r}
+v_i <- c(1,3)
+v_2[v_i]
+```
+
+Das funktioniert ebenfalls ohne den Zwischenvektor.
 
 ```{r}
 v_2[c(1,3)]
 ```
 
-Der zurückgegebene Typ ist in diesem Fall auch wieder ein Vektor. Wir können dadurch zum Beispiel einen Vektor erstellen der länger als der Ursprungsvektor ist.
+Der zurückgegebene Wert ist dann auch wieder ein Vektor. Wir können dadurch zum Beispiel einen Vektor erstellen, der länger ist als der Ursprungsvektor.
 
 ```{r}
 v_1[c(1,1,2,2,3,3)]
 ```
 
-Zum subsetten können auch logische Vektoren verwendet werden. Der resultierende Vektor ist ein Vektor mit denjenigen Element, für der logische Vektor `TRUE` ist.
+Zum subsetten können auch logische Vektoren verwendet werden. Der resultierende Vektor ist ein Vektor mit denjenigen Elementen, für die der logische Vektor den Wert `TRUE` hat.
 
 ```{r}
 v_bool <- c(TRUE, FALSE, TRUE)
 v_1[v_bool]
 ```
 
-Numerische Vektoren verstehen als mathematischen Operatoren, diese werden jedoch elementweise ausgeführt. Als zum Beispiel die Multiplikation von $v_1$ mit Skalar $3$ führt zu.
-
-\begin{equation}
-\begin{pmatrix}3\\7\\8\end{pmatrix} \cdot 3 = \begin{pmatrix}9\\21\\24\end{pmatrix}
-\end{equation}
+Wird ein negativer Wert an `[]` übergeben, dann wird dieser bzw. diese Wert(e) von `R` ausgeschlossen.
 
 ```{r}
-v_1 * 3
+v_1[-2]
 ```
+
+Das funktioniert auch wieder mit Vektoren.
+
+```{r}
+v_lang <- c(1,2,3,4,5,6,7)
+v_lang[-c(2,3,6)]
+```
+
+Auf numerische Vektoren können die gängigen mathematischen Operatoren (`+-*/`) angewendet werden. Die Operationen werden elementweise ausgeführt.
+
+\begin{equation*}
+\begin{pmatrix}v_1\\v_2\\\vdots\\v_n\end{pmatrix} \times
+\begin{pmatrix}a\\b\\\vdots\\c\end{pmatrix} = 
+\begin{pmatrix}av_1\\bv_2\\\vdots\\cv_n\end{pmatrix} \cdot
+\end{equation*}
 
 Dementsprechend können Vektoren auch addiert werden, wenn die Längen gleich sind. Die Addition erfolgt dann ebenfalls elementweise.
 
@@ -494,8 +522,17 @@ v_4 <- c(4,5,6)
 v_3 + v_4
 ```
 
+Multiplikation mit einem Skalar folgt der üblichen Skalarmultiplikation von Vektoren aus der Mathematik.
 
-Eine etwas unglückliche gewählte Eigenschaft von `R`, dass auch Vektoren mit unterschiedlichen Längen addiert (subtrahiert, multipliziert, dividiert) werden können, allerdings nur wenn die Länge des längeren Vektors eine Vielfaches des kürzeren ist.
+\begin{equation}
+\begin{pmatrix}3\\7\\8\end{pmatrix} \cdot 3 = \begin{pmatrix}9\\21\\24\end{pmatrix}
+\end{equation}
+
+```{r}
+v_1 * 3
+```
+
+Eine etwas unglückliche gewählte Operation von `R` ist, dass auch Vektoren mit unterschiedlichen Längen addiert (subtrahiert, multipliziert, dividiert) werden können. Allerdings nur wenn die Länge des längeren Vektors eine Vielfaches des kürzeren Vektors ist. `R` wiederholt dann die Abfolge  der Elemente des kürzeren Vektors so oft bis die Länge des längeren Vektors erreicht wird.
 
 ```{r}
 v_5 <- c(1,2)
@@ -503,24 +540,57 @@ v_6 <- c(1,2,3,4,5,6)
 v_5 + v_6
 ```
 
-Dieses Verhalten ist wie gesagt etwas unglücklich gewählt, das sich schnell subtile Fehler in den Code einschleichen können, die dann nur sehr schwer zu identifzieren sind. Daher sollte auf diese Feature möglichst verzichtet werden.
+Dieses Verhalten ist wie gesagt etwas unglücklich gewählt, da sich sehr schnell subtile Fehler in den Code einschleichen können. Diese sind erfahrungsgemäß nur sehr schwer wieder ausfindig zu machen. Daher sollte auf diese Feature möglichst verzichtet werden.
 
-Per default werden Vektoren in `R` nicht als Spaltenvektoren wie in der Mathematik angesehen. Das kann manchmal zu zu Problemen in Rechnungen führen, wenn die Rechnung von der üblichen Algebra bei Vektoren und Matrizen ausgeht. Dies sollte daher im Hinterkopf behalten werden.
+Das subsetting wird auch benutzt, wenn ich einem bestehenden Vektor Werte zuweisen will. Will ich zum Beispiel bei $v_1$ den zweiten Wert von einer $2$ in eine $20$ ändern. Dann verwende ich wiederum `[]` und weise die entsprechende Anzahl von indizierten Werteplätzen zu.
 
-Wenn das Skalarprodukt $\|v_x v_y\|^2 = \sum_{i=1}^nv_{xi}v_{yi}$ zweier Vektoren berechnet werden soll, dann muss ein spezieller Matrizenmultiplikator benutzt werden `%*%`.
+```{r}
+v_1[2] <- 20
+v_1
+```
+
+Oder eben mehrere Werte
+
+```{r}
+v_1[1:2] <- c(10, 100)
+v_1
+```
+
+Ich kann auch nur einen einzelnen Wert zuweisen, der dann an mehrere Stellen geschrieben wird.
+
+```{r}
+v_1[2:3] <- 1000
+v_1
+```
+
+Das funktioniert auch mit logischen Indexvektoren.
+
+```{r}
+v_1[c(TRUE,FALSE,TRUE)] <- -13
+v_1
+```
+
+
+Per default werden Vektoren in `R` nicht als Spaltenvektoren wie in der Mathematik angesehen. Das kann manchmal ebenfalls zu Problemen in Rechnungen führen, wenn Formeln eins-zu-eins in `R` übertragen werden und die Formel von der üblichen Algebra bei Vektoren und Matrizen ausgeht. Dies sollte daher im Hinterkopf behalten werden.
+
+Wenn das Skalarprodukt $v_x  v_y = \sum_{i=1}^nv_{xi}v_{yi}$ zweier Vektoren berechnet werden soll, dann muss ein spezieller Matrizenmultiplikator benutzt werden `%*%`. In unserem Beispiel mit $v_3$ und $v_4$
+
+\begin{equation*}
+v_3 \cdot v_4 = 1\cdot4 + 2\cdot5 + 3\cdot6 = 32
+\end{equation*}
 
 ```{r}
 v_3 %*% v_4
 ```
 
-In `R` gibt es verschiedene Funktion um schnell Vektoren mit bestimmten Strukturen zu erstellen. Wir ein Vektor mit aufeinanderfolgenden Ganzzahlen benötigt kann der `:` Operator verwendet werden. Es wird ein Vektor nach dem Muster `a:b` = $(a,a+1,\ldots,b-1,b)$ erstellt.
+In `R` gibt es verschiedene Funktion um schnell Vektoren mit bestimmten Strukturen zu erstellen. Wird ein Vektor mit aufeinanderfolgenden Ganzzahlen benötigt kann der `:` Operator verwendet werden. Es wird ein Vektor nach dem Muster `a:b` = $(a,a+1,\ldots,b-1,b)$ erstellt.
 
 ```{r}
 1:3
 10:15
 ```
 
-Soll die Zahlenfolgen nicht ganzzahlig sein sondern andere Intervalle haben, dannn kann die `seq()` Funktion verwendet werden.
+Soll die Zahlenfolgen nicht ganzzahlig sein sondern ein anderes Interval haben, dann kann die `seq()` Funktion verwendet werden.
 
 ```{r}
 seq(from = 1, to = 10, by = 2) # <1>
@@ -544,19 +614,34 @@ rep(c(1,2), each=3) # <3>
 2. Wiederhole den Vektor $(1,2)$ dreimal.
 3. Wiederhole jedes Element des Vektor $(1,2)$ dreimal.
 
-Wie in dem Beispiel ersichtlich, kann so schnell beliebige Wiederholungen erzeugt werden.
+Wie in den Beispielen gezeigt, können relativ unkompliziert Vektoren mit beliebigen Wiederholungen erzeugt werden.
 
-Eine praktische Funktion im Zusammenhang mit Vektoren ist wiederum die Funktion `paste()` die wir im Zusammenhang mit Zeichenketten kennengelernt haben. Werden Vektoren an `paste()` übergeben, werden die kürzeren Werte so oft wiederholt bis die Länge des längsten Vektors erreicht wird und dann erfolgt die Zusammensetzung. Daher wird dann ein Vektor zurückgegeben.
+Eine weitere praktische Funktion in diesem Zusammenhang ist die Funktion `paste()` die wir schon bei den Zeichenketten kennengelernt haben. Werden Vektoren an `paste()` übergeben, werden die kürzeren Werte so oft wiederholt bis die Länge des längsten Vektors erreicht wird. Dann erfolgt erst die Zusammensetzung der Vektoren wiederum elementweise. Als Rückgabewert wird daher wiederum ein Vektor gegeben.
 
 ```{r}
 paste('Participant', 1:3, sep = '_')
 paste(c('A','B'), 1:4, sep = 'x')
 ```
 
+Zuletzt, benötige ich einen Vektor einer bestimmen Länge bei dem alle Elemente gleich sind kann ich die Funktionen `numeric()`, `character()` und `logical()` verwenden. Zum Beispiel wenn ich einen numerischen Vektor der Länge $11$ mit nur $13$ als Einträg gebrauche.
+
+```{r}
+numeric(11) + 13
+```
+
+Da Vektoren ein zentraler Datentyp in `R` sind, ist es wichtig sich möglichst eingehend mit den Eigenschaften von Vektoren zu beschäftigen. Es ist praktisch unmöglich in `R` produktiv zu werden ohne zumindest die Grundeigenschaften von Vektoren verstanden zu haben.
 
 ### Matrizen
 
-Matrizen sind zweidimensionale Datenstrukturen, die aus Zeilen und Spalten bestehen. Sie werden häufig für numerische Berechnungen, wie lineare Algebra, verwendet. Matrizen können mit der Funktion `matrix()` erstellt werden.
+Matrizen sind rechteckige und damit zweidimensionale Datenstrukturen, die aus Zeilen und Spalten bestehen und als Verallgemeinerung von Vektoren zu verstehen sind. Matrizen werden häufig für numerische Berechnungen, wie lineare Algebra, verwendet. In `R` können aber genauso wie Vektoren Werte mit Zeichenketten oder logischen Werten haben. Wir werden uns allerdings auf numerische Matrizen beschränken, da diese am ehesten benötigt werden.
+
+Matrizen werden in `R` mit der Funktion `matrix()` erstellt. Der erste Parameter gibt die einzelnen Werte an gefolgt von der Anzahl der Zeilen (`nrow`) und der Anzahl der Spalten (`ncol`).
+
+```{r}
+mat_1 <- matrix(1:4, nrow=2, ncol = 2)
+mat_1
+```
+
 
 
 ### `data.frame()` oder `tibble()`
@@ -565,99 +650,3 @@ Dataframes sind ähnlich wie Matrizen, aber sie ermöglichen die Speicherung ver
 
 Diese Datentypen bilden das Grundgerüst für die Datenverarbeitung und Analyse in R. Ihr Verständnis ist unerlässlich, um effektiv mit Daten zu arbeiten und komplexe Analysen durchzuführen. R bietet zudem zahlreiche Funktionen zur Manipulation und Umwandlung dieser Datentypen, was die Flexibilität und Leistungsfähigkeit der Sprache weiter erhöht.
 
-## Ablaufkontrolle
-
-### Vergleiche 
-
-```{r}
-#| echo: true
-m <- 1:6  # <1>
-m[m < 3]  # <2>
-```
-
-1. Der Variable `m` wird mit einem Vektor mit den Werten $[1,2, \dots, 6]$ gefüllt.
-2. Mittels eines Vergleichs werden alle Werte kleiner $3$ ausgegeben.
-
-### Bedingte Anweisungen und Verzweigungen 
-
-```{mermaid}
-flowchart
-A[condition] --> B[TRUE]
-A[condition] --> C[FALSE]
-B --> D[Ausdruck A]
-C --> E[Ausdruck B]
-```
-
-
-`if () {} else {}`
-
-```{r}
-#| eval: false
-#| echo: true
-
-if (condition) { # <1>
-  AusdruckA      # <2>
-} else {         # <3>
-  AusdruckB      # <4> 
-}
-
-```
-
-1. `condition` wird zu einem truth-Wert (`true,false`) evaluiert
-2. Wenn `condition` `TRUE` ist, wird `AusdruckA` ausgeführt.
-3. Wenn `condition` `FALSE` ist, wird der `else` Zweig ausgeführt.
-4. Im `else`-Zweig wird `AusdruckB` ausgeführt.
-
-Beispiel
-
-```{r}
-#| echo: true
-m <- 0
-a <- 10
-b <- 20
-if (a < b) {
-  m <- 10
-} else {
-  m <- 20
-}
-m
-```
-
-
-### Schleifen
-
-```{mermaid}
-%%| fig-height: 4
-
-stateDiagram-v2
-[*] --> item
-item --> Vector
-Vector --> item
-item --> Ausdruck
-item --> [*]
-```
-
-
-```{r}
-#| eval: false
-#| echo: true
-
-for (item in vector) { # <1>
-  Ausdruck             # <2>
-}
-
-```
-
-1. In der Klammer werden zwei Ausdrücke benötigt. `item` ist ein Zähler der die Einträge des Vektors `vector` durchläuft.
-2. Jedes Mal wenn `item` mit einem neuen Wert belegt worden ist, wird `Ausdruck` ausgeführt und der jeweilige Wert von `item` steht im Ausdruck zur Verfügung.
-
-Beispiel
-
-```{r}
-#| echo: true
-
-vec <- c('mama','papa','daughter','son') 
-for (i in 1:4) {
-  cat(i, ': ', vec[i], '\n')
-}
-```
