@@ -633,7 +633,16 @@ Da Vektoren ein zentraler Datentyp in `R` sind, ist es wichtig sich möglichst e
 
 ### Matrizen
 
-Matrizen sind rechteckige und damit zweidimensionale Datenstrukturen, die aus Zeilen und Spalten bestehen und als Verallgemeinerung von Vektoren zu verstehen sind. Matrizen werden häufig für numerische Berechnungen, wie lineare Algebra, verwendet. In `R` können aber genauso wie Vektoren Werte mit Zeichenketten oder logischen Werten haben. Wir werden uns allerdings auf numerische Matrizen beschränken, da diese am ehesten benötigt werden.
+Matrizen sind rechteckige und damit zweidimensionale Datenstrukturen, die aus Zeilen und Spalten bestehen und als Verallgemeinerung von Vektoren zu verstehen sind. Matrizen werden häufig für numerische Berechnungen, wie in der linearen Algebra, verwendet. In `R` können aber genauso wie Vektoren Werte mit Zeichenketten oder logischen Werten haben. Wir werden uns allerdings auf numerische Matrizen beschränken, da diese am ehesten benötigt werden.
+
+Eine Matrize der Dimension $m \times n$ wird in der Mathematik wir folgt definiert.
+
+\begin{equation}
+A = a_{ij} = \begin{pmatrix}a_{11} & \ldots & a_{1n} \\
+\vdots & & \vdots \\
+a_{m1} & \ldots & a_{mn}
+\end{pmatrix}
+\end{equation}
 
 Matrizen werden in `R` mit der Funktion `matrix()` erstellt. Der erste Parameter gibt die einzelnen Werte an gefolgt von der Anzahl der Zeilen (`nrow`) und der Anzahl der Spalten (`ncol`).
 
@@ -680,6 +689,103 @@ B
 A %*% B
 ```
 
+Um die Dimension einer Matrize zu bestimmen gibt es in `R` die Funktion `dim()`.
+
+```{r}
+dim(A)
+```
+Oder auch die beiden Kurzfunktionen:
+
+```{r}
+nrow(A)
+ncol(A)
+```
+
+Ansonsten funktionieren die mathematischen Operator wie in der Matrizenalgebra zu erwarten ist. Wenn z.B. zwei Matrizen addiert werden sollen, dann müssen die Dimensionen übereinstimmen.
+
+```{r}
+#| error: true
+
+A + B
+```
+
+```{r}
+D <- matrix(11:16, nr=2)
+dim(D)
+A + D
+```
+
+Mit der Funktion `diag()` kann eine Diagonalmatrize erstellt werden.
+
+$$
+\begin{pmatrix}
+d_{11}& 0      & 0 & \cdots & 0 \\
+0     & d_{22} & 0 &        &\vdots \\
+0     & 0      & \ddots &   &  \\
+\vdots&        &   &        &  \\
+0     &  \cdots &  &        & d_{nn}
+\end{pmatrix}
+$$
+
+```{r}
+diag(3) # <1>
+diag(1:4) # <2>
+```
+1. Wenn ein Skalar $a$ übergeben wird, die wird die Einheitsmatrize der Dimension $a$ erstellt.
+2. Wenn ein Vektor übergeben wird, dann eine Diagonalmatrize mit den Werten des Vektors.
+
+Wenn `diag()` eine Matrize übergeben wird, dann werden die Elemente auf der Diagonalen extrahiert.
+
+```{r}
+E <- diag(1:4)
+diag(E)
+```
+
+Eine Matrize kann mit Hilfe der `t()` Funktion transponiert werden.
+
+\begin{align*}
+A^T = a_{ji} = \begin{pmatrix}a_{11} & \ldots & a_{m1} \\
+\vdots & & \vdots \\
+a_{n1} & \ldots & a_{mn}
+\end{pmatrix}
+\end{align*}
+
+```{r}
+t(A)
+```
+
+D.h. beim transponieren, werden die Zeilen und Spalten der Matrize vertauscht. Die Determinante einer Matrize kann mit der Funktion `det()` berechnet werden.
+
+```{r}
+det(E)
+```
+
+
+Mit den Funktionen `cbind()` und `rbind()` können zusätzliche Spalten bzw. Zeilen an eine Matrize angehängt werden. Dabei werden die Argumente so wiederholt, dass die Anzahl der Elemente übereinstimmt, bzw. ein Fehler geworfen wenn die Anzahl kein Vielfaches voneinander ist.
+
+```{r}
+cbind(1:2, E)
+rbind(E,1:2)
+```
+
+Um die Inverse eine quadratischen Matrize zu berechnen bzw. um lineare Gleichungsysteme zu lösen kann die `solve()` Funktion verwendet werden.
+
+```{r}
+E_inv <- solve(E)
+E_inv %*% E
+```
+
+Eine weitere hilfreiche Funktion im Zusammenhang mit der Programmierung mit Matrizen ist die `apply()` Funktion. Mit `apply()` kann eine Funktion auf die einzelnen Spalten oder Zeilen einer Matrize angewendet werden.
+
+```{r}
+F <- matrix(1, nr = 4, nc = 3) # <1>
+F
+apply(F, 1, sum) # <2>
+apply(F, 2, sum) # <3>
+```
+1. Eine Matrize $F$ mit vier Zeilen und drei Spalten die nur Einsen als Einträge hat wird erstellt.
+2. Die Summenfunktion wird entlang der ersten Dimension (Zeilen) auf $F$ angewendet.
+3. Die Summenfunktion wird entlang der zweiten Dimension (Spalten) auf $F$ angewendet. 
 
 ### `data.frame()` oder `tibble()`
 
