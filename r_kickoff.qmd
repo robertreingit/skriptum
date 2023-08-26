@@ -651,9 +651,29 @@ mat_1 <- matrix(1:4, nrow=2, ncol = 2)
 mat_1
 ```
 
-Um zwei Matrizen miteinander zu multiplizieren
+Um Elemente in der Matrize zu manipulieren oder zu extrahieren verwendet ihr wieder den subsetting Operator `[]` mit dem Unterschied dass ihr jetzt zwei Indexe angeben müsst nach dem Muster `mat[zeile,spalte]`. Wie beim Vektor sind Vektoren, logische Werte und negative Werte erlaubt. Wenn ihr eine Dimension weglasst, werden entsprechend alle Zeilen oder Spalten angesteuert.
 
-$$
+```{r}
+mat_1[1,1]
+mat_1[2,2]
+mat_1[,1]
+mat_1[2,]
+mat_1[-2,1]
+```
+
+Über das subsetting könnt entsprechend auch die indexierten Werte neu belegen.
+
+```{r}
+mat_0 <- matrix(0, nr=6, nc = 3)
+mat_0
+mat_0[2:3,2] <- 1:2
+mat_0[5,2:3] <- -13
+mat_0
+```
+
+Matrizen können wie Vektoren auf zwei Arten multipliziert werden. Entweder die elementweise Art über `*` oder Matrizenmultiplikation über `%*%` nach dem Muster.
+
+\begin{gather*}
 \begin{bmatrix}
     a_{11} & a_{12} & \dots  & a_{1n} \\
     a_{21} & a_{22} & \dots  & a_{2n} \\
@@ -673,13 +693,30 @@ $$
     c_{21} & c_{22} & \dots  & c_{2p} \\
     \vdots & \vdots & \ddots & \vdots \\
     c_{m1} & c_{m2} & \dots  & c_{mp}
-\end{bmatrix}
-$$
+\end{bmatrix} \\
+\text{mit } c_{ij} = a_{i1}b_{1j} + a_{i2}b_{2j} + \dots + a_{in}b_{nj} \text{ für } 1 \leq i \leq m \text{ und } 1 \leq j \leq p.
+\end{gather*}
+
+Etwas übersichtlicher mit einem einfachen Beispiel.
 
 $$
-\text{mit } c_{ij} = a_{i1}b_{1j} + a_{i2}b_{2j} + \dots + a_{in}b_{nj} \text{ für } 1 \leq i \leq m \text{ und } 1 \leq j \leq p.
+\begin{matrix}
+& \begin{pmatrix}
+b_1 & b_2 \\
+b_3 & b_4
+\end{pmatrix} \\
+\begin{pmatrix}
+a_1 & a_2 \\
+a_3 & a_4 \\
+\end{pmatrix} &
+\begin{pmatrix}
+a_1 \cdot b_1 + a_2 \cdot b_3 & a_1\cdot b_2 + a_2\cdot b_4 \\
+a_3 \cdot b_1 + a_4 \cdot b_3 & a_3\cdot b_2 + a_4\cdot b_4 \\
+\end{pmatrix}
+\end{matrix}
 $$
-muss wiederum der schon bekannte Operator `%*%` verwendet werden. Die Matrizen müssen dazu konform für die Mutliplikation sein.
+
+D.h. die Zeilen von $A$ werden mit den Spalten von $B$ per Skalaprodukt multipliziert. Für die Matrizenmultiplikation müssen die Matrizen $A$ und $B$ konform sein. Die Anzahl der Spalten von $A$ muss gleich der Anzahl der Zeilen von $B$ sein.
 
 ```{r}
 A <- matrix(1:6, nr=2)
@@ -689,12 +726,12 @@ B
 A %*% B
 ```
 
-Um die Dimension einer Matrize zu bestimmen gibt es in `R` die Funktion `dim()`.
+Um die Dimension einer Matrize, d.h. die Anzahl der Zeilen und Spalten, zu bestimmen gibt es in `R` die Funktion `dim()`.
 
 ```{r}
 dim(A)
 ```
-Oder auch die beiden Kurzfunktionen:
+Der erste Wert gibt entsprechend die Anzahl der Zeilen an während der zweite Wert die Anzahl der Spalten anzeigt. Wenn nur einer der Werte benötigt wird, gibt es auch die beiden Kurzfunktionen:
 
 ```{r}
 nrow(A)
@@ -715,7 +752,7 @@ dim(D)
 A + D
 ```
 
-Mit der Funktion `diag()` kann eine Diagonalmatrize erstellt werden.
+Mit der Funktion `diag()` wird eine quadratische Diagonalmatrize erstellt.
 
 $$
 \begin{pmatrix}
@@ -732,9 +769,9 @@ diag(3) # <1>
 diag(1:4) # <2>
 ```
 1. Wenn ein Skalar $a$ übergeben wird, die wird die Einheitsmatrize der Dimension $a$ erstellt.
-2. Wenn ein Vektor übergeben wird, dann eine Diagonalmatrize mit den Werten des Vektors.
+2. Wenn ein Vektor übergeben wird, dann eine Diagonalmatrize mit den Werten des Vektors auf der Hauptdiagonalen erstellt.
 
-Wenn `diag()` eine Matrize übergeben wird, dann werden die Elemente auf der Diagonalen extrahiert.
+Wenn `diag()` eine Matrize übergeben wird, dann werden die Elemente auf der Hauptdiagonalen extrahiert.
 
 ```{r}
 E <- diag(1:4)
@@ -774,6 +811,25 @@ Um die Inverse eine quadratischen Matrize zu berechnen bzw. um lineare Gleichung
 E_inv <- solve(E)
 E_inv %*% E
 ```
+
+Um das Gleichungssystem
+
+\begin{align*}
+2x + 3y &= 7 \\
+-4x + y &= 2 \\
+\end{align*}
+
+zu lösen, wird entsprechend der folgende Code verwendet.
+
+```{r}
+A <- matrix(c(2,-4,3,1), nr=2)
+y <- c(7,2)
+x <- solve(A,y)
+x
+A %*% x
+```
+
+Weitere Funktionen wie beispielweise die QR-Zerlegung findet ihr in der Dokumentation.
 
 Eine weitere hilfreiche Funktion im Zusammenhang mit der Programmierung mit Matrizen ist die `apply()` Funktion. Mit `apply()` kann eine Funktion auf die einzelnen Spalten oder Zeilen einer Matrize angewendet werden.
 
