@@ -845,7 +845,118 @@ apply(F, 2, sum) # <3>
 
 ### `data.frame()` oder `tibble()`
 
-Dataframes sind ähnlich wie Matrizen, aber sie ermöglichen die Speicherung verschiedener Datentypen (z. B. numerisch, Zeichenfolgen, Faktoren) in den Spalten. Data Frames sind besonders nützlich für die Verarbeitung und Analyse von tabellarischen Daten und können mit der Funktion `data.frame()` erstellt werden.
+Dataframes sind eine zentrale Datenstruktur in `R` da praktisch alle Arten von Daten mittels Dataframes organisiert werden. Konzeptionell sind Dataframes ähnlich zu Matrizen, sie ermöglichen allerdings die Speicherung verschiedener Datentypen (z. B. numerisch, Zeichenfolgen, Faktoren) in verschiedenen Spalten ähnlich wie die Daten in einem Tabellenprogramm organisiert sind. Jede Spalte hat dabei die gleiche Anzahl an Elementen und muss einen eineindeutigen Namen haben.
 
-Diese Datentypen bilden das Grundgerüst für die Datenverarbeitung und Analyse in R. Ihr Verständnis ist unerlässlich, um effektiv mit Daten zu arbeiten und komplexe Analysen durchzuführen. R bietet zudem zahlreiche Funktionen zur Manipulation und Umwandlung dieser Datentypen, was die Flexibilität und Leistungsfähigkeit der Sprache weiter erhöht.
+Klassischerweise werden Dataframes mittels der Funktion `data.frame()` erstellt. Eine modernere Version sind die sogenannten `tibbles()` aus dem Package `tibble`. Dieses werden hier im Weiteren verwenden, d.h. `tibbles()` aus Anwendersicht verschiedene Verbesserungen mitbringen. Wir verwenden jedoch weiter den Term Dataframe um den Datentyp zu becshreiben. Daher, wenn wir ein Dataframe mittels `tibble()` erstellen wollen, müssen wir zunächst das Package `tibble()` laden.
 
+```{r}
+library(tibble)
+```
+
+Dann können wir einen Dataframe erstellen.
+
+```{r}
+df_1 <- tibble(a = 1:3, b = c('eins','zwei','drei'))
+df_1
+```
+
+Wenn ich mir den Inhalt eines Dataframes ausgeben lasse, dann werden mir die Namen der Spalten angezeigt, in vorliegenden Fall `a` und `b`. Gefolgt vom Datentyp hier `<int>` den wir strenggenommen noch nicht kennengelernt haben aber auch ein numerischer Typ ist, und `<chr>` was die Kurzform für `character` und entsprechend Zeichenketten bezeichnet. Danach folgen die Einträge in den beiden Spalten. Standardmäßig werden nur die ersten zehn Zeilen gezeigt, was in diesem Fall nicht weiter auffällt.
+
+Wir können auf die einzelnen Spalten über zwei verschiedene Operatoren zugreifen. Einmal mittels des `$` Operator oder über `[[]]` Im ersten Fall können wir den Namen direkt verwenden.
+
+```{r}
+df_1$a
+```
+
+Bei der doppelten, eckigen Klammer `[[]]` müssen wir den Namen als eine Zeichenkette, also entweder in `'` oder `"` einschließen.
+
+```{r}
+df_1[['a']]
+```
+
+Wenn ich eine neue Spalte hinzufügen will, kann ich einfache das Dataframe nehmen und über die Syntax von eben eine neue Spalte definieren.
+
+```{r}
+df_1$neu <- 11:13
+df_1
+```
+
+Entsprechend kann ich über eine Kombination von Spaltennamen und subsetting einzelne Elemente verändern.
+
+```{r}
+df_1$b[2] <- "AA"
+df_1
+```
+
+Da Daten praktisch immer in Form von Dataframes bearbeitet werden, gibt es eine ganze Reihe von Hilfsfunktionen um mit Dataframes zu arbeiten. Erstellen wir uns zunächst ein etwas größeres Beispiel.
+
+```{r}
+df_2 <- tibble(
+  id = paste0('P', 1:10),
+  gruppe = rep(c('CON','TRT'), each=5),
+  wert = 21:30
+)
+df_2
+```
+
+Mit der Funktion `summary()` erstellt `R` eine kurze Zusammenfassung mit deskriptiven Statistiken zum Dataframe.
+
+```{r}
+summary(df_2)
+```
+
+Eine ähnliche Funktion erfüllt die Funktion `glimpse()` aus dem Package `tibble()`.
+
+```{r}
+glimpse(df_2)
+```
+
+Die ersten `n` Elemente (default `n = 6`) mit `head()`.
+
+```{r}
+head(df_2, n = 4)
+```
+
+Die letzten `n` elemente (default `n = 6`) mit tail().
+
+```{r}
+tail(df_2, n = 3)
+```
+
+Die Spaltennamen werden mittels `names()` ausgegeben.
+
+```{r}
+names(df_2)
+```
+
+Die `names()` Funktion kann auch verwendet werden um die Spaltennamen zu verändern. Dazu kann entweder subsetting angewendet werden um bestimmte Namen zu verändern oder auch alle auf einmal.
+
+```{r}
+names(df_2)[3] <- 'value'
+df_2
+```
+
+```{r}
+names(df_2) <- c('pid', 'group', 'measurement')
+df_2
+```
+
+Datenframes sind wie Vektoren zentral in der Arbeit mit `R` und es ist deshalb wiederum wichtig sich schnell in diesen Datentyp einzuarbeiten. Tatsächlich werden ihr feststellen, dass ihr sehr selten Dataframes von Hand erstellt, sondern meistens liegen die Daten schon in digitaler Form auf eurem Rechner vor und ihr ladet mittels Funktionen, die wir später kennenlernen, die Daten in `R` wo sie dann als Dataframe repräsentiert werden.
+
+### Zusammenfassung
+
+Damit haben wir auch schon die wichtigsten Datentypen in `R` kennengelernt. In @fig-r-kickoff-dependencies sind die verschiedenen Datentypen und deren Abhängigkeiten noch einmal abgebildet.
+
+```{mermaid}
+%%| label: fig-r-kickoff-dependencies
+%%| fig-cap: "Hierarchie der Datentypen."
+
+flowchart TD
+    A[Dataframe] --> B[Vektor]
+    F[Matrize] --> B
+    B --> C(Numerisch)
+    B --> D(Zeichenkette)
+    B --> E(Logisch)
+```
+
+Dies war natürlich nur eine Übersicht, aber sollte euch schon relativ weit in der Arbeit mit `R` bringen.
