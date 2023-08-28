@@ -41,157 +41,171 @@ rt_tbl <- tibble::tibble(
 )
 ```
 
-Bisher waren wir damit beschäftigt unsere Modelle immer komplizierter zu machen, angefangen haben dem einfachen linearen Modell, das dann zum multiplen linearen Modell wurde mit mehreren $x$-Variablen. Die konnten im nächsten Schritt miteinander interagieren und dann im letzten Schritt wurde die Anforderung aufgehoben, das die $x$-Variablen kontinuierlich sein mussten. Letztendlich konnte aber immer das einfache Modell, die Punkt-Steigungsform, aus der Schule beibehalten werden. Nun werden wir noch eine direkte Verbindung zwischen dem Regressionsmodell und der Varianzanalyse aufzeigen.
+Bisher waren wir damit beschäftigt unsere Modelle Stück für Stücke immer komplizierter zu machen. Angefangen haben wir mit dem einfachen linearen Modell, das dann zum multiplen linearen Modell mit mehreren $x$-Variablen wurden. Die $x$-Variablen konnten im nächsten Schritt miteinander interagieren, während dann im letzten Schritt die Anforderung aufgehoben wurde, dass die $x$-Variablen kontinuierlich sein mussten, sondern auch nominal sein konnten. Durch die Kombination von verschiedenen Variablen sind wir nun in der Lage auch komplexe DGP abzubilden. Im Kern wurde aber letztendlich immer das einfache Modell, die Punkt-Steigungsform, aus der Schule, beibehalten. Im folgenden Abschnitt werden wir nun eine direkte Verbindung zwischen dem Regressionsmodell und der Varianzanalyse erarbeiten.
 
-## Einfaches Modell
+## Genereller Linearer Modell Testansatz 
 
 Wir beginnen mit einem einfachen Modell, das wiederum nur eine $x$ und eine $y$-Variable hat.
 
-```{r, echo=T}
+```{r}
+#| echo: true
+
 mod0 <- lm(y ~ x, simple)
 summary(mod0)
 ```
 
-
-Hier ist jetzt zunächst einmal nichts Neues. Setzen wir uns aber noch einmal genauer mit den Abweichungen mit den Residuen auseinander. In der Besprechung des Determinationskoeffizienten $R^2$ haben wir schon die Unterteilung der Quadratsummen kennengelernt. Hier hatten wird auf die Aufteilung der Varianz von $Y$ SSTO in die beiden Komponenten Regressionsvarianz $SSR$ und Fehlervarianz $SSE$. Es gilt.
+D.h. hier ist jetzt zunächst einmal nichts Neues dazukommen. Schauen wir uns aber noch einmal genauer die Residuen, d.h. die Abweichungen von der Regressionsgeraden, an. In der Besprechung des Determinationskoeffizienten $R^2$ haben wir schon Quadratsummen und deren Unterteilung kennengelernt. Dort hatten wird die Aufteilung der Varianz von $Y$, bezeichnet als $SSTO$, in die beiden Komponenten Regressionsvarianz $SSR$ und Fehlervarianz $SSE$ besprochen. Es gilt.
 
 \begin{equation}
 SSTO = SSR + SSE
 \end{equation}
 
-Die Fehlerquadratsumme SSE ist definiert nach:
+Die Fehlerquadratsumme SSE, die Summe der quadrierten Abweichungen zwischen dem beobachteten Wert $y_i$ und dem vorhergesagten Wert $\hat{y}_i$ ist definiert mittels:
 
 \begin{equation}
 SSE = \sum_{i=1}^n (y_i - \hat{y}_i)^2
 \end{equation}
 
-Als die Summe der quadrierten Abweichungen der vorhergesagten Werte $\hat{y}_i$ von den tatsächlich beobachteten Werten $y_i$.
-
-Um die Werte $\hat{y}_i$ berechnen zu können, benötigen wir unser Modell. Dieses Modell hat zwei Parameter, die beiden Koeffizienten $\beta_0$ und $\beta_1$. Die Anzahl der Parameter in dem Modell wird meistens per Konvention mit dem Symbol $p$ bezeichnet. In unserem Fall ist gilt daher $p = 2$. Die Anzahl der Parameter $p$ ist verknüpft mit den sogenannten Freiheitsgraden $df$ (degrees of freedom). Die Freiheitsgrade von SSE berechnen sich nach $N-p$, wobei $N$ die Anzahl der Beobachtungen, der Datenpunkte ist. In unseren Fall also $N-2$
+Um die Werte $\hat{y}_i$ berechnen zu können, benötigen wir unser Modell bzw. die Modellkoeffizienten. Das einfache Regressionsmodell hat zwei Parameter, die beiden Koeffizienten $\beta_0$ und $\beta_1$. Formalisierung wir die Parameteranzahl indem ihr ein Symbol spendieren, per Konvention meistens das Symbol $p$. In unserem Fall ist gilt daher $p = 2$. Die Anzahl der Parameter $p$ ist verknüpft mit den sogenannten Freiheitsgraden $df$ (degrees of freedom). Die Freiheitsgrade von $SSE$ berechnen sich mittels der Formel $N-p$, wobei $N$ die Anzahl der Beobachtungen, der Datenpunkte ist. 
 
 \begin{equation}
 df_E := n - p
 \end{equation}
 
-Die Frheitsgerade bestimmen die *effektive* Anzahl der Beobachtungen die zur Verfügung stehen um die Varianz $\sigma^2$ des Modells abzuschätzen. Dadurch, dass zwei Parameter anhand der Daten für das Modell bestimt werden, fallen zwei Datenpunkt raus als unabhängige Informationsquellen. Anders ausgedrückt, wenn ich die beiden Modellparameter, in unseren Fall $\beta_0$ und $\beta_1$ kenne, dann sind nur noch $N-2$ Datenpunkt frei variierbar. Sobald ich die Werte von $N-2$ Datenpunkten und die beiden Parameter kenne, kann ich die verbleibenden beiden Werte berechnen. Daher die Begriff der Freiheitsgrade.
+Die Freiheitsgerade bestimmen die *effektive* Anzahl der Beobachtungen die zur Verfügung stehen um die Varianz $\sigma^2$ des Modells abzuschätzen. Dadurch, dass zwei Parameter anhand der Daten für das Modell bestimt werden, fallen zwei Datenpunkt als unabhängige Informationsquellen weg. Anders ausgedrückt, wenn ich die beiden Modellparameter, in unseren Fall $\beta_0$ und $\beta_1$ kenne, dann sind nur noch $N-2$ Datenpunkt frei variierbar. Sobald ich die Werte von $N-2$ Datenpunkten und die beiden Parameter kenne, kann ich die verbleibenden beiden Werte berechnen. Daher die Begriff der Freiheitsgrade.
 
-Wir nun SSE durch die Anzahl der Freiheitsgerade teilen, dann lässt sich zeigen, das dieser Wert ein erwartungstreuer Schätzer für die Residualvarianz $\sigma^2$ in Bezug auf die Verteilungsannahme zu den $\epsilon_i \sim \mathcal{N}(0,\sigma^2)$ der Daten ist. Das Verhältnis von SSE zu $df$ wird als Mean squared error MSE bezeichnet.
+Wir nun $SSE$ durch die Anzahl der Freiheitsgerade teilen, dann lässt sich zeigen, das dieser Wert ein erwartungstreuer Schätzer für die Residualvarianz $\sigma^2$ unter der Verteilungsannahme $\epsilon_i \sim \mathcal{N}(0,\sigma^2)$ der Daten ist. Das Verhältnis von $SSE$ zu $df$ wird als Mean squared error ($MSE$) bezeichnet.
 
 \begin{equation}
 MSE = \frac{SSE}{df_{E}} = \frac{\sum_{i=1}^n (y_i - \hat{y}_i)^2}{n-p} = \hat{\sigma}^2
 \end{equation}
 
-Im ersten Moment erscheint diese Begründung etwas undurchsichtig, aber tatsächlich ist diese Formel schon eine alte Bekannte die uns in Form der Stichprobenvarianz begegnet ist.
+Im ersten Moment erscheint diese Begründung etwas undurchsichtig, aber tatsächlich ist diese Formel schon eine alte Bekannte die uns in Form der Stichprobenvarianz $s^2$ begegnet ist.
 
-Wenn wir eine Stichprobe der Größe $N$ mit Werten $y_i$ haben, dann haben wir gelernt die Varianz mittels der Formel:
+Wenn wir eine Stichprobe der Größe $N$ mit Werten $y_i$ haben, dann haben wir die Stichprobenvarianz mittels der Formel:
 
 \begin{equation}
 \hat{\sigma}^2 = s^2 = \frac{1}{n-1}\sum_{i=1}^2(y_i - \bar{y})^2
 \end{equation}
 
-zu berechnen. Was bei dieser Formel schon immer etwas quer gesessen hat, ist der Nenner mit $N-1$ anstatt einfach $N$ wie wir es vom Mittelwert kennen. Aber, um die Varianz zu berechnen benötigen wir einen Parameter, eben den Mittelwert. Dies führt wiederum dazu, dass nur $N-1$ Werte frei variiert werden können und wir sobald wir, neben dem Mittelwert $\bar{y}$, $N-1$ Werte kennen, den verbleibenden Wert berechnen können.
+berechnet. Was bei dieser Formel schon immer etwas quer gesessen hat, ist der Nenner mit $N-1$ anstatt einfach $N$ wie wir es vom Mittelwert kennen. Aber, um die Varianz zu berechnen benötigen wir einen Parameter, den Mittelwert $\hat{y}$ den wir anhand der Daten berechnen. Dies führt dazu, dass nur $N-1$ Werte frei variiert werden können. Sobald wir, neben dem Mittelwert $\bar{y}$, $N-1$ Werte kennen, können den verbleibenden Wert $N$-ten Wert berechnen.
 
-## Genereller Linearer Modell Testansatz^[@kutner2005, p.72]
-### Idee
+Nach dieser Wiederholung sind wir nun in der Lage eine neue Teststatistik entwickeln. Das Ziel ist dabei eine Metrik zu entwickeln mit der wir abschätzen können, ob die Hinzunahme von Modellparametern zu einer Verbesserung der Modellvorhersage führt. Die Verbesserung werden wir mittels der Reduktion der Fehlervarianz $SSE$ abschätzen. Wir werden in diesem Zusammenhang sehen, dass Modelle in eine Hierarchie zueinander in Beziehung gesetzt werden können bei einfachere Modellen als Teilmodelle von komplexeren Modellen interpretiert werden können.
 
-Wir bauen uns eine Teststatistik die die Verbesserung in der Vorhersage ($=$ Reduktion der Fehlervarianz) als Metrik verwendet. Modelle werden in eine Hierarchie gesetzt mit einfacheren Modellen untergeordnet zu komplexeren Modellen.
+Wir müssen dazu zunächst die Unterscheidung in ein volles Modell ($F$ull model) und ein reduziertes Modell ($R$educed model) verstehen. Beim Beispiel der einfachen lineare Regression ist das full model das uns schon bekannte:
 
-### Leitfrage:
-
-*Bringt mir die Aufnahme \underline{zusätzlicher} Modellparameter eine \underline{Verbesserung} in der Vorhersage von Y bzw. bezüglich der Aufklärung der Varianz in Y?*
-
-
-## Genereller Linearer Modell Testansatz - Full model
-
-Beispiel einfache lineare Regression
-
-### Volles Modell
 $$
 Y_i = \beta_0 + \beta_1 X_i + \epsilon_i, \quad \epsilon_i \sim \mathcal{N}(0,\sigma^2)
 $$
 
-### Residualvarianz SSE(F)
+Die Residualvarianz $SSE(F)$ berechnet sich wie oben wiederholt mittels:
 
-$$
+\begin{equation}
 \textrm{SSE(F)}  = \sum_{i=1}^n(y_i - \hat{y}_i)^2 = \sum_{i=1}^n [y_i - (\beta_0 + \beta_1 x_i)]^2
-$$
+\label{eq-mlm-hier-ssef}
+\end{equation}
 
-mit $p = 2, dfE(F) = n - 2$
 
+Da wir $p = 2$ Modellparameter haben, hat das Modell  $dfE(F) = n - 2$ Freiheitsgerade. So weit ist bisher noch nichts Neues dazugekommen. Wir könnten uns jetzt die Frage stellen, ob wir tatsächlich den Modellparameter $\beta_1$ benötigen. Vielleicht zeigt die $x$-Variable gar keinen Zusammenhang mit der $y$-Variable und wir fitten nur Rauschen im Modell. Aus dieser Überlegung heraus, können wir jetzt ein reduziertes Modell formulieren bei dem der Parameter $\beta_1$ fehlt.
 
-## Genereller Linearer Modell Testansatz - Reduced model
-
-### Reduziertes Modell
 $$
 Y_i = \beta_0 + \epsilon_i, \quad \epsilon_i \sim \mathcal{N}(0,\sigma^2)
 $$
 
-### Residualvarianz SSE(R)
+Die Residualvarianz SSE(R) berechnet sich jetzt mittels.
 
 $$
 \textrm{SSE(R)} = \sum_{i=1}^n (y_i - \beta_0)^2 = \sum_{i=1}^n(y_i - \bar{y})^2 = \textrm{SSTO}
 $$
 
-mit $p = 1, dfE(R) = n - 1$
+Uns Modell hat jetzt nur noch einen Paramter $\beta_0$ gilt nun  $p = 1$ und entsprechend $dfE(R) = n - 1$. Der Modellparameter $\beta_0$ ist jetzt also nichts anderes als der Mittelwert $\bar{y}$ der beobachteten $y$-Werte.
 
+Mit etwas Algebra lässt sich zeigen, dass im Allgemeinen $SSE(F) \leq SSE(R)$ gilt. Dieser Zusammenhang lässt sich auch heuristisch herleiten. Wenn es keinen Zusammenhang zwischen $x$ und $y$ gibt, dann wird der $\beta_1$ im full model nahezu $0$ sein und Formel~\eqref{eq-mlm-hier-ssef} wird zu SSE(R). Im realistischen Fall wird aber, selbst wenn kein Zusammenhang besteht, ein Teil des Rauschens mittels $\beta_1$ gefittet, so dass der beschriebene Zusammenhang zwischen SSE(F) und SSE(R) entsteht. 
 
-Im Allgemeinen gilt: $SSE(F) \leq SSE(R)$
+### Reduziertes Modell und Stichprobenvarianz(*) 
 
-## Link: Reduziertes Modell und Stichprobenvarianz
+Zwischen der Residualvarianz im reduzierten Modell SSE(R), dem *optimalen* Modellparameter $\beta_0$ und der Stichprobenvarianz besteht ein enger Zusammenhang bzw. Identität wie sich anhand der folgenden Herleitung sehen lässt. Wir wollen den Modellparameter unter der Minimierung der Summer der Quadrate der Abweichung, sprich SSE, ermitteln.
 
 \begin{align*}
-SSE &= \sum_{i=1}^n(y_i - \beta_0)^2 = \sum_{i=1}^n (y_i^2 - 2y_i\beta_0 + \beta_0^2) \\
+SSE &= \sum_{i=1}^n(y_i - \beta_0)^2 \\
+&= \sum_{i=1}^n (y_i^2 - 2y_i\beta_0 + \beta_0^2) 
+\end{align*}
+
+Wir wollen entsprechend $min[SSE]$ bestimmen, wie wir das schon vorher immer beim Regressionmodell gemacht haben. Daher setzen wir den Term $=0$ und leiten nach dem Modellparameter $\beta_0$ ab. Ein bisschen Algebra führt zu:
+
+\begin{align*}
 0 &= \frac{\mathrm{d}}{\mathrm{d} \beta_0}\sum_{i=1}^n (y_i^2 - 2y_i\beta_0 + \beta_0^2) \\
 0 &= \sum_{i=1}^n (-2y_i + 2 \beta_0) = -2\sum_{i=1}^n y_i + 2\sum_{i=1}^n \beta_0\\
 n\beta_0 &= \sum_{i=1}^n y_i \\
-\beta_0 &= \frac{\sum_{i=1}^n y_i}{n} = \bar{y} \rightarrow \frac{SSE}{n-1} = \hat{\sigma}^2 = s^2
+\beta_0 &= \frac{\sum_{i=1}^n y_i}{n} 
 \end{align*}
 
+Somit ist Wert von $\beta_0$ der Abweichungen minimiert, der Mittelwert $\bar{y}$. Daraus folgt allerdings, das unsere Schätzer für die $\sigma^2$, 
 
-## Genereller Linearer Modell Testansatz 
+\begin{equation*}
+\hat{\sigma}^2 = \frac{SSE}{n-p} = \frac{SSE(R)}{n-1} = \sum_{i=1}^n (y_i - \bar{y})^2 =  s^2
+\end{equation*}
 
-Annahme: Das reduzierte Modell ist korrekt. Dann sollte
-$$
+einfach nur unser bekannter Schätzer der Stichprobenvarianz $s^2$ ist.
+
+Kommen wir zurück zur Entwicklung unsere Metrik um das volle und das reduzierte Modell miteinander zu vergleichen. Gehen wir davon aus, das das reduzierte Modell ist korrekt. D.h. die Hinzunahme von $X$ sollte keine Verbesserung des Modells nach sich ziehen. Konkret bedeutet dies, dass $SSE(R)$ und $SSE(F)$ in etwas gleich sind bzw. $SSE(F)$ nur wenig besser ist als $SSE(R)$. Wenn ich jetzt die Differenz zwischen diesen beiden Werte nehme, dann sollte der Wert eher klein sein.
+
+\begin{equation}
 \textrm{SSE(R)} - \textrm{SSE(F)}
-$$
-eher klein sein (Beide Modelle haben einen gleich guten fit).
+\label{eq-mlm-hier-div}
+\end{equation}
 
-Annahme: Das reduzierte Modell ist falsch: Dann sollte
-$$
-\textrm{SSE(R)} - \textrm{SSE(F)}
-$$
-eher groß sein (Das reduzierte Modell kann die Daten nicht so gut fitten wie das komplizierte Modell)
+Beide Modelle haben einen gleich guten fitten die Daten in etwas gleich gut. Das volle Modell etwas besser, das es durch den zusätzlichen Parameter etwas flexibler als das reduzierte Modell ist.
 
-## Genereller Linearer Modell Testansatz - Teststatistik
+Gehen wir von nun von der entgegengesetzen Annahme aus. Das reduzierte Modell ist falsch und wir benötigen die Variable $X$ um die Varianz in $Y$ aufzuklären. In diesem Fall sollte die Differenz \eqref{eq-mlm-hier-div} einen deutlich größeren Wert annehmen, da das reduzierte Modell denjenigen Teil der Varianz von $Y$ nicht aufklären kann, der durch $X$ entsteht. Im vollem Modell kann diese Varianz durch den zusätzlichen Modellparameter $\beta_1$ dagegen erklärt werden. 
 
-Wenn das reduzierte Modell korrekt ist, dann lässt sich zeigen, dass:
-$$
-MS_{\textrm{test}} = \frac{\textrm{SSE(R)} - \textrm{SSE(F)}}{\textrm{dfE(R)} - \textrm{dfE(F)}}
-$$
-ein Schätzer für die Varianz $\sigma^2$ ($\epsilon_i \sim \mathcal{N}(0,\sigma^2)$) ist.
+Zusammengefasst haben wir heuristisch eine Metrik hergeleitet, die uns erlaubt verschiedene Modell miteinander zu vergleichen. Wenn das reduzierte, einfachere Modell ausreicht um die Daten zu fitten, dann wird die Differenz \eqref{eq-mlm-hier-div} eher klein ausfallen. Wenn die zusätzlichen Parameter im vollem Modell benötigt werden, dann wird der Unterschied \eqref{eq-mlm-hier-div} eher groß.
 
-Wenn das reduzierte Modell korrekt ist, dann ist auch das volle Modell korrekt. Daher ist dann:
+Wir bringen jetzt noch eine zusätzliche Parameter in unseren Modellvergleich ein. Die Bedeutsamkeit des Unterschieds zwischen den beiden Modellen ist auch noch abhängig davon in wie vielen Parameter sich die beiden Modelle voneinander unterscheiden. Wenn im vollen Modell $p = 10$ Parameter sind und im reduzierten Modell eben nur $p = 1$ Parameter ist, dann ist ein gegebener Unterschied in den $SSE$s zwischen den Modell anders zu bewerten, als wenn im vollem Modell $p = 2$ Parameter geschätzt werden. Bei gleichem Unterschied zwischen den Modell ist der Unterschied im ersteren Fall weniger Bedeutsam im Vergleich zum letzteren Fall. Daher wird der Unterschied noch anhand des Unterschieds in der Anzahl der Parameter kalibriert. In unserem Fall passiert da nichts, da der Unterschied $= 1$ ist. Wir werden aber später sehen, dass auch Modelle mit größeren Unterschieden miteinander verglichen werden können.
+
+Mit $p_F$ = Anzahl der Parameter im vollen Modell, $p_R$ = Anzahl der Parameter im reduzierten Modell, $df_{E(F)} = gilt:
 
 $$
-\textrm{MSE(F)} = \frac{\textrm{SSE(F)}}{\textrm{dfE(F)}}
-$$
-auch ein Schätzer für $\sigma^2$
-
-## F-Wert als Teststatistik
-
-$$
-F = \frac{MS_{\textrm{test}}}{MSE(F)}= \frac{\frac{\textrm{SSE(R)} - \textrm{SSE(F)}}{\textrm{dfE(R)} - \textrm{dfE(F)}}}{ \frac{\textrm{SSE(F)}}{\textrm{dfE(F)}}}
+p_{F} - p_{R} = p_{F} - p_{R} + N - N = N - p_{R} - (N - p_{F}) = df_{E(R)} - df_{E(F)}
 $$
 
+Somit schreiben wir den Unterschied zwischen den beiden Modellen folgendermaßen auf und gegen dem Term auch noch einen Namen $MS_{\textrm{test}}$ für mean squared test.
 
-## Verteilung der F-Statistik
+\begin{equation}
+MS_{\textrm{test}} = \frac{\textrm{SSE(R)} - \textrm{SSE(F)}}{df_{E(R)} - df_{E(F)}}
+\label{eq-mlm-hier-mstest}
+\end{equation}
+
+Unter der Annahme, das das reduzierte Modell korrekt ist, lässt sich zeigen, dass $MS_{\textrm{test}}$ ein Schätzer für die Varianz $\sigma^2$ im Rahmen der üblichen Modellannahmen $\epsilon_i \sim \mathcal{N}(0,\sigma^2)$ ist. D.h.
+
+\begin{equation*}
+MS_{\textrm{test}} = \hat{\sigma}^2
+\end{equation*}
+
+Zusätzlich, wenn das reduzierte Modell korrekt ist, dann ist auch das volle Modell korrekt, hat halt einen Parameter zu viel aber der sollte wie oben ausgeführt in der Nähe von $0$ sein. Daher ist auch wie schon vorher gezeigt $MSE(F)$ ein Schätzer für die Varianz $\sigma^2$ im Rahmen der üblichen Modellannahmen $\epsilon_i \sim \mathcal{N}(0,\sigma^2)$ ist.
+
+\begin{equation}
+MS_{E(F)} = \frac{\textrm{SSE(F)}}{df_{E(F)}} = \hat{\sigma}^2
+\end{equation}
+
+Eine Sache fehlt uns noch um die Größe von $MS_{\textrm{test}}$ einordnen zu können. Da wir es mit Varianzen zu tun haben, können wir die Größe der Quadratsummen verändern indem wir die Einheiten der abhängigen Variablen $Y$ verändern. Würden wir z.B. von $[m]$ auf $[cm]$ gehen, da würde sich der Unterschied in Formel \eqref{eq-mlm-hier-mstest} um den Faktor $10\times 10=100$ vergrößern ohne das wirklich eine Veränderung in den Modellen stattgefunden hat. Daher kalibrieren wir $MS_{\textrm{test}}$ indem wir den Term durch $MS_{E(F)}$ teilen. Damit fallen alle Problem mit Veränderungen durch Änderungen in den Einheiten weg. 
+
+\begin{equation}
+\frac{MS_{\textrm{test}}}{MS_{E(F)}} = \frac{\frac{\textrm{SSE(R)} - \textrm{SSE(F)}}{df_{E(R)} - df_{E(F)}}}{ \frac{\textrm{SSE(F)}}{df_{E(F)}}}
+\label{eq-mlm-hier-Ftest}
+\end{equation}
+
+Zusätzlich hat dies auch noch den Vorteil, dass die entstehende Metrik unter der $H_0$ das das reduzierte Modell korrekt ist, einer uns bekannten theoretische Verteilung, nämlich der $F$-Verteilung mit $df_{E(R)} - df_{E(F)}$ und $df_{E(F)}$ Freiheitsgeraden, folgt. 
 
 $$
-F = \frac{MS_{\textrm{test}}}{MSE(F)}  \sim F(\textrm{dfE(R)}-\textrm{dfE(F)},\textrm{dfE(F)})
+F = \frac{MS_{\textrm{test}}}{MS_{E(F)}}  \sim F(df_{E(R)}-df_{E(F)},df_{E(F)})
 $$
+
+Zur Erinnerung sind in @fig-mlm-hier-fdist nochmal ein paar Beispiele für $F$-Verteilung mit verschiedenen Freiheitsgeraden abgebildet.
 
 ```{r}
-#| fig.cap: "Beispiele für die F-Verteilung mit verschiedenen Freiheitsgraden $df_1, df_2$"
+#| fig-cap: "Beispiele für die F-Verteilung mit verschiedenen Freiheitsgraden $df_1, df_2$"
+#| label: fig-mlm-hier-fdist
 
 dff <- tibble::tibble(
   F = seq(0.01,5,length.out=100),
@@ -210,10 +224,11 @@ ggplot(dff, aes(F, d, color=dist)) +
   labs(x = 'F-Wert', y = 'Dichte') 
 ```
 
-## Hypothesentest mit F-Wert
+Sobald wir eine bekannte theoretische Verteilung unter einer $H_0$ haben, können wir unser Hypothestinstrumentarium auf die Verteilung los lassen und entsprechend einen kritische Bereich mit $\alpha$ bestimmen. In @fig-mlm-hier-fcrit haben wir dies entsprechend getan. Somit wenn wenn der beobachtete $F$-Wert in den kritischen Bereich fällt, interpretieren wird das als Evidenz gegen die $H_0$. Wir sind überrascht diesen Wert unter der $H_0$ zu sehen und lehen die $H_0$ das das einfachere Modell korrekt ist ab und werten dies als Evidenz dafür, das das komplexere, volle Modell die Daten besser abbildet und *statistisch signifikant* mehr Varianz der abhängigen Variable modellieren kann.
 
 ```{r}
-#| fig.cap: "F-Verteilung mit $df_1 = 5, df_2 = 10$ und kritischem Wert bei $\\alpha=0.05$"
+#| fig-cap: "F-Verteilung mit $df_1 = 5, df_2 = 10$ und kritischem Wert bei $\\alpha=0.05$"
+#| label: fig-mlm-hier-fcrit
 
 k_w <- qf(0.95, 5, 10)
 ggplot(dff %>% dplyr::filter(dist == 'f3'), aes(F, d)) +
@@ -224,31 +239,33 @@ ggplot(dff %>% dplyr::filter(dist == 'f3'), aes(F, d)) +
               aes(ymin = 0, ymax = d), fill='red', alpha=0.5) +
   labs(x = 'F-Wert', y = 'Dichte') 
 ```
-^[In `R`: `df(), pf(), qf(), rf()`]
 
-## Teilziel
+### Zusammenfassung 
 
-- Durch den Vergleich von Modellen kann die Verbesserung/Verschlechterung der Modellvorhersage statistisch Überprüft werden
-- Alternativ: Brauchen ich zusätzliche Parameter oder reicht mir das einfache Modell?
+Durch den Vergleich von Modellen miteinander, sind wir jetzt in der Lage, die Verbesserung/Verschlechterung der Modellvorhersage statistisch zu überprüfen. Wenn der $F$-Test statistisch signifikant ist, dann werten wir dies als Evidenz dafür, das das volle Modell die Daten so viel besser modelliert, das wir dieses Modell dem reduzierten Modell vorziehen.
 
 ## Beispiel: Candy-Problem
 
+Schauen wir uns hergeleitete Metrik in Aktion an einem konkreten Beispiel an. Dabei werden hier auch noch den Begriff der Modellhierarchien einführen. In @fig-mlm-hier-candy-example ist eine exemplarischer Datensatz abgebildet.
+
 ```{r}
-#| fig.cap: "Zusammenhang zwischen der Präferenz für ein Bonbon und dem Süßgrad für verschiedene Weichheitsgrade"
+#| fig-cap: "Zusammenhang zwischen der Präferenz für ein Bonbon und dem Süßgrad (g pro Bonbon/100) für verschiedene Saftanteile 0% - 20%"
+#| label: fig-mlm-hier-candy-example
 
 ggplot(candy, aes(sweetness, like)) + geom_point(size=3) +
   facet_grid(~moisture) +
   theme(text = element_text(size=12))
 ```
 
-## Modelle als Hierarchien auffassen
+In einer Studie wurde der Zusammenhang zwischen wie gut ein Bonbon bewertet wurde (like, Skala 0-100) und dem Süßegrad und dem Saftanteil untersucht. Wir sehen, dass Bonbons umso besser bewertet werden umso höher der Süßegrad war, aber das dieser Effekt durch den Saftanteil beeinflusst wird und umso stärker ist, umso höher der Saftanteil ist. Daher spricht dies für ein Interaktionsmodell.
 
-### Full model
+Das volle Modell kann dementsprechend mit $x_1$ = Süßegrad und $x_2$ = Saftanteil folgendermaßen modelliert werden.
+
 $$
 y_i = \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \beta_3 x_{1i}x_{2i} + \epsilon_i
 $$
 
-### Hierarchie
+Im vollen Modell ist daher $p = 4$ und wir können drei verschiedenen reduzierte Modelle definieren. Das einfachste Modell bezeichnen wir der Einfachheit halber als $m_0$ und dementsprechend ansteigend bis zum vollen Modell $m_3$.
 
 \begin{align*}
 m_0&: y_i = \beta_0 + \epsilon_i \\
@@ -257,11 +274,19 @@ m_2&: y_i = \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \epsilon_i \\
 m_3&: y_i = \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \beta_3 x_{1i}x_{2i} + \epsilon_i
 \end{align*}
 
-Es gilt: $m_0 \subseteq m_1 \subseteq m_2 \subseteq m_3$
+Das Modell $m_0$ besitzt nur einen $y$-Achsenabschnitt $\beta_0$, der wie wir oben gesehen haben zu $\bar{y}$ wird. Modell $m_1$ hat einen zusätzlichen Parameter mit einem Steigungskoeffizienten $\beta_1$ für den Süßegrad, $m_1$ hat zusätzlich noch einen Parameter $\beta_2$ für den Saftanteil. Wir können nun diese Modelle in folgender Hierarchie anordnen.
 
-## Modelle als Hierarchien auffassen in `R`
+\begin{equation*}
+m_0 \subseteq m_1 \subseteq m_2 \subseteq m_3
+\end{equation*}
 
-In R:
+Es gilt ebenfalls 
+
+\begin{equation*}
+p_{m_0} < p_{m_1} < p_{m_2} < p_{m_3}
+\end{equation*}
+
+In `R` können wir die entsprechenden Modelle fitten.
 
 ```{r}
 #| echo: true
@@ -273,26 +298,25 @@ mod_3 <- lm(like ~ sweetness * moisture, candy)
 ```
 
 
-## Vergleich $m_0$ gegen $m_1$
+Den Vergleich $m_0$ gegen $m_1$
 
 \begin{align*}
 m_0: y_i &= \beta_0 + \epsilon_i \\
 m_1: y_i &= \beta_0 + \beta_1 x_{1i} + \epsilon_i
 \end{align*}
 
+können wir mit der `anova()` Funktion machen, indem wir die beiden gefitteten Modelle übergeben (tatsächlich können auch mehr Modelle übergeben werden).
+
 ```{r}
-#| eval: false
+#| eval: true 
 #| echo: true
 
 anova(mod_0, mod_1)
 ```
 
-```{r}
-ss1 <- anova(mod_0, mod_1)
-anova_tbl_knitr(ss1)
-```
+Die Einträge unter `ResDf` sind die jeweiligen $df_{E}$, `RSS` die jeweiligen Quadratsummen, unter `Df` ist der Unterschied in der Anzahl der Modellparameter angeben, gefolgt von $MS_{\text{test}}$ und dem resultierenden $F$-Wert und des p-Werts unter der $H_0$. Im Beispiel sehen wir wenig überraschend einen statistische signifikanten p-Wert.
 
-## Vergleich $m_1$ gegen $m_2$
+Parallel dazu können wir $m_1$ gegen $m_2$ testen.
 
 \begin{align*}
 m_1: y_i &= \beta_0 + \beta_1 x_{1i} + \epsilon_i \\
@@ -301,17 +325,13 @@ m_2: y_i &= \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \epsilon_i
 
 ```{r}
 #| echo: true
-#| eval: false
 
 anova(mod_1, mod_2)
 ```
 
-```{r}
-ss2 <- anova(mod_1, mod_2)
-anova_tbl_knitr(ss2)
-```
+Wiederum deutet der Test einen darauf, das das komplexere Modell das beide Variablen enthält des statisch besseren fit ermöglicht.
 
-## Vergleich $m_2$ gegen full model $m_3$
+Letztendlich erfolgt der Test von $m_3$ gegen $m_2$.
 
 \begin{align*}
 m_2: y_i &= \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \epsilon_i  \\
@@ -320,17 +340,21 @@ m_3: y_i &= \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \beta_3 x_{1i} x_{2i} + 
 
 ```{r}
 #| echo: true
-#| eval: false
 
 anova(mod_2, mod_3)
 ```
 
+Dieser Test zeigt ebenfalls ein statistisch signifikantes Ergebnis.
+
+Wir sind aber nicht darauf beschränkt immer nur einen zusätzlichen Parameter zu testen. In diesem Fall ist der $F$-Test äquivalent zum $t$-Wert den wir unter `summary()` angezeigt bekommen. Der $F$ ist gleich dem quadrierten $t$-Wert.
+
 ```{r}
-ss3 <- anova(mod_2, mod_3)
-anova_tbl_knitr(ss3)
+#| echo: true
+
+summary(mod_3)
 ```
 
-## Vergleich full model $m_3$ gegen minmales Modell $m_0$
+Wir können nun aber ebenso das Modell $m_3$ mit $p = 4$ Parametern gegen das $m_0$ Modell mit $p = 1$ Parameter vergleichen.
 
 \begin{align*}
 m_0: y_i &= \beta_0 + \epsilon_i  \\
@@ -339,19 +363,16 @@ m_3: y_i &= \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \beta_3 x_{1i} x_{2i} + 
 
 ```{r}
 #| echo: true
-#| eval: false
 
 anova(mod_0, mod_3)
 ```
 
-```{r}
-ss4 <- anova(mod_0, mod_3)
-anova_tbl_knitr(ss4)
-```
-
-## In `summary()` $m_3$ gegen $m_0$
+In diesem Fall wird getestet ob die Hinzunahme der Parameter $\beta_1, \beta_2$ und $\beta_3$ eine statistisch signifikante Verbesserung im Modellfit bedeutet. 
+Tatsächlich wird dieser Test in der Ausgabe von `summary()` angegeben.
 
 ```{r}
+#| echo: true
+
 summary(mod_3)
 ```
 
