@@ -525,10 +525,10 @@ MS_{E(F)} = \frac{\textrm{SSE(F)}}{df_{E(F)}} = \hat{\sigma}^2
 \frac{MS_{\textrm{test}}}{MS_{E(F)}} = \frac{\frac{\textrm{SSE(R)} - \textrm{SSE(F)}}{df_{E(R)} - df_{E(F)}}}{ \frac{\textrm{SSE(F)}}{df_{E(F)}}}
 \label{eq-mlm-hier-Ftest}
 \end{equation}\]</span></p>
-<p>Zusätzlich hat dies auch noch den Vorteil, dass die entstehende Metrik unter der <span class="math inline">\(H_0\)</span>, das das reduzierte Modell korrekt ist, einer uns bekannten theoretische Verteilung, nämlich der <span class="math inline">\(F\)</span>-Verteilung mit <span class="math inline">\(df_{E(R)} - df_{E(F)}\)</span> und <span class="math inline">\(df_{E(F)}\)</span> Freiheitsgeraden, folgt.</p>
-<p><span class="math display">\[\begin{equation*}
+<p>Zusätzlich hat dies auch noch den Vorteil, dass die entstehende Metrik unter der <span class="math inline">\(H_0\)</span> das das reduzierte Modell korrekt ist, einer uns bekannten theoretische Verteilung, nämlich der <span class="math inline">\(F\)</span>-Verteilung mit <span class="math inline">\(df_{E(R)} - df_{E(F)}\)</span> und <span class="math inline">\(df_{E(F)}\)</span> Freiheitsgeraden, folgt.</p>
+<p><span class="math display">\[
 F = \frac{MS_{\textrm{test}}}{MS_{E(F)}}  \sim F(df_{E(R)}-df_{E(F)},df_{E(F)})
-\end{equation*}\]</span></p>
+\]</span></p>
 <p>Zur Erinnerung sind in <a href="#fig-mlm-hier-fdist">Abbildung&nbsp;<span>19.1</span></a> nochmal ein paar Beispiele für <span class="math inline">\(F\)</span>-Verteilung mit verschiedenen Freiheitsgeraden abgebildet.</p>
 <div class="cell">
 <div class="cell-output-display">
@@ -551,54 +551,6 @@ F = \frac{MS_{\textrm{test}}}{MS_{E(F)}}  \sim F(df_{E(R)}-df_{E(F)},df_{E(F)})
 </div>
 </div>
 </div>
-<p>Schauen wir uns diesen letzten Schritt noch einmal mit einer Simulation genauer an. Gegeben sein ein DGP der folgenden Form:</p>
-<p><span class="math display">\[\begin{equation}
-y = 3 + 2 \cdot x + \epsilon_i \quad \epsilon_i \sim \mathcal{N}(0,1)
-\label{eq-mlm-hier-mstest-sim}
-\end{equation}\]</span></p>
-<p>D.h. wir haben ein einfache lineares Regressionsmodell mit <span class="math inline">\(\beta_0 = 3\)</span>, <span class="math inline">\(\beta_1 = 2\)</span> und normalverteilten Residuen mit <span class="math inline">\(\sigma = 1\)</span>. Wir simulieren jetzt DGP <span class="math inline">\(1000\)</span>mal mit <span class="math inline">\(n = 30\)</span> zum Beispiel und fitten drei verschiedene Modelle an diese Daten. Einmal ein reduziertes Modell ohne <span class="math inline">\(\beta_1\)</span>, ein korrektes Modell mit <span class="math inline">\(\beta_0\)</span> und <span class="math inline">\(\beta_1\)</span> und ein überparameterisiertes Modell mit <span class="math inline">\(\beta_0\)</span>, <span class="math inline">\(\beta_1\)</span> und <span class="math inline">\(\beta_2\)</span> wobei wir eine Zufallsvariable als <span class="math inline">\(X_2\)</span> nehmen die der Standardnormalverteilung folgt (D.h. <span class="math inline">\(X_2 \sim \mathcal{N}(0,1)\)</span>. Zwischen <span class="math inline">\(X_2\)</span> und <span class="math inline">\(Y\)</span> besteht also kein Zusammenhang. Daher sollte die Hinzunahme von <span class="math inline">\(X_2\)</span> auch zu keiner Verbesserung des Modell führen und somit nur als Rauschen interpretiert werden kann.</p>
-<p>In <a href="#fig-mlm-hier-msetest-sim-01">Abbildung&nbsp;<span>19.3</span></a> ist das Ergebnis der Simulation zu sehen. Für jede der <span class="math inline">\(1000\)</span> Simulation generieren wir <span class="math inline">\(n = 30\)</span> Datenpaare <span class="math inline">\((y_i,x_i)\)</span> nach der Formel <span class="math inline">\(\eqref{eq-mlm-hier-mstest-sim}\)</span>. Wir fitten dann an jeden dieser <span class="math inline">\(1000\)</span> Datensätze die drei verschiedenen Modelle.</p>
-<p><span class="math display">\[\begin{align*}
-\text{under} &amp;: y_i = \beta_0 + \epsilon_i \\
-\text{correct} &amp;: y_i = \beta_0 + \beta_1 \cdot x_i + \epsilon_i \\
-\text{over} &amp;: y_i = \beta_0 + \beta_1 \cdot x_{1i} + \beta_2 \cdot x_{2i} + \epsilon_i
-\end{align*}\]</span></p>
-<div class="cell">
-<div class="cell-output-display">
-<div id="fig-mlm-hier-msetest-sim-01" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="mlm_hierarchies_files/figure-html/fig-mlm-hier-msetest-sim-01-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption class="figure-caption">Abbildung&nbsp;19.3: Verteilung von <span class="math inline">\(\hat{\sigma}^2 = MSE\)</span> für die drei verschiedenen Modelle.</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<p>In <a href="#fig-mlm-hier-msetest-sim-01">Abbildung&nbsp;<span>19.3</span></a> ist rot die tatsächliche Varianz bzw. Standardabweichung des DGP mit <span class="math inline">\(\sigma = 1\)</span> eingezeichnet. Im reduzierten Modell (under) wird die Residualvarianz klar in allen Durchgängen überschätzt. Da der Modellparameter für <span class="math inline">\(X\)</span> fehlt, wir diejenige Varianz von <span class="math inline">\(Y\)</span> die auf <span class="math inline">\(X\)</span> zurückgeht in die Residualvarianz mit aufgenommen. Im mittleren Graphen beim korrekten Modell sind die abgeschätzten Residualvarianz schön um den tatsächlichn Wert herum verteilt. Im einzelnen Fall kommt es natürlich auf Grund der Stichprobenvariabilität zur Überschätzung bzw. Unterschätzung von <span class="math inline">\(\sigma\)</span> aber im Mittel sind die Werte korrekt. Im letzten Fall für das überparameterisierte Modell (over) wird die Residualvarianz ebenfalls korrekt abgeschätzt. Die hinzunahme der zufälligen Variable <span class="math inline">\(X_2\)</span> führt zu keiner Verschlechterung von <span class="math inline">\(\hat{\sigma}^2\)</span> aber eben auch zu keiner großen Verbesserung.</p>
-<p>Schauen wir uns als nächstes an, wie sich der <span class="math inline">\(F\)</span>-Wert aus Formel<span class="math inline">\(\eqref{eq-mlm-hier-Ftest}\)</span> verhält.</p>
-<div id="fig-mlm-hier-f-comparisons" class="cell quarto-layout-panel">
-<figure class="figure">
-<div class="quarto-layout-row quarto-layout-valign-top">
-<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
-<div id="fig-mlm-hier-f-comparisons-1" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="mlm_hierarchies_files/figure-html/fig-mlm-hier-f-comparisons-1.png" class="img-fluid figure-img" data-ref-parent="fig-mlm-hier-f-comparisons" width="672"></p>
-<figcaption class="figure-caption">(a) Vergleich von correct vs under</figcaption>
-</figure>
-</div>
-</div>
-<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
-<div id="fig-mlm-hier-f-comparisons-2" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="mlm_hierarchies_files/figure-html/fig-mlm-hier-f-comparisons-2.png" class="img-fluid figure-img" data-ref-parent="fig-mlm-hier-f-comparisons" width="672"></p>
-<figcaption class="figure-caption">(b) Vergleich von over vs correct</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;19.4: F-Werte der Modellvergleiche. Die theoretische Verteilung unter der <span class="math inline">\(H_0\)</span> ist in rot abgetragen.</figcaption><p></p>
-</figure>
-</div>
-<p>In <a href="#fig-mlm-hier-f-comparisons">Abbildung&nbsp;<span>19.4</span></a> sind die Verteilungen der <span class="math inline">\(F\)</span>-Werte für die <span class="math inline">\(1000\)</span> Simulationen einmal für den Vergleich correct vs.&nbsp;under (a) und over vs.&nbsp;correct (b) abgetragen. Schauen wir uns zunächst <a href="#fig-mlm-hier-f-comparisons-2">Abbildung&nbsp;<span>19.4 (b)</span></a> an. Die Verteilung der <span class="math inline">\(F\)</span>-Wert. Wenn wir beobachtete Verteilung (Balken) mit theoretischen Verteilung unter der <span class="math inline">\(H_0\)</span> (rot) vergleichen, ist zu erkennen wie die beobachteten Werte sehr gut der unter der <span class="math inline">\(H_0\)</span> erwarteten folgen. Dies entspricht auch unserer Erwartung, die Hinzunahme von <span class="math inline">\(X_2\)</span>, das keinen Zusammenhang mit <span class="math inline">\(Y\)</span> hat, führt zu keiner Verbesserung des Modells. Im Gegensatz dazu folgt die Verteilung der beobachteten <span class="math inline">\(F\)</span>-Wert in <a href="#fig-mlm-hier-f-comparisons-1">Abbildung&nbsp;<span>19.4 (a)</span></a> nicht einmal annährend der erwarteten unter der <span class="math inline">\(H_0\)</span>, das die Hinzunahme von <span class="math inline">\(X_1\)</span> zu keiner Verbesserung führt. Dementsprechend würde in praktisch allen Fällen die <span class="math inline">\(H_0\)</span> abgelehnt werden.</p>
 </section>
 <section id="zusammenfassung" class="level3" data-number="19.1.2">
 <h3 data-number="19.1.2" class="anchored" data-anchor-id="zusammenfassung"><span class="header-section-number">19.1.2</span> Zusammenfassung</h3>
@@ -607,13 +559,13 @@ y = 3 + 2 \cdot x + \epsilon_i \quad \epsilon_i \sim \mathcal{N}(0,1)
 </section>
 <section id="beispiel-candy-problem" class="level2" data-number="19.2">
 <h2 data-number="19.2" class="anchored" data-anchor-id="beispiel-candy-problem"><span class="header-section-number">19.2</span> Beispiel: Candy-Problem</h2>
-<p>Schauen wir uns hergeleitete Metrik in Aktion an einem konkreten Beispiel an. Dabei werden hier auch noch den Begriff der Modellhierarchien einführen. In <a href="#fig-mlm-hier-candy-example">Abbildung&nbsp;<span>19.5</span></a> ist eine exemplarischer Datensatz abgebildet.</p>
+<p>Schauen wir uns hergeleitete Metrik in Aktion an einem konkreten Beispiel an. Dabei werden hier auch noch den Begriff der Modellhierarchien einführen. In <a href="#fig-mlm-hier-candy-example">Abbildung&nbsp;<span>19.3</span></a> ist eine exemplarischer Datensatz abgebildet.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-mlm-hier-candy-example" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
 <p><img src="mlm_hierarchies_files/figure-html/fig-mlm-hier-candy-example-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption class="figure-caption">Abbildung&nbsp;19.5: Zusammenhang zwischen der Präferenz für ein Bonbon und dem Süßgrad (g pro Bonbon/100) für verschiedene Saftanteile 0% - 20%</figcaption>
+<figcaption class="figure-caption">Abbildung&nbsp;19.3: Zusammenhang zwischen der Präferenz für ein Bonbon und dem Süßgrad (g pro Bonbon/100) für verschiedene Saftanteile 0% - 20%</figcaption>
 </figure>
 </div>
 </div>
@@ -659,8 +611,8 @@ m_1: y_i &amp;= \beta_0 + \beta_1 x_{1i} + \epsilon_i
 Model 1: like ~ 1
 Model 2: like ~ sweetness
   Res.Df   RSS Df Sum of Sq      F    Pr(&gt;F)    
-1     77 58917                                  
-2     76 38838  1     20080 39.294 2.023e-08 ***
+1     77 48509                                  
+2     76 26222  1     22287 64.596 9.346e-12 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
@@ -678,9 +630,9 @@ m_2: y_i &amp;= \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \epsilon_i
 
 Model 1: like ~ sweetness
 Model 2: like ~ sweetness + moisture
-  Res.Df   RSS Df Sum of Sq      F    Pr(&gt;F)    
-1     76 38838                                  
-2     75  8601  1     30236 263.65 &lt; 2.2e-16 ***
+  Res.Df     RSS Df Sum of Sq     F    Pr(&gt;F)    
+1     76 26221.7                                 
+2     75  6115.1  1     20107 246.6 &lt; 2.2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
@@ -699,8 +651,8 @@ m_3: y_i &amp;= \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \beta_3 x_{1i} x_{2i
 Model 1: like ~ sweetness + moisture
 Model 2: like ~ sweetness * moisture
   Res.Df    RSS Df Sum of Sq      F    Pr(&gt;F)    
-1     75 8601.4                                  
-2     74  259.6  1    8341.7 2377.7 &lt; 2.2e-16 ***
+1     75 6115.1                                  
+2     74  311.4  1    5803.7 1379.1 &lt; 2.2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
@@ -716,20 +668,20 @@ lm(formula = like ~ sweetness * moisture, data = candy)
 
 Residuals:
     Min      1Q  Median      3Q     Max 
--4.1597 -1.3306  0.3948  1.1158  5.5081 
+-3.2547 -1.4818 -0.1531  1.0703  4.1625 
 
 Coefficients:
-                    Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept)         2.643985   0.925842   2.856  0.00557 ** 
-sweetness          -0.009334   0.047041  -0.198  0.84326    
-moisture           -0.030802   0.065898  -0.467  0.64158    
-sweetness:moisture  0.165106   0.003386  48.762  &lt; 2e-16 ***
+                   Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)        1.395065   0.903822   1.544    0.127    
+sweetness          0.063198   0.051052   1.238    0.220    
+moisture           0.056554   0.076683   0.738    0.463    
+sweetness:moisture 0.158653   0.004272  37.136   &lt;2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 1.873 on 74 degrees of freedom
-Multiple R-squared:  0.9956,    Adjusted R-squared:  0.9954 
-F-statistic:  5573 on 3 and 74 DF,  p-value: &lt; 2.2e-16</code></pre>
+Residual standard error: 2.051 on 74 degrees of freedom
+Multiple R-squared:  0.9936,    Adjusted R-squared:  0.9933 
+F-statistic:  3818 on 3 and 74 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 <p>Wir können nun aber ebenso das Modell <span class="math inline">\(m_3\)</span> mit <span class="math inline">\(p = 4\)</span> Parametern gegen das <span class="math inline">\(m_0\)</span> Modell mit <span class="math inline">\(p = 1\)</span> Parameter vergleichen.</p>
@@ -745,8 +697,8 @@ m_3: y_i &amp;= \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \beta_3 x_{1i} x_{2i
 Model 1: like ~ 1
 Model 2: like ~ sweetness * moisture
   Res.Df   RSS Df Sum of Sq      F    Pr(&gt;F)    
-1     77 58917                                  
-2     74   260  3     58658 5573.3 &lt; 2.2e-16 ***
+1     77 48509                                  
+2     74   311  3     48197 3817.6 &lt; 2.2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
@@ -761,32 +713,32 @@ lm(formula = like ~ sweetness * moisture, data = candy)
 
 Residuals:
     Min      1Q  Median      3Q     Max 
--4.1597 -1.3306  0.3948  1.1158  5.5081 
+-3.2547 -1.4818 -0.1531  1.0703  4.1625 
 
 Coefficients:
-                    Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept)         2.643985   0.925842   2.856  0.00557 ** 
-sweetness          -0.009334   0.047041  -0.198  0.84326    
-moisture           -0.030802   0.065898  -0.467  0.64158    
-sweetness:moisture  0.165106   0.003386  48.762  &lt; 2e-16 ***
+                   Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)        1.395065   0.903822   1.544    0.127    
+sweetness          0.063198   0.051052   1.238    0.220    
+moisture           0.056554   0.076683   0.738    0.463    
+sweetness:moisture 0.158653   0.004272  37.136   &lt;2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 1.873 on 74 degrees of freedom
-Multiple R-squared:  0.9956,    Adjusted R-squared:  0.9954 
-F-statistic:  5573 on 3 and 74 DF,  p-value: &lt; 2.2e-16</code></pre>
+Residual standard error: 2.051 on 74 degrees of freedom
+Multiple R-squared:  0.9936,    Adjusted R-squared:  0.9933 
+F-statistic:  3818 on 3 and 74 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 </section>
 <section id="beispiel-nominale-variable" class="level2" data-number="19.3">
 <h2 data-number="19.3" class="anchored" data-anchor-id="beispiel-nominale-variable"><span class="header-section-number">19.3</span> Beispiel: Nominale Variable</h2>
-<p>Schauen wir uns als Nächstes an, was passiert wenn wir eine nominale Variable in unser Modell aufnehmen. In <a href="#fig-mlm-hier-rtex">Abbildung&nbsp;<span>19.6</span></a> haben wir ein hypothetisches Beispiel. Es wurde ein Reaktionszeitexperiment mit vier verschiedenen Konditionen A, B, C und D gemacht.</p>
+<p>Schauen wir uns als Nächstes an, was passiert wenn wir eine nominale Variable in unser Modell aufnehmen. In <a href="#fig-mlm-hier-rtex">Abbildung&nbsp;<span>19.4</span></a> haben wir ein hypothetisches Beispiel. Es wurde ein Reaktionszeitexperiment mit vier verschiedenen Konditionen A, B, C und D gemacht.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-mlm-hier-rtex" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
 <p><img src="mlm_hierarchies_files/figure-html/fig-mlm-hier-rtex-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption class="figure-caption">Abbildung&nbsp;19.6: Ein Reaktionszeitexperiment mit vier Stufen A, B, C und D</figcaption>
+<figcaption class="figure-caption">Abbildung&nbsp;19.4: Ein Reaktionszeitexperiment mit vier Stufen A, B, C und D</figcaption>
 </figure>
 </div>
 </div>

@@ -195,11 +195,11 @@ Eine Sache fehlt uns noch um die Größe von $MS_{\textrm{test}}$ einordnen zu k
 \label{eq-mlm-hier-Ftest}
 \end{equation}
 
-Zusätzlich hat dies auch noch den Vorteil, dass die entstehende Metrik unter der $H_0$ das das reduzierte Modell korrekt ist, einer uns bekannten theoretische Verteilung, nämlich der $F$-Verteilung mit $df_{E(R)} - df_{E(F)}$ und $df_{E(F)}$ Freiheitsgeraden, folgt. 
+Zusätzlich hat dies auch noch den Vorteil, dass die entstehende Metrik unter der $H_0$, das das reduzierte Modell korrekt ist, einer uns bekannten theoretische Verteilung, nämlich der $F$-Verteilung mit $df_{E(R)} - df_{E(F)}$ und $df_{E(F)}$ Freiheitsgeraden, folgt. 
 
-$$
+\begin{equation*}
 F = \frac{MS_{\textrm{test}}}{MS_{E(F)}}  \sim F(df_{E(R)}-df_{E(F)},df_{E(F)})
-$$
+\end{equation*}
 
 Zur Erinnerung sind in @fig-mlm-hier-fdist nochmal ein paar Beispiele für $F$-Verteilung mit verschiedenen Freiheitsgeraden abgebildet.
 
@@ -240,13 +240,78 @@ ggplot(dff %>% dplyr::filter(dist == 'f3'), aes(F, d)) +
   labs(x = 'F-Wert', y = 'Dichte') 
 ```
 
+Schauen wir uns diesen letzten Schritt noch einmal mit einer Simulation genauer an. Gegeben sein ein DGP der folgenden Form:
+
+\begin{equation}
+y = 3 + 2 \cdot x + \epsilon_i \quad \epsilon_i \sim \mathcal{N}(0,1)
+\label{eq-mlm-hier-mstest-sim}
+\end{equation}
+
+D.h. wir haben ein einfache lineares Regressionsmodell mit $\beta_0 = 3$, $\beta_1 = 2$ und normalverteilten Residuen mit $\sigma = 1$. Wir simulieren jetzt DGP $1000$mal mit $n = 30$ zum Beispiel und fitten drei verschiedene Modelle an diese Daten. Einmal ein reduziertes Modell ohne $\beta_1$, ein korrektes Modell mit $\beta_0$ und $\beta_1$ und ein überparameterisiertes Modell mit $\beta_0$, $\beta_1$ und $\beta_2$ wobei wir eine Zufallsvariable als $X_2$ nehmen die der Standardnormalverteilung folgt (D.h. $X_2 \sim \mathcal{N}(0,1)$. Zwischen $X_2$ und $Y$ besteht also kein Zusammenhang. Daher sollte die Hinzunahme von $X_2$ auch zu keiner Verbesserung des Modell führen und somit nur als Rauschen interpretiert werden kann. 
+```{r}
+load('data/hierarchy_example.RData')
+```
+
+In @fig-mlm-hier-msetest-sim-01 ist das Ergebnis der Simulation zu sehen. Für jede der $1000$ Simulation generieren wir $n = 30$ Datenpaare $(y_i,x_i)$ nach der Formel \eqref{eq-mlm-hier-mstest-sim}. Wir fitten dann an jeden dieser $1000$ Datensätze die drei verschiedenen Modelle.
+
+\begin{align*}
+\text{under} &: y_i = \beta_0 + \epsilon_i \\
+\text{correct} &: y_i = \beta_0 + \beta_1 \cdot x_i + \epsilon_i \\
+\text{over} &: y_i = \beta_0 + \beta_1 \cdot x_{1i} + \beta_2 \cdot x_{2i} + \epsilon_i 
+\end{align*}
+
+Für jeden Modellfit wird dann $MSE = \hat{\sigma}^2$ berechnet von dem wir wissen das der *wahre* Wert $\sigma^2 = 1$ ist.
+
+```{r}
+#| label: fig-mlm-hier-msetest-sim-01
+#| fig-cap: "Verteilung von $\\hat{\\sigma}^2 = MSE$ für die drei verschiedenen Modelle." 
+
+ggplot(df, aes(sse, after_stat(density))) + 
+  geom_histogram(bins=30) +
+  geom_vline(xintercept = 1, color = 'red', linetype = 'dashed') +
+  facet_grid(~model, scale = 'free_x') +
+  labs(x = 'MSE')
+```
+
+In @fig-mlm-hier-msetest-sim-01 ist rot die tatsächliche Varianz bzw. Standardabweichung des DGP mit $\sigma = 1$ eingezeichnet. Im reduzierten Modell (under) wird die Residualvarianz klar in allen Durchgängen überschätzt. Da der Modellparameter für $X$ fehlt, wir diejenige Varianz von $Y$ die auf $X$ zurückgeht in die Residualvarianz mit aufgenommen. Im mittleren Graphen beim korrekten Modell sind die abgeschätzten Residualvarianz schön um den tatsächlichn Wert herum verteilt. Im einzelnen Fall kommt es natürlich auf Grund der Stichprobenvariabilität zur Überschätzung bzw. Unterschätzung von $\sigma^2$ aber im Mittel sind die Werte korrekt. D.h. der Schätzer ist Erwarungstreu. Im letzten Fall für das überparameterisierte Modell (over) wird die Residualvarianz ebenfalls korrekt abgeschätzt. Die Hinzunahme der zufälligen Variable $X_2$ führt wie erwartet zu keiner Verschlechterung von $\hat{\sigma}^2$ aber eben auch zu keiner relevanten Verbesserung.
+
+Schauen wir uns als Nächstes an, wie sich der $F$-Wert aus Formel\eqref{eq-mlm-hier-Ftest} verhält.
+
+```{r}
+#| label: fig-mlm-hier-f-comparisons
+#| fig-cap: "F-Werte der Modellvergleiche. Die theoretische Verteilung unter der $H_0$ ist in rot abgetragen."
+#| fig-subcap:
+#|   - "Vergleich von correct vs under"
+#|   - "Vergleich von over vs correct"
+#| layout-ncol: 2
+
+ggplot(df_2, aes(x=f_r, after_stat(density))) +
+  geom_histogram(bins=100) +
+  geom_line(
+    data = tibble(x = seq(0.01, 100, length.out=100),
+                  f_r = df(x, 1, n-1)),
+    aes(x = x, y = f_r), color='red') +
+    lims(y = c(0,0.01)) +
+  labs(x = 'F-Wert')
+
+ggplot(df_2, aes(x=o_f, after_stat(density))) +
+  geom_histogram(bins=50) +
+  geom_line(data = tibble(x = seq(0.1,max(df_2$o_f), length.out=100),
+                          o_f = df(x, 1, n-2)),
+            aes(x = x, y = o_f), color='red') +
+  lims(x = c(0,10)) +
+  labs(x = 'F-Wert')
+```
+
+In @fig-mlm-hier-f-comparisons sind die Verteilungen der $F$-Werte für die $1000$ Simulationen einmal für den Vergleich correct vs. under (a) und over vs. correct (b) abgetragen. Schauen wir uns zunächst @fig-mlm-hier-f-comparisons-2 an. Die Verteilung der $F$-Wert. Wenn wir die beobachtete Verteilung (Balken) mit theoretischen Verteilung unter der $H_0$ (rot) vergleichen, ist zu erkennen wie die beobachteten Werte sehr gut der unter der $H_0$ erwarteten Verteilung folgen. Dies entspricht auch unserer Erwartung, die Hinzunahme der Variable $X_2$, die keinen Zusammenhang mit $Y$ hat, führt zu keiner Verbesserung des Modells. Das heißt, dass wir in $\alpha$-Prozent der die $H_0$ ablehnen würden und uns dementsprechend irren würden. Im Gegensatz dazu folgt die Verteilung der beobachteten $F$-Wert in @fig-mlm-hier-f-comparisons-1 nicht einmal annährend der erwarteten unter der $H_0$. Die $H_0$ in diesem Fall, das die Hinzunahme von $X_1$ zu keiner Verbesserung führt. Dementsprechend würde in praktisch allen Fällen die $H_0$ abgelehnt werden, da der beobachtete $F$-Wert deutlich größer als der kritische Wert der $F$-Verteilung ist. Dementsprechend würden wir bei der Modellauswahl das korrekte Modell indentizieren.
+
 ### Zusammenfassung 
 
-Durch den Vergleich von Modellen miteinander, sind wir jetzt in der Lage, die Verbesserung/Verschlechterung der Modellvorhersage statistisch zu überprüfen. Wenn der $F$-Test statistisch signifikant ist, dann werten wir dies als Evidenz dafür, das das volle Modell die Daten so viel besser modelliert, das wir dieses Modell dem reduzierten Modell vorziehen.
+Durch den Vergleich von Modellen miteinander, sind wir in der Lage, die Verbesserung/Verschlechterung der Modellvorhersage bei Hinzunahme von Modellvariablen statistisch zu überprüfen. Wenn der $F$-Test statistisch signifikant ist, dann werten wir dies als Evidenz dafür, das das volle Modell die Daten so viel besser modelliert, das wir dieses Modell dem reduzierten Modell vorziehen sollten.
 
 ## Beispiel: Candy-Problem
 
-Schauen wir uns hergeleitete Metrik in Aktion an einem konkreten Beispiel an. Dabei werden hier auch noch den Begriff der Modellhierarchien einführen. In @fig-mlm-hier-candy-example ist eine exemplarischer Datensatz abgebildet.
+Schauen wir uns hergeleitete Metrik in Aktion an einem konkreten Beispiel an. Dabei führen wir auch noch den Begriff der Modellhierarchien ein. In @fig-mlm-hier-candy-example ist eine exemplarischer Datensatz abgebildet.
 
 ```{r}
 #| fig-cap: "Zusammenhang zwischen der Präferenz für ein Bonbon und dem Süßgrad (g pro Bonbon/100) für verschiedene Saftanteile 0% - 20%"
