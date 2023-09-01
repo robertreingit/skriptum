@@ -161,7 +161,7 @@ Gehen wir von nun von der entgegengesetzen Annahme aus. Das reduzierte Modell is
 
 Zusammengefasst haben wir heuristisch eine Metrik hergeleitet, die uns erlaubt verschiedene Modell miteinander zu vergleichen. Wenn das reduzierte, einfachere Modell ausreicht um die Daten zu fitten, dann wird die Differenz \eqref{eq-mlm-hier-div} eher klein ausfallen. Wenn die zusätzlichen Parameter im vollem Modell benötigt werden, dann wird der Unterschied \eqref{eq-mlm-hier-div} eher groß.
 
-Wir bringen jetzt noch eine zusätzliche Parameter in unseren Modellvergleich ein. Die Bedeutsamkeit des Unterschieds zwischen den beiden Modellen ist auch noch abhängig davon in wie vielen Parameter sich die beiden Modelle voneinander unterscheiden. Wenn im vollen Modell $p = 10$ Parameter sind und im reduzierten Modell eben nur $p = 1$ Parameter ist, dann ist ein gegebener Unterschied in den $SSE$s zwischen den Modell anders zu bewerten, als wenn im vollem Modell $p = 2$ Parameter geschätzt werden. Bei gleichem Unterschied zwischen den Modell ist der Unterschied im ersteren Fall weniger Bedeutsam im Vergleich zum letzteren Fall. Daher wird der Unterschied noch anhand des Unterschieds in der Anzahl der Parameter kalibriert. Anders formuliert, schauen wir uns die Veränderung in der Varianzverkleinerung pro Freiheitsgrad an. In unserem einfachen Fall passiert da nichts, da der Unterschied in der Parameteranzahl $= 1$ ist. Wir werden aber später sehen, dass auch Modelle mit größeren Unterschieden in der Parameteranzahl $p$ miteinander verglichen werden können.
+Wir bringen jetzt noch einen zusätzlichen Parameter in unseren Modellvergleich ein. Die Bedeutsamkeit des Unterschieds zwischen den beiden Modellen ist auch noch abhängig davon in wie vielen Parameter sich die beiden Modelle voneinander unterscheiden. Wenn im vollen Modell $p = 10$ Parameter sind und im reduzierten Modell eben nur $p = 1$ Parameter ist, dann ist ein gegebener Unterschied in den $SSE$s zwischen den Modell anders zu bewerten, als wenn im vollem Modell $p = 2$ Parameter geschätzt werden. Bei gleichem Unterschied zwischen den Modell ist der Unterschied im ersteren Fall weniger Bedeutsam im Vergleich zum letzteren Fall. Daher wird der Unterschied noch anhand des Unterschieds in der Anzahl der Parameter kalibriert. Anders formuliert, schauen wir uns die Veränderung in der Varianzverkleinerung pro Freiheitsgrad an. In unserem einfachen Fall passiert da nichts, da der Unterschied in der Parameteranzahl $= 1$ ist. Wir werden aber später sehen, dass auch Modelle mit größeren Unterschieden in der Parameteranzahl $p$ miteinander verglichen werden können.
 
 Mit $p_F$ = Anzahl der Parameter im vollen Modell, $p_R$ = Anzahl der Parameter im reduzierten Modell, $df_{E(F)} = gilt:
 
@@ -182,11 +182,31 @@ Unter der Annahme, das das reduzierte Modell korrekt ist, lässt sich zeigen, da
 MS_{\textrm{test}} = \hat{\sigma}^2
 \end{equation*}
 
-Zusätzlich, wenn das reduzierte Modell korrekt ist, dann ist auch das volle Modell korrekt, hat halt einen Parameter zu viel aber der sollte wie oben ausgeführt in der Nähe von $0$ sein. Daher ist auch wie schon vorher gezeigt $MSE(F)$ ein Schätzer für die Varianz $\sigma^2$ im Rahmen der üblichen Modellannahmen $\epsilon_i \sim \mathcal{N}(0,\sigma^2)$ ist.
+Zusätzlich, wenn das reduzierte Modell korrekt ist, dann ist auch das volle Modell korrekt. Das volle Modell hat einen Parameter zu viel aber der sollte wie oben ausgeführt in der Nähe von $0$ sein. Daher ist auch wie schon vorher gezeigt $MSE(F)$ ein Schätzer für die Varianz $\sigma^2$ im Rahmen der üblichen Modellannahmen $\epsilon_i \sim \mathcal{N}(0,\sigma^2)$ .
 
 \begin{equation}
 MS_{E(F)} = \frac{\textrm{SSE(F)}}{df_{E(F)}} = \hat{\sigma}^2
 \end{equation}
+
+Das Verhältnis des vollen zum reduzierten Modell kann auch dahingehend interpretiert werden, das das reduzierte Modell das volle Modell mit einer zusätzlichen Randbedigung ist. Wenn das volle Modell die folgende Form hat:
+
+\begin{equation*}
+Y = \beta_0 + \beta_1 \cdot X_1 + \epsilon
+\end{equation*}
+
+Und das reduzierte Modell die Form:
+
+\begin{equation*}
+Y = \beta_0 + \epsilon
+\end{equation*}
+
+Dann kann das reduzierte Modell als das volle Modell mit der Randbedingung das $\beta_1 = 0$ formuliert werden.
+
+\begin{equation*}
+Y = \beta_0 + \beta_1 \cdot X_1 + \epsilon, \quad \beta_1 = 0
+\end{equation*}
+
+Daher läuft ein Vergleich der beiden Modell darauf hinaus zu testen ob der Parameter $\beta_1 = 0$ ist. Dies erklärt auch noch mal den Satz, das das volle Modell korrekt ist, wenn das reduzierte Modell korrekt ist, da das reduzierte Modell nur ein Spezialfall des vollen Modells ist.
 
 Eine Sache fehlt uns noch um die Größe von $MS_{\textrm{test}}$ einordnen zu können. Da wir es mit Varianzen zu tun haben, können wir die Größe der Quadratsummen verändern indem wir die Einheiten der abhängigen Variablen $Y$ verändern. Würden wir z.B. von $[m]$ auf $[cm]$ gehen, da würde sich der Unterschied in Formel \eqref{eq-mlm-hier-mstest} um den Faktor $10\times 10=100$ vergrößern ohne das wirklich eine Veränderung in den Modellen stattgefunden hat. Daher kalibrieren wir $MS_{\textrm{test}}$ indem wir den Term durch $MS_{E(F)}$ teilen. Damit fallen alle Problem mit Veränderungen durch Änderungen in den Einheiten weg [siehe auch  @maxwell2004, p.75].
 
@@ -223,6 +243,8 @@ ggplot(dff, aes(F, d, color=dist)) +
                        )) +
   labs(x = 'F-Wert', y = 'Dichte') 
 ```
+
+Da beide Terme in Formel \eqref{eq-mlm-hier-Ftest} die Varianz abschätzen deutet ein Wert in der Nähe von $1$ daraufhin, das das reduzierte Modell adäquat ist um die Daten zu beschreiben und die Hinzunahme des Parameters im vollen Modell keine Verbesserung liefert.
 
 Sobald wir eine bekannte theoretische Verteilung unter einer $H_0$ haben, können wir unser Hypothestinstrumentarium auf die Verteilung los lassen und entsprechend einen kritische Bereich mit $\alpha$ bestimmen. In @fig-mlm-hier-fcrit haben wir dies entsprechend getan. Somit wenn wenn der beobachtete $F$-Wert in den kritischen Bereich fällt, interpretieren wird das als Evidenz gegen die $H_0$. Wir sind überrascht diesen Wert unter der $H_0$ zu sehen und lehen die $H_0$ das das einfachere Modell korrekt ist ab und werten dies als Evidenz dafür, das das komplexere, volle Modell die Daten besser abbildet und *statistisch signifikant* mehr Varianz der abhängigen Variable modellieren kann.
 
@@ -303,7 +325,7 @@ ggplot(df_2, aes(x=o_f, after_stat(density))) +
   labs(x = 'F-Wert')
 ```
 
-In @fig-mlm-hier-f-comparisons sind die Verteilungen der $F$-Werte für die $1000$ Simulationen einmal für den Vergleich correct vs. under (a) und over vs. correct (b) abgetragen. Schauen wir uns zunächst @fig-mlm-hier-f-comparisons-2 an. Die Verteilung der $F$-Wert. Wenn wir die beobachtete Verteilung (Balken) mit theoretischen Verteilung unter der $H_0$ (rot) vergleichen, ist zu erkennen wie die beobachteten Werte sehr gut der unter der $H_0$ erwarteten Verteilung folgen. Dies entspricht auch unserer Erwartung, die Hinzunahme der Variable $X_2$, die keinen Zusammenhang mit $Y$ hat, führt zu keiner Verbesserung des Modells. Das heißt, dass wir in $\alpha$-Prozent der die $H_0$ ablehnen würden und uns dementsprechend irren würden. Im Gegensatz dazu folgt die Verteilung der beobachteten $F$-Wert in @fig-mlm-hier-f-comparisons-1 nicht einmal annährend der erwarteten unter der $H_0$. Die $H_0$ in diesem Fall, das die Hinzunahme von $X_1$ zu keiner Verbesserung führt. Dementsprechend würde in praktisch allen Fällen die $H_0$ abgelehnt werden, da der beobachtete $F$-Wert deutlich größer als der kritische Wert der $F$-Verteilung ist. Dementsprechend würden wir bei der Modellauswahl das korrekte Modell indentizieren.
+In @fig-mlm-hier-f-comparisons sind die Verteilungen der $F$-Werte für die $1000$ Simulationen einmal für den Vergleich correct vs. under (a) und over vs. correct (b) abgetragen. Schauen wir uns zunächst @fig-mlm-hier-f-comparisons-2 an. Die Verteilung der $F$-Wert. Wenn wir die beobachtete Verteilung (Balken) mit theoretischen Verteilung unter der $H_0$ (rot) vergleichen, ist zu erkennen wie die beobachteten Werte sehr gut der unter der $H_0$ erwarteten Verteilung folgen. Der Großteil der Wert liegt in der Umgebung von $1$. Dies entspricht auch unserer Erwartung, die Hinzunahme der Variable $X_2$, die keinen Zusammenhang mit $Y$ hat, führt zu keiner Verbesserung des Modells. Das heißt, dass wir in $\alpha$-Prozent der die $H_0$ ablehnen würden und uns dementsprechend irren würden. Im Gegensatz dazu folgt die Verteilung der beobachteten $F$-Wert in @fig-mlm-hier-f-comparisons-1 nicht einmal annährend der erwarteten unter der $H_0$. Wir haben in der Umgebung von $1$ überhaupt keine Werte beobachtete. Die $H_0$ in diesem Fall, das die Hinzunahme von $X_1$ zu keiner Verbesserung führt. Dementsprechend würde in praktisch allen Fällen die $H_0$ abgelehnt werden, da der beobachtete $F$-Wert deutlich größer als der kritische Wert der $F$-Verteilung ist. Dementsprechend würden wir bei der Modellauswahl das korrekte Modell identizieren.
 
 ### Zusammenfassung 
 
@@ -441,6 +463,14 @@ Tatsächlich wird dieser Test in der Ausgabe von `summary()` angegeben.
 summary(mod_3)
 ```
 
+Um noch einmal die Idee aufzugreifen das reduzierte Modell als das volle Modell mit zusätzlichen Randbedinungen zu betrachten, im vorliegenden Fall:
+
+\begin{equation*}
+m_0: y_i = \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \beta_3 x_{1i} x_{2i} + \epsilon_i, \quad \beta_1 = 0, \beta_2 = 0, \beta_3 = 0
+\end{equation*}
+
+Der Modellvergleich erlaubt uns nun mehrere Parameter auf einmal zu testen. Bisher haben wir immer nur einen einzelnen Parameter getestet. Zusätzlich, erlaubt der Modellvergleich dasjenige Modell zu bestimmen, welches die Daten am *Besten* bzw. am einfachsten (mit den wenigstens Parametern) modelliert.
+
 ## Beispiel: Nominale Variable 
 
 Schauen wir uns als Nächstes an, was passiert wenn wir eine nominale Variable in unser Modell aufnehmen. In @fig-mlm-hier-rtex haben wir ein hypothetisches Beispiel. Es wurde ein Reaktionszeitexperiment mit vier verschiedenen Konditionen A, B, C und D gemacht.
@@ -518,6 +548,6 @@ Tatsächlich verwendet `aov()` im Hintergrund auch nichts anderes als die `lm()`
 
 ## Zum Nacharbeiten 
 
-@christensen2018[p.57-64] 
+Viele der Ideen die hier diskutiert werden sind aus @christensen2018[p.57-64]. Daher wer noch mal etwas mehr Hintergrund dazu haben möchte, sei diese Quelle wärmstens empfohlen.
 
   
