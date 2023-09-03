@@ -12,7 +12,7 @@ require(plot3D)
 lm_coef_ex <- function(mod, max_co=3) round(summary(mod)$coefficients[,1:max_co],2)
 ```
 
-In vielen Fällen in der Praxis liegt selten der einfache Fall vor, dass eine abhängige Variable mitels nur einer einzigen Variable erklärt bzw. vorhergesagt werden soll. Sondern meisten sind mehrere Variablen an dem Prozess der modelliert werden soll beteiligt. Ein einfaches Beispiel aus der Literatur ist der Zusammenhang zwischen der Wurfgeschwindigkeit beim Handball in Abhängigkeit vom Körpergewicht und der Armspannweite. In @tbl-debanne-2011 ist ein Ausschnitt aus einem möglichen Datensatz abgebildet.
+In vielen Fällen in der Praxis liegt selten der einfache Fall vor, dass eine abhängige Variable mittels nur einer einzigen Variable erklärt bzw. vorhergesagt werden soll. Sondern meisten sind mehrere Variablen an dem Prozess beteiligt der modelliert werden soll. Ein einfaches Beispiel aus der Literatur ist der Zusammenhang zwischen der Wurfgeschwindigkeit beim Handball in Abhängigkeit vom Körpergewicht und der Armspannweite. In @tbl-debanne-2011 ist ein Ausschnitt aus einem möglichen Datensatz abgebildet.
 
 
 ```{r}
@@ -30,11 +30,7 @@ handball_short |>
         )
 ```
 
-Im Prinzip könnte der isolierte Einfluss der beiden Prädiktorvariablen Körpermasse und Armspannweite auf die Wurfgeschwindigkeit untersucht werden. Allerdings ist den meisten Fällen von größerem Interesse wie sich die beiden Variablen zusammen verhalten und ob durch die Kombination der beiden Variablen ein besseres Modell der Daten erstellt werden kann.
-
-Aus dieser Problemstellung heraus ergibt sich die Notwendigkeit von der einfachen linearen Regression auf eine multiple multiple lineare Regression überzugehen. Formal, geschieht dies einfach dadurch, dass die Formel der einfachen Regression mit dem Prädiktor $x$ um eine zweite Variable erweitert wird.
-
-Dementsprechend wird aus:
+Im Prinzip könnte der isolierte Einfluss der beiden Prädiktorvariablen Körpermasse und Armspannweite auf die Wurfgeschwindigkeit jeweils einzeln untersucht werden. Allerdings ist den meisten Fällen von größerem Interesse wie sich die beiden Variablen zusammen verhalten und ob durch die Kombination der beiden Variablen ein besseres Modell der Daten erstellt werden kann. Aus dieser Problemstellung heraus ergibt sich die Notwendigkeit von der einfachen linearen Regression auf eine multiple multiple lineare Regression überzugehen. Formal geschieht dies einfach dadurch, dass die Formel der einfachen Regression mit dem Prädiktor $X$ um eine zweite oder mehr Variablen erweitert wird. Dementsprechend wird aus:
 
 \begin{equation}
 y_i = \beta_0 + \beta_1 x_i + \epsilon_i
@@ -46,9 +42,9 @@ die Formel für die multiple Regression mit:
 y_i = \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \dots + \beta_K x_{Ki} + \epsilon_i
 \end{equation}
 
-Da bei der einfachen Regression nur eine einzige $x$-Variable in der Formel vorhanden war, ist kein zusätzlicher Index notwendig gewesen, bei der mutliplen Regression mit mehreren Prädiktorvariablen $x$ wird jeder $x$ Variabler ein zusätzlicher Index $j$ angehängt um die Variablen eindeutig zu identifizieren. Per Konvention, wobei diese leider nicht global eingehalten wird, wird die Anzahl der Prädiktorvaiablen mit $K$ bezeichnet. Der y-Achsenabschnitt erhält den Index $j=0$ und die weiteren Steigungskoeffzienten $\beta_1$ bis $\beta_K$ erhalten den Prädiktorvariablen $x_j$ entsprechden Index.
+Da bei der einfachen Regression nur eine einzige $X$-Variable in der Formel vorhanden war, ist kein Index notwendig gewesen. Bei der mutliplen Regression mit mehreren Prädiktorvariablen $X$ wird jeder $X$ Variabler ein zusätzlicher Index $j$ angehängt um die Variablen eindeutig zu identifizieren. Per Konvention, wobei diese leider nicht global eingehalten wird, wird die Anzahl der Prädiktorvaiablen mit $K$ bezeichnet. Der y-Achsenabschnitt erhält den Index $j=0$ und die weiteren Steigungskoeffzienten $\beta_1$ bis $\beta_K$ erhalten den Prädiktorvariablen $X_j$ entsprechden Index.
 
-In welcher Reihenfolge die Prädiktorvariablen mit $j=1, j=2, \ldots, j=K$ verteilt werden hat zunächst keine Auswirkung auf das Modell und regelt lediglich die Bezeichnung. In unserem konkreten Fall der Handballwurfdaten wäre zum Beispiel eine mögliche Zuordnung, das $x_1$ die Körpermasse und $x_2$ die Armspannweite kodiert.
+In welcher Reihenfolge die Prädiktorvariablen mit $j=1, j=2, \ldots, j=K$ verteilt werden hat zunächst keine Auswirkung auf das Modell und regelt lediglich die Bezeichnung. In unserem konkreten Fall der Handballwurfdaten wäre zum Beispiel eine mögliche Zuordnung, das $X_1$ die Körpermasse und $X_2$ die Armspannweite kodiert.
 
 ```{r}
 handball_short |> 
@@ -61,7 +57,7 @@ handball_short |>
   )
 ```
 
-Rein formal haben wir jetzt schon den Übergang zur multiple Regression vollzogen. Die Frage die sich natürlich direkt anschließt bezieht sich nun auf die Bedeutung der Koeffizienten $\beta_1, \ldots, \beta_k$. 
+Rein formal haben wir jetzt schon den Übergang zur multiple Regression vollzogen. Die Frage die sich natürlich direkt anschließt bezieht sich nun auf die Bedeutung der Koeffizienten $\beta_1, \ldots, \beta_k$ und wie sich die weiteren Schritte die vorher bei der einfachen Regression kennengelernt haben auf die multiple Regression übertragen.
 
 ## Bedeutung der Koeffizienten bei der multiplen Regression 
 
@@ -88,9 +84,7 @@ p_res <- ggplot(simple, aes(x,y,label = epsilon)) +
 print(p_res)
 ```
 
-Bei der einfachen Regression haben mittels der Methode der kleinsten Quadrate eine Regressiongerade durch unsere Punktwolke gelegt. Dabei haben wir die Regressionsgerade so gewählt, dass die senkrechten Abstände der beobachteten Punkte von der Regressionsgerade minimiert werden bzw. die Abstände zwischen denen auf der Gerade liegenden, vorhergesagten Werte $\hat{y}_i$ und den beobachteten Wert $y_i$.
-
-Wenn wir nun den Übergang von einer Prädiktorvariablenzum nächstkomplizierteren Fall nehmen mit zwei Prädiktorvariablen $x_1$ und $x_2$, dann wäre eine mögliche Darstellungsform der Daten eine Punktwolke im dreidimensionalen Raum (siehe @fig-mlm-basics-scatter-1). 
+Bei der einfachen Regression haben wir mittels der Methode der kleinsten Quadrate eine Regressiongerade durch die Punktwolke der Daten gelegt. Dabei haben wir die Regressionsgerade so gewählt, dass die senkrechten Abstände der beobachteten Punkte von der Regressionsgerade minimiert werden bzw. die Abstände zwischen denen auf der Gerade liegenden, vorhergesagten Werte $\hat{y}_i$ und den beobachteten Wert $Y_i$ (Residuen). Wenn wir nun den Übergang von einer Prädiktorvariablen zum nächstkomplizierteren Fall nehmen mit zwei Prädiktorvariablen $X_1$ und $X_2$, dann wäre eine mögliche Darstellungsform der Daten eine Punktwolke im dreidimensionalen Raum (siehe @fig-mlm-basics-scatter-1). 
 
 
 ```{r}
@@ -101,7 +95,7 @@ Wenn wir nun den Übergang von einer Prädiktorvariablenzum nächstkomplizierter
 #|   - "3D Punktwolke"
 #|   - "3D Punktwolke mit gefitteter Ebene"
 
-#par(mar=c(1,1,1,1), cex.axis = 0.5)
+par(mar=c(1,1,1,1), cex.axis = 0.5)
 # x, y, z variables
 x <- mtcars$wt
 y <- mtcars$disp
@@ -134,9 +128,11 @@ scatter3D(x, y, z, col='black', pch=16, cex=1.2,
     colkey=F, d = 4)
 ```
 
-Da jetzt eine einzelne Gerade nicht mehr in der Lage ist die Daten zu fitten, ist die nächst Möglichkeit eine Ebene die in die Punktwolke gelegt wird (siehe @fig-mlm-basics-scatter-2). Dies ermöglicht dann genau die gleiche Herangehensweise wie bei der einfachen linearen Regression anzuwenden. Als Zielgröße wird aus den möglichen Ebenen diejenigen gesucht deren vorhergesagten, auf der Ebene liegenden Punkte $\hat{y}_i$ die geringsten senkrechten Abstand zu den beobachteten Punkten $y_i$ haben. Anders, wir suchen diejenigen Ebene durch die Punktwolke deren Summe der quadrierten Residuen $e_i = y_i - \hat{y}_i$ minimal ist.
+Da jetzt eine einzelne Gerade nicht mehr in der Lage ist die Daten zu fitten, ist die nächste Möglichkeit eine Ebene in die Punktwolke zu legen (siehe @fig-mlm-basics-scatter-2). Dies ermöglicht dann genau die gleiche Herangehensweise wie bei der einfachen linearen Regression anzuwenden. Als Zielgröße wird aus den möglichen Ebenen diejenigen gesucht deren vorhergesagten, auf der Ebene liegenden, Punkte $\hat{y}_i$ die geringsten senkrechten Abstand zu den beobachteten Punkten $y_i$ haben (wieder Residuen). Anders, wir suchen diejenigen Ebene durch die Punktwolke deren Summe der quadrierten Residuen $e_i = y_i - \hat{y}_i$ minimal ist.
 
-Diese Herangehensweise hat den Vorteil, dass sie zum einem die einfache lineare Regression  als Spezialfall mit $K=1$ beinhaltet und sich beliebig erweitern lässt mit der Einschränkung, dass bei $K>2$ die dreidimenionale Darstellung mittels einer Grafik nicht mehr möglich ist. Das Prinzip der Minimierung der Abweichungen von $\hat{y}_i$ zu $y$ bleibt aber immer erhalten. Zusammenfassend hat dieser Ansatz somit die folgenden Vorteile:
+Diese Herangehensweise hat den Vorteil, dass sie zum einem die einfache lineare Regression  als Spezialfall mit $K=1$ beinhaltet und sich beliebig erweitern lässt mit der Einschränkung, dass bei $K>2$ die dreidimenionale Darstellung mittels einer Grafik nicht mehr möglich ist. Das Prinzip der Minimierung der Abweichungen von $\hat{y}_i$ zu $y$ bleibt aber immer erhalten.
+
+Zusammenfassend: 
 
 - Die Berechnungen bleiben alle gleich
 - Abweichungen $\hat{\epsilon_i}$ sind jetzt nicht mehr Abweichungen von einer Gerade sondern von einer $K$-dimensionalen Hyperebene. Die Eigenschaften der Residuen bleiben aber alle erhalten. 

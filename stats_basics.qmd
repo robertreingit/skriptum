@@ -19,7 +19,7 @@ d_gr <- 100
 d_x <- 2
 ```
 
-Beginnen wir mit eine einfachen Modell. Dazu nehmen wir eine kleine Welt die nur aus 20 Personen besteht. In @fig-small-world können wir alle Personen einzeln sehen. Die Gesamtheit aller Personen (allgmeine Objekte) über die wir eine Aussage treffen woll bezeichnen wir als eine Population\index{Population}.
+Beginnen wir mit eine einfachen Modell. Dazu nehmen beginnen mit einer übersichtlichen kleinen Welt. Unsere Welt über die wir eine Aussage treffen wollen besteht nur aus insgesamt 20 Personen. In @fig-small-world sind alle Personen unserer Welt einzeln zu sehen. Die Gesamtheit aller Personen (allgemein Objekte) über die wir eine Aussage treffen wollen bezeichnen wir als eine Population\index{Population}.
 
 ```{r}
 #| fig.cap: "Eine kleine Welt"
@@ -30,31 +30,29 @@ include_graphics('pics/small_world.png')
 
 ```
 
-
 ::: {#def-population}
 
 ## Population
 
 Eine Population oder auch die Grundgesamtheit ist Gesamtheit aller Objekte/Dinge/Personen über die eine Aussage getroffen werden soll.
-
 :::
 
 ## Ein Experiment
 
-Wir wollen nun eine Krafttrainingsstudie durchführen um die Beinkraft zu erhöhen. Wir haben allerdings nur sehr wenige Ressourcen (bzw. wir sind faul) und können insgesamt nur sechs Messungen durchführen. Aus einem kürzlich durchgeführten Census haben wir aber die Kraftwerte der ganzen Population. Wir stellen die Kraftwerte zunächst mittels einer Tabelle dar (siehe @tbl-sts-basics-world)
+Wir wollen nun ein Experiment, eine Krafttrainingsstudie, durchführen um zu überprüfen ob das Training die Beinkraft erhöht. Wir haben allerdings nur sehr wenige Ressourcen zur Verfügung (bzw. wir sind faul) und können daher nur insgesamt sechs Messungen durchführen. Aus einem kürzlich durchgeführten Census haben wir aber die Beinkraftwerte der ganzen Population. Stellen wir die Kraftwerte zunächst mittels einer Tabelle dar (siehe @tbl-sts-basics-world)
 
 ```{r}
 #| tbl-cap: "Kraftwerte (in Newton) der Lummerländer an der einbeinigen Beinpresse"
 #| label: tbl-sts-basics-world
 
-world_wide <- cbind(world[1:10,],world[11:20,]) 
-world_wide |> 
+#world_wide <- cbind(world[1:10,],world[11:20,]) 
+world |> 
   kable(
     booktabs=TRUE, 
-    col.names = c('ID', 'Kraft[N]','ID','Kraft[N]')) 
+    col.names = c('ID', 'Kraft[N]')) #,'ID','Kraft[N]')) 
 ```
 
-Selbst bei 20 Werten ist diese Darstellung wenig übersichtlich. Wir könnten zwar Zeile für Zeile durchgehen und nach etwas notieren und suchen würden wir sehen das der Maximalwert bei $3200$N für P17 und der Minimalwert von Person P13 bei $1800$N liegt. Aber wirklich einfach ist diese Darstellung nicht. Für solche univariaten Daten (uni = eins) kann eine übersichtlichere Darstellung mittels eines sogenannten Dotplots erreicht werden (siehe @fig-sts-basics-lummer-dotplot).
+Selbst bei 20 Werten ist diese Darstellung mittels einer Tabelle leider wenig übersichtlich. Wir müssen Zeile für Zeile die Tabelle durchgehen und uns spezifische Kennwerte notieren. Beispielsweise könnten wir notieren, dass der Maximalwert der Beinkraft bei $`r max(world$Kraft)`$N für `r world$ID[which.max(world$Kraft)]` und der Minimalwert von `r world$ID[which.min(world$Kraft)]` bei $`r min(world$Kraft)`$N liegt. Aber wirklich übersichtlich ist die Darstellung in Form einer Tabelle nicht. Für solche univariaten Daten (uni = eins) kann eine übersichtlichere Darstellung mittels eines sogenannten Dotplots erreicht werden (siehe @fig-sts-basics-lummer-dotplot).
 
 ```{r}
 #| fig.cap: "Dotplot der Lummerlandkraftdaten"
@@ -68,13 +66,13 @@ ggplot(world,
   scale_y_continuous('', breaks = NULL)
 ```
 
-Hier kann deutlich schneller abgelesen werden was das Minimum und das Maximum der Daten ist, sowie es kann auch direkt abgeschätzt werden in welchem Bereich sich der Großteil der Daten befindet. Allerdings wird durch diese Art der Darstellung die Information über welche Person die jeweiligen Werte besitzt nicht mehr dargestellt. Dies stellt in den meisten Fällen allerdings kein Problem dar, da wir in den meisten Fällen aussagen über die Gruppe und weniger über einzelne Personen machen wollen.
+Hier kann deutlich schneller abgelesen werden was das Minimum und das Maximum der Daten ist, sowie es kann auch direkt abgeschätzt werden in welchem Bereich sich der Großteil der Daten befindet. Allerdings wird durch diese Art der Darstellung die Information über welche Person die jeweiligen Werte besitzt nicht mehr dargestellt. Dies stellt in den meisten Fällen allerdings kein Problem dar, da wir in den meisten Fällen aussagen über die Gruppe und weniger über einzelne Personen machen wollen. So ein Dotplot hat auch gleichzeitig den Vorteil, dass wir die Verteilung der Werte abschätzen können. In welchem Bereich liegen die meisten Datenwerte? Liegen die Werte eng beineinander oder streuen die Werte sehr stark? Gibt es einzelne Werte die sehr unterschiedlich von den anderen Werten? Dies sind alles Fragen die notwendig sind um einen Datensatz zu beurteilen.
 
-Gehen wir jetzt von der folgenden Fragestellung aus. Wir wollen den Gesundheitsstatus unserer Lummerländer verbessern und wollen dazu ein Krafttraining durchführen. Da evidenzbasiert arbeiten wollen, möchten wir überprüfen ob wirklich ein Verbesserung der Kraft durch das Training stattgefunden hat. Da es sich aber gleichzeitig um unsere selbst geschaffene Welt handelt führen wir natürlich ein perfektes Krafttraining, eine perfekte Intervention, durch. D.h wir stellen uns immer wieder als unwissend da und geben vor das wir gar nicht wissen, das das Training perfekt effektiv ist.
+Gehen wir jetzt von der folgenden Fragestellung aus. Wir wollen den Gesundheitsstatus unserer Lummerländer verbessern und wollen dazu ein Krafttraining durchführen. Da wir evidenzbasiert arbeiten wollen, möchten wir überprüfen ob wirklich ein Verbesserung der Beinkraft durch das Training stattfindet. Da es sich aber gleichzeitig um unsere selbst geschaffene Welt handelt führen wir natürlich ein perfektes Krafttraining, eine perfekte Intervention, durch. D.h wir stellen uns immer wieder als unwissend da und geben vor das wir gar nicht wissen, das das Training perfekt effektiv ist. Dies ermöglicht uns gleichzeitig ein Gedankenexperiment durchzuführen und zu überprüfen was passiert wenn wir ein solches Experiment in der Realität durchführen.
 
-D.h. wir führen gleichzeitig ein Gedankenexperiment durch. Wir führen ein Krafttraining für die Beine durch. Das Training ist perfekt und verbessert die Kraftleistung um genau $+`r d_gr`$N. Dieser Kraftzuwachs unabhängig davon welche Person aus unserer Population das Training durchführt (Warum ist das keine realistische Annahme?). Wir wollen zwei Gruppen miteinander vergleichen eine Interventionsgruppe und eine Kontrollgruppe. In beiden Gruppen sollen jeweils $n_{\text{TRT}} = n_{\text{CON}} = 3$ TeilnehmerInnen bzw. Teilnehmer einbezogen werden da wir nicht mehr Ressourcen für mehr ProbandInnen haben.
+Das Beinkrafttraining sei also perfekt und verbessert die Kraftleistung um genau $+`r d_gr`$N. Dieser Kraftzuwachs ist unabhängig davon welche Person aus unserer Population das Training durchführt (Ist das eine realistische Annahme?). Um die Effektivität des Training abzuschätzen vergleichen wir zwei Gruppen miteinander. Eine Interventionsgruppe und eine Kontrollgruppe. In beiden Gruppen sollen jeweils $n_{\text{TRT}} = n_{\text{CON}} = 3$ TeilnehmerInnen bzw. Teilnehmer einbezogen werden da wir nicht mehr Ressourcen für mehr ProbandInnen haben.
 
-Die erste Frage die sich nun stellt ist wie wählen wir die sechs Personen aus unserer Population aus und wie teilen wir die sechs Personen in die beiden Gruppen? Nach etwas überlegen kommen wir darauf, dass wir am besten eine zufällige Stichprobe ziehen sollten (Warum?).
+Die erste Frage die sich nun stellt ist wie wählen wir die sechs Personen aus unserer Population aus und wie teilen wir die sechs Personen in die beiden Gruppen auf? Nach etwas überlegen kommen wir darauf, dass wir am besten eine zufällige Stichprobe ziehen sollten (Warum?).
 
 ::: {#def-sample}
 ## Stichprobe
@@ -88,16 +86,30 @@ Eine Stichprobe\index{Stichprobe} ist eine Teilmenge der Objekte aus der Populat
 Eine Zufallsstichprobe\index{Zufallsstichprobe} ist eine Teilmenge der Objekte aus der Population die *zufällig* ausgewählt wurde.
 :::
 
-Diese sechs Personen, unsere Stichprobe, wird dann wiederum zufällig auf die beiden Gruppen aufgeteilt.
+Die sechs Personen unserer Stichprobe werden dann zufällig auf die beiden Gruppen aufgeteilt. (Warum zufällig?)
 
 ```{r}
 id_s1 <- c(8, 9, 3, 7, 10, 20)
 ```
 
-Ein Zufallszahlengenerator hat die Zahlen $i = \{`r paste(sort(id_s1), collapse=',')`\}$ gezogen. Die entsprechenden Personen werden aus der Population ausgewählt und wiederum zufällig in die beiden Gruppen aufgeteilt (siehe @tbl-sts-basics-experiment-1).
+Mit einem Zufallszahlengeneratoren haben wir die Zahlen $i = \{`r paste(sort(id_s1), collapse=',')`\}$ gezogen. Die entsprechenden Personen werden aus der Population anhand der ID ausgewählt. Anschließend ordnet wieder ein Zufallszahlengenerator die sechs Personen in die beiden Gruppen ein.
+
+```{mermaid}
+%%| fig-cap: "Ablaufdiagramm der Gruppenzuweisung."
+%%| label: fig-stats-basics-sample-01
+
+flowchart TD
+    A{Population} --> B(Zufallszahlengenerator)
+    B --> C[Stichprobe]
+    C --> D(Zufallszahlengenerator)
+    D --> E[Kontrollgruppe]
+    D --> F[Interventionsgruppe]
+```
+
+In @tbl-sts-basics-experiment-1 ist die Stichprobe und Zuteilung in die Gruppen zu sehen.
 
 ```{r}
-#| tbl-cap: "Zufällig ausgewählte Stichprobe der Kontrollgruppe (CON) und der Interventionsgruppe (TRT)."
+#| tbl-cap: "Zufällig ausgewählte Stichprobe mit $N=6$ und die Zuteilung in Kontroll- (CON) und Interventionsgruppe (TRT)."
 #| label: tbl-sts-basics-experiment-1
 
 world_ex_1 <- world[id_s1,] |> mutate(Gruppe=rep(c('CON','TRT'),each=3))
@@ -148,28 +160,26 @@ kable(dat_int |> add_mean(),
   col.names=c('ID','Kraft[N]'))
 ```
 
-Für beide Gruppen ist jeweils der Mittelwert\index{Mittelwert} berechnet worden, um die Wert miteinander vergleichen zu können. Später werden wir noch weitere Maße kennenlernen die es ermöglichen zwei Mengen von Werten miteinander zu vergleichen.
+Letztendlich haben wir in der Interventionsgruppe nur die Ausgangswerte aus dem Census genommen und $100$N dazuaddiert. Für beide Gruppen ist in @tbl-sts-basics-sample-1 jeweils noch der Mittelwert\index{Mittelwert} berechnet worden, um die Gruppen leichter miteinander vergleichen zu können. Später werden wir noch weitere Maße kennenlernen die es ermöglichen zwei Mengen von Werten miteinander zu vergleichen. Der Mittelwert ist dabei derjenige der wenn schon aus der Schule kennen.
 
 ::: {#def-Mittelwert}
 ## Mittelwert
 
-Der Mittelwert über $n$ Werte berechnet sich nach der Formel:
+Der Mittelwert $\bar{x}$ über $n$ Werte berechnet sich nach der Formel:
 
 $$
 \bar{x} = \frac{\sum_{i=1}^n x_i}{n}
 $$ {#eq-mean}
 
 Der Mittelwert wird mit einem Strich über der Variable dargestellt.
-
 :::
 
-Damit lernen wir direkt auch ein neues Konzept kennen. Nämlich das der Statistik\index{Statistik}. Ein Wert der auf der erhobenen Stichprobe berechnet wird, wird als Statistik bezeichnet.
+Damit haben wir auch schon direkt ein neues Konzept aus der Statistik kennengelernt. Nämlich das der Statistik\index{Statistik}. Ein Wert der mittels der Werte aus der Stichprobe berechnet wird, wird als Statistik bezeichnet.
 
 ::: {#def-Statistik}
 ## Statistik
 
 Ein auf einer Stichprobe berechnet Wert, wird als Statistik bezeichnet.
-
 :::
 
 Um jetzt Unterschied zwischen den beiden Gruppen zu untersuchen berechnen wir die Differenz D zwischen den beiden Mittelwerten $D = \bar{K}_{\text{TRT}} - \bar{K}_{\text{CON}}$. Die Differenz kann natürlich auch in die andere Richtung berechnet werden und es würde sich das Vorzeichen ändern. Hier gibt es keine Vorgaben, sondern die Richtung kann frei bestimmt werden. Wenn bekannt ist in welcher Richtung der Unterschied berechnet wird, dann stellt dies keine Problem dar. Im vorliegenden Fall ziehen wir die Interventionsgruppe von der Kontrollgruppe ab, da wir davon ausgehen, dass die Intervention zu einer Krafterhöhung führt und wir dadurch einen positiven Unterschied erhalten (vgl. @eq-sts-basics-ex1-d)

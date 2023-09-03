@@ -27,13 +27,37 @@ $$
 
 D.h also, wir gehen davon aus, dass die Residuen normalverteilt sind, mit einem Mittelwert von $\mu = 0$ und einer noch näher zu spezifizierenden Varianz $\sigma^2$. Das führt dann zu der folgenden Formulierung des Regressionsmodells.
 
-$$
+\begin{equation}
 Y_i = \beta_0 + \beta_1 \cdot x_i + \epsilon_i, \quad \epsilon_i \sim \mathcal{N}(0, \sigma^2)
-$$ {#eq-simple-regression-model}
+\label{eq-slm-inf-simple-reg}
+\end{equation}
 
-$Y$ wird jetzt groß geschrieben, da es sich um eine Zufallsvariable handelt. Dies führt jetzt dazu, das das Regressionsmodell in zwei Teile unterschieden werden kann. Einmal eine deterministischen Teil $\beta_0 + \beta_1 \cdot x$ und einen stochastischen Teil $\epsilon_i$. Dies führt dazu, dass $Y_i$ ebenfalls stochastisch ist und zu einer Zufallsvariable wird.
+Bezüglich der Residuen $\epsilon_i$ lässt sich noch eine weitere Spezifikation machen, auf die wir später noch öfter zurückgreifen werden. Da die Datenpunkt unabhängig voneinander sind, sind die Kovariancen zwischen den Residuen $=0$ oder formaler $cov(e_i,e_j) = 0,~für~i\neq j$. Daher lassen sich die Varianzen und Kovarianzen von $\epsilon_i$ in Form einer sogenannten Varianz-Kovarianz-Matrize schreiben. Matrizen hatten wir schon in der Einführung zu `R` kennengelernt. Die Varianz-Kovarianz-Matrize bekommt per Konvention das Zeichen $\Sigma$. 
+\begin{equation*}
+\Sigma = \begin{pmatrix}
+\sigma^2 & 0 & \cdots & 0 \\
+0 & \sigma^2 & & \vdots \\
+\vdots &  & \ddots &  \\
+0 & \cdots & & \sigma^2
+\end{pmatrix} = \sigma^2 \begin{pmatrix}
+1 & 0 & \cdots & 0 \\
+0 & 1 & & \vdots \\
+\vdots &  & \ddots &  \\
+0 & \cdots & & 1 
+\end{pmatrix} = \sigma^2 \mathbf{I}_n
+\end{equation*}
 
-Schauen wir uns weiter an, wie sich $Y_i$ verhält, wenn wir $x_i$ als Konstante $x$ mit ein bestimmten Wert annehmen. Dann wird aus @eq-simple-regression-model $Y_i = \beta_0 + \beta_i \cdot x + \epsilon_i$. Folglich bleibt der deterministische Teil immer gleich, wird zu einer Konstante. Da $\epsilon_i$ normalverteilt ist ist $Y_i$ ebenfalls normalverteilt. Der Mittelwert der Normalverteilung von $Y_i$ $\mu_{Y_i}$ ist allerdings nicht gleich Null, sondern die Normalverteilung von $\epsilon_i$ wird um die Konstante $\beta_0 + \beta_1 \cdot x$ verschoben (siehe @fig-slm-inf-epsilon-1). Das führt dazu, dass $Y_i$ der Verteilung $\mathcal{N}(\beta_0 + \beta_1 x)$ folgt.
+Die Annahmen des Modells, das ein linearer Zusammenhang zwischen $Y$ und  $X$ besteht, die einzelnen $N$ Datenpunkte unabhängig voneinander sind und die Residuen einer multivariaten Normalverteilung mit $\epsilon \sim \mathcal{N}(0,\sigma^2\mathbf{I}_n)$ folgen werden als Gauss-Markov-Modell bezeichnet. $\mathbf{I}_n$ bezeichnet die Einheitsmatrize.
+
+::: {#def-gauss-markov}
+## Gauss-Markov-Modell
+
+Besteht zwischen $N$ unabhängigen Datenpunkten $(y_i,x_i)$ ein linearer Zusammenhang der Form $Y = \beta_0 + \beta_1 \cdot X + \epsilon$ zwischen den Variablen $X$ und $Y$ und sind die Datenpunkte unabhängigvoneinander und die $\epsilon$ folgen einer multivariaten Normalverteilung $\epsilon \sim \mathcal{N}(0, \sigma^2 \mathbf{I}_n)$ dann wird dieses Modell als Gauss-Markov-Modell bezeichnet.
+:::
+
+$Y$ wird jetzt groß geschrieben, da es sich um eine Zufallsvariable handelt. Dies führt jetzt dazu, das das Regressionsmodell in zwei Teile unterschieden werden kann. Einmal einen deterministischen Teil $\beta_0 + \beta_1 \cdot x$ und einen stochastischen Teil $\epsilon_i$. Dies führt dazu, dass $Y_i$ ebenfalls stochastisch und somit zu einer Zufallsvariable wird.
+
+Schauen wir uns weiter an, wie sich $Y_i$ verhält, wenn wir $X_i$ als Konstante $X$ mit ein bestimmten Wert annehmen. Dann wird aus Formel\eqref{eq-slm-inf-simple-reg} $Y_i = \beta_0 + \beta_i \cdot x + \epsilon_i$. Folglich bleibt der deterministische Teil immer gleich, wird zu einer Konstante. Da $\epsilon_i$ normalverteilt ist ist $Y_i$ ebenfalls normalverteilt. Der Mittelwert der Normalverteilung von $Y_i$ $\mu_{Y_i}$ ist allerdings nicht gleich Null, sondern die Normalverteilung von $\epsilon_i$ wird um die Konstante $\beta_0 + \beta_1 \cdot x$ verschoben (siehe @fig-slm-inf-epsilon-1). Das führt dazu, dass $Y_i$ der Verteilung $\mathcal{N}(\beta_0 + \beta_1 x)$ folgt.
 
 ```{r}
 #| label: fig-slm-inf-epsilon-1
@@ -76,7 +100,7 @@ include_graphics('pics/Stats_Figures.png')
 
 In @fig-slm-inf-epsilon-2 ist klar zu sehen, wie für jeden der drei Punkte von $X$ die beobachteten $Y$-Werte einer Normalverteilung. Die Breite der Verteilung ist an jedem Punkte gleich, nämlich $=\sigma^2$ während der Mittelwert der Gleichung $\beta_0 + \beta_1 X$ folgend entlang der Regressionsgerade verschoben ist.
 
-Wenn wir uns zurück an die Ausführungen zur statistischen Signifikanz erinnern, dann haben wir in dem Zusammenhang vom einem datengenerierenden Prozess gesprochen (@def-dgp) (DGP). In unserem jetzigen Modell können wir dementsprechend zwei Komponenten als Teile des DGP identizifieren. Entsprechend @eq-simple-regression-model besteht der DGP aus dem deterministischen Teil $\beta_0 + \beta_1 X$ und dem stochastischen Teil $\epsilon_i \sim \mathcal{N}(0,\sigma^2)$. Diese Einsicht können wir verwenden um die Eigenschaften dieses Modells bezüglich Aussagen über statistische Signifikanz zu untersuchen.
+Wenn wir uns zurück an die Ausführungen zur statistischen Signifikanz erinnern, dann haben wir in dem Zusammenhang vom einem datengenerierenden Prozess gesprochen (@def-dgp) (DGP). In unserem jetzigen Modell können wir dementsprechend zwei Komponenten als Teile des DGP identizifieren. Entsprechend Formel\eqref{eq-slm-inf-simple-reg} besteht der DGP aus dem deterministischen Teil $\beta_0 + \beta_1 X$ und dem stochastischen Teil $\epsilon_i \sim \mathcal{N}(0,\sigma^2)$. Diese Einsicht können wir verwenden um die Eigenschaften dieses Modells bezüglich Aussagen über statistische Signifikanz zu untersuchen.
 
 Wir fokussieren uns jetzt auf ein vereinfachtes Modell bei dem wir zusätzlich noch $\beta_0 = 0$ setzen, und wir uns erst mal nur für die Eigenschaften von $\beta_1$ interessieren. Gehen wir nun davon aus, dass zwischen $X$ und $Y$ der Zusammenhang $\beta_1 = 1$ besteht. D.h. wenn $X$ um eine Einheit vergrößert wird, dann wird $Y$ ebenfalls um eine Einheit größer.
 
@@ -124,7 +148,7 @@ ggplot(dat_sim_1, aes(x_i, y_i)) +
 
 Ebenfalls wenig überraschend, die Punkte sind auf den $x$-Werten $-1, 0$ und $1$ zentriert und liegen nicht alle aufeinander, da sie einer Zufallsstichprobe aus $\mathcal{N}(0, \frac{1}{4})$ entspringen.
 
-Jetzt kann ich natürlich für diese Daten unsere Normalengleichungen anwenden und Werte für $\hat{\beta}_0$ und $\hat{\beta}_1$ berechnen. Oder eben direkt in `R`.
+Jetzt können für diese Daten unsere Normalengleichungen anwenden und Werte für $\hat{\beta}_0$ und $\hat{\beta}_1$ berechnen. Oder wir lassen das von `R` machen.
 
 ```{r}
 #| echo: true
@@ -385,7 +409,7 @@ $$
 k_i = \frac{X_i - \bar{X}}{\sum(X_i - \bar{X})^2}
 $$ {#eq-defn-ki}
 
-Der Grund für diese zunächst etwas uneinsichtige Definition wird im weiteren klarer werden. Zunächst haben die $k_i$ verschieldene Eigenschaften die wir uns im Späteren zunutze machen wollen. Zunächst erst einmal noch ein paar Identitäten die wir später auch noch verwenden.
+Der Grund für diese zunächst etwas uneinsichtige Definition wird im Weiteren klarer werden. Zunächst haben die $k_i$ verschieldene Eigenschaften die wir uns später zunutze machen wollen. Zunächst erst einmal noch ein paar Identitäten die wir später auch noch verwenden.
 
 Die erste Identität bezieht sich auf das Kreuzprodukt der Abweichungen von $X_i$ und $Y_i$ von ihren jeweiligen Mittelwerten.
 
@@ -448,21 +472,19 @@ Wir erhalten die bereits eingeführte Formel. Wiederum eine Einsicht aus der Her
 
 Eine interessante Eigenschaft des Standardfehler von $\hat{\beta}_1$ ist in Formel \eqref{eq-slm-inf-beta1-deriv} zu sehen. Im Nenner stehen die Abweichungen der $X$-Werte vom Mittelwert $\hat{X}$. D.h. wenn die $X$-Werte weiter auseinander sind, dann führt dies dazu, dass der Standardfehler $\sigma^2[b_1]$ kleiner wird. Intuitive macht dies auch Sinn, wenn ich eine Gerade bestimmen will, dann ist es einfacher die Gerade anhand weit auseinander liegenden Stütztwerten zu bestimmen im Vergleich zu wenn ich eng beinander liegende $X$-Werte verwende.
 
-## Maximum-likelihood Methode bei der einfachen linearen Regression
+## Maximum-likelihood Methode bei der einfachen linearen Regression(*)
 
-Ein anderer Herleitung für $\beta_0$ und $\beta_1$ kann über die sogenannten Maximum Likelihood durchgeführt werden. Dabei gehen direkt die Verteilungsannahmen direkt ein.
+Ein anderer Herleitung für $\beta_0$ und $\beta_1$ kann über die sogenannten Maximum-Likelihood-Methode durchgeführt werden. Dabei gehen die Verteilungsannahmen der Variablen direkt in die Herleitung ein.
 
-Für eine gegebene Zufallsvariable die jeweilige Dichte eines gegebenen Wertes über die Dichtefunktion berechnet werden. Wenn ein Zufallsvariable $X$ einer Normalverteilung folgt, dann wird die Verteilung von $X$ nach der bereits kennengelernte Dichtefunktion der Normalverteilung beschrieben.
+Im Zuge der theoretischen Verteilungen haben wir die Dichtefunktion kennengelernt. Für eine gegebene Zufallsvariable kann die Dichte für einen gegebenen Wert, z.B. $y_i$, über die Dichtefunktion berechnet werden. Wenn ein Zufallsvariable $X$ einer Normalverteilung folgt, dann wird die Verteilung von $X$ mittels der bereits kennengelernte Dichtefunktion der Normalverteilung beschrieben.
 
-$$
+\begin{equation*}
 f(X|\mu,\sigma^2) = \frac{1}{\sqrt{2 \pi \sigma^2}} \exp\left(-\frac{1}{2}\frac{(X - \mu)^2}{\sigma^2}\right)
-$$
+\end{equation*}
 
-Hier wird die Dichte von $X$ als eine Funktion von $\mu$ und $\sigma^2$ aufgefasst. Es ist aber auch möglich, die Zufallsvariable $X$ als gegeben anzusehen und die Dichte für verschiedene Werte von $\mu$ und $\sigma^2$ abzutragen. Der Einfachheit halber gehen wir davon aus, dass $\sigma^2$ gegeben sei und wir $\mu$ nicht kennen. Eine mögliche Fragestellung ist jetzt, für einen beobachteten Wert $x$, welcher Wert von $\mu$ ist am plausibelsten?
+Hier wird die Dichte von $X$ als eine Funktion von $\mu$ und $\sigma^2$ aufgefasst. D.h. ich gebe die Wert von $\mu$ und $\sigma$ vor, da ich sie brauche um die Dichte auszurechnen.
 
-Tragen wir dazu verschiedene Dichtewerte für ein gegebenes $x$ in Abhängigkeit von verschiedenen $\mu$ ab.
-
-D.h. wir interpretieren die Funktion als:
+Jetzt wird ein Perspektivwechsel durchgeführt. Ich kann nämlich auch anders herum die Zufallsvariable $X$ als gegeben ansehen und die Dichte für verschiedene Werte von $\mu$ und $\sigma^2$ abtragen. Der Einfachheit halber gehen wir davon aus, dass $\sigma^2$ gegeben bzw. bekannt sei und wir wollen $\mu$ ermitteln. Eine mögliche Fragestellung ist jetzt, für einen beobachteten Wert $x$, welcher Wert für $\mu$ ist am plausibelsten? Dazu tragen wir verschiedene Dichtewerte für ein gegebenes $x$ in Abhängigkeit von $\mu$ ab. D.h. wir interpretieren die Funktion als:
 
 $$
 f(\mu|x,\sigma^2) = \frac{1}{\sqrt{2 \pi \sigma^2}} \exp\left(-\frac{1}{2}\frac{(X - \mu)^2}{\sigma^2}\right)
@@ -470,28 +492,90 @@ $$
 
 Diese Funktion wird als die likelihood-Funktion bezeichnet. Das Maximum dieser Funktion kann als derjenige Wert interpretiert werden bei dem derjenige Wert von $\mu$ die maximal mögliche Dichte einnimmt.
 
-Die Likelihood-Funktion ist eine Funktion, die die Wahrscheinlichkeit beschreibt, mit der eine gegebene Stichprobe, in Abhängikeit  von den Parametern aus einer bestimmten Verteilung stammt. Die Likelihood-Funktion gibt also an, wie gut die beobachteten Daten zu einem bestimmten Satz von Parametern passen.
+Nehmen wir ein konkretes Beispiel. Wir haben einen Wert $x = 3$ beobachtet und wir wissen das $\sigma = 1$ ist. Natürlich ist klar, dass ein einzelner Wert nicht ausreicht um irgendwas zu bestimmen aber wir wollen erst einmal das Prinzip verstehen. Fangen wir mit einer Tabelle an. Wir nehmen die Wert $mu_i = [0,1,2,3,4,5,6]$ Und berechenen für jeder dieser Werte die Dichte $f(\mu|x=3,\sigma^2=1)$ aus (siehe @tbl-slm-inf-ml-01).
 
-Formal wird die Likelihood-Funktion als die gemeinsame Wahrscheinlichkeitsdichte der Stichprobe beschrieben, betrachtet als Funktion der Parameter. Dabei werden die beobachteten Werte als festgelegt und die Parameter als Variablen betrachtet. Die Likelihood-Funktion ist also eine Funktion der Parameter, die die Wahrscheinlichkeit der beobachteten Daten als Funktion dieser Parameter beschreibt. Die Likelihood-Funktion ist dabei keine Dichtefunktion und beschreibt somit keine Wahrscheinlichkeiten. Dementsprechend ist gilt für das Integral der Likelihood-Funktion $\int L(\mu|X,\sigma^2) d\mu \neq 1$ bzw. ist $=1$ per *Zufall*.
+```{r}
+#| tbl-cap: "Dichte für verschiedene Werte für $\\mu$ für $x = 3$"
+#| label: tbl-slm-inf-ml-01
 
-In unserem Regressionsfall nimmt die Likelihood-Funktion für einen einzelnen Wert die folgende Form an:
+x <- 3
+sigma <- 1
+tibble(mu = 0:6, d = dnorm(x, mu, sigma)) |> 
+  knitr::kable(
+    booktabs = TRUE,
+    linesep = '',
+    col.names = c("$\\mu$","Dichte"),
+    escape = FALSE,
+    digits = 3
+  )
+```
 
-$$
+Wenn wir uns die Werte in @tbl-slm-inf-ml-01 anschauen, da sehen wir, dass der Wert bei $\mu = 3$ die größte Dichte hat. Nun die Tabelle ist etwas grob, stellen wir das Ganze als kontinuierlichen Graphen dar.
+
+```{r}
+#| label: fig-slm-inf-ml-01
+#| fig-cap: "Likelihood-Funktion für $x = 3$"
+
+
+tibble(mu = seq(0,10,length.out=100), d = dnorm(x, mu, sigma)) |> 
+  ggplot(aes(mu, d)) +
+  geom_line() +
+  scale_x_continuous(expression(mu), breaks = 0:10) +
+  labs(y = 'Dichte')
+```
+
+In @fig-slm-inf-ml-01 sehen wir, das das Maximum der Likelihood-Funktion beim Wert $\mu = 3$ auftritt. D.h. die Normalverteilung mit $\mathcal{N}(\mu=3, \sigma=1)$ scheint diejenige zu sein, die die höchste Dichte produziert und daher auch diejenige die den höchsten likelihood hat als Verteilung unseren beobachteten Wert produziert zu haben. Macht bei einigen draufstarren auch Sinn, wenn unserer Wert aus einer Normalverteilung kommt und wir nur einen einzigen Wert haben, dann macht diejenige Normalverteilung am meisten Sinn die ihren Mittelwert $\mu$ an der Stelle des beobachteten Werts hat. Das Beispiel ist natürlich ein bisschen künstlich.
+
+Schauen wir uns zwei Werte an $x_1 = 1, x_2 = 2$. Wir gehen wieder davon aus, das die beiden Wert unabhängig voneinander sind. Dadurch können wir die Dichten für die beiden Wert einfach miteinander multiplizieren. Unsere likelihood-Funktion $L$ nimmt dann die Form.
+
+\begin{equation*}
+L = f(\mu|x_1,\sigma) \cdot f(\mu|x_2,\sigma)
+\end{equation*}
+
+Erstellen wir wieder einen Graphen von $L$ für verschiedene $\mu$ bei gegebenem $\sigma = 1$
+
+```{r}
+#| label: fig-slm-inf-ml-02
+#| fig-cap: "Likelihood-Funktion $L$ für $x_1 = 1$ und $x_2 = 2$."
+
+tibble(mu = seq(-2, 8, length.out = 1000),
+       d = dnorm(1, mu, sigma) * dnorm(2, mu, sigma)) |> 
+  ggplot(aes(mu, d)) +
+  geom_line() +
+  scale_x_continuous(expression(mu), breaks = -2:8) +
+  labs(y = 'Dichte')
+```
+
+In @fig-slm-inf-ml-02 ist jetzt das Maximum von $L$ an der Stelle $\mu = 1.5$ was aus nicht ganz zufälligen Gründen der Mittelwert $\bar{x} = \frac{1}{2}\sum_{i=1}^2 x_i$ der beiden Werte ist. Intuitiv kann das mit motiviertem Starren auch hergeleitet werden. Wenn beiden Werten die gleiche Bedeutung zugemessen wird, dann ist die Verteilung die genau in der Mitte zwischen den beiden Werten liegt, dijenige die am kompatibelsten mit der Erzeugung der beiden Werte ist.
+
+Die Likelihood-Funktion $L$ ist also eine Funktion, die die Wahrscheinlichkeit beschreibt, mit der eine gegebene Stichprobe, in Abhängikeit  von den Parametern aus einer bestimmten Verteilung stammt. Die Likelihood-Funktion $L$ gibt an, wie gut die beobachteten Daten zu einem bestimmten Satz von Parametern, im Beispiel ein Parameter $\mu$, passen. Per Konvention werden die Parameter oft mit dem Symbol $\theta$ bezeichnet. Im Beispiel damit wiederum $\theta = \mu$.
+
+Formal wird die Likelihood-Funktion $L$ als die gemeinsame Wahrscheinlichkeitsdichte der Stichprobe beschrieben, betrachtet als Funktion der Parameter $\theta$. Dabei werden die beobachteten Werte als festgelegt und die Parameter als Variablen betrachtet. $L$ wird eine Funktion der Parameter $L(\theta)$ interpretiert. Die Daten werden als gegeben angesehen. Die Likelihood-Funktion $L$ ist aber keine Dichtefunktion und beschreibt somit keine Wahrscheinlichkeiten. Dementsprechend ist gilt für das Integral der Likelihood-Funktion $\int L(\mu|X,\sigma^2) d\mu \neq 1$. Bzw. das Integral $=1$ dann nur per *Zufall*.
+
+In unserem Regressionsfall nimmt die Likelihood-Funktion $L$ für einen einzelnen Wert die folgende Form an:
+
+\begin{equation}
 L(\beta_0, \beta_1, \sigma^2|y_i) = \frac{1}{\sqrt{2\pi\sigma^2}} \exp\left(-\frac{(y_i - \beta_0 - \beta_1 x_i)^2}{2\sigma^2}\right)
-$$
+\label{eq-slm-inf-lik-01}
+\end{equation}
 
-Bei unserer Regressionsanalyse haben wir jedoch nicht nur einen einzigen beobachteten Wert $(y_i, x_i)$ sondern $N$ beobachtete Werte. Da die Werte unabhängig voneinander sind (laut der Annahmen), werden die jeweiligen likelihoods miteinander multipliziert. Die resultierende Likelihood-Funktion nimmt dann die folgenden Form an:
+D.h. die Parameter $\theta$ von $L$ sind $\beta_0, \beta_1$ und $\sigma$. Bei unserer Regressionsanalyse haben wir jedoch nicht nur ein einzelnes beobachtetes Wertepaar $(y_i, x_i)$ sondern $N$ beobachtete Wertepaare. Laut dem Gauss-Markov-Modell sind die Werte unabhängig voneinander, können die jeweiligen likelihoods wieder miteinander multipliziert werden. Die resultierende Likelihood-Funktion $L$ nimmt dann die folgenden etwas involviertere Form an:
 
 \begin{align*}
 L(\beta_0, \beta_1, \sigma^2) &= \prod_{i=1}^{N} f(y_i | x_i; \beta_0, \beta_1, \sigma^2) \\
 &= \prod_{i=1}^{N} \frac{1}{\sqrt{2\pi\sigma^2}} \exp\left(-\frac{(y_i - \beta_0 - \beta_1 x_i)^2}{2\sigma^2}\right) \\
-&= \left(\frac{1}{\sqrt{2\pi \sigma^2}}\right)^N \exp\left(\sum_{i=1}^N \frac{(y_i - \beta_0 - \beta_1 x_i)^2}{2 \sigma^2}\right) \\
+\end{align*}
+
+Wobei wir jetzt nicht anderes gemacht haben als Formel \eqref{eq-slm-inf-lik-01} eingesetzt haben. Wenn wir uns aber der Rechenregeln für Exponenten aus der Schule erinnern $e^a e^b = e^{a+b}$ dann können wir die Formel etwas vereinfachen.
+
+\begin{align*}
+L(\beta_0, \beta_1, \sigma^2|y_i) &= \left(\frac{1}{\sqrt{2\pi \sigma^2}}\right)^N \exp\left(\sum_{i=1}^N \frac{(y_i - \beta_0 - \beta_1 x_i)^2}{2 \sigma^2}\right) \\
 &= \left(\frac{1}{2\pi \sigma^2}\right)^{N/2} \exp\left(\sum_{i=1}^N \frac{(y_i - \beta_0 - \beta_1 x_i)^2}{2 \sigma^2}\right) \\
 \end{align*}
 
-Die Idee ist jetzt wieder die Gleiche. Wir versuchen das Maximum dieser Funktion zu finden, da die Werte $\beta_0, \beta_1$ und $\sigma^2$ dann so gewählt sind, dass sie die höchste likelihood haben. Der Ansatz erfolgt wieder mechanisch ,indem wie bei der Herleitung der Normalengleichungen, die partiellen Ableitungen berechnet werden, diese gleich Null gesetzt werden und das resultierende Gleichungssystem gelöst wird. Zu beachten hierbei, wir haben in jedem Produktterm die gleichen Parameter $\beta_0, \beta-1$ und $\sigma^2$ und die jeweiligen beobachteten $(y_i, x_i)$ Tuple werden als gegeben angesehen. 
+Die Idee ist jetzt wieder die Gleiche wie in den Beispieln oben. Wir versuchen das Maximum von $L$ zu finden, da die Werte $\beta_0, \beta_1$ und $\sigma^2$ dann so gewählt sind, dass sie die höchste likelihood haben. Jetzt schauen wir uns aber nicht einen Graphen an, sondern benutzten den gleichen Ansatz wie der Methode der kleinsten Quadrate; ableiten und $=0$ setzen. Der Ansatz erfolgt wieder mechanisch, indem wie bei der Herleitung der Normalengleichungen, die partiellen Ableitungen berechnet werden, diese gleich Null gesetzt werden und das resultierende Gleichungssystem gelöst wird. Zu beachten hierbei ist, wir haben in jedem Produktterm die gleichen Parameter $\beta_0, \beta-1$ und $\sigma^2$ und die jeweiligen beobachteten $(y_i, x_i)$ Tuple werden als gegeben angesehen. 
 
-Um die Berechnungn zu vereinfachen, bietet sich bei der Likelihoo-Funktion ein Trick an. Es wird nicht Likelihood-Funktion abgeleitet, sondern der Logarithmus der Likelihood-Funktion. D.h. die Funktion wird transformiert. Bei der Logarithmus-Funktion handelt es sich um eine sogenannte bijektive Funktion. Eine bijektive Funktion ist eine Funktion die jedem Element in der Ursprungsmenge genau ein Element in der Zielmenge zuordnet und ebenfalls umgekehrt. Dadurch kommt es zu keinen Kollisionen oder Auslassungen. Einfach gesagt, wenn die Funktion $y = f(x) = log(x)$ ist, dann wird jedem $x$ genau ein $y$ zugeordnet. Bzw. anders herum, wenn ich $y$ kenne, dann kenne ich auch den Wert von $x$ mit $f(x) = y$ bzw. $x = f^{-1}(y) = \exp(y)$. Dadurch, das die Logarithmus-Funktion bijektiv ist, führt dies dazu, dass das Maximum der ursprünglichen Funktion $L(\beta_0, \beta_1, \sigma^2)$ an der gleichen Stelle auftritt wie bei der transformierten Funktion $\ln L(\beta_0, \beta_1, \sigma^2)$.
+Um die Berechnungn zu vereinfachen, bietet sich bei der Likelihood-Funktion $L$ ein Trick an. Es wird nicht $L$ direkt abgeleitet, sondern der Logarithmus der Likelihood-Funktion. D.h. die Funktion wird transformiert. Bei der Logarithmus-Funktion handelt es sich um eine bijektive Funktion. Eine bijektive Funktion ist eine Funktion die jedem Element in der Ursprungsmenge genau ein Element in der Zielmenge zuordnet und ebenfalls umgekehrt. Dadurch kommt es zu keinen Kollisionen oder Auslassungen. Einfach gesagt, wenn die Funktion $y = f(x) = log(x)$ ist, dann wird jedem $x$ genau ein $y$ zugeordnet. Bzw. anders herum, wenn ich $y$ kenne, dann kenne ich auch den Wert von $x$ mit $f(x) = y$ bzw. $x = f^{-1}(y) = \exp(y)$. Dadurch, das die Logarithmus-Funktion bijektiv ist, führt dies dazu, dass das Maximum der ursprünglichen Funktion $L(\beta_0, \beta_1, \sigma^2)$ an der gleichen Stelle auftritt wie bei der transformierten Funktion $\ln L(\beta_0, \beta_1, \sigma^2)$.
 
 Wenn jetzt die Eigenschaften der Logarithmusfunktion, speziell des natürlichen Logarithmus, beachtet werden, dann wird auch klar, warum es Sinn machen könnte die Likelihood-Funktion mit dem Logarithmus zu transformieren, da aus den Produkten Summen werden mit denen einfacher umgegangen werden kann:
 
@@ -513,13 +597,25 @@ Der Logarithmus angewendet auf $L(\beta_0, \beta_1, \sigma^2)$ resultiert dann i
 &= -\frac{n}{2}\ln(2\pi) - \frac{n}{2}\ln(\sigma^2) - \frac{1}{2\sigma^2}\sum_{i=1}^{N}(y_i - \beta_0 - \beta_1 x_i)^2
 \end{align*}
 
-Wir die Funktion $\ell(\beta_0, \beta_1, \sigma^2)$ wieder partiell nach $\beta_0$ und $\beta_1$ abgeleitet und gleich Null gesetzt erhalten wir das gleiche Gleichungssystem wie bei den vorhergehenden Herleitungen über die Abweichungen von der Regressionsgeraden. z.B.
+Wird die Funktion $\ell(\beta_0, \beta_1, \sigma^2)$ wieder partiell nach $\beta_0$ und $\beta_1$ abgeleitet und gleich Null gesetzt erhalten wir das gleiche Gleichungssystem wie bei den vorhergehenden Herleitungen über die Abweichungen von der Regressionsgeraden sprich den Normalengleichungen. z.B.
 
 \begin{align*}
-\frac{\partial \ell(\beta_0, \beta_1, \sigma^2)}{\partial \beta_0} &= \frac{\partial}{\partial \beta_0} -\frac{n}{2}\ln(2\pi) - \frac{n}{2}\ln(\sigma^2) - \frac{1}{2\sigma^2}\sum_{i=1}^{N}(y_i - \beta_0 - \beta_1 x_i)^2 \\
+\frac{\partial \ell(\beta_0, \beta_1, \sigma^2)}{\partial \beta_0} &= \frac{\partial}{\partial \beta_0} \left[-\frac{n}{2}\ln(2\pi) - \frac{n}{2}\ln(\sigma^2) - \frac{1}{2\sigma^2}\sum_{i=1}^{N}(y_i - \beta_0 - \beta_1 x_i)^2\right] \\
 &= \frac{2}{2\sigma^2}\sum_{i=1}^N (y_i - \beta_0 - \beta_1 x_i)
 \end{align*}
-Wenn dieser Ausdruck gleich Null gesetzt erhalten wir den gleichen Ausdruck wie unter
+Wenn dieser Ausdruck gleich Null gesetzt erhalten wir den gleichen Ausdruck wie formals unter den Normalengleichungen für $\beta_0$.
+
+\begin{alignat}{2}
+ && \frac{2}{2\sigma^2}\sum_{i=1}^N (y_i - \beta_0 - \beta_1 x_i) = 0 \nonumber \\
+\Leftrightarrow\mkern40mu && \sum (y_i - \beta_0- \beta_1 x_i) = 0 \nonumber \\
+\Leftrightarrow\mkern40mu && \sum y_i - \sum \beta_0- \sum \beta_1 x_i = 0 \nonumber \\
+\Leftrightarrow\mkern40mu && n \bar{y} - n \beta_0- \beta_1 n \bar{x} = 0 \nonumber \\
+\Leftrightarrow\mkern40mu && \bar{y} - \beta_0- \beta_1 \bar{x} = 0 \nonumber \\
+\Leftrightarrow\mkern40mu && \bar{y} - \beta_1 \bar{x} = \beta_0\nonumber \\
+\Leftrightarrow\mkern40mu && \beta_0= \bar{y} - \beta_1 \bar{x} 
+\end{alignat}
+
+Die Herleitung für $\beta_1$ ist ebenfalls gleich derjenigen die aus den Normalengleichungen entsteht. Nochmal zum Unterschied, bei den Normalengleichungen sind keine Annahmen über die Verteilung der Werte eingeflossen. Einzig, wir haben eine Methode gesucht, die die quadrierten Residuen minimiert. Dagegen beruht die Herleitung der Gleichungen aus der Maximum-Likelihood Methode direkt auf eine spezifischen Verteilungsannahme. Im Fall der lineare Regression führen beide Methoden zum gleichen Ergebnis. Die Maximum-Likelihood-Methode kann jedoch auch in Fällen angewendet werden bei denen die Methode der quadrierten Abweichungen nicht funktioniert. Wichtig für unsere Anwendung ist das zugrundeliegende Prinzip bzw. den Unterschied zu verstehen.
 
 ## Konfidenzintervalle für die Koeffizienten
 
@@ -546,5 +642,6 @@ Noch einmal zu erwähnen ist, dass die beiden Parameter $\hat{\beta}_0$ und $\ha
 
 ## Weiteres Material 
 
-@pos_simple_regression und @kutner2005 [p.40-48]
+Eine schnelle Zusammenfassung findet ihr in @pos_simple_regression, während @kutner2005 das die Lineare Regression detailliert herleiten. Für die eben besprochenen Themen ist vor allem Abschnitt (S.40-48) von Interesse.
+
 
