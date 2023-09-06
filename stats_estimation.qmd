@@ -21,69 +21,67 @@ sd_lummer <- 230
 sample_k9 <- readr::read_csv('data/sample_k9.csv')
 ```
 
-# Parameterschätzung 
+Bisher haben wir die Daten mittels Hypothesentests betrachtet. D.h. wir haben eine $H_0$ und $H_1$-Hypothese formuliert und dann anhand der Stichprobenverteilung abgeschätzt wie kompatible unsere beobachteter Wert mit der $H_0$-Hypothese ist. Dadurch haben eine dichotome Betrachtung der Daten durchgeführt. Entweder der beobachtete Wert war statistisch signifikant unter der $H_0$ oder eben nicht. Diese Unterteilung der Entscheidung in nur zwei verschiedene Ausgänge kann, neben dem Problem das wir eine Frage beantworten die wir oftmals gar nicht gestellt haben, bringt aber ein paar Grundlegende Nachteile mit sich die wir uns nun genauer anschauen.
 
-## Problem bei einer dichotomen Betrachtung der Daten
+Das folgende Beispiel ist stark angelehnt bzw. entnommen aus @cumming2013[p.1]. Wir haben zwei Forschergruppen. Die Gruppen Glücklich und Pech. Beide Gruppen haben das gleiche Experiment durchgeführt, eine Krafttrainingsintervention. Die Gruppe Glücklich hat insgesamt $N = 44$ TeilnehmerInnen in zwei unabhängigen Gruppen, während die Gruppe Pech $N = 36$ TeilnehmerInnen in zwei unabhängigen Gruppen untersucht hat. Die beiden Untersuchung kamen zum folgenden Ergebnis (siehe @tbl-stats-est-prob)
+
+| Gruppe | $D_{MW}$ | $D_{STD}$ | Statistik | p-Wert |
+| --- | --- | --- | --- | -- |
+| Glücklich | $3.61$ | $6.97$ | $t(42) = 2.43$ | $0.02$ |
+| Pech | $2.23$ | $7.59$ | $t(34) = 1.24$ | $0.22$ |
+
+: Ergebnisse der Untersuchung der Forschergruppen Glücklich und Pech (D = Differenz) {#tbl-stats-est-prob}
+
+Wenn wir eine Irrtumswahrscheinlichkeit von $\alpha = 0.05$ ansetzten. Dann hat unter den beobachteten Daten nur die Gruppe Glücklich ein statistisch signifikantes Ergebnis, da der p-Wert $p = 0.02 < 0.05 = \alpha$ ist. Die Gruppe Pech dagegen hat kein statistisch Signifikantes Ergebnis und kann mit $p = 0.22 > 0.05 = \alpha$ die $H_0$ nicht ablehnen. Wenn wir nun die zu den beiden Untersuchungen gehörenden Veröffentlichungen lesen würden, und die Ergebnisse streng dichotom betrachten würden, dann hätten wir zwei widersprüchliche Ergebnisse. Wir könnten das versuchen zu erklären, dass die Stichprobengröße in Pech zu klein und vielleicht zu variabel ist. Allerdings, wenn wir das Ergebnis von Glücklich ansetzen dann hätte die Power für Pech ausgereicht tatsächlich ausgereicht um relativ sicher Power $>.9$ um eine statistisch signifikantes Ergebnis zu beobachten. Stellen wir die beiden Effekte einmal graphisch dar.
 
 ```{r}
-#| fig.cap: "Auszug aus @cumming2013 [p.1]"
-#| label: fig-sts-sig-cumming
- 
-include_graphics('pics/cumming_luck.png')
+#| label: fig-stats-est-prob-01
+#| fig-cap: "Gruppendifferenzen für die beiden Forschgruppen"
+#| fig-height: 1.5
+
+ggplot(tibble(x = c(3.61, 2.23), y = 1:2, ), aes(x,y)) +
+  geom_point(size=3) +
+  geom_vline(xintercept = 0, linetype = 'dashed', color = 'red') +
+  scale_x_continuous('Gruppendifferenz D', limits = c(-4, 4)) +
+  scale_y_continuous('Gruppe', limits = c(0.9, 2.1),
+                     breaks = 1:2, labels = c('Glücklich','Pech'))
 ```
 
-
-## Wie groß ist der Effekt? 
+Wenn wir uns die Differenzen in @fig-stats-est-prob-01 anschauen. Dann sehen die Ergebnisse eigentlich gar nicht so widersprüchlich aus. Beide Effekte sind in der gleichen Richtung, nur die Effektstärke unterscheidet sich zwischen den beiden Gruppen. Wenn uns jemand zwingen würde eine Abschätzung zu geben wir groß der Effekt der Trainingsintervention ist, dann würde wir wahrscheinlich einen Wert zwischen den beiden beobachteten Werte angeben. Schauen wir uns mal einen anderen Fall an.
 
 ```{r}
-#| fig.cap: "Stichprobenverteilungen der Differenz unter $H_0$ und $H_1:\\delta=500$N bei einer Stichprobengröße von n = 9"
+#| label: fig-stats-est-prob-02
+#| fig-cap: "Beispiel für ein anderes Ergebnis der Gruppendifferenzen für die beiden Forschgruppen"
+#| fig-height: 1.5
 
-d_x <- 2 
-sigma <- sample_k9$sd[1]
-d <- sample_k9$m[2]
-xx = seq(-4*sigma,d+4*sigma)
-n_pts = length(xx)
-dat_k9 <- tibble(
-  x = rep(xx,2),
-  y = c(dnorm(xx, 0, sigma), dnorm(xx, d, sigma)),
-  hypo = rep(c('H0','H500'), c(n_pts, n_pts))
-)
-ggplot(dat_k9, aes(x,y,fill=hypo, ymin=0, ymax=y)) +
-  geom_ribbon(alpha=0.5) +
-  geom_line() +
-  scale_fill_discrete("Hypothese", labels=c(
-    expression(H[0]  ), expression(H[500])
-  )) +  
-  lims(x = c(-750, 1250)) +
-  labs(x = 'Differenzen[N]', y = 'relative Häufigkeiten') 
+ggplot(tibble(x = c(3.61, -2.23), y = 1:2, ), aes(x,y)) +
+  geom_point(size=3) +
+  geom_vline(xintercept = 0, linetype = 'dashed', color = 'red') +
+  scale_x_continuous('Gruppendifferenz D', limits = c(-4, 4)) +
+  scale_y_continuous('Gruppe', limits = c(0.9, 2.1),
+                     breaks = 1:2, labels = c('Glücklich','Pech'))
 ```
 
+Hätten wir das Ergebnis aus @fig-stats-est-prob-02 beobachtet, dann würde wir wahrscheinlich schon eher von einem widersprüchlichen Ergebnis in der Literatur sprechen. Wenn wir wieder unter Zwang einen Wert angeben müssten, dann wahrscheinlich einen in der Nähe von $D = 0$. In beiden Fällen haben wir aber unter der rein dichotomen Betrachtung das gleiche Ergebnis (1 x statisch signifikant + 1 x statistisch nicht signifikant). Daraus können wir schließen, dass wir bei der Interpretation von Forschungsergebnissen nicht nur auf statistisch signifikant ja oder nein schauen sollten. Wir müssen auch immer die die Effektrichtungen und deren Größe genauer anschauen um uns ein Bild des Forschungsstandes zu machen. Dazu gehört natürlich auch noch eine Betrachtung des Forschungsdesigns und insbesondere der Stichprobengröße $N$. Deren Einfluss schauen wir uns im Folgenden etwas genauer an.
 
-## Schätzung der Populationsparameter
+## Wie groß und präzise ist der beobachtete Effekt? 
+
+Aus den Ausführungen von eben ist also klar, dass wir den beobachteten Effekt auch dokumentieren müssen, da er für die Interpretation des Ergebnisse wichtig ist. Letztendlich ist die Größe des Effekts auch ausschlaggebend ob ich zum Beispiel eine Trainingsintervention mit meinen Athletinnen durchführe. Mir reicht es nicht zu wissen das ein statistisch signifikanter Effekt in Studien gefunden wurde, sondern ich möchte auch die Größe des Effekts wissen.
 
 ```{r}
 alpha <- 0.05
 delta <- 500
 mu <- delta
 d_hat <- 350
-s_hat <- 132
-s_e <- round(s_hat/sqrt(9))
+s_hat <- 54 
+#s_e <- round(s_hat/sqrt(9))
+s_e <- round(s_hat*sqrt(2/3))
 c_i <- d_hat + c(-1,1)*qnorm(1-alpha/2)*s_e
 ```
 
-Kleine Welt: Experiment wird einmal mit n = 9 durchgeführt 
+Gehen wir zurück zu unseren Lummerland-Beispiel. Das Ergebnis der Intervention könnte beispielsweise die folgenden Stichprobenkennwerte  bei $N = 9$ haben. Wir beobachten einen Unterschied von $D = \bar{x}_{treat} - \bar{x}_{con} = `r d_hat`$ zwischen den Gruppen. Beide Stichproben zeigen eine Standardabweichung von  $s = `r s_hat`$ was zu einem Standardfehler von $s_e = `r s_e`$ führt (Rechnung unterschlagen). Dies ist unsere **Schätzung der Populationsparameter** anhand der Stichprobe. Der Standardfehler gibt uns eine Schätzung über die Präzision unseres Schätzwertes $D$. Wenn der Standardfehler $s_e$ sehr groß ist, dann bedeutet dies, dass wir den Wert nur sehr unpräzise geschätzt haben. Anderes herum wenn $s_e$ sehr klein ist. Daran schließt sichg natürlich die Frage, was die Präzision für meine Schätzung bedeutet. Welche anderen Unterschiedswerte $D$ sind anhand der beobachteten Daten noch plausibel?
 
-### Beobachtete Stichprobenkennwerte
-
-\begin{align*}
-d = \bar{x}_{treat} - \bar{x}_{con} &= `r d_hat` \\
-s &= `r s_hat` \\
-s_e &= `r s_e`
-\end{align*}
-
-Wie präzise ist meine Schätzung und welche anderen Unterschiedswerte sind anhand der beobachteten Daten noch plausibel?
-
-## Welche $\delta$s sind plausibel für $d = `r d_hat`$? 
+## Welche $\delta$s sind plausibel für $D = `r d_hat`$? 
 
 ```{r}
 #| fig.cap: "Verschiedene Verteilungen von Gruppendifferenzen, beobachteter Unterschied (rot)"

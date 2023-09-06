@@ -499,6 +499,20 @@ $$
 
 In Worten besagt der Zentrale Grenzwertsatz, dass egal welche Ursprungsform die Verteilung einer Zufallsvariablen $X$ hat, wenn die Stichprobengröße gegen unendlich geht, die konvergiert die Differenz des Stichprobenmittelwerts und des Mittelwert der Verteilung geteilt durch den Stichprobenstandardfehler gegen die Standardnormalverteilung. Grenzwertsätz sind manchmal etwas schwierig zu interpretieren, da hier noch keine Aussage gemacht wird, wie groß die Stichprobe sein muss, damit diese Abschätzung valide ist. In der Praxis wird oft ab einer *gefühlt* großen Stichproben diese Abschätzung als zulässig angesehen. 
 
+```{r}
+foo <- function(n_sim = 400, n = 30, k = 10, p = 0.5) tibble(
+  x = n,
+  y = replicate(n_sim, mean(rbinom(n, k, p))))
+d_b <- purrr::list_rbind(purrr::map(c(5,30,50), \(x) foo(n = x)))
+d_b <- d_b |> dplyr::mutate(z = (y - 5)/sqrt(10*0.25/x))
+omega <- tibble(z = seq(min(d_b$z), max(d_b$z),length.out=100),
+                y = dnorm(z))
+ggplot(d_b, aes(z)) + 
+  geom_histogram(aes(z,after_stat(density)), bins=24) +
+  geom_line(data = omega, aes(y = y), color='red') +
+  facet_grid(~x)
+```
+
 # Verteilungszoo
 
 ## t-Verteilung

@@ -656,7 +656,7 @@ Zusammengefasst haben wir die folgende Liste bezüglich der Terme, $\alpha$, $\b
 - $\beta$: Die Wahrscheinlichkeit sich gegen die $H_1$ zu entscheiden, wenn die $H_1$ zutrifft.
 - Power := $1 - \beta$: Die Wahrscheinlichkeit sich für die $H_1$ zu entscheiden, wenn die $H_1$ zutrifft. Sollte ebenfalls **vor** dem Experiment festgelegt werden.
 
-Fassen wir auch noch mal kurz die möglichen Entscheidungen und Konsequenzen in einer Tabelle zusammen (siehe @tbl-stats-sigpower).
+Die verschiedenen Entscheidungsmöglichkeiten haben wir schon einmal zusammengefasst (siehe @tbl-stats-sig-power).
 
 | Entscheidung\\Realität | $H_0$ | $H_1$ |
 | --- | --- | --- |
@@ -667,8 +667,11 @@ Fassen wir auch noch mal kurz die möglichen Entscheidungen und Konsequenzen in 
 
 ## Wie können wir die Power erhöhen? 
 
+Die Frage die sich nun stellt, ist wie können wir die Power erhöhen? In @fig-stats-sig-power-04 haben wir nochmal die beiden Verteilungen abgetragen bei $\Delta = 500$ und $\Delta = 0$.
+
 ```{r}
-#| fig.cap: "Verteilungen wenn $\\delta$=500 und $\\delta$=0 in unserem kleine Welt Beispiel mit n = 3."
+#| fig-cap: "Verteilungen wenn $\\Delta$=500 und $\\Delta$=0 in unserem kleine Welt Beispiel mit n = 3."
+#| label: fig-stats-sig-power-04
 
 dat <- tibble(
   di = c(differences$d + 500, differences$d),
@@ -683,11 +686,13 @@ p_h500 <- ggplot(dat, aes(di, fill=hypo)) +
 print(p_h500)
 ```
 
+Unsere Entscheidung ist speziell problematisch im Bereich zwischen $0$ und $500$. Hier überlappen die beiden Verteilungen und wir haben dementsprechend Schwierigkeiten einen beobachteten Wert in diesem Bereich eindeutig einer der beiden Hypothesen zuzuordnen. Wir können die Power daher erhöhen, wenn wir die Überschlappung der beiden Verteilungen verkleinern. Dazu haben wir zwei Möglichkeiten, entweder wir Vergrößern den Unterschied zwischen den beiden $\Delta$s. D.h. das Krafttraining müsste effizienter werden oder wir versuchen die beiden Verteilungen schmaler zu machen indem wir die Streuung der Wert verkleinern.
 
-## Stichprobengröße von n = 3 auf n = 9 erhöhen?
+In @fig-stats-sig-power-05 haben wir alle Parameter gleich gelassen zu @fig-stats-sig-power-04 aber haben die Stichprobengröße von $n = 3$ auf $n = 9$ erhöht.
 
 ```{r}
-#| fig.cap: "Stichprobenverteilungen der Differenz unter $H_0$ und $H_1:\\delta=500$N bei einer Stichprobengröße von n = 9"
+#| fig-cap: "Stichprobenverteilungen der Differenz unter $H_0$ und $H_1:\\delta=500$N bei einer Stichprobengröße von n = 9"
+#| label: fig-stats-sig-power-05
 
 sample_k9 <- readr::read_csv('data/sample_k9.csv')
 sigma <- sample_k9$sd[1]
@@ -709,23 +714,32 @@ ggplot(dat_k9, aes(x,y,fill=hypo, ymin=0, ymax=y)) +
   labs(x = 'Differenzen[N]', y = 'relative Häufigkeiten') 
 ```
 
+Hier sehen wir, dass die Position der Verteilungen gleich geblieben ist. Dies sollte nicht weiter verwundern, da immer noch die beiden Hypothesen $H_0: \Delta = 0$N und $H_1: \Delta = 500$N miteinander vergleichen werden. Aber durch die Erhöhung der Stichprobengröße ist die Streuung der $D$s unter beiden Hypothesen kleiner geworden. Dies führt dazu, dass die Verteilungen steiler sind und sich dementsprechend weniger stark überlappen. Die Streuung der Statistik wird als Standardfehler bezeichnet.
+
+::: {#def-standard-error}
 ## Standardfehler 
 
-Die Standardabweichung der Stichprobenverteilung wird als **Standardfehler** $s_e$ bezeichnet^[Der Standardfehler schätzt die Reliabilität der Statistik ab (@cohen1988)]. Der Standardfehler ist nicht gleich der Standardabweichung in der Population bzw. der Stichprobe. Es gilt für den Mittelwert:
+Die Standardabweichung der Stichprobenverteilung der beobachteten Statistik wird als Standardfehler $s_e$ bezeichnet
+:::
 
+Der Standardfehler ist nicht gleich der Standardabweichung in der Population bzw. der Stichprobe. Es gilt beispielsweise für den Standardfehler des Mittelwerts.
 
-\begin{table}[]
-    \caption{Standardfehler des Mittelwerts, n = Stichprobengröße}
-    \centering
-    \begin{tabular}{ll}
-     \toprule
-     Population & Stichprobe \\
-     \midrule
-     $\sigma_{\bar{X}} =  \sqrt{\frac{\sigma^2}{n}} = \frac{\sigma}{\sqrt{n}}$ & 
-     $ s_e =  \sqrt{\frac{s^2}{n}} = \frac{s}{\sqrt{n}}$ \\ 
-     \bottomrule
-    \end{tabular}
-    \label{tab:s_e}
-\end{table}
+| Population | Stichprobe |
+| --- | --- | 
+| $\sigma_{\bar{X}}=\sqrt{\frac{\sigma^2}{n}} = \frac{\sigma}{\sqrt{n}}$ | $s_e=\sqrt{\frac{s^2}{n}}=\frac{s}{\sqrt{n}}$ | 
 
+: Standardfehler des Mittelwerts, n = Stichprobengröße {#tbl-stats-sig-standard-error}
 
+In @tbl-stats-sig-standard-error ist zu sehen, dass ein wurzelförmiger Zusammenhang zwischen dem Standardfehler $s_e$ und der Stichprobengröße besteht. Dieser Zusammenhang wird uns in verschiedenen Berechnung zum Standardfehler verschiedener Statistiken immer wieder begegenen.
+
+```{r}
+#| label: fig-stats-sig-sqrtfcn
+#| fig-cap: "Funktionaler Zusammenhang zwischen $x$ und $\\sqrt{x}$."
+
+tibble(x = seq(0, 100), y = sqrt(x)) |> 
+  ggplot(aes(x,y)) +
+  geom_line() +
+  labs(x = 'x', y = expression(y==sqrt(x)))
+```
+
+In @fig-stats-sig-sqrtfcn ist zu Erinnerung aus der Schule die Funktion $y = \sqrt{x}$ abgetragen. Daran sehen wir, dass die Funktionswerte für kleine Werte von $x$ steil ansteigen und später dann anfangen immer langsamer größer zu werden. Angewendet auf unsere Powerfrage, wenn der Standardfehler mit der Wurzel der Stichprobengröße $n$ kleiner wird, dann ist dies besonders bei kleinen Stichprobengrößen von Bedeutung, also zum Beispiel der Unterschied zwischen $n = 10$ und $n = 20$. Der gleiche Stichprobenunterschied dagegen zwischen $n = 110$ und $n = 120$ fällt nicht mehr ganz so groß in Gewicht. D.h. bei kleinen Stichproben sollte um jede zusätzliche Teilnehmerin bzw. Teilnehmer gekämpft werden. Allgemein gilt, umso größer die Stichprobengröße umso größer die Power. 
