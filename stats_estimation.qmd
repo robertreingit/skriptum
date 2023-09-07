@@ -32,7 +32,7 @@ Das folgende Beispiel ist stark angelehnt bzw. entnommen aus @cumming2013[p.1]. 
 
 : Ergebnisse der Untersuchung der Forschergruppen Glücklich und Pech (D = Differenz) {#tbl-stats-est-prob}
 
-Wenn wir eine Irrtumswahrscheinlichkeit von $\alpha = 0.05$ ansetzten. Dann hat unter den beobachteten Daten nur die Gruppe Glücklich ein statistisch signifikantes Ergebnis, da der p-Wert $p = 0.02 < 0.05 = \alpha$ ist. Die Gruppe Pech dagegen hat kein statistisch Signifikantes Ergebnis und kann mit $p = 0.22 > 0.05 = \alpha$ die $H_0$ nicht ablehnen. Wenn wir nun die zu den beiden Untersuchungen gehörenden Veröffentlichungen lesen würden, und die Ergebnisse streng dichotom betrachten würden, dann hätten wir zwei widersprüchliche Ergebnisse. Wir könnten das versuchen zu erklären, dass die Stichprobengröße in Pech zu klein und vielleicht zu variabel ist. Allerdings, wenn wir das Ergebnis von Glücklich ansetzen dann hätte die Power für Pech ausgereicht tatsächlich ausgereicht um relativ sicher Power $>.9$ um eine statistisch signifikantes Ergebnis zu beobachten. Stellen wir die beiden Effekte einmal graphisch dar.
+Wenn wir eine Irrtumswahrscheinlichkeit von $\alpha = 0.05$ ansetzten. Dann hat unter den beobachteten Daten nur die Gruppe Glücklich ein statistisch signifikantes Ergebnis, da der p-Wert $p = 0.02 < 0.05 = \alpha$ ist. Die Gruppe Pech dagegen hat kein statistisch Signifikantes Ergebnis und kann mit $p = 0.22 > 0.05 = \alpha$ die $H_0$ nicht ablehnen. Wenn wir nun die zu den beiden Untersuchungen gehörenden Veröffentlichungen lesen würden, und die Ergebnisse streng dichotom betrachten würden, dann hätten wir zwei widersprüchliche Ergebnisse. Wir könnten das versuchen zu erklären, dass die Stichprobengröße in Pech zu klein und vielleicht zu variabel ist. Allerdings, wenn wir das Ergebnis von Glücklich ansetzen dann hätte die Power für Pech ausgereicht tatsächlich ausgereicht um relativ sicher Power $>.9$ um eine statistisch signifikantes Ergebnis zu beobachten. Stellen wir die beiden beobachteten Effekte graphisch dar.
 
 ```{r}
 #| label: fig-stats-est-prob-01
@@ -81,34 +81,91 @@ c_i <- d_hat + c(-1,1)*qnorm(1-alpha/2)*s_e
 
 Gehen wir zurück zu unseren Lummerland-Beispiel. Das Ergebnis der Intervention könnte beispielsweise die folgenden Stichprobenkennwerte  bei $N = 9$ haben. Wir beobachten einen Unterschied von $D = \bar{x}_{treat} - \bar{x}_{con} = `r d_hat`$ zwischen den Gruppen. Beide Stichproben zeigen eine Standardabweichung von  $s = `r s_hat`$ was zu einem Standardfehler von $s_e = `r s_e`$ führt (Rechnung unterschlagen). Dies ist unsere **Schätzung der Populationsparameter** anhand der Stichprobe. Der Standardfehler gibt uns eine Schätzung über die Präzision unseres Schätzwertes $D$. Wenn der Standardfehler $s_e$ sehr groß ist, dann bedeutet dies, dass wir den Wert nur sehr unpräzise geschätzt haben. Anderes herum wenn $s_e$ sehr klein ist. Daran schließt sichg natürlich die Frage, was die Präzision für meine Schätzung bedeutet. Welche anderen Unterschiedswerte $D$ sind anhand der beobachteten Daten noch plausibel?
 
-## Welche $\delta$s sind plausibel für $D = `r d_hat`$? 
+Zunächst einmal müssen wir uns überlegen, was genau plausibel in diesem Zusammenhang heißt. In Bezug auf die $H_0$ behalten wir die $H_0$ bei, wenn der beobachtete Wert der Teststatistik nicht in den kritischen Bereichen liegt. Diesen Ansatz können wir verallgemeinern indem wir Werte als plausibel bezeichnen, wenn wir diejenigen Werte nicht ablehnen würden wenn wir sie als $H_0$ angesetzt hätten.
+
+In @fig-stats-est-ci-01 ist eine Verteilung und derjenige Bereich abgetragen den wir bisher als nicht kritisch bezeichnet haben. D.h. alle Werte die im grünen Bereich liegen sind kompatible mit der angesetzten $H_0$.
 
 ```{r}
-#| fig.cap: "Verschiedene Verteilungen von Gruppendifferenzen, beobachteter Unterschied (rot)"
+#| label: fig-stats-est-ci-01
+#| fig-cap: "Bereich bei dem beobachtete Werte unter der Hypothese beibehalten werden"
 
-cut_h <- 0.00002
-dat_con <- tibble(
-  x = seq(-500, 1000, length.out=200),
-  d0 = dnorm(x, 0, s_e),
-  dm75 = dnorm(x, -75, s_e),
-  d500 = dnorm(x, 500, s_e),
-  d350 = dnorm(x, 350, s_e),
-  d250 = dnorm(x, 250, s_e)
-) %>% tidyr::pivot_longer(-x, names_to="x_bar", values_to="v") %>% 
-  dplyr::filter(v > cut_h)
-ggplot(dat_con, aes(x,v,ymin=cut_h, ymax=v, fill=x_bar)) + 
-  geom_line() +
-  geom_ribbon(alpha=0.3) +
-  geom_vline(xintercept = d_hat, col = 'red', linetype='dashed') +
-  scale_fill_discrete("Verteilungen",
-                      breaks = c('d0', 'd500', 'd350', 'dm75', 'd250'),
-                      labels = c(expression(delta==0),
-                                 expression(delta==500),
-                                 expression(delta==350),
-                                 expression(delta==-75),
-                                 expression(delta==250))) +
-  labs(x = "Differenz", y = "Dichte") 
+mu <- 0; sigma <- 1; q <- 0.05
+p_1 <- tibble(
+x = seq(qnorm(q, mu, sigma), qnorm(1-q, mu, sigma), length.out = 100),
+p = dnorm(x, mean = mu, sd = sigma)
+) |> 
+ggplot(aes(x,p)) +
+  geom_ribbon(aes(ymin = 0, ymax = p), fill = 'green', alpha=.3) +
+  geom_line(size=2, color='green') + 
+  scale_x_continuous('Werte der Teststatistik',
+                     limits = c(-3,3),
+                     labels = c("","","",0,"","",""),
+                     breaks = -3:3) +
+  scale_y_continuous('Dichte')
+p_1
 ```
+
+Fügen wir nun einen beobachteten Wert hinzu (@fig-stats-est-ci-02).
+
+```{r}
+#| label: fig-stats-est-ci-02
+#| fig-cap: "Bereich bei dem beobachtete Werte unter der Hypothese beibehalten werden und ein beobachteter Wert"
+
+p_1 + geom_point(data = tibble(x = -1, p = 0), color = 'red', size=4)
+```
+
+Der Wert liegt im grünen Bereich und ist daher kompatibel mit der angesetzten Hypothese. Halten wir den beobachten Wert nun fixiert und verändern unsere Hypothese $H_0^*$. Dies führt dazu, dass die Verteilung und mit ihr der kompatible Bereich verschoben wird.
+
+```{r}
+#| label: fig-stats-est-ci-03
+#| fig-cap: "Bereich bei dem beobachtete Werte unter der Hypothese $H_0^*$ beibehalten werden und der beobachtete Wert"
+
+mu <- -2
+tibble(
+x = seq(qnorm(q, mu, sigma), qnorm(1-q, mu, sigma), length.out = 100),
+p = dnorm(x, mean = mu, sd = sigma)
+) |> 
+ggplot(aes(x,p)) +
+  geom_ribbon(aes(ymin = 0, ymax = p), fill = 'green', alpha=.3) +
+  geom_line(size=2, color='green') + 
+  geom_point(data = tibble(x = -1, p = 0), color = 'red', size=4) +
+  scale_x_continuous('Werte der Teststatistik',
+                     limits = c(-4,3),
+                     labels = c("","","",0,"","",""),
+                     breaks = -3:3) +
+  scale_y_continuous('Dichte')
+```
+
+In @fig-stats-est-ci-03 ist nun der Bereich für eine neue Hypothese abgetragen. Wie zu sehen ist, liegt der beobachtete Wert auch für diese Hypothese in dem Bereich den wir unter der neuen Hypothese $H_0^*$ als unkritisch bzw. kompatibel betrachten. Dieser Prozess kann in beide Richtungen weitergeführt worden, d.h. wir schieben systematisch $H_0$-Hypothesen von $-\infty$ bis $\infty$ und schauen ob der beobachtete Wert in den unkritischen Bereichen liegt. Letztendlich führt dies zu einer kleinsten Hypothese $H_{lower}$ und einer größten Hypothese $H_{upper}$ die noch mit dem beobachteten Wert kompatibel sind. 
+
+Führen wir eine kleine Vereinfachung der graphischen Darstellung des kompatiblen Bereichs durch.
+
+```{r}
+#| label: fig-stats-est-ci-04
+#| fig-cap: "Graphische Darstellung des kompatiblen Bereich für eine Hypothese."
+
+mu <- 0
+tibble(
+x = seq(qnorm(q, mu, sigma), qnorm(1-q, mu, sigma), length.out = 100),
+p = dnorm(x, mean = mu, sd = sigma) + 1
+) |> 
+ggplot(aes(x,p)) +
+  geom_ribbon(aes(ymin = 1, ymax = p), fill = 'green', alpha=.3) +
+  geom_line(size=2, color='green') + 
+  geom_pointrange(data = tibble(xmin = qnorm(q,mu,sigma),
+                                xmax = qnorm(1-q,mu,sigma),
+                                x = 0,
+                                p = 0.9),aes(xmin=xmin,xmax=xmax),
+                  size = 1, color = 'green', linewidth=2) +
+  scale_x_continuous('Werte der Teststatistik',
+                     limits = c(-3,3),
+                     labels = c("","","",0,"","",""),
+                     breaks = -3:3) +
+  scale_y_continuous('Dichte')
+```
+
+In @fig-stats-est-ci-04 ist unter der kompatible Bereich mittels einer Linie und eines Punktes dargestellt. Der Punkt zeigt den Wert der jeweiligen Hypothese an, während die Striche rechts und links die untere und die obere Grenze des kompatiblen Bereich zeigen.
+
 
 Plausibel unter einem gegebenem **$\alpha$-Level**!
 

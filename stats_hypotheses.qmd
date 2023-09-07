@@ -8,12 +8,7 @@ source('_common.R')
 ```
 
 
-## Wahrscheinlichkeitstheorie
-
-
-## Rechenregeln zum Erwartungswert und der Varianz
-
-### Der Erwartungwert einer Zufallsvariable
+## Der Erwartungwert einer Zufallsvariable
 
 Für eine diskrete Zufallsvariable $X$ auf einer endlichen Menge $\{x_i, i = 1, \ldots, n\}$ mit $n$ Elementen ist der Erwartungswert definiert mit:
 
@@ -67,7 +62,7 @@ E[X] = \int_{x=-\infty}^\infty x f(x) dx
 
 Das Integral geht über den gesamten Definitionsbereich von $X$ und die Wahrscheinlichkeitsfunktion wird durch die Dichtefunktion $f(x)$ ausgetauscht. Die Linearität bleibt für alle uns interessierenden Fälle erhalten (keine Panik, es werden im Weiteren keine Integrale berechnet).
 
-#### Beispiele {-}
+### Beispiele {-}
 
 Nehmen wir zur Veranschaulichung ein einfaches Beispiel mit einer Zufallsvariable $X$ die nur vier verschiedene Werte annehmen kann, die die folgenden Wahrscheinlichkeiten haben (siehe @tbl-stats-hypo-px):
 
@@ -158,14 +153,20 @@ $$
 E[\bar{x}] = E\left[\frac{1}{n}\sum_{i=1}^n x_i\right] = \frac{1}{n}\sum_{i=1}^n E[x_i] = \frac{1}{n}\sum_{i=1}^n \mu = \frac{1}{n}n \mu = \mu
 $$
 
-### Varianz
+## Varianz
 
-Die Varianz, die Streuung der Daten ist, definiert mit:
+Die Varianz, die Streuung der Daten ist, definiert durch:
 
 \begin{equation}
 Var(Y) = E[(Y-E[Y])^2] = E[Y^2] - E[Y]^2
 \label{eq-def-variance}
 \end{equation}
+
+Wenn wir die Terminologie für den Erwartungswert $\mu$ und die Varianz $\sigma^2$ anwenden, erhalten wir dementsprechend.
+
+\begin{equation*}
+Var(Y) = \sigma^2 = E[Y^2] - \mu^2
+\end{equation*}
 
 Für die Varianz gibt es auch paar einfache Rechenregeln ähnlich wie für den Erwartungswert.
 
@@ -185,9 +186,11 @@ Var(X + Y) = Var(X) + Var(Y)
 
 Eine überraschende Eigenschaft aus diesen Regeln ist, dass die Varianz der Differenz von zwei unabhängigen Variablen gleich der Varianz ist, wenn die beiden Variablen addiert werden.
 
-\begin{equation*}
-Var(X - Y) = Var( 1\cdot X + (-1)\cdot Y) = Var(X) + Var((-1)\cdot Y) = Var(X) + (-1)^2 \cdot Var(Y) = Var(X) + Var(Y)
-\end{equation*}
+\begin{align*}
+Var(X - Y) &= Var( 1\cdot X + (-1)\cdot Y) \\
+&= Var(X) + Var((-1)\cdot Y) = Var(X) + (-1)^2 \cdot Var(Y) \\
+&= Var(X) + Var(Y)
+\end{align*}
 
 Mit diesen Regeln können wir nun auch die Varianz des Mittelwerts bestimmen. Die Variablen seien wieder unabhängig voneinander.
 
@@ -198,11 +201,33 @@ Var(\bar{X}) &= Var\left(\frac{1}{n}\sum_{i=1}^n X_i\right) = \left(\frac{1}{n}\
 
 ## Schätzer
 
-Erwartungstreue
+Ein Schätzer wir eine Funktion bezeichnet mit deren Hilfe wir anhand einer Stichprobe einen Wert, ein Schätzwert, zu berechnen der ermöglicht Rückschlüsse über unbekannte Parameter in einer Population zu erhalten. Beispielsweise ist der Mittelwert $\bar{x}$ eine Schätzer für den Mittelwert $\mu$ in der Population. Die Standardabweichung $s$ der Stichprobe ist ein Schätzer für die Standardabweichung $\sigma$ in der Population.
 
+Eine wichtige Eigenschaft von Schätzern ist die sogenannte Erwartungstreue. Die Erwartungstreue ist eng mit dem Erwartungswerts einer Statistik verknüpft. Wir hatten oben gesehen, dass für den Erwartungwert des Mittelwerts $E[\bar{x}] = \mu$ gilt. Die zeigt, dass der Mittelwert der Stichprobe eine erwartungstreuer Schätzer für den Populationsparameter $\mu$ ist.
 
+Mit $\sigma^2 = E[X^2] - E[X]^2 = E[X^2] - \mu^2 \Rightarrow E[X^2] = \sigma^2 + \mu^2$ und den Rechenregeln zum Erwartungswert gilt:
+
+\begin{align*}
+E[\sum_{i=1}^{n} (x_i-\bar x)^2] &= E[\sum_{i=1}^{n} x_i^2-2\bar x\sum_{i=1}^{n} x_i+n\bar{x}^2]\\
+&=E[\sum_{i=1}^{n} x_i^2-2\bar{x}n\bar{x}+n\bar{x}^2]\\ 
+&= E[\sum_{i=1}^{n} x_i^2-n\bar{x}^2] \\
+&= n E[x_i^2]- n E[\bar{x}^2]\\
+&= n (\mu^2 + \sigma^2) - n(\mu^2+\sigma^2/n)\\
+&= (n-1) \sigma^2
+\end{align*}
+
+Daraus folgt:
+\begin{equation*}
+E[s^2] = E\left[\frac{\sum_{i=1}^n (x_i - \bar{x})^2}{n-1}\right] = \sigma^2
+\end{equation*}
+
+Was dann auch erklärt warum die Summe der quadrierten Abweichung durch $n-1$ und nicht durch $n$ geteilt wird.
+
+Wir benötigen erwartungstreue Schätzer um die Verknüpfung zwischen unserer Stichprobe und den Parametern der theoretischen Stichproben durchführen zu können.
 
 ## Hypothesentestung
+
+Es folgt noch eine kurze Übersicht über verschiedenen Teststatistiken die uns immer wieder begegnen wird.
 
 ### Der t-Test
 
