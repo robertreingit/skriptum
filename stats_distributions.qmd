@@ -390,17 +390,18 @@ In @fig-stats-dist-dbinom30 sehen wir, dass wir zum Beispiel recht überrascht w
 
 Setzen wir unser Kriterium z.B. bei 2% an. Die Entscheidung wird jetzt folgendermaßen getroffen. Wenn wir einen Wert beobachten der unter der Annahme einer fairen Münze die wir $30\times$ aus dem Bereich der Werte von $\leq2\%$ kommt. Dann sehen wir dies als Evidenz gegen die Annahme an.
 
-Im Folgenden werden vier verschiedene Verteilungen noch einmal etwas genauer vorgestellt, da diese Verteilung immer wieder im weiteren Verlauf auftauchen werden. Dies sind die Normalverteilung, die $t$-Verteilung, die $\chi^2$-Verteilung und die $F$-Verteilung. Dabei ist es, außer bei der Normalverteilung, weniger wichtig sich die Formeln einzuprägen sondern es soll eher darum gehen die Form der Verteilung, den Wertebereich und die Parameter der Verteilung zu kennen. Also zum Beispiel wird die Normalverteilung durch zwei Parameter $\mu$ und $\sigma^2$ spezifiziert während die $\chi^2$-Verteilung nur über einen einzelnen Parameter den Freiheitsgrad $df$ bestimmt wird. Streng genommen wird auch nicht über vier Verteilungen gesprochen, sondern es handelt sich um jeweils Verteilungsfamilien, da es beispielsweise nicht die eine Normalverteilung gibt, sondern die Form wie eben beschrieben von den beiden Parametern abhängt. Dies gilt in gleich3em Maßen ebenfalls für die anderen behandelten Verteilungen.
+Im Folgenden werden vier verschiedene Verteilungen noch einmal etwas genauer vorgestellt, da diese Verteilung immer wieder im weiteren Verlauf auftauchen werden. Dies sind die Normalverteilung, die $t$-Verteilung, die $\chi^2$-Verteilung und die $F$-Verteilung. Dabei ist es, außer bei der Normalverteilung, weniger wichtig sich die Formeln einzuprägen sondern es soll eher darum gehen die Form der Verteilung, den Wertebereich und die Parameter der Verteilung zu kennen. Also zum Beispiel wird die Normalverteilung durch zwei Parameter $\mu$ und $\sigma^2$ spezifiziert während die $\chi^2$-Verteilung nur über einen einzelnen Parameter den Freiheitsgrad $df$ bestimmt wird. Streng genommen wird auch nicht über vier Verteilungen gesprochen, sondern es handelt sich um jeweils Verteilungsfamilien, da es beispielsweise nicht die eine Normalverteilung gibt, sondern die Form wie eben beschrieben von den beiden Parametern abhängt. Dies gilt in gleichem Maßen ebenfalls für die anderen behandelten Verteilungen.
 
 ## Normalverteilung
 
-Beginnen wir mit der Normalverteilung\index{Normalverteilung}.
+Schauen wir uns als nächstes die wohl wichtigste theoretische Verteilung, die Normalverteilung \index{Normalverteilung} an. Die Normalverteilung hat die folgende Form:
 
-$$
+\begin{equation}
 f(x|\mu,\sigma^2) = \frac{1}{\sqrt{2 \pi \sigma^2}}e^{\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)}
-$$
+\label{eq-normal-distribution}
+\end{equation}
 
-Die Normalverteilung ist eine symmetrische Verteilung und hat die uns schon oft begegnete Glockenform (siehe @fig-stats-dist-ndist).
+Die Normalverteilung ist wiederum eine Verteilungsfamilie mit den beiden Parametern $\mu$ und $\sigma^2$. Sie ist eine symmetrische Verteilung und hat die uns schon oft begegnete Glockenform (siehe @fig-stats-dist-ndist).
 
 ```{r}
 #| fig.cap: Dichtefunktion der Normalverteilung mit den Parametern $\mu = 0$ und $\sigma = 1$.
@@ -409,7 +410,7 @@ Die Normalverteilung ist eine symmetrische Verteilung und hat die uns schon oft 
 dnorm_plot()
 ```
 
-Der Wertebereich der Normalverteilung ist $X \in [-\infty, \infty]$. Das Maximum liegt genau beim Erwartungswert $\mu$ der dementsprechend die Verteilung in die linken 50% und die rechten 50% unterteilt. Das Abfallen der Flanken wird über die Varianz $\sigma^2$ geregelt. Wird $\sigma^2$ größer, fallen die Flanken flacher ab, wird $\sigma^2$ kleiner, fallen die Flanken schneller ab (siehe @fig-stats-dist-ndist2).
+Der Wertebereich der Normalverteilung ist $X \in [-\infty, \infty]$. Das Maximum liegt genau beim Erwartungswert $\mu$ der die Verteilung in die linken 50% und die rechten 50% unterteilt. D.h. der Median und Mittelwert sind bei der Normalverteilung gleich. Das Abfallen der Flanken wird über die Varianz $\sigma^2$ geregelt. Wird $\sigma^2$ größer, fallen die Flanken flacher ab, wird $\sigma^2$ kleiner, fallen die Flanken schneller ab (siehe @fig-stats-dist-ndist2).
 
 ```{r}
 #| layout-ncol: 2
@@ -422,6 +423,25 @@ Der Wertebereich der Normalverteilung ist $X \in [-\infty, \infty]$. Das Maximum
 dnorm_plot(0, 1)
 dnorm_plot(0, 2)
 ```
+
+In @fig-stats-dist-ndist wird der Graph nicht als Wahrscheinlichkeitsfunktion wie bei der Binomialverteilung sondern als Dichtefunktion bezeichnet. Der Unterschied stammt daher, dass die Normalverteilung keine diskrete Verteilung sondern eine kontinuierliche Verteilung darstellt. Vereinfacht gesprochen, wenn wir unsere bisherige Herleitung von Wahrscheinlichkeiten nehmen, dann haben wir im Unterschied zur Binomialverteilung bei der Normalverteilung unendlich viele Ereignisse (=Werte) zur Verfügung. Alle werte zwischen $-\infty$ und $\infty$ sind möglich. Dementsprechend wenn wir die Wahrscheinlichkeit für einen einzelnen Wert nach $\frac{1}{\text{Anzahl der Möglichkeiten}}$ berechnen erhalten wir $P(X) = \frac{1}{\infty} = 0$. Daher macht es im Fall einer kontinuierlichen Verteilung wenig Sinn von der Wahrscheinlichkeit für einen einzelnen Wert zu sprechen. Wahrscheinlichkeiten können in diesem Fall immer nur für bestimmte Bereiche berechnet werden.
+
+```{r}
+#| label: fig-stats-dist-ndist3
+#| fig-cap: "Bereich einer Normalverteilung"
+ 
+dnorm_plot() +
+  geom_ribbon(data = tibble(x = seq(0,1,length.out=50),p = dnorm(x)),aes(ymin=0,ymax=p),
+              alpha = .5, fill = 'yellow') +
+  scale_x_continuous(breaks = c(-2,0,1,2),
+                     labels = c('-2', 'a','b',2))
+```
+
+In @fig-stats-dist-ndist3 ist ein Bereich gelb ausgezeichnet. Für diesen Bereich kann nun die Wahrscheinlichkeit, die Fläche unter der Kurve, berechnet werden. Wenn wir Fläche unter der Kurve hören, dann wissen natürlich sofort das das Integral der Funktion gemeint ist. Daher berechnet sich die Wahrscheinlichkeitt für ein Intervall $[a,b]$
+
+\begin{equation*}
+P(a \leq X \leq b) = \int_{a}^b f(x|\mu,\sigma^2)dx
+\end{equation*}
 
 Die Standardabweichung kann dazu verwendet werden, die Dichtfunktion in verschiedene Abschnitte zu unterteilen. Es gelten die folgenden Zusammenhänge (siehe @tbl-stats-dist-sigma-int):
 

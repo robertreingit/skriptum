@@ -50,7 +50,7 @@ dnorm_plot <- function(mu = 0, sigma = 1, length.out = 100) {
     p = dnorm(x, mean = mu, sd = sqrt(sigma))) |> 
     ggplot(aes(x,p)) +
       geom_ribbon(aes(ymin = 0, ymax = p), fill = 'red', alpha=.3) +
-      geom_line(size=2, col='red') + 
+      geom_line(linewidth=2, col='red') + 
       labs(x = 'Werte', y = 'Dichte') 
   p1
 }
