@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -325,12 +359,16 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Inhaltsverzeichnis</h2>
    
   <ul>
-  <li><a href="#der-münzwurf-und-die-bionomialverteilung" id="toc-der-münzwurf-und-die-bionomialverteilung" class="nav-link active" data-scroll-target="#der-münzwurf-und-die-bionomialverteilung"><span class="header-section-number">10.1</span> Der Münzwurf und die Bionomialverteilung</a></li>
+  <li><a href="#der-münzwurf-und-die-bionomialverteilung" id="toc-der-münzwurf-und-die-bionomialverteilung" class="nav-link active" data-scroll-target="#der-münzwurf-und-die-bionomialverteilung"><span class="header-section-number">10.1</span> Der Münzwurf und die Bionomialverteilung</a>
+  <ul class="collapse">
+  <li><a href="#binomialverteilung-in-r" id="toc-binomialverteilung-in-r" class="nav-link" data-scroll-target="#binomialverteilung-in-r"><span class="header-section-number">10.1.1</span> Binomialverteilung in <code>R</code></a></li>
+  </ul></li>
   <li><a href="#normalverteilung" id="toc-normalverteilung" class="nav-link" data-scroll-target="#normalverteilung"><span class="header-section-number">10.2</span> Normalverteilung</a>
   <ul class="collapse">
   <li><a href="#die-standardnormalverteilung" id="toc-die-standardnormalverteilung" class="nav-link" data-scroll-target="#die-standardnormalverteilung"><span class="header-section-number">10.2.1</span> Die Standardnormalverteilung</a></li>
   <li><a href="#z-transformation" id="toc-z-transformation" class="nav-link" data-scroll-target="#z-transformation"><span class="header-section-number">10.2.2</span> z-Transformation</a></li>
-  <li><a href="#zentraler-grenzwertsatz" id="toc-zentraler-grenzwertsatz" class="nav-link" data-scroll-target="#zentraler-grenzwertsatz"><span class="header-section-number">10.2.3</span> Zentraler Grenzwertsatz</a></li>
+  <li><a href="#normalverteilung-in-r" id="toc-normalverteilung-in-r" class="nav-link" data-scroll-target="#normalverteilung-in-r"><span class="header-section-number">10.2.3</span> Normalverteilung in <code>R</code></a></li>
+  <li><a href="#zentraler-grenzwertsatz" id="toc-zentraler-grenzwertsatz" class="nav-link" data-scroll-target="#zentraler-grenzwertsatz"><span class="header-section-number">10.2.4</span> Zentraler Grenzwertsatz</a></li>
   </ul></li>
   <li><a href="#t-verteilung" id="toc-t-verteilung" class="nav-link" data-scroll-target="#t-verteilung"><span class="header-section-number">10.3</span> t-Verteilung</a></li>
   <li><a href="#chi2-verteilung" id="toc-chi2-verteilung" class="nav-link" data-scroll-target="#chi2-verteilung"><span class="header-section-number">10.4</span> <span class="math inline">\(\chi^2\)</span>-Verteilung</a></li>
@@ -780,10 +818,22 @@ P(X = x) = P(X \leq x) - P(X \leq x-1)
 <p>In <a href="#fig-stats-dist-dbinom30">Abbildung&nbsp;<span>10.9</span></a> sehen wir, dass wir zum Beispiel recht überrascht wären, wenn wir bei einem Durchgang von <span class="math inline">\(30\)</span> Münzwürfen einen Wert von z.B. <span class="math inline">\(x = 29 \times\)</span> Kopf beobachten würden. Es ist nicht unmöglich, aber es wäre schon überraschend. Diesen Grad der Überraschung können wir als Kriterium nehmen, um zu entscheiden ob wir eine bestimmt Beobachtung dazu verwenden würden diese als Evidenz für oder gegen eine bestimmte Verteilungsannahme zu sehen.</p>
 <p>Setzen wir unser Kriterium z.B. bei 2% an. Die Entscheidung wird jetzt folgendermaßen getroffen. Wenn wir einen Wert beobachten der unter der Annahme einer fairen Münze die wir <span class="math inline">\(30\times\)</span> aus dem Bereich der Werte von <span class="math inline">\(\leq2\%\)</span> kommt. Dann sehen wir dies als Evidenz gegen die Annahme an.</p>
 <p>Im Folgenden werden vier verschiedene Verteilungen noch einmal etwas genauer vorgestellt, da diese Verteilung immer wieder im weiteren Verlauf auftauchen werden. Dies sind die Normalverteilung, die <span class="math inline">\(t\)</span>-Verteilung, die <span class="math inline">\(\chi^2\)</span>-Verteilung und die <span class="math inline">\(F\)</span>-Verteilung. Dabei ist es, außer bei der Normalverteilung, weniger wichtig sich die Formeln einzuprägen sondern es soll eher darum gehen die Form der Verteilung, den Wertebereich und die Parameter der Verteilung zu kennen. Also zum Beispiel wird die Normalverteilung durch zwei Parameter <span class="math inline">\(\mu\)</span> und <span class="math inline">\(\sigma^2\)</span> spezifiziert während die <span class="math inline">\(\chi^2\)</span>-Verteilung nur über einen einzelnen Parameter den Freiheitsgrad <span class="math inline">\(df\)</span> bestimmt wird. Streng genommen wird auch nicht über vier Verteilungen gesprochen, sondern es handelt sich um jeweils Verteilungsfamilien, da es beispielsweise nicht die eine Normalverteilung gibt, sondern die Form wie eben beschrieben von den beiden Parametern abhängt. Dies gilt in gleichem Maßen ebenfalls für die anderen behandelten Verteilungen.</p>
+<section id="binomialverteilung-in-r" class="level3" data-number="10.1.1">
+<h3 data-number="10.1.1" class="anchored" data-anchor-id="binomialverteilung-in-r"><span class="header-section-number">10.1.1</span> Binomialverteilung in <code>R</code></h3>
+<p>In <code>R</code> gibt es wie für die anderen Verteilung wieder vier Funktionen. <code>dbinom()</code> für die Wahrscheinlichkeitsfunktion, <code>pbinom()</code> für die Verteilungsfunktion, <code>qbinom()</code> für die Quartilfunktion und <code>rbinom()</code> um Zufallszahlen entsprechend einer Binomialverteilung zu erzeugen. Um beispielsweise die Wahrscheinlichkeiten <span class="math inline">\(P(Y = y)\)</span> für <span class="math inline">\(y = 0,1,\ldots, 10\)</span> für die Binomialverteilung mit <span class="math inline">\(p = 0.3\)</span> und <span class="math inline">\(n = 10\)</span> zu berechnen, kann der folgende Code verwendet werden.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dbinom</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">10</span>, <span class="at">size =</span> <span class="dv">10</span>, <span class="at">prob =</span> <span class="fl">0.3</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] 0.0282475249 0.1210608210 0.2334744405 0.2668279320 0.2001209490
+ [6] 0.1029193452 0.0367569090 0.0090016920 0.0014467005 0.0001377810
+[11] 0.0000059049</code></pre>
+</div>
+</div>
+</section>
 </section>
 <section id="normalverteilung" class="level2" data-number="10.2">
 <h2 data-number="10.2" class="anchored" data-anchor-id="normalverteilung"><span class="header-section-number">10.2</span> Normalverteilung</h2>
-<p>Schauen wir uns als nächstes die wohl wichtigste theoretische Verteilung, die Normalverteilung an. Die Normalverteilung hat die folgende Form:</p>
+<p>Schauen wir uns als nächstes die wohl wichtigste theoretische Verteilung, die Normalverteilung an. Die Funktion der Normalverteilung hat die folgende Form:</p>
 <p><span class="math display">\[\begin{equation}
 f(x|\mu,\sigma^2) = \frac{1}{\sqrt{2 \pi \sigma^2}}e^{\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)}
 \label{eq-normal-distribution}
@@ -823,22 +873,22 @@ f(x|\mu,\sigma^2) = \frac{1}{\sqrt{2 \pi \sigma^2}}e^{\left(-\frac{(x-\mu)^2}{2\
 <p></p><figcaption class="figure-caption">Abbildung&nbsp;10.11: Veränderung der Dichtefunktion bei unterschiedlichen Varianzen <span class="math inline">\(\sigma^2\)</span></figcaption><p></p>
 </figure>
 </div>
-<p>In <a href="#fig-stats-dist-ndist">Abbildung&nbsp;<span>10.10</span></a> wird der Graph nicht als Wahrscheinlichkeitsfunktion wie bei der Binomialverteilung sondern als Dichtefunktion bezeichnet. Der Unterschied stammt daher, dass die Normalverteilung keine diskrete Verteilung sondern eine kontinuierliche Verteilung darstellt. Vereinfacht gesprochen, wenn wir unsere bisherige Herleitung von Wahrscheinlichkeiten nehmen, dann haben wir im Unterschied zur Binomialverteilung bei der Normalverteilung unendlich viele Ereignisse (=Werte) zur Verfügung. Alle werte zwischen <span class="math inline">\(-\infty\)</span> und <span class="math inline">\(\infty\)</span> sind möglich. Dementsprechend wenn wir die Wahrscheinlichkeit für einen einzelnen Wert nach <span class="math inline">\(\frac{1}{\text{Anzahl der Möglichkeiten}}\)</span> berechnen erhalten wir <span class="math inline">\(P(X) = \frac{1}{\infty} = 0\)</span>. Daher macht es im Fall einer kontinuierlichen Verteilung wenig Sinn von der Wahrscheinlichkeit für einen einzelnen Wert zu sprechen. Wahrscheinlichkeiten können in diesem Fall immer nur für bestimmte Bereiche berechnet werden.</p>
+<p>In <a href="#fig-stats-dist-ndist">Abbildung&nbsp;<span>10.10</span></a> wird der Graph nicht als Wahrscheinlichkeitsfunktion wie bei der Binomialverteilung sondern als Dichtefunktion bezeichnet. Der Unterschied kommt daher, dass die Normalverteilung keine diskrete Verteilung sondern eine kontinuierliche Verteilung ist. Vereinfacht ausgedrückt, wenn wir unsere bisherige Herleitung von Wahrscheinlichkeiten nehmen, dann haben wir im Unterschied zur Binomialverteilung bei der Normalverteilung unendlich viele Ereignisse (=Werte) zur Verfügung. Alle werte zwischen <span class="math inline">\(-\infty\)</span> und <span class="math inline">\(\infty\)</span> sind möglich. Dementsprechend wenn wir die Wahrscheinlichkeit für einen einzelnen Wert nach <span class="math inline">\(\frac{1}{\text{Anzahl der Möglichkeiten}}\)</span> berechnen erhalten wir <span class="math inline">\(P(X) = \frac{1}{\infty} = 0\)</span>. Daher macht es im Fall einer kontinuierlichen Verteilung wenig Sinn von der Wahrscheinlichkeit für einen einzelnen Wert zu sprechen. Wahrscheinlichkeiten können in diesem Fall immer nur für bestimmte Bereiche berechnet werden.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-stats-dist-ndist3" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
 <p><img src="stats_distributions_files/figure-html/fig-stats-dist-ndist3-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption class="figure-caption">Abbildung&nbsp;10.12: Bereich einer Normalverteilung</figcaption>
+<figcaption class="figure-caption">Abbildung&nbsp;10.12: Dichtefunktion der Normalverteilung und ein gelb ausgezeichneter Bereich</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>In <span class="citation" data-cites="fit-stats-dist-ndist3">(<a href="references.html#ref-fit-stats-dist-ndist3" role="doc-biblioref"><strong>fit-stats-dist-ndist3?</strong></a>)</span> ist ein Bereich gelb ausgezeichnet. Für diesen Bereich kann nun die Wahrscheinlichkeit, die Fläche unter der Kurve, berechnet werden. Wenn wir Fläche unter der Kurve hören, dann wissen natürlich sofort das das Integral der Funktion gemeint ist. Daher berechnet sich die Wahrscheinlichkeitt für ein Intervall <span class="math inline">\([a,b]\)</span></p>
+<p>In <a href="#fig-stats-dist-ndist3">Abbildung&nbsp;<span>10.12</span></a> ist ein Bereich gelb ausgezeichnet. Für diesen Bereich kann nun die Wahrscheinlichkeit, die Fläche unter der Kurve, berechnet werden. Wenn wir Fläche unter der Kurve hören, dann wissen natürlich sofort das das Integral der Funktion gemeint ist. Daher berechnet sich die Wahrscheinlichkeitt für ein Intervall <span class="math inline">\([a,b]\)</span></p>
 <p><span class="math display">\[\begin{equation*}
 P(a \leq X \leq b) = \int_{a}^b f(x|\mu,\sigma^2)dx
 \end{equation*}\]</span></p>
-<p>Die Standardabweichung kann dazu verwendet werden, die Dichtfunktion in verschiedene Abschnitte zu unterteilen. Es gelten die folgenden Zusammenhänge (siehe <a href="#tbl-stats-dist-sigma-int">Tabelle&nbsp;<span>10.6</span></a>):</p>
+<p>Die Standardabweichung <span class="math inline">\(\sigma\)</span> (Wurzel der Varianz) eignet sich , die Dichtfunktion in verschiedene Intervalle um <span class="math inline">\(\mu\)</span> herum mit bestimmten Wahrscheinlichkeiten zu unterteilen. Es gelten die folgenden Zuweisungen(siehe <a href="#tbl-stats-dist-sigma-int">Tabelle&nbsp;<span>10.6</span></a>):</p>
 <div id="tbl-stats-dist-sigma-int" class="anchored">
 <table class="table">
 <caption>Tabelle&nbsp;10.6: Wahrscheinlichkeiten für verschiedene Intervalle um <span class="math inline">\(\mu\)</span> in Abhängigkeit von <span class="math inline">\(\sigma\)</span></caption>
@@ -850,15 +900,15 @@ P(a \leq X \leq b) = \int_{a}^b f(x|\mu,\sigma^2)dx
 </thead>
 <tbody>
 <tr class="odd">
-<td><span class="math inline">\([-\sigma,\sigma]\)</span></td>
+<td><span class="math inline">\([\mu-\sigma,\mu+\sigma]\)</span></td>
 <td>0.682</td>
 </tr>
 <tr class="even">
-<td><span class="math inline">\([-2\sigma,2\sigma]\)</span></td>
+<td><span class="math inline">\([\mu-2\sigma,\mu + 2\sigma]\)</span></td>
 <td>0.955</td>
 </tr>
 <tr class="odd">
-<td><span class="math inline">\([-3\sigma,3\sigma]\)</span></td>
+<td><span class="math inline">\([\mu-3\sigma,\mu + 3\sigma]\)</span></td>
 <td>0.997</td>
 </tr>
 </tbody>
@@ -877,12 +927,12 @@ P(a \leq X \leq b) = \int_{a}^b f(x|\mu,\sigma^2)dx
 </div>
 <p>Wie in <a href="#tbl-stats-dist-sigma-int">Tabelle&nbsp;<span>10.6</span></a> zu sehen ist, hat der Bereich <span class="math inline">\([-2\sigma, 2\sigma]\)</span> eine Wahrscheinlichkeit von etwas über <span class="math inline">\(0.95\)</span>. Daher, wenn ich einen Bereich um den Erwartungswert <span class="math inline">\(\mu\)</span> auszeichnen möchte, der genau eine Wahrscheinlichkeit von <span class="math inline">\(0.95\)</span> hat, dann muss <span class="math inline">\(\sigma\)</span> mit einem kleineren Wert als <span class="math inline">\(2\)</span> multipliziert werden, nämlich <span class="math inline">\(1.96\)</span>. Das wird hier noch mal speziell erwähnt, da die Zahl <span class="math inline">\(1.96\)</span> später immer wieder auftaucht. Formal:</p>
 <p><span class="math display">\[P(x\in[\mu-1.96\sigma, \mu+1.96\sigma]) = 0.95\]</span></p>
-<p>Anders herum, wenn es darum geht in Konfidenzintervall abzuschätzen, dann funktioniert auch die Faustregel, Teststatistik <span class="math inline">\(\pm 2\times\)</span> Standardfehler.</p>
+<p>Anders herum, wenn es darum geht ein Konfidenzintervall abzuschätzen, dann kann die Faustregel, Teststatistik <span class="math inline">\(\pm 2\times\)</span> Standardfehler angewendet werden.</p>
 <section id="die-standardnormalverteilung" class="level3" data-number="10.2.1">
 <h3 data-number="10.2.1" class="anchored" data-anchor-id="die-standardnormalverteilung"><span class="header-section-number">10.2.1</span> Die Standardnormalverteilung</h3>
-<p>Eine Sonderrolle in der Familie der Normalverteilungen spielt die Standardnormalverteilung mit <span class="math inline">\(\mu = 0\)</span> und <span class="math inline">\(\sigma^2 = 1\)</span>. Tatsächlich taucht diese so oft aus, dass die Mathematiker ihr ein eigenes Symbol spendiert haben <span class="math inline">\(\phi(x)\)</span></p>
+<p>Eine Sonderrolle in der Familie der Normalverteilungen spielt die Standardnormalverteilung mit <span class="math inline">\(\mu = 0\)</span> und <span class="math inline">\(\sigma^2 = 1\)</span>. Tatsächlich taucht diese so oft aus, dass die Mathematiker ihr ein eigenes Symbol spendiert haben <span class="math inline">\(\Phi(x)\)</span></p>
 <p><span class="math display">\[
-\phi(x) = \mathcal{N}(\mu = 0, \sigma^2 = 1)
+\Phi(x) = \mathcal{N}(\mu = 0, \sigma^2 = 1)
 \]</span></p>
 <p>Im Fall der Standardnormalverteilung nehmen <a href="#tbl-stats-dist-sigma-int">Tabelle&nbsp;<span>10.6</span></a> und <a href="#fig-stats-dist-sigma-int">Abbildung&nbsp;<span>10.13</span></a> besonders einfache Formen an da die Intervalle jeweils <span class="math inline">\([-1,1]\)</span>, <span class="math inline">\([-2,2]\)</span> und <span class="math inline">\([-3,3]\)</span> sind (siehe <a href="#fig-stats-dist-phi-int">Abbildung&nbsp;<span>10.14</span></a>).</p>
 <div class="cell">
@@ -898,17 +948,41 @@ P(a \leq X \leq b) = \int_{a}^b f(x|\mu,\sigma^2)dx
 </section>
 <section id="z-transformation" class="level3" data-number="10.2.2">
 <h3 data-number="10.2.2" class="anchored" data-anchor-id="z-transformation"><span class="header-section-number">10.2.2</span> z-Transformation</h3>
-<p>Es besteht mittels einer einfachen Möglichkeit jede beliebiege Normalverteilung <span class="math inline">\(\mathcal{N}(\mu,\sigma^2)\)</span> auf die Standardnormalverteilung <span class="math inline">\(\mathcal{N}(0,1)\)</span> abzubilden. Die Transformation wird als z-Transformation bezeichnet und hat die folgende Form:</p>
-<p><span id="eq-z-transformation"><span class="math display">\[
-z = \frac{X - \mu_X}{\sigma_X}
-\tag{10.4}\]</span></span></p>
-<p>D.h. der Mittelwert der Verteilung von <span class="math inline">\(X\)</span> wird von X abgezogen und die Differenz wird durch die Standardabweichung der Population <span class="math inline">\(\sigma_X\)</span> geteilt. Die Umkehrfunktion ist dementsprechend:</p>
-<p><span id="eq-z-invtransformation"><span class="math display">\[
+<p>Jede beliebiege Normalverteilung <span class="math inline">\(\mathcal{N}(\mu,\sigma^2)\)</span> kann mittels einer Transformation auf die Standardnormalverteilung <span class="math inline">\(\mathcal{N}(0,1)\)</span> abgebildet werden. Die Transformation wird als z-Transformation bezeichnet und hat die folgende Form:</p>
+<p><span class="math display">\[\begin{equation}
+Z = \frac{X - \mu_X}{\sigma_X}
+\label{eq-z-transformation}
+\end{equation}\]</span></p>
+<p>D.h. der Mittelwert der Verteilung von <span class="math inline">\(X\)</span>, <span class="math inline">\(\mu_x\)</span> wird von X abgezogen und die Differenz wird durch die Standardabweichung der Population <span class="math inline">\(\sigma_X\)</span> geteilt. Die Zufallsvariable <span class="math inline">\(Z\)</span> ist dann Standardnormalverteilt <span class="math inline">\(Z \sim Phi(z)\)</span>.</p>
+<p>Die Umkehrfunktion der z-Transformation berechnet sich nach:</p>
+<p><span class="math display">\[\begin{equation}
 X = \mu_X + z \sigma_X
-\tag{10.5}\]</span></span></p>
+\label{eq-z-invtransformation}
+\end{equation}\]</span></p>
+<p>Mittels der z-Transformation kann z.B. ein einfaches Intervall um eine beliebige, normalverteilte Zufallsvariable <span class="math inline">\(Y\)</span> erstellt werden. Möchte ich zum Beispiel ein Intervall <span class="math inline">\([A,B]\)</span> mit der Wahrscheinlichkeit <span class="math inline">\(P(X \in [A,B]) = 0.95\)</span> erstellen. Formal:</p>
+<p><span class="math display">\[\begin{align*}
+P(A \leq X \leq B) &amp;= P(A^* = \frac{A-\mu_x}{\sigma_x} \leq \frac{X-\mu_x}{\sigma_x} \leq \frac{B-\mu_X}{\sigma_X} = B^*) \\
+&amp;= P(A^* \leq \frac{X-\mu_x}{\sigma_x} = B^*)
+\end{align*}\]</span></p>
+<p>Wenn wir in der Tabelle für Quartilen für die Standardnormalverteilung nachsehen, dann erhalte ich eine die Wert <span class="math inline">\(-1.96\)</span> für <span class="math inline">\(A^*\)</span> und <span class="math inline">\(1.96\)</span> für <span class="math inline">\(B^*\)</span>. Eingesetzt und zurück transformiert erhalten wir.</p>
+<p><span class="math display">\[\begin{align*}
+P(-1.96 \leq \frac{X-\mu_X}{\sigma} \leq 1.96) &amp;= P(-1.96\sigma \leq X-\mu_X \leq 1.96\sigma) \\
+&amp;= P(\mu_X-1.96\sigma \leq X \leq \mu_X + 1.96\sigma)
+\end{align*}\]</span></p>
 </section>
-<section id="zentraler-grenzwertsatz" class="level3" data-number="10.2.3">
-<h3 data-number="10.2.3" class="anchored" data-anchor-id="zentraler-grenzwertsatz"><span class="header-section-number">10.2.3</span> Zentraler Grenzwertsatz</h3>
+<section id="normalverteilung-in-r" class="level3" data-number="10.2.3">
+<h3 data-number="10.2.3" class="anchored" data-anchor-id="normalverteilung-in-r"><span class="header-section-number">10.2.3</span> Normalverteilung in <code>R</code></h3>
+<p>Dem üblichen Muster folgend haben die Funktion für die Dichtefunktion, die Verteilungsfunktion, die Quartilfunktion und Zufallszahlen in <code>R</code> die Namen <code>dnorm()</code>, <code>pnorm()</code>, <code>qnorm()</code> und <code>rnorm()</code>. Um zehn Zufallszahlen aus der Normalverteilung mit <span class="math inline">\(\mu = 2\)</span> und <span class="math inline">\(\sigma = 1.2\)</span> zu ziehen verwenden wir.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rnorm</span>(<span class="dv">10</span>, <span class="at">mean =</span> <span class="dv">2</span>, <span class="at">sd =</span> <span class="fl">1.25</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] 2.1568367 0.7654850 1.3200894 0.9373165 3.4675057 3.5715373 2.3295811
+ [8] 3.9881389 3.5376922 1.4113200</code></pre>
+</div>
+</div>
+</section>
+<section id="zentraler-grenzwertsatz" class="level3" data-number="10.2.4">
+<h3 data-number="10.2.4" class="anchored" data-anchor-id="zentraler-grenzwertsatz"><span class="header-section-number">10.2.4</span> Zentraler Grenzwertsatz</h3>
 <p>Die Normalverteilung spielt in der Wahrscheinlichkeitstheorie und der Statistik aus verschiedenen Gründen eine Spezialrolle. Ein Grund dafür ist der sogenannte Zentrale Grenzwertsatz, den wir hier nicht beweisen sondern nur kurz diskutieren.</p>
 <div id="prp-central-limit" class="theorem proposition">
 <p><span class="theorem-title"><strong>Aussage 10.1 (Zentraler Grenzwertsatz) </strong></span>Seien <span class="math inline">\(X_1, X_2, \ldots, X_n\)</span> n unabhängige, gleichverteilte Zufallsvariablen mit <span class="math inline">\(E[X_i]=\mu\)</span> und <span class="math inline">\(Var[X_i]=\sigma^2\)</span> endlich. <span class="math display">\[
@@ -918,7 +992,7 @@ X = \mu_X + z \sigma_X
 <p>In Worten besagt der Zentrale Grenzwertsatz, dass egal welche Ursprungsform die Verteilung einer Zufallsvariablen <span class="math inline">\(X\)</span> hat, wenn die Stichprobengröße gegen unendlich geht, die konvergiert die Differenz des Stichprobenmittelwerts und des Mittelwert der Verteilung geteilt durch den Stichprobenstandardfehler gegen die Standardnormalverteilung. Grenzwertsätz sind manchmal etwas schwierig zu interpretieren, da hier noch keine Aussage gemacht wird, wie groß die Stichprobe sein muss, damit diese Abschätzung valide ist. In der Praxis wird oft ab einer <em>gefühlt</em> großen Stichproben diese Abschätzung als zulässig angesehen.</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="stats_distributions_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
+<p><img src="stats_distributions_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -929,7 +1003,7 @@ X = \mu_X + z \sigma_X
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="stats_distributions_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="stats_distributions_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="672"></p>
 <figcaption class="figure-caption">Beispiel für verschiedene Dichtefunktionen der t-Verteilung</figcaption>
 </figure>
 </div>
@@ -942,7 +1016,7 @@ X = \mu_X + z \sigma_X
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="stats_distributions_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="stats_distributions_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="672"></p>
 <figcaption class="figure-caption">Beispiele für verschiedene Dichtefunktion der <span class="math inline">\(\chi^2\)</span>-Verteilung.</figcaption>
 </figure>
 </div>
@@ -955,7 +1029,7 @@ X = \mu_X + z \sigma_X
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="stats_distributions_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="stats_distributions_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid figure-img" width="672"></p>
 <figcaption class="figure-caption">Beispiele für verschiedene Dichtefunktion der F-Verteilung.</figcaption>
 </figure>
 </div>

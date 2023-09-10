@@ -392,9 +392,20 @@ Setzen wir unser Kriterium z.B. bei 2% an. Die Entscheidung wird jetzt folgender
 
 Im Folgenden werden vier verschiedene Verteilungen noch einmal etwas genauer vorgestellt, da diese Verteilung immer wieder im weiteren Verlauf auftauchen werden. Dies sind die Normalverteilung, die $t$-Verteilung, die $\chi^2$-Verteilung und die $F$-Verteilung. Dabei ist es, außer bei der Normalverteilung, weniger wichtig sich die Formeln einzuprägen sondern es soll eher darum gehen die Form der Verteilung, den Wertebereich und die Parameter der Verteilung zu kennen. Also zum Beispiel wird die Normalverteilung durch zwei Parameter $\mu$ und $\sigma^2$ spezifiziert während die $\chi^2$-Verteilung nur über einen einzelnen Parameter den Freiheitsgrad $df$ bestimmt wird. Streng genommen wird auch nicht über vier Verteilungen gesprochen, sondern es handelt sich um jeweils Verteilungsfamilien, da es beispielsweise nicht die eine Normalverteilung gibt, sondern die Form wie eben beschrieben von den beiden Parametern abhängt. Dies gilt in gleichem Maßen ebenfalls für die anderen behandelten Verteilungen.
 
+### Binomialverteilung in `R`
+
+In `R` gibt es wie für die anderen Verteilung wieder vier Funktionen. `dbinom()` für die Wahrscheinlichkeitsfunktion, `pbinom()` für die Verteilungsfunktion, `qbinom()` für die Quartilfunktion und `rbinom()` um Zufallszahlen entsprechend einer Binomialverteilung zu erzeugen. Um beispielsweise die Wahrscheinlichkeiten $P(Y = y)$ für $y = 0,1,\ldots, 10$ für die Binomialverteilung mit $p = 0.3$ und $n = 10$ zu berechnen, kann der folgende Code verwendet werden.
+
+```{r}
+#| echo: true
+
+dbinom(0:10, size = 10, prob = 0.3)
+```
+
+
 ## Normalverteilung
 
-Schauen wir uns als nächstes die wohl wichtigste theoretische Verteilung, die Normalverteilung \index{Normalverteilung} an. Die Normalverteilung hat die folgende Form:
+Schauen wir uns als nächstes die wohl wichtigste theoretische Verteilung, die Normalverteilung \index{Normalverteilung} an. Die Funktion der Normalverteilung hat die folgende Form:
 
 \begin{equation}
 f(x|\mu,\sigma^2) = \frac{1}{\sqrt{2 \pi \sigma^2}}e^{\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)}
@@ -424,11 +435,11 @@ dnorm_plot(0, 1)
 dnorm_plot(0, 2)
 ```
 
-In @fig-stats-dist-ndist wird der Graph nicht als Wahrscheinlichkeitsfunktion wie bei der Binomialverteilung sondern als Dichtefunktion bezeichnet. Der Unterschied stammt daher, dass die Normalverteilung keine diskrete Verteilung sondern eine kontinuierliche Verteilung darstellt. Vereinfacht gesprochen, wenn wir unsere bisherige Herleitung von Wahrscheinlichkeiten nehmen, dann haben wir im Unterschied zur Binomialverteilung bei der Normalverteilung unendlich viele Ereignisse (=Werte) zur Verfügung. Alle werte zwischen $-\infty$ und $\infty$ sind möglich. Dementsprechend wenn wir die Wahrscheinlichkeit für einen einzelnen Wert nach $\frac{1}{\text{Anzahl der Möglichkeiten}}$ berechnen erhalten wir $P(X) = \frac{1}{\infty} = 0$. Daher macht es im Fall einer kontinuierlichen Verteilung wenig Sinn von der Wahrscheinlichkeit für einen einzelnen Wert zu sprechen. Wahrscheinlichkeiten können in diesem Fall immer nur für bestimmte Bereiche berechnet werden.
+In @fig-stats-dist-ndist wird der Graph nicht als Wahrscheinlichkeitsfunktion wie bei der Binomialverteilung sondern als Dichtefunktion bezeichnet. Der Unterschied kommt daher, dass die Normalverteilung keine diskrete Verteilung sondern eine kontinuierliche Verteilung ist. Vereinfacht ausgedrückt, wenn wir unsere bisherige Herleitung von Wahrscheinlichkeiten nehmen, dann haben wir im Unterschied zur Binomialverteilung bei der Normalverteilung unendlich viele Ereignisse (=Werte) zur Verfügung. Alle werte zwischen $-\infty$ und $\infty$ sind möglich. Dementsprechend wenn wir die Wahrscheinlichkeit für einen einzelnen Wert nach $\frac{1}{\text{Anzahl der Möglichkeiten}}$ berechnen erhalten wir $P(X) = \frac{1}{\infty} = 0$. Daher macht es im Fall einer kontinuierlichen Verteilung wenig Sinn von der Wahrscheinlichkeit für einen einzelnen Wert zu sprechen. Wahrscheinlichkeiten können in diesem Fall immer nur für bestimmte Bereiche berechnet werden.
 
 ```{r}
 #| label: fig-stats-dist-ndist3
-#| fig-cap: "Bereich einer Normalverteilung"
+#| fig-cap: "Dichtefunktion der Normalverteilung und ein gelb ausgezeichneter Bereich"
  
 dnorm_plot() +
   geom_ribbon(data = tibble(x = seq(0,1,length.out=50),p = dnorm(x)),aes(ymin=0,ymax=p),
@@ -443,13 +454,13 @@ In @fig-stats-dist-ndist3 ist ein Bereich gelb ausgezeichnet. Für diesen Bereic
 P(a \leq X \leq b) = \int_{a}^b f(x|\mu,\sigma^2)dx
 \end{equation*}
 
-Die Standardabweichung kann dazu verwendet werden, die Dichtfunktion in verschiedene Abschnitte zu unterteilen. Es gelten die folgenden Zusammenhänge (siehe @tbl-stats-dist-sigma-int):
+Die Standardabweichung $\sigma$ (Wurzel der Varianz) eignet sich , die Dichtfunktion in verschiedene Intervalle um $\mu$ herum mit bestimmten Wahrscheinlichkeiten zu unterteilen. Es gelten die folgenden Zuweisungen(siehe @tbl-stats-dist-sigma-int):
 
 | $x \in$ |  P  |
 | ----  | ---- |
-|$[-\sigma,\sigma]$| 0.682 |
-|$[-2\sigma,2\sigma]$| 0.955 |
-|$[-3\sigma,3\sigma]$| 0.997 |
+|$[\mu-\sigma,\mu+\sigma]$| 0.682 |
+|$[\mu-2\sigma,\mu + 2\sigma]$| 0.955 |
+|$[\mu-3\sigma,\mu + 3\sigma]$| 0.997 |
 
 : Wahrscheinlichkeiten für verschiedene Intervalle um $\mu$ in Abhängigkeit von $\sigma$ {#tbl-stats-dist-sigma-int}
 
@@ -484,14 +495,14 @@ Wie in @tbl-stats-dist-sigma-int zu sehen ist, hat der Bereich $[-2\sigma, 2\sig
 
 $$P(x\in[\mu-1.96\sigma, \mu+1.96\sigma]) = 0.95$$
 
-Anders herum, wenn es darum geht in Konfidenzintervall abzuschätzen, dann funktioniert auch die Faustregel, Teststatistik $\pm 2\times$ Standardfehler. 
+Anders herum, wenn es darum geht ein Konfidenzintervall abzuschätzen, dann kann die Faustregel, Teststatistik $\pm 2\times$ Standardfehler angewendet werden.
 
 ### Die Standardnormalverteilung
 
-Eine Sonderrolle in der Familie der Normalverteilungen spielt die Standardnormalverteilung\index{Standardnormalverteilung} mit $\mu = 0$ und $\sigma^2 = 1$. Tatsächlich taucht diese so oft aus, dass die Mathematiker ihr ein eigenes Symbol spendiert haben $\phi(x)$
+Eine Sonderrolle in der Familie der Normalverteilungen spielt die Standardnormalverteilung\index{Standardnormalverteilung} mit $\mu = 0$ und $\sigma^2 = 1$. Tatsächlich taucht diese so oft aus, dass die Mathematiker ihr ein eigenes Symbol spendiert haben $\Phi(x)$
 
 $$
-\phi(x) = \mathcal{N}(\mu = 0, \sigma^2 = 1)
+\Phi(x) = \mathcal{N}(\mu = 0, \sigma^2 = 1)
 $$
 
 Im Fall der Standardnormalverteilung nehmen @tbl-stats-dist-sigma-int und @fig-stats-dist-sigma-int besonders einfache Formen an da die Intervalle jeweils $[-1,1]$, $[-2,2]$ und $[-3,3]$ sind (siehe @fig-stats-dist-phi-int).
@@ -523,17 +534,45 @@ ggplot(df, aes(x,p, ymin = 0, ymax = p)) +
 
 ### z-Transformation
 
-Es besteht mittels einer einfachen Möglichkeit jede beliebiege Normalverteilung $\mathcal{N}(\mu,\sigma^2)$ auf die Standardnormalverteilung $\mathcal{N}(0,1)$ abzubilden. Die Transformation wird als z-Transformation\index{z-Transformation} bezeichnet und hat die folgende Form:
+Jede beliebiege Normalverteilung $\mathcal{N}(\mu,\sigma^2)$ kann mittels einer Transformation auf die Standardnormalverteilung $\mathcal{N}(0,1)$ abgebildet werden. Die Transformation wird als z-Transformation\index{z-Transformation} bezeichnet und hat die folgende Form:
 
-$$
-z = \frac{X - \mu_X}{\sigma_X}
-$$ {#eq-z-transformation}
+\begin{equation}
+Z = \frac{X - \mu_X}{\sigma_X}
+\label{eq-z-transformation}
+\end{equation}
 
-D.h. der Mittelwert der Verteilung von $X$ wird von X abgezogen und die Differenz wird durch die Standardabweichung der Population $\sigma_X$ geteilt. Die Umkehrfunktion ist dementsprechend:
+D.h. der Mittelwert der Verteilung von $X$, $\mu_x$ wird von X abgezogen und die Differenz wird durch die Standardabweichung der Population $\sigma_X$ geteilt. Die Zufallsvariable $Z$ ist dann Standardnormalverteilt $Z \sim Phi(z)$.
 
-$$
+Die Umkehrfunktion der z-Transformation berechnet sich nach:
+
+\begin{equation}
 X = \mu_X + z \sigma_X
-$$ {#eq-z-invtransformation}
+\label{eq-z-invtransformation}
+\end{equation}
+
+Mittels der z-Transformation kann z.B. ein einfaches Intervall um eine beliebige, normalverteilte Zufallsvariable $Y$ erstellt werden. Möchte ich zum Beispiel ein Intervall $[A,B]$ mit der Wahrscheinlichkeit $P(X \in [A,B]) = 0.95$ erstellen. Formal:
+
+\begin{align*}
+P(A \leq X \leq B) &= P(A^* = \frac{A-\mu_x}{\sigma_x} \leq \frac{X-\mu_x}{\sigma_x} \leq \frac{B-\mu_X}{\sigma_X} = B^*) \\
+&= P(A^* \leq \frac{X-\mu_x}{\sigma_x} = B^*)
+\end{align*}
+
+Wenn wir in der Tabelle für Quartilen für die Standardnormalverteilung nachsehen, dann erhalte ich eine die Wert $-1.96$ für $A^*$ und $1.96$ für $B^*$. Eingesetzt und zurück transformiert erhalten wir.
+
+\begin{align*}
+P(-1.96 \leq \frac{X-\mu_X}{\sigma} \leq 1.96) &= P(-1.96\sigma \leq X-\mu_X \leq 1.96\sigma) \\
+&= P(\mu_X-1.96\sigma \leq X \leq \mu_X + 1.96\sigma)
+\end{align*}
+
+### Normalverteilung in `R`
+
+Dem üblichen Muster folgend haben die Funktion für die Dichtefunktion, die Verteilungsfunktion, die Quartilfunktion und Zufallszahlen in `R` die Namen `dnorm()`, `pnorm()`, `qnorm()` und `rnorm()`. Um zehn Zufallszahlen aus der Normalverteilung mit $\mu = 2$ und $\sigma = 1.2$ zu ziehen verwenden wir.
+
+```{r}
+#| echo: true
+
+rnorm(10, mean = 2, sd = 1.25)
+```
 
 
 ### Zentraler Grenzwertsatz 
