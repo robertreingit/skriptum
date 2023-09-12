@@ -550,19 +550,49 @@ X = \mu_X + z \sigma_X
 \label{eq-z-invtransformation}
 \end{equation}
 
-Mittels der z-Transformation kann z.B. ein einfaches Intervall um eine beliebige, normalverteilte Zufallsvariable $Y$ erstellt werden. Möchte ich zum Beispiel ein Intervall $[A,B]$ mit der Wahrscheinlichkeit $P(X \in [A,B]) = 0.95$ erstellen. Formal:
+Mittels der z-Transformation kann z.B. ein Intervall um eine beliebige, normalverteilte Zufallsvariable $X$ mit einer bestimmten Wahrscheinlichkeit erstellt werden. Möchte ich zum Beispiel ein Intervall $[A,B]$ mit der Wahrscheinlichkeit $P(X \in [A,B]) = 0.95$ ermitteln. Dann kann ich die z-Transformation folgendermaßen verwenden:
+
+Wir suchen das Interval $[A,B]$ in dem einer normalverteilten Zufallsvariable $X$ mit einer bestimmten Wahrscheinlichkeit $p$ enthalten ist. Formal
+
+\begin{equation*}
+P(A \leq X \leq B) = p
+\end{equation*}
+
+Jetzt wende wir auf die Werte in der ersten Klammer die z-Transformation an.
+
+\begin{equation*}
+P(A \leq X \leq B) = P(\frac{A-\mu_x}{\sigma_x} \leq \frac{X-\mu_x}{\sigma_x} \leq \frac{B-\mu_X}{\sigma_X}) 
+\end{equation*}
+
+Definieren wir uns noch zwei neue Hilfsgrenzen $A^* := \frac{A-\mu_x}{\sigma_x}$ und $B^* := \frac{B-\mu_x}{\sigma}$ und erhalten:
+
+\begin{equation*}
+P(A \leq X \leq B) = P\left(A^* \leq \frac{X-\mu_x}{\sigma_x} = B^*\right)
+\end{equation*}
+
+Der Term in der Mitte folgt nun einer Standardnormalverteilung. Die Standardnormalverteilung ist symmetrisch um den Nullpunkt herum. Daher können wir die Quartilfunktion der Standardnormalverteilung verwenden und benötigen nur linke Grenze $A^*$ da die rechte Grenze den gleichen Wert $\times (-1)$ hat.
+
+Setzen wir nun unser $p = 0.95$, d.h. wir suchen ein Intervall mit einer Wahrscheinlichkeit von 95%. In @fig-stats-dist-phi-01 haben wir links $0.025$ abgeschnitten um die Grenzen unter der Standardnormalverteilung zu ermitteln, da $2 \times 0.025 = 0.05 = 1 - 0.95$. 
+
+```{r}
+#| label: fig-stats-dist-phi-01
+#| fig-cap: "Quartilfunktion der Standardnormalverteilung."
+
+tibble(x = seq(0, 1, length.out = 100), y = qnorm(x)) |> 
+  ggplot(aes(x,y)) +
+  geom_vline(xintercept = 0.025, color = 'red', linetype = 'dashed') +
+  geom_line() +
+  labs(x = 'Wahrscheinlichkeit',  y = 'Werte')
+```
+
+Wir erhalten den Wert $-1.96$ für $A^*$ und dementsprechend $1.96$ für $B^*$. Eingesetzt und zurück transformiert erhalten wir.
 
 \begin{align*}
-P(A \leq X \leq B) &= P(A^* = \frac{A-\mu_x}{\sigma_x} \leq \frac{X-\mu_x}{\sigma_x} \leq \frac{B-\mu_X}{\sigma_X} = B^*) \\
-&= P(A^* \leq \frac{X-\mu_x}{\sigma_x} = B^*)
+P\left(-1.96 \leq \frac{X-\mu_X}{\sigma} \leq 1.96\right) &= P(-1.96\sigma \leq X-\mu_X \leq 1.96\sigma) \\
+&= P(X -1.96\sigma \leq \mu_X \leq X + 1.96\sigma)
 \end{align*}
 
-Wenn wir in der Tabelle für Quartilen für die Standardnormalverteilung nachsehen, dann erhalte ich eine die Wert $-1.96$ für $A^*$ und $1.96$ für $B^*$. Eingesetzt und zurück transformiert erhalten wir.
-
-\begin{align*}
-P(-1.96 \leq \frac{X-\mu_X}{\sigma} \leq 1.96) &= P(-1.96\sigma \leq X-\mu_X \leq 1.96\sigma) \\
-&= P(\mu_X-1.96\sigma \leq X \leq \mu_X + 1.96\sigma)
-\end{align*}
+Damit erhalten wir das gewünschte Intervall, das auch noch ein Konfidenzintervall $\mu$ ist. Solange wir keinen Datenpunkt für $X$ gesammelt haben, können wir hier über Wahrscheinlichkeiten reden. Die beiden Grenzen des Konfidenzintervalls sind ebenfalls Zufallsvariablen. Sobald wir aber einen Datenpunkt gesammelt haben, also aus dem $X$ ein $x$ wird, dann ist alle Zufälligkeit weg und das Konfidenzintervall beschreibt nicht die Wahrscheinlichkeit mit der $\mu$ enthalten ist. Diese Wahrscheinlichkeit ist entweder $0$ oder $1$.
 
 ### Normalverteilung in `R`
 
@@ -607,8 +637,11 @@ ggplot(d_b, aes(z)) +
 
 ## t-Verteilung
 
+Die t-Verteilung ist der Normalverteilung sehr ähnlich. Sie hat allerdings immer den Erwartungswert $E[X] = 0$. Sie hat nur einen Parameter, die Freiheitsgrade $df$ die bestimmen wie stark die Flanken der Verteilung abfallen. In @fig-stats-dist-t-dist-01 sind verschiedene t-Verteilungen abgebildet.
+
 ```{r}
 #| fig.cap: "Beispiel für verschiedene Dichtefunktionen der t-Verteilung"
+#| label: fig-stats-dist-t-dist-01
 
 n_fig_pts <- 130
 t_dist <- tibble(
@@ -628,6 +661,7 @@ ggplot(t_dist, aes(x,v,fill=dist, ymin=0, ymax=v)) +
   labs(x = 'Werte', y = 'Dichte') 
 ```
 
+Die t-Verteilung wird oft verwendet wenn neben dem Erwartungswert $\mu$ auch die Varianz $\sigma^2$ anhand der Stichprobe bestimmt wird. 
 
 ## $\chi^2$-Verteilung
 
