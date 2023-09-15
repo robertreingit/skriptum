@@ -1,11 +1,114 @@
 # Einfache Datenbearbeitung und Visualisierung in `R`  
 
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+source('_common.R')
+```
+
+```{r}
+library(tibble)
+```
+
+Im Folgenden werden wir verschiedene Funktion zur Bearbeitung und Visualisierung von Daten kennenlernen. Die verwendeten Funktionen sind alle in einer großen Sammlung von Funktionen dem `tidyverse` zugeordnet. Pakete aus dem `tidyverse` verfolgen alle eine einheitliche Syntax und Herangehensweise an die Datenverarbeitung. Daneben verfügen sie über eine ausgezeichnete Dokumentation. Daher werden die jeweiligen Funktionen hier nur kurz angeschnitten. Weitergehende Informationen und vor allem jede Menge Beispielanwendungen findet ihr in der `tidyervers` [Dokumention](https://tidyvers.org).
+
 ## Daten in `R` einlesen
 
+Daten in `R` werden mittels spezieller Funktionen eingelesen, die jeweils auf bestimmte Datentypen spezialisiert sind. Drei Pakete sind dabei für die allermeisten ausreichend. Die Pakete sind `readr`, `readxl` und `haven`. 
+
+### readr
+
+Im Paket `readr` sind eine Reihe von Funktionen enthalten um rechteckige Textdateien einzulesen. Die allgemeineste Funktion ist `read_delim()` bei der angegeben werden muss, welche Trennzeichen (engl. delimiter) zwischen den einzelnen Spalteneinträgen steht. Seien z.B. die folgenden Daten in einer Datei `example_01.txt` in dem Ordner `data` gespeichert.
+
+| id	grp	value
+| p1	CON	1
+| p2	CON	2
+| p3	TRT	3
+| p4	TRT	4
+
+Das Trennzeichen zwischen den Eintragen ist ein {{< kbd TAB >}}. Die Datei können wir mittels des folgenden Befehls einlesen.
+
+```{r}
+#| echo: true
+
+df <- readr::read_delim(
+  file = 'data/example_01.txt',
+  delim = '\t'
+)
+```
+
+Mit der Parameter `\t` spezifizieren das verwendete Trennzeichen. `read_delim()` verwendet eine Reihe von Heuristiken um den jeweiligen Datentyp der Spalten zu bestimmen. Der Rückgabewert von `read_delim()` ist ein `tibble()` mit den Daten, das wir der Variable `df` in dem Fall zuweisen.
+
+```{r}
+#| echo: true
+
+df
+```
+
+Im Beispiel sind die ersten beiden Spalten als Zeichenketten (`<char>`) erkannt worden, während die dritte Spalte als Zahl (`<dbl>`) erkannt wurde. Manchmal funktionieren die Regeln nicht korrekt. In dem Falle können mit dem Parameter `col_types` die Spaltentypen direkt angegeben werden. Wenn keine Kopfzeile in den Daten vorhanden ist, kann diese über den Parameter `col_names` spezifiziert werden. Mit `skip` können Zeilen zu Beginn der Datei übersprungen werden.
+
+Zum Beispiel wenn wir die Spaltennamen anders haben wollen, können wir die erste Zeile beim einlesen überspringen und andere Spaltennamen angeben.
+
+```{r}
+#| echo: true
+
+readr::read_delim(
+  file = 'data/example_01.txt',
+  delim = '\t',
+  skip = 1,
+  col_names = c('ID', 'Gruppe','Wert'),
+  col_types = 'ccd'
+)
+```
+
+Wie immer, wenn ihr das Paket `readr` mit `library()` geladen habt, ist die Qualifizierung `readr::` nicht notwendig um die Funktion zu verwenden. Die weiteren Funktionen in `readr`  wie `read_csv`, `read_tsv` usw. sind in den meisten Fällen Spezialversionen von `read_delim` bei denen der Parameter `delim` schon voreingestellt ist. Schaut euch etwas in der [Dokumentation](https://readr.tidyverse.org/reference/index.html) um einen Überblick über die verschiedenen Varianten zu bekommen.
+
+
+### readxl
+
+### haven
 
 ## Daten in `R` prozessieren mit `tidyverse()`
 
+### `filter()`
+### `arrange()`
+### `select()`
+### `mutate()`
+### `summarize()`
+### `group_by()`
+### `ungroup()`
+### `separate()`
+### `pivot_wider()`
+### `pivot_longer()`
+### `add_column()`
+### `left_join()`
+### `map()`
 
-## Daten in `R` visualisieren mit `GGplot()`
+## Daten in `R` visualisieren mit `ggplot()`
+
+```{r}
+#| echo: true
+
+df <- tibble(
+  dv = 1:8,
+  iv = 11:18,
+  group = rep(c('a','b'), 4),
+  team = rep(c('Nuggets','Lakers'), each=4)
+)
+```
 
 
+### `geom_point()`
+### `geom_line()`
+### `geom_boxplot()`
+### `geom_col()`
+### `geom_errorbar()`
+### `facet_grid()`
+### `geom_density()` 
+### `geom_histogram()`
+### `geom_pointrange()`
+### `geom_ribbon()`
+### `labs()` und `lims()`
+### `scale_x|y_continuous()`
+### Darstellung modifizieren mit `theme()` 
