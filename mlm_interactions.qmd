@@ -18,9 +18,12 @@ handball <- tibble::tibble(
   body_mass = foo[,2],
   vel = 1 + 0.12*body_mass + 0.06*arm_span + 0.02*(body_mass-77)*(arm_span-184) + rnorm(n)
 )
+ncol_text <- theme(text = element_text(size=20))
 ```
 
 Bisher haben wir uns additive Effekte angeschaut. D.h. in unserer Modellspezifikation sind die Prädiktorvariablen $x_i$ immer nur mit einem $+$ in die Formel eingegangen. Im folgenden werden wir sehen, das das lineare Modell nicht nur auf solche Effekt beschränkt ist, sondern Prädiktorvariablen $x_i$ auch multiplikativ in die Formel eingehen können.
+
+## Ein Handballbeispiel
 
 Fangen wir mit einem hypothetischen Datensatz zum Handball an. Wir haben drei Datenspalten zur Wurfgeschwindigkeit, der Körpermasse und der Armspannweite und unser Ziel ist es, die Wurfgeschwindigkeit anhand der Körpermasse und der Armspanweite vorherzusagen. Die Fragestellung ist angelehnt an @debanne2011. Schauen wir uns zunächst die deskriptiven Daten (siehe @tbl-mlm-inter-handball-01).
 
@@ -51,11 +54,13 @@ In @tbl-mlm-inter-handball-01 ist zunächst einmal nichts auffallendes zu sehen.
 
 ggplot(handball, aes(body_mass, vel)) +
   geom_point(size=3) +
-  labs(x = 'Köpergewicht [kg]', y = 'Geschwindigkeit [m/s]') 
+  labs(x = 'Köpergewicht [kg]', y = 'Geschwindigkeit [m/s]') +
+  ncol_text
 
 ggplot(handball, aes(arm_span, vel)) +
   geom_point(size=3) +
-  labs(x = 'Armspannweite [cm]', y = 'Geschwindigkeit [m/s]') 
+  labs(x = 'Armspannweite [cm]', y = 'Geschwindigkeit [m/s]') +
+  ncol_text
 ```
 
 In beiden Graphen ist mit etwas gutem Willen ein positiver Zusammenhang zwischen den jeweiligen Prädiktorvariablen und der Wurfgeschwindigkeit zu identifzieren. Für das Körpergewicht in @fig-mlm-inter-handball-01-1 vielleicht etwas mehr als für die Armspannweite in @fig-mlm-inter-handball-01-2.
@@ -157,7 +162,9 @@ hb_quick |>
   labs(x = 'Armspannweite', y = 'Geschwindigkeit') 
 ```
 
-Hier zeigt sich ein interessantes Muster. Für mittel und schwere Handballer nimmt die Wurfgeschwindigkeit mit der Armspannweite zu. Dagegen zeigt sich der gegensätzliche Trend für leichte Handballer. D.h. der Einfluss der Armspannweite hängt davon ab wie schwer der Handballer ist. Bzw. andersherum natürlich genause. Aber dies ist die Definition eines Interaktionseffekts.
+Hier zeigt sich ein interessantes Muster. Für mittel und schwere Handballer nimmt die Wurfgeschwindigkeit mit der Armspannweite zu. Dagegen zeigt sich der gegensätzliche Trend für leichte Handballer. D.h. der Einfluss der Armspannweite hängt davon ab wie schwer der Handballer ist. Der Einfluss ist in der anderen Richtung genause, der Einfluss der Körpermasse hängt von der Armspanweite ab. Wenn sich die Effekte zweier Prädiktorvariablen gegenseitig beeinflussen, dann wird dies als Interaktionseffekts bezeichnet.
+
+## Interaktion zwischen zwei Effekten
 
 ::: {#def-interaction}
 ## Interaktionseffekt\index{Interaktion}
@@ -165,7 +172,7 @@ Hier zeigt sich ein interessantes Muster. Für mittel und schwere Handballer nim
 Wenn der Effekt einer unabhängigen Variable auf die abhängige Variable davon abhängt welche Ausprägung eine weitere unabhängige Variable hat, dann wird dies als ein Interaktionseffekt bezeichnet.
 :::
 
-Im Rahmen des linearen Modells wir ein solcher Interaktionseffekt durch einen multiplikativen Term zwischen den beiden Variablen modelliert.
+Im Rahmen eines linearen Modells, wird ein solcher Interaktionseffekt durch einen multiplikativen Term zwischen den beiden Variablen modelliert.
 
 \begin{equation*}
 Y_{i} = \beta_0 + \beta_1 \times \textrm{bm}_i + \beta_2 \times \textrm{as}_i + \beta_3 \times \textrm{bm}_i \times \textrm{as}_i + \epsilon_i
@@ -197,15 +204,15 @@ handball <- handball |>
 mod_3 |> lm_tbl_knitr(caption = "Modell 3", long = T, add_sigma = T)
 ```
 
-Als erstes sehen wir, dass sich die Residualvarianz $\hat{sigma}$ mehr als halbiert hat. D.h unser Modell ist schon einmal deutlich präziser geworden. Auch die Standardfehler der beiden Steigungskoeffizienten für dei Haupteffekte haben sich deutlich verringert (vgl. @tbl-mlm-inter-handball-mod2). Dementsprechend sind beide Koeffizienten statistisch signifikant. Der neue dazugekommene Interaktionseffekt ist ebenfalls statistisch signifikant mit einem sehr kleinen Standardfehler. Jetzt müssen wir nur noch verstehen was der Koeffizient für $\beta_3$ eigentlich bedeutet.
+Als erstes sehen wir, dass sich die Residualvarianz $\hat{\sigma}$ mehr als halbiert hat. D.h unser Modell ist schon einmal deutlich präziser geworden. Auch die Standardfehler der beiden Steigungskoeffizienten für die Haupteffekte haben sich deutlich verringert (vgl. @tbl-mlm-inter-handball-mod2). Dementsprechend sind beide Koeffizienten statistisch signifikant. Der neu dazugekommene Koeffizient für den Interaktionseffekt ist ebenfalls statistisch signifikant mit einem sehr kleinen Standardfehler. Jetzt müssen wir nur noch verstehen was die Koeffizienten und insbesondere $\beta_3$ eigentlich bedeuten.
 
-Schauen wir dazu zunächst die Vorhersagen $\hat{y}_i$ unter den beiden Modellen Modell 1 und Modell 2 an. Beide Modell arbeiten mit zentrierten Prädiktorvariablen. Vereinfachen wir die Daten und nehmen nur drei verschiedene Werte für die Armspannweite $as = \{-5,0,5\}$ D.h. einen hypothetischen Handballer mit der Durchschnittsspannweite, sowie jeweils einen mit $5$ cm kürzerer bzw. $5$ cm längerer Spannweite. Wir kombinieren diese drei Werte mit fünf verschiedenen Körpermassen $bm = \{-6,-3,0,3,6\}$. D.h. eine durchschnittliche Körpermasse und jeweils $3$ und $6$ Kg darüber und darunter. Das führt dann insgesamt zu dieser Kombination von Prädiktorvariablen (siehe @tbl-mlm-inter-handball-xpred).
+Schauen wir dazu zunächst die Vorhersagen $\hat{y}_i$ unter den beiden Modellen Modell 2 und Modell 3 an. Zur Erinnerung, beide Modell arbeiten mit zentrierten Prädiktorvariablen. Um einen besseren Überblick über die Vorhersagen zu bekommen, vereinfachen wir die Daten und nehmen nur drei verschiedene Werte für die Armspannweite $as = \{-10,0,10\}$ cm. D.h. einen hypothetischen Handballer mit der Durchschnittsspannweite, sowie jeweils einen mit $10$ cm kürzerer bzw. $10$ cm längerer Spannweite. Wir kombinieren diese drei Werte mit drei verschiedenen Körpermassen $bm = \{-2,0,2\}$ Kg. D.h. eine durchschnittliche Körpermasse und jeweils $2$ und $2$ Kg darüber und darunter. Das führt dann insgesamt zu dieser Kombination von Prädiktorvariablen (siehe @tbl-mlm-inter-handball-xpred).
 
 ```{r}
 #| label: tbl-mlm-inter-handball-xpred
 #| tbl-cap: "Alle Kombinationen von Prädiktorvariablen."
   
-expand.grid(as = c(-3,0,3), bm = c(-6,-3,0,3,6)) |> 
+expand.grid(as = c(-10,0,10), bm = c(-2,0,2)) |> 
   knitr::kable(booktabs = T,
                col.names = c('Armspannweite','Körpermasse'))
 ```
@@ -222,8 +229,8 @@ Berechnen wir jetzt die vorhergesagten Wert $\hat{y}_i$ für die beiden Modelle 
 #|   - "Vorhersage unter Modell 3"
 
 hb_new <- tibble::tibble(
-  arm_span_c = rep(c(-5,5),5),
-  body_mass_c = rep(seq(-6,6,by=3), each=2),
+  arm_span_c = rep(c(-10,0,10),3),
+  body_mass_c = rep(c(-2,0,2), each=3),
   bm_f = factor(body_mass_c)
 )
 hb_new_1 <- hb_new |> 
@@ -232,9 +239,9 @@ ggplot(hb_new_1, aes(arm_span_c, vel, group=bm_f)) +
   geom_point() +
   geom_line(aes(linetype=bm_f)) +
   scale_linetype_discrete("Level von\nbody mass\ncentered", guide = guide_legend(reverse=T)) +
-  scale_x_continuous("Armspannweite zentriert[cm]", breaks = c(-5,0,5)) +
+  scale_x_continuous("Armspannweite zentriert[cm]", breaks = c(-10,0,10)) +
   labs(y = 'Ballgeschwindigkeit[m/s]') +
-  theme(text = element_text(size=12))
+  ncol_text
 
 hb_new_2 <- hb_new |>  dplyr::mutate(vel = predict(mod_3, newdata = hb_new))
 p_inter_1 <- ggplot(hb_new_2, aes(arm_span_c, vel, group=bm_f)) +
@@ -242,15 +249,16 @@ p_inter_1 <- ggplot(hb_new_2, aes(arm_span_c, vel, group=bm_f)) +
   geom_line(aes(linetype=bm_f)) +
   scale_linetype_discrete("Level von\nbody mass\ncentered",
                           guide = guide_legend(reverse=T)) +
-  scale_x_continuous("Armspannweite zentriert[cm]", breaks = c(-5,0,5)) +
-  labs(y = 'Ballgeschwindigkeit[m/s]') +
-  theme(text = element_text(size=12))
-print(p_inter_1)
+  scale_x_continuous("Armspannweite zentriert[cm]", breaks = c(-10,0,10)) +
+  labs(y = 'Ballgeschwindigkeit[m/s]') 
+print(p_inter_1 + ncol_text)
 ```
 
-In @fig-mlm-inter-simple-1 sehen wir, dass die vorhergesagten Werte $\hat{y}_i$ für verschiedene Körpermassen jeweils nur parallel verschoben sind. Da die unterschiede zwischen den Körpermassen jeweils $3$ Kg unterscheiden sich für einen gegebenen Wert der Armspannweite die Werte konstant zwischen den Linien um den Faktor $\beta_{\text{body mass}} \times 3$. Dies sieht komplett anders unter Modell 3 aus (siehe @fig-mlm-inter-simple-2). Hier sehen wir, dass die Unterschiede zwischen den verschiedenen Armspannweiten davon abhängen wie schwer die Handballer ist. Während bei kleinen Armspannweiten die Unterschiede sehr klein sind, werden die Unterschiede zwischen den Gewichtskategorien umso größer je größer die Armspannweite wird. Es handelt sich eben um einen Interkationseffekt.
+In @fig-mlm-inter-simple-1 sehen wir, dass die vorhergesagten Werte $\hat{y}_i$ für verschiedene Körpermassen jeweils nur parallel verschoben sind. Da die Unterschiede zwischen den Körpermassen sich um jeweils $2$ Kg unterscheiden sind für einen gegebenen Wert der Armspannweite die Abstände zwischen den Linien konstant um den Faktor $\beta_{\text{body mass}} \times 2$. D.h. egal welchen Wert die Armspannweite einnimmt, der Zusammenhang der Körpermasse mit der Wurfgeschwindigkeit bleibt gleich. Diese Zusammenhänge zwischen einer Prädiktorvariable und der abhängigen Variable während die andere Variable konstant gehalten wird, werden als einfache Steigungen bezeichnet.
 
-Der Interaktionseffekt ist dabei symmetrisch und hängt nicht davon ab, welche Variable als $x$-Variable in dem Graphen verwendet wird. In @fig-mlm-inter-simple-02 sind beide Möglichkeiten einmal nebeneinander dargestellt.
+Dagegen sehen die einfachen Steigung anders unter Modell 3 aus (siehe @fig-mlm-inter-simple-2). Hier können wir sehen, dass die Unterschiede zwischen den verschiedenen Armspannweiten davon abhängen wie schwer ein Handballer ist. Während bei kleinen Armspannweiten die Unterschiede eher gering sind, werden die Unterschiede zwischen den Gewichtskategorien umso größer je größer die Armspannweite wird. Es handelt sich um einen Interkationseffekt. Wir sehen weiter, dass bei einer Armspannweite von $-5$ cm es sogar zum schneiden der einfachen Steigungen kommt und entsprechend die Anordnung der Wurfweiten in Abhängigkeit von der Körpermasse sich umkehrt.
+
+Ein Interaktionseffekt ist dabei symmetrisch und hängt nicht davon ab, welche Variable als $x$-Variable in dem Graphen verwendet wird. In @fig-mlm-inter-simple-02 sind beide Möglichkeiten einmal nebeneinander dargestellt.
 
 ```{r}
 #| label: fig-mlm-inter-simple-02
@@ -277,14 +285,16 @@ p_inter_2 <- ggplot(hb_new_3, aes(body_mass_c, vel, group=arm_f)) +
   scale_x_continuous("Bodymass zentriert[kg]", breaks = c(-.5,0,.5)) +
   labs(y = 'Ballgeschwindigkeit[m/s]') +
   theme(text = element_text(size=12))
-print(p_inter_2)
+print(p_inter_2 + ncol_text)
 
-print(p_inter_1)
+print(p_inter_1 + ncol_text)
 ```
 
-In beiden Fällen beobachten wir den Interaktionseffekt.
+In beiden Fällen beobachten wir den Interaktionseffekt, wobei sich die einfachen Steigungen auf Grund der unterschiedlichen Varianz der Variablen unterscheidet bzw. von deren Einheiten abhängt.
 
-Als nächstes Versuchen wir zu verstehen warum die Multiplikation im Model Sinn macht und was die Koeffizienten in @tbl-mlm-inter-handball-mod3 bedeuten. In @fig-mlm-inter-mod3-coefs-1 sind noch einmal die Steigungen für die Körpermasse in Abhängigkeit von der Armspannweite abgebildet. Der Einfachheit halber nur drei Stück für die Armspannweiten $as = \{-10,0,10\}$cm.
+## Koeffizienten im Interaktionsmodell verstehen
+
+Als nächstes Versuchen wir zu verstehen warum die Multiplikation im Model Sinn macht und was die Koeffizienten in @tbl-mlm-inter-handball-mod3 bedeuten. In @fig-mlm-inter-mod3-coefs-1 sind noch einmal die Steigungen für die Körpermasse in Abhängigkeit von der Armspannweite abgebildet. 
 
 ```{r}
 #| label: fig-mlm-inter-mod3-coefs-1
@@ -302,7 +312,7 @@ ggplot(aes(body_mass_c, vel, group=arm_f)) +
   theme(text = element_text(size=12))
 ```
 
-Diese Steigungen werden als einfache Steigungen bezeichnet. Nochmal, wir sehen anhand des Graphen, dass der Zusammenhang zwischen der Wurfgeschwindigkeit und der Körpermasse von der Armspannweite abhängt. In @tbl-mlm-inter-mod3-coefs-1 sind die dazugehörenden Steigungskoeffizienten für die einfachen Steigungen abgebildet. $\beta_0$ ist der $y$-Achsenabschnitt für die jeweiligen Armspannweiten und $\beta_1$ die jeweiligen Steigungen. 
+Nochmal, wir sehen anhand des Graphen, dass der Zusammenhang zwischen der Wurfgeschwindigkeit und der Körpermasse von der Armspannweite abhängt. In @tbl-mlm-inter-mod3-coefs-1 sind die dazugehörenden Steigungskoeffizienten für die einfachen Steigungen abgebildet. $\beta_0$ ist der $y$-Achsenabschnitt für die jeweiligen Armspannweiten und $\beta_1$ die jeweiligen Steigungen. 
 
 ```{r}
 #| label: tbl-mlm-inter-mod3-coefs-1
@@ -368,7 +378,8 @@ D.h. wir erhalten, bis auf ein paar Rundungsfehler, die Steigungskoeffizienten d
 Versuche anhand der Koeffizienten in @tbl-mlm-inter-mod3-coefs-1-2 die einfache Steigungsgleichung für $as_c = -10$ zu erhalten.
 ::: 
 
-::: {.callout-note}
+### Zusammenfassung
+
 Zusammenfassend lässt sich die folgende Interpretation der Koeffizienten in einem Interaktionsmodell formulieren.
 
 \begin{equation*}
@@ -380,17 +391,19 @@ Y = b_0 + b_1 \cdot x_1 + b_2 \cdot x_2 + b_3 \cdot x_1 \cdot x_2 + \epsilon_i
 - $b_2$: Der Unterschied in $\hat{Y}$ wenn zwei Objekte sich in $x_2$ um eine Einheit unterscheiden und $x_1 = 0$ ist.
 - $b_3$: (Interaktionskoeffizient) Die Veränderung des Effekts von $x_1$ auf $\hat{Y}$ wenn $x_2$ um eine Einheit größer wird bzw. genau andersherum für $x_2$.
 
-:::
+
+## Vergleich additives Modell mit dem Interaktionsmodell
 
 Schauen wir nun noch einmal an, wie sich die gefitteten Flächen der beiden Modell voneinander unterscheiden. In @fig-mlm-inter-resid-plane sind die gefitten Flächen und die Residuen unter den beiden Modell abgebildet.
 
 ```{r}
 #| label: fig-mlm-inter-resid-plane
+#| fig-height: 5
 #| layout-ncol: 2
 #| fig-cap: "Vergleich der gefitteten Ebenen in den beiden Modellen." 
 #| fig-subcap:
 #|   - "3D Streudiagramm des Interaktionsmodells und gefittet Ebene unter Model 1"
-#|   - "3D Streudiagramm des Interaktionsmodells und gefittet Ebene unter Model 2"
+#|   - "3D Streudiagramm des Interaktionsmodells und gefittet Fläche unter Model 2"
 
 par(mar=c(1,1,1,1), cex.axis = 0.5)
 # x, y, z variables
@@ -444,29 +457,32 @@ plot3D::scatter3D(x, y, z, col='black', pch=16, cex=1.2,
 
 Die gefitte Oberfläche ist jetzt keine Ebene mehr, sondern die Hinzunahme des Interaktionseffekts hat dazu geführt, dass die Oberfläche jetzt eher einem Sattel ähnelt. D.h. durch die Interaktionseffekte können wir deutlich komplizierte Zusammenhänge zwischen den Prädiktorvariablen und der abhängigen Variable modellieren. Die Komplexität erhöht sich entsprechend mit der Zahl der Prädiktorvariablen und den möglichen Interaktion zwischen diesen.
 
-Zurückkommend auf unser Ausgangsbeispiel. Wie hat sich die Hinzunahme des Interaktionseffekts eigentlich auf den Modellfit ausgewirkt. Vergleichen wir die beiden Residuenplots dazu.
+Zurückkommend auf unser Ausgangsbeispiel. Wie hat sich die Hinzunahme des Interaktionseffekts eigentlich auf den Modellfit ausgewirkt. Vergleichen wir die beiden Residuenplots dazu (siehe @fig-mlm-inter-resid-comparison).
 
 ```{r}
 #| label: fig-mlm-inter-resid-comparison
 #| layout-ncol: 2
+#| fig-height: 5
 #| fig-cap: "Vergleich der Residuen zwischen Modell 2 und Modell 3."
 #| fig-subcap:
 #|   - "Residuen im additiven Modell"
 #|   - "Residuen im Interaktionsmodell"
 
-print(p_resid_2)
+print(p_resid_2 + ncol_text)
 ggplot(handball, aes(y_hat_3, res_3)) +
   geom_point() +
   geom_hline(yintercept = 0, col = 'red', linetype = 'dashed') +
   labs(x = expression(paste('Vorhergesagte Werte ', hat(y)[i])),
-       y = expression(paste('Residuen ', hat(e)[i]))) 
+       y = expression(paste('Residuen ', hat(e)[i]))) +
+  ncol_text
 ```
 
-Der gleiche Vergleich noch einmal für die qq-Plots der Residuen.
+Wir sehen in @fig-mlm-inter-resid-comparison-2 das die Struktur, die wir im additiven Modell in @fig-mlm-inter-resid-comparison-1 in den Residuen beobachtet haben, nun nicht mehr vorhanden ist. Ähnlich verhält sich auch der Vergleich für die die qq-Plots der Residuen (siehe @fig-mlm-inter-qq-comparison).
 
 ```{r}
 #| label: fig-mlm-inter-qq-comparison
 #| layout-ncol: 2
+#| fig-height: 5
 #| fig-cap: "Vergleich der Residuen zwischen Modell 2 und Modell 3."
 #| fig-subcap:
 #|   - "qq-Plot für das additive Modell"
@@ -475,25 +491,39 @@ Der gleiche Vergleich noch einmal für die qq-Plots der Residuen.
 ggplot(handball, aes(sample = res_2)) +
   geom_qq() +
   stat_qq_line() +
-  labs(x = 'Theoretisch', y = 'Empirisch') 
+  labs(x = 'Theoretisch', y = 'Empirisch') +
+  ncol_text
 ggplot(handball, aes(sample = res_3)) +
   geom_qq() +
   stat_qq_line() +
-  labs(x = 'Theoretisch', y = 'Empirisch') 
+  labs(x = 'Theoretisch', y = 'Empirisch') +
+  ncol_text
+```
+
+Schauen wir uns noch die verbleibenden Performanceparameter an.
+
+```{r}
+#| label: tbl-stats-int-model-performance
+#| tbl-cap: "Vergleich der Modellperformance zwischen Model 2 und Model 3"
+
+performance::compare_performance(mod_2, mod_3, metrics = c('R2','R2_adj','RMSE','SIGMA')) |> 
+  knitr::kable(booktabs = TRUE, digits = 3)
 ```
 
 
+Insgesamt sind durch die Hinzunahme des Interaktionseffekt nicht nur die Standardfehler und der Residualfehler verringert worden, sondern das Modell fittet die Daten auch deutlich besser als das additive Modell. Dies ist natürlich nicht immer der Fall, sondern hängt eng mit den jeweiligen Daten zusammen.
+
 ## Take-away
 
-Interaktionsmodell
+Das Interaktionsmodell:
 
 - Erhöht die Flexibilität des linearen Modells.
 - Bei Interaktionen hängt der Einfluss der einzelnen Variablen immer von den Werten der anderen Variablen ab. 
-- Achtung: Interpretation der einfachen Haupteffekte nicht mehr möglich bzw. sinnvoll!
-
+- Achtung: Interpretation der einfachen Haupteffekte oft nicht mehr möglich bzw. sinnvoll!
 
 ### Zuschlag^*^
-Schauen wir uns noch einmal an, was passiert mit dem Koeffizienten im Interaktionsmodell wenn die Prädiktorvariablen $x_{ki}$s zentriert werden?
+
+Schauen wir uns noch zum Abschluss noch an, was algebraisch mit dem Koeffizienten im Interaktionsmodell passiert wenn die Prädiktorvariablen $x_{ki}$s zentriert werden.
 
 \begin{align*}
 y_i &= \beta_0 + \beta_1 (x_{1i} - \bar{x}_1) + \beta_2 (x_{2i} - \bar{x}_2) + \beta_3 (x_{1i}-\bar{x}_1)(x_{2i}-\bar{x}_2) \\
@@ -502,7 +532,7 @@ y_i &= \beta_0 + \beta_1 (x_{1i} - \bar{x}_1) + \beta_2 (x_{2i} - \bar{x}_2) + \
  &= \underbrace{\beta_0 - \beta_1 \bar{x}_1 - \beta_2 \bar{x}_2 + \beta_3 \bar{x}_1 \bar{x}_2}_{\beta_0} + \underbrace{(\beta_1 - \beta_3 \bar{x}_2) x_{1i}}_{\beta_1 x_{1i}} + \underbrace{(\beta_2 - \beta_3 \bar{x}_1) x_{2i}}_{\beta_2 x_{2i}} + \beta_3 x_{1i} x_{2i} 
 \end{align*}
 
-Wir sehen, dass nur der Interaktionsterm gleich ist unter dem zentrierten und dem unzentrierten Modell. Dagegen unterscheiden sich die Koeffizienten der Haupteffekte deutlich zwischen den beiden Modellen voneinander. 
+Wir sehen, dass der Interaktionsterm tatsächlich gleich ist unter beiden Modellen. Dagegen unterscheiden sich die Koeffizienten der Haupteffekte deutlich voneinander. Der Übergang vom zentrierten zum unzentrierten Modell ist dabei nicht immer gleich, sondern hängt von den jeweiligen Werten dern Daten ab.
 
 ## Zum Nacharbeiten
 
