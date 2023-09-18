@@ -10,6 +10,7 @@ source('_common.R')
 ```{r defs_reg_04}
 require(plot3D)
 lm_coef_ex <- function(mod, max_co=3) round(summary(mod)$coefficients[,1:max_co],2)
+ncol_theme <- theme(text = element_text(size=20))
 ```
 
 In vielen Fällen in der Praxis liegt selten der einfache Fall vor, dass eine abhängige Variable mittels nur einer einzigen Variable erklärt bzw. vorhergesagt werden soll. Sondern meisten sind mehrere Variablen an dem Prozess beteiligt der modelliert werden soll. Ein einfaches Beispiel aus der Literatur ist der Zusammenhang zwischen der Wurfgeschwindigkeit beim Handball in Abhängigkeit vom Körpergewicht und der Armspannweite. In @tbl-debanne-2011 ist ein Ausschnitt aus einem möglichen Datensatz abgebildet.
@@ -91,6 +92,7 @@ Bei der einfachen Regression haben wir mittels der Methode der kleinsten Quadrat
 #| label: fig-mlm-basics-scatter
 #| layout-ncol: 2
 #| fig.cap: "Punktwolken bei der multiple Regression"
+#| fig-height: 5
 #| fig-subcap:
 #|   - "3D Punktwolke"
 #|   - "3D Punktwolke mit gefitteter Ebene"
@@ -145,12 +147,15 @@ Als nächster Schritt versuchen wir nun die Interpretation der Koeffizienten  im
 
 ## Einfaches Beispiel 
 
+Fangen wir mit einem einfachen Beispiel an. Wir gehen von einem DGP mit den folgenden Modellwerten aus.
 
 \begin{align*}
-y_i &= \beta_0 + \beta_1 \cdot x_1 + \beta_2 \cdot x_2 + \epsilon_i \\
+y_i &= \beta_0 + \beta_1 \cdot x_{1i} + \beta_2 \cdot x_{2i} + \epsilon_i \\
 \beta_0 &= 1 ,\beta_1 = 3, \beta_2 = 0.7 \\
 \epsilon_i &\sim N(0,\sigma = 0.5)
 \end{align*}
+
+Übersetzt in `R` code bedeutet dies, wenn wir $x_1$ und $x_2$ als Gleichverteilt aus $U(-2,2)$ ansehen.
 
 ```{r}
 #| echo: true
@@ -168,109 +173,126 @@ df <- tibble(
     rnorm(N, 0, sigma)) 
 ```
 
-```{r}
-#| fig.height=2.2,
-#| fig.cap="Einfacher Zusammenhang y~x1"
+Wenn wir die Prädiktorvariblen $x_1$ und $x_2$ gegen $y$ jeweils in einem Streudiagramm abtragen erhalten wir die folgenden Abbildungen (siehe @fig-mlm-basics-example-01).
 
-ggplot(df, aes(x1,y)) + geom_point() 
+```{r}
+#| label: fig-mlm-basics-example-01
+#| layout-ncol: 2
+#| fig-height: 4 
+#| fig-cap: "Streudiagramme der einfachen Zusammenhänge für das Beispiel."
+#| fig-subcap:
+#|   - Streudiagramm $y$ gegen $x_1$
+#|   - Streudiagramm $y$ gegen $x_2$
+
+ggplot(df, aes(x1,y)) + geom_point() + ncol_theme 
+ggplot(df, aes(x2,y)) + geom_point() + ncol_theme
 ```
 
-```{r}
-#| fig.height=2.2,
-#| fig.cap="Einfacher Zusammenhang y~x2"
-
-ggplot(df, aes(x2,y)) + geom_point()
-```
-
-
-## Wie sieht der Fit aus?
+Der Zusammenhang zwischen $x_1$ und $y$ ist ziemlich klar (siehe @fig-mlm-basics-example-01-1), während das Streudiagramm für $x_2$ gegen $y$ nicht ganz so eindeutig ist (siehe @fig-mlm-basics-example-01-2). Fitten wir das Modell mittels `lm()` in `R`
 
 ```{r}
+#| echo: true
 mod <- lm(y ~ x1 + x2, df)
-summary(mod)
 ```
 
-## Was bedeuten die einzelnen Koeffizienten?
+Wir erhalten die folgenden Modellkoeffizienten.
 
 ```{r}
-lm_tbl_knitr(mod, long=F)
+#| label: tbl-mlm-basics-example-01
+#| tbl-cap: "Modellkoeffizienten für das Beispiel."
+ 
+lm_tbl_knitr(mod, long=F, add_sigma=T)
 ```
 
-Der Unterschied in der abhängigen Variablen, wenn zwei Objekte sich in $x_i$ um eine Einheit unterscheiden und die paarweise gleichen Werte in den verbleibenden $x_j, j \neq i$ annehmen.
+In @tbl-mlm-basics-example-01 sehen wir, dass wir die Koeffizienten des DGP wieder sehr gut wiederherstellen können. Das sollte uns erst mal etwas beruhigen, da es zeigt, dass wir mit unserer multiplen Regression eigentlich ganz gut arbeiten können und das Modell in der Lage ist die korrekten Modellparamter im Rahmen der Stichprobenunsicherheit relativ gut abschätzen zu können. Die Interpretation von $\beta_1$ ist gleich derjenigen bei der einfachen linearen Regression. Zwei Objekte die sich in $x_1$ um eine Einheit voneinander unterscheiden, unterscheiden sich in der abhängigen Variablen $y$ um den Steigungskoeffizienten $\beta_1$. Die gleiche Interpretation trifft auch auf $\beta_2$ zu nur eben mit den umgekehrten Rollen von $x_2$ und $x_1$. Schauen wir uns nun an, wo die Koeffizienten herkommen?
 
-## Was bedeuten die Koeffizienten in Kombination?
+Dazu machen wir erst einmal einen kleinen Umweg. Wir erstellen uns eine neue Variable $x_1^*$. Wir erhalten $x_1^*$ indem wir eine Regression von $x_1$ auf $x_2$ berechnen. Also das Modell: 
 
-### Full model
+\begin{equation*}
+x_{1i} = \beta_0 + \beta_1 x_{2i} + \epsilon_i
+\end{equation*}
+
+D.h. wir versuchen $x_1$ mittels $x_2$ vorherzusagen. Was soviel heißt wie, wie viele Information über $x_1$ sind schon in $x_2$ enthalten. Von diesem Modell nehmen wir jetzt die Residuen $e_i$.
+
+\begin{equation}
+e_i = x_{1i} - \beta_0 - \beta_1 x_{2i}
+\label{eq-mlm-basics-coef-01}
+\end{equation}
+
+Dies Residuen stellen denjenigen Teil von $x_1$ der sich nicht linear durch $x_2$ darstellen lässt. Anders, derjenige Teil von $x_1$ der um den Teil von $x_2$ *bereinigt* wurde. Die Residuen $e_i$ aus Formel \eqref{eq-mlm-basics-coef-01} bezeichnen wir nun mit $x_1^*$. Im nächsten Schritt verwenden wir $x_1^*$ um eine einfache lineare Regression $y$ durchzuführen. 
+
+\begin{equation*}
+y_i = \beta_0 + \beta_1 x_{1i}^* 
+\end{equation*}
+
+In `R` entsprechend:
+
 ```{r}
-#lm_coef_ex(mod)
-lm_tbl_knitr(mod, long=F)
+#| echo: true
+ 
+mod_x1_star<- lm(x1 ~ x2, df)
+x1_star <- resid(mod_x1_star)
+mod_y_x1_star <- lm(y ~ x1_star, df)
 ```
 
-### um x2 bereinigt
-```{r, echo=T}
-mod_x1_x2 <- lm(x1 ~ x2, df)
-res_mod_x1_x2 <- resid(mod_x1_x2)
-mod_x1_res <- lm(y ~ res_mod_x1_x2, df)
-```
+Schauen wir uns nun die Koeffizienten an (siehe @tbl-mlm-basics-example-02)
 
 ```{r}
-lm_coef_ex(mod_x1_res)
+#| label: tbl-mlm-basics-example-02
+#| tbl-cap: "Modellkoefizienten von $y$ gegen $x_1^*$."
+
+lm_tbl_knitr(mod_y_x1_star, long = F)
 ```
 
-### um x1 bereinigt
+Der Steigungskoeffizient $\beta_1$ ist genau derjenige aus dem Modell mit beiden Variablen (siehe @tbl-mlm-basics-example-01).
+
+Wenig überraschend, wenn wir das gleiche Verfahren auf $x_2$ anwenden. 
+
 ```{r}
 #| echo: true
 
-mod_x2_x1 <- lm(x2 ~ x1, df)
-res_mod_x2_x1 <- resid(mod_x2_x1)
-mod_x2_res <- lm(y ~ res_mod_x2_x1, df)
-```
-```{r}
-lm_coef_ex(mod_x2_res)
+mod_x2_star <- lm(x2 ~ x1, df)
+x2_star <- resid(mod_x2_star)
+mod_y_x2_star <- lm(y ~ x2_star, df)
+coef(mod_y_x2_star)[2]
 ```
 
-## Was bedeuten die Koeffizienten in Kombination?
+Erhalten wir den Steigungskoeffizienten für $\beta_2$ aus dem Modell mit beiden Variablen.
+
+Insgesamt können wird die Steigungskoeffizienten in multiplen Regressionsmodell dahingehend interpretieren, dass wenn wir den Steigungskoeffzienten $\beta_i$ betrachten. Welche zusätzlichen Information erhalten wir durch die Variable $x_i$ wenn wir schon alle anderen Variablen $x_j, j \neq i$ im Modell haben. D.h. das multiple Regressionsmodell kontrolliert automatisch immer den Einfluss der anderen $K-1$ Variablen bei der Betrachtung der Variablen $i$. Nochmal als Liste:
 
 - $\hat{\beta}_1$: Wenn ich $x_2$ weiß, welche zusätzlichen Informationen bekomme ich durch $x_1$ 
 - $\hat{\beta}_2$: Wenn ich $x_1$ weiß, welche zusätzlichen Informationen bekomme ich durch $x_2$ 
 
-In Beispiel nicht problematisch, weil nach Konstruktion $x_1$ und $x_2$ unabhängig voneinander sind:
-```{r}
-#| echo: true
-round(cor(df),3)
-```
+Bezogen auf die Werte der Steigungskoeffzienten $\beta_i$ ist die Bedeutung immernoch wie oben, wenn sich zwei Objekte auf der Variablen $x_i$ um eine Einheit voneinander unterscheiden, dann unterschieden sich die erwarteten (vorhergesagten) Werte $\hat{y}_i$ laut des Modells um $\beta_i$. Die anderen Prädiktorvariblen $x_j, j \neq i$ werden dabei konstant gehalten.
 
 ## Added-variable plots
-```{r}
-#| fig.cap="Zusammenhang zwischen y und x2 bereinigt um den Einfluß von x1.",
-#| fig.height=2,
-#| fig.width=3
 
-res_1 <- resid(lm(y ~ x1, df))
-res_2 <- resid(lm(x2 ~ x1, df))
-ggplot(tibble(x1_res = res_2, y_res = res_1),
-       aes(x1_res,y_res)) + geom_point() + labs(x = 'x2 | x1', y = 'y | x1')
-```
-
-
-## Added-variable plots mit `car::avPlots()`
-```{r}
-#| echo=T,
-#| eval=F
-
-car::avPlots(mod, ~x2)
-```
+Der letzte Satz, das die anderen Variablen konstant gehalten werden ist dabei auch das Problem wenn ich ein Streudiagramm bei einer multiplen linearen Regression von einer $Y$ gegen eine der Prädiktorvariablen erstelle wie in @fig-mlm-basics-example-01. In @fig-mlm-basics-example-01-1 können wir den Einfluss von $x_1$ sehr gut identifizieren, da der Steigungskoeffizient $\beta_1$ im Verhältnis zu $\sigma$ recht groß ist. Im Falle von @fig-mlm-basics-example-01-2 ist dies nicht der Fall. Eine Möglichkeit hier Abhilfe zu schaffen kommt durch die sogenannten added-variable plots. Die Idee dahinter geht von dem Trick von eben aus, den wir benutzt haben um die Bedeutung der Steigungskoeffizienten zu verstehen. Neben der Bereinigung von $x_2$ aus $x_1$ rechnen wir auch noch den Einfluss von $x_2$ aus $y$ raus. Schauen wir uns an wie wir einen solchen Plot erstellen könnten (siehe @fig-mlm-basics-avplot-01).
 
 ```{r}
-#| fig.height=2,
-#| fig.width=3,
-#| fig.align='center'
+#| echo: true
+#| label: fig-mlm-basics-avplot-01
+#| fig-cap: "Zusammenhang zwischen $y$ und $x_2$ bereinigt um den Einfluß von $x_1$."
 
-par(mar=c(3,3,2,1))
-car::avPlots(mod, ~x2)
-mtext('x2 | others', 1, line=1.8)
-mtext('y | others', 2, line=1.9)
+x1_star <- resid(lm(y ~ x1, df))
+y_star <- resid(lm(x2 ~ x1, df))
+ggplot(tibble(x1_star, y_star),
+       aes(x1_star,y_star)) +
+  geom_point() + 
+  labs(x = 'x2 | x1', y = 'y | x1')
 ```
+
+Wir sehen jetzt viel deutlicher den Zusammenhang zwischen $x_2$ und $y$ als dies in @fig-mlm-basics-example-01-2 der Fall war. Im Paket `car` gibt es auch eine Funktion `avPlots()` mit der wir die added-variable plots auch direkt erstellen können.
+
+```{r}
+#| echo: true
+#| fig-height: 3
+
+car::avPlots(mod)
+```
+
+Im Falle von mehr als zwei Prädiktorvariablen werden immer alle $K-1$ Variablen aus $x_i$ und $y$ rausgerechnet.
 
 ## Was passiert wenn ich einen Prädiktor weg lasse?
 
@@ -284,6 +306,14 @@ lm_tbl_knitr(mod, long=F)
 coef(lm(y ~ x1, df))
 coef(lm(y ~ x2, df))
 ```
+
+Jetzt wenden wir aber gleich ein, das das in Beispiel auch nicht besonders problematisch war, weil nach Konstruktion $x_1$ und $x_2$ unabhängig voneinander sind:
+```{r}
+#| echo: true
+
+round(cor(df),3)
+```
+
 
 In unserem Beispiel wieder nicht viel, da die Variablen unabhängig (orthogonal) voneinander sind.
 
@@ -440,7 +470,5 @@ mit K Prädiktorvariablen und Multikollinearität.
 
 ## Zum Nacharbeiten
 
-@pos_multiple_regression \newline
-@kutner2005 [p.278-288] \newline
-@fox2011 [p.325-327]
+Die folgenden Texte eignen sich gut um die Inhalte noch einmal zu vertiefen. @pos_multiple_regression diskutiert noch mal eingehend was passiert wenn Variablen miteinander korrelieren und wie sich das auf die Schätzer für die Koeffizienten auswirkt. [@kutner2005, p.278-288] und [@fox2011, p.325-327] sind nochmal als Zusammenfassungen zu lesen.
 
