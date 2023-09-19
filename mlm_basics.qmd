@@ -145,8 +145,6 @@ Zusammenfassend:
 
 Als nächster Schritt versuchen wir nun die Interpretation der Koeffizienten  im multiplen Regressionsmodell besser zu verstehen.
 
-## Einfaches Beispiel 
-
 Fangen wir mit einem einfachen Beispiel an. Wir gehen von einem DGP mit den folgenden Modellwerten aus.
 
 \begin{align*}
@@ -268,7 +266,7 @@ Bezogen auf die Werte der Steigungskoeffzienten $\beta_i$ ist die Bedeutung imme
 
 ## Added-variable plots
 
-Der letzte Satz, das die anderen Variablen konstant gehalten werden ist dabei auch das Problem wenn ich ein Streudiagramm bei einer multiplen linearen Regression von einer $Y$ gegen eine der Prädiktorvariablen erstelle wie in @fig-mlm-basics-example-01. In @fig-mlm-basics-example-01-1 können wir den Einfluss von $x_1$ sehr gut identifizieren, da der Steigungskoeffizient $\beta_1$ im Verhältnis zu $\sigma$ recht groß ist. Im Falle von @fig-mlm-basics-example-01-2 ist dies nicht der Fall. Eine Möglichkeit hier Abhilfe zu schaffen kommt durch die sogenannten added-variable plots. Die Idee dahinter geht von dem Trick von eben aus, den wir benutzt haben um die Bedeutung der Steigungskoeffizienten zu verstehen. Neben der Bereinigung von $x_2$ aus $x_1$ rechnen wir auch noch den Einfluss von $x_2$ aus $y$ raus. Schauen wir uns an wie wir einen solchen Plot erstellen könnten (siehe @fig-mlm-basics-avplot-01).
+Die letzte Bemerkung, das die anderen Variablen konstant gehalten werden ist dabei auch das Problem wenn ich ein Streudiagramm bei einer multiplen linearen Regression von $Y$ gegen eine der Prädiktorvariablen erstelle wie in @fig-mlm-basics-example-01. In @fig-mlm-basics-example-01-1 können wir den Einfluss von $x_1$ sehr gut identifizieren, da der Steigungskoeffizient $\beta_1$ im Verhältnis zu $\sigma$ recht groß ist. Im Falle von @fig-mlm-basics-example-01-2 ist dies nicht der Fall. Eine Möglichkeit hier Abhilfe zu schaffen kommt durch die sogenannten added-variable plots. Die Idee dahinter geht von dem Trick von eben aus, den wir benutzt haben um die Bedeutung der Steigungskoeffizienten zu verstehen. Neben der Bereinigung von $x_2$ aus $x_1$ rechnen wir auch noch den Einfluss von $x_2$ aus $y$ raus. In `R` können wir einen solchen Plot mittels des folgenden Ansatzes erstellen (siehe @fig-mlm-basics-avplot-01).
 
 ```{r}
 #| echo: true
@@ -283,7 +281,7 @@ ggplot(tibble(x1_star, y_star),
   labs(x = 'x2 | x1', y = 'y | x1')
 ```
 
-Wir sehen jetzt viel deutlicher den Zusammenhang zwischen $x_2$ und $y$ als dies in @fig-mlm-basics-example-01-2 der Fall war. Im Paket `car` gibt es auch eine Funktion `avPlots()` mit der wir die added-variable plots auch direkt erstellen können.
+Wir sehen jetzt viel deutlicher den Zusammenhang zwischen $x_2$ und $y$ als dies in @fig-mlm-basics-example-01-2 der Fall war. Im Paket `car` gibt es eine Funktion `avPlots()` mit der wir die added-variable plots auch direkt erstellen können.
 
 ```{r}
 #| echo: true
@@ -292,63 +290,88 @@ Wir sehen jetzt viel deutlicher den Zusammenhang zwischen $x_2$ und $y$ als dies
 car::avPlots(mod)
 ```
 
-Im Falle von mehr als zwei Prädiktorvariablen werden immer alle $K-1$ Variablen aus $x_i$ und $y$ rausgerechnet.
+Wenn eine multiple Regression mit mehr als zwei Prädiktorvariablen gerechnet wird, dann werden im added-variable plot jeweils alle $K-1$ Variablen aus $x_i$ und $y$ rausgerechnet. D.h. $Y$ und $X_i$ werden um den Einfluss aller, verbleibenden $X_j, j \neq i$ bereinigt.
 
-## Was passiert wenn ich einen Prädiktor weg lasse?
+Da ein Steigungskoeffizientt $\beta_i$ immer den Beitrag der Information von $X_i$ über denjenigen der anderen Prädiktorvariablen bestimmt, stellt sich die Frage was passiert wenn im Modell eine oder mehrere Prädiktorvariablen weggelassen werden. 
+
+## Was passiert wenn eine Prädiktorvariable weggelassen wird?
+
+In @tbl-mlm-basics-modelfit-01 sind noch mal die Koeffizienten aus dem Beispiel abgebildet.
 
 ```{r}
+#| label: tbl-mlm-basics-modelfit-01
+#| tbl-cap: "Koeffizienten im Beispielmodell."
 lm_tbl_knitr(mod, long=F)
 ```
 
+Was passiert nun, wenn wir zwei Einzelmodelle als einfache lineare Regression fitten, jeweils mit nur einer Variablen? Wir schauen uns nur die Koeffizienten an. Einmal das Modell mit nur $X_1$:
+
 ```{r}
-#| echo=T
+#| echo: true
 
 coef(lm(y ~ x1, df))
+```
+
+Wir sehen, dass sich der Koeffizient verändert aber noch in einem ähnlichen Bereich ist. Das Gleiche nun für $X_2$:
+
+```{r}
+#| echo: true
+
 coef(lm(y ~ x2, df))
 ```
 
-Jetzt wenden wir aber gleich ein, das das in Beispiel auch nicht besonders problematisch war, weil nach Konstruktion $x_1$ und $x_2$ unabhängig voneinander sind:
+Der Steigungskoeffizient ändert sich hier auch wieder, bleibt aber ebenfalls in einem ähnlichen Bereich.
+
+Jetzt können wir aber einwenden, dass in unserem Beispiel das sehr speziell ist, da nach Konstruktion des DGP $X_1$ und $X_2$ unabhängig voneinander sind. Als wir die Daten generiert haben, haben wir jeweils zwei unabhängige Zufallszahlenmengen erstellt. Wenn wir uns die Korrelation der Variablen ansehen, dann ist das gut nachvollziehbar.
+
 ```{r}
 #| echo: true
 
 round(cor(df),3)
 ```
 
-
-In unserem Beispiel wieder nicht viel, da die Variablen unabhängig (orthogonal) voneinander sind.
+D.h. $X_1$ und $X_2$ korrelieren praktisch überhaupt nicht miteinander (Warum ist die Korrelation $r_{x_1x_2}$ nicht exakt $=0$). D.h. $X_1$ enthält keine Informationen über $X_2$ und dementsprechend sollte die beiden Beiträge zum Modell unabhängig voneinander sein.
 
 
 ## Was passiert wenn Prädiktoren stark miteinander korrelieren?
 
+Schauen wir uns nun einen neuen Datensatz an [Beispiel aus @kutner2005]. Im Rahmen einer Untersuchung sind Körperfettmessungen durchgeführt an $20$ Personen durchgeführt worden. Neben einer Gesamtkörpermessung wurde auch der Körperfettanteil am Oberarm, Unterarm und am Oberschenkel bestimmt. In @tbl-mlm-basics-bodyfat-01 ist ein Ausschnitt der Daten angebildet.
+
 ```{r}
-#| fig.height=2
+#| label: tbl-mlm-basics-bodyfat-01
+#| tbl-cap: "Ausschnitt der Körperfettdaten [%]" 
 
 bodyfat <- readr::read_delim(
   "triceps;thigh;midarm;body_fat\n19.5;43.1;29.1;11.9\n24.7;49.8;28.2;22.8\n30.7;51.9;37;18.7\n29.8;54.3;31.1;20.1\n19.1;42.2;30.9;12.9\n25.6;53.9;23.7;21.7\n31.4;58.5;27.6;27.1\n27.9;52.1;30.6;25.4\n22.1;49.9;23.2;21.3\n25.5;53.5;24.8;19.3\n31.1;56.6;30;25.4\n30.4;56.7;28.3;27.2\n18.7;46.5;23;11.7\n19.7;44.2;28.6;17.8\n14.6;42.7;21.3;12.8\n29.5;54.4;30.1;23.9\n27.7;55.3;25.7;22.6\n30.2;58.6;24.6;25.4\n22.7;48.2;27.1;14.8\n25.2;51;27.5;21.1\n",
   delim = ';', col_types = 'dddd'
 ) 
 knitr::kable(head(bodyfat),
-             caption = 'Ausschnitt von Körperfettdaten',
+             col.names = c('Oberarm', 'Unterarm', 'Oberschenkel','Gesamt'),
              booktabs = TRUE,
              linesep = '')
 ```
 
-^[Beispiel nach @kutner2005]
+Als Modell sollen der Gesamtkörperfettanteil mit Hilfe der drei Messungen bestimmt werden.
 
+\begin{equation}
+Y_{\text{Körperfettanteil}} = \beta_0 + \beta_1 \cdot X_{\text{Oberarm}} + \beta_2 \cdot X_{\text{Unterarm}} + \beta_3 \cdot X_{\text{Oberschenkel}} + \epsilon
+\end{equation}
 
-## Was passiert wenn Prädiktoren stark miteinander korrelieren?
+Schauen wir uns zunächst einmal an, wie stark die Werte miteinander korrelieren. Wir verwenden die Funktion `ggpairs()` aus dem `GGally` Paket. So erhalten wir mit wenig Aufwand eine übersichtliche Darstellung (siehe @fig-mlm-basics-bodyfat-01).
+
 ```{r}
-#| echo=T,
-#| fig.cap="Korrelationsmatrize",
-#| fig.height=2.5
+#| echo: true 
+#| label: fig-mlm-basics-bodyfat-01
+#| fig-height: 5
+#| fig-cap: "Korrelationsmatrize der Körperfettdaten"
 
-GGally::ggpairs(bodyfat) + theme(text = element_text(size = 10))
+GGally::ggpairs(bodyfat) 
 ```
 
-## Was passiert wenn Prädiktoren stark miteinander korrelieren?
+Wie nicht anders zu erwarten, korrelieren die Prädiktorvariablen relativ stark miteinander. Die Korrelation zwischen den Oberschenkeldaten und den Oberarmdaten in dieser Stichprobe ist sogar $>0.9$. Schauen wir uns nun an, wie sich das auf die Modellfits auswirkt, wenn wir nur Teilmengen der Prädiktorvariablen zum fitten verwenden. Insgesamt fitten wir vier verschiedene Modelle. Ein Modell mit allen Prädiktorvariablen und drei weitere bei denen wir jeweils eine der Prädiktorvariablen weglassen. In `R`:
 
 ```{r}
-#| echo=T
+#| echo: true
 
 # Alle drei Prädiktoren
 mod_full <- lm(body_fat ~ triceps + thigh + midarm, bodyfat)
@@ -360,23 +383,28 @@ mod_wo_thigh <- lm(body_fat ~ triceps + midarm, bodyfat)
 mod_wo_triceps <- lm(body_fat ~ thigh + midarm, bodyfat)
 ```
 
-## Was passiert wenn Prädiktoren stark miteinander korrelieren?
+In @tbl-mlm-basics-bodyfat-02 sind nur die Steigungskoeffizienten für die vier verschiedenen Modell abgebildet.
 
 ```{r}
-lm_tbl_knitr(mod_full, long=F, caption="full model")
+#| label: tbl-mlm-basics-bodyfat-02
+#| tbl-cap: "Koeffizienten der vier verschiedenen Modellen zu den Körperfettdaten."
+
+mat <- matrix(NA, nr=4, nc = 3)
+colnames(mat) <- names(coef(mod_full)[2:4])
+colnames(mat) <- c('Oberarm', 'Oberschenkel','Unterarm') 
+rownames(mat) <- c('Alle','ohne Unterarm','ohne Oberschenkel','ohne Oberarm')
+mat[1,] <- coef(mod_full)[2:4]
+mat[2,1:2] <- coef(mod_wo_midarm)[2:3]
+mat[3,c(1,3)] <- coef(mod_wo_thigh)[2:3]
+mat[4,2:3] <- coef(mod_wo_triceps)[2:3]
+mat |> knitr::kable(
+  booktabs = TRUE,
+  digits = 2
+)
 ```
 
-```{r}
-lm_tbl_knitr(mod_wo_midarm, long=F, caption='w/o midarm')
-```
+Wir sehen, dass hier die Koeffizienten sich sehr stark ändern in Abhängigkeit von welche anderen Variablen in dem Modell enthalten sind. Beispielsweise änder der Koeffizient für den Oberschenkel nicht nur seine Größe und auch sein Vorzeichen, je nachdem ob der Ober- oder der Unterarm oder beide im Modell enthalten sind.
 
-```{r}
-lm_tbl_knitr(mod_wo_thigh, long=F, caption='w/o thigh')
-```
-
-```{r}
-lm_tbl_knitr(mod_wo_triceps, long=F, caption='w/o triceps')
-```
 
 ## Multikollinearität^[informell nach @kutner2005 [pp. 407]]
 
