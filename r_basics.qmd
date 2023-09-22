@@ -151,7 +151,7 @@ vec |> abs() |> mean() |> round(2)
 
 Der pipe-Operator `|>` ist so alltäglich, dass ihr in RStudio einen short-cut für ihn habt {{< kbd STRG+SHIFT+m >}}.
 
-Neben dem Grund das `|>` ziemlich praktisch ist, haben ihn wir hier eingeführt, weil er Umgang mit Datenprozessierung im Zusammenhang mit `tidyverse` praktisch unabkömmlich ist. Die dahinterliegende Idee ist tatsächlich schon relativ lange bekannt in der Informatik [siehe @kernigham1984]. Anstatt große, komplizierte Funktionen zu schreiben die eine Vielzahl von Argumenten haben und mehrere unterschiedliche Aufgaben erledigen, werden lieber viele kleine, spezialisierte Programmer erstellt. Die spezialisierten Programme können dann zusamengesetzt werden um komplizierte Aufgaben zu erfüllen. Der pipe-operator ist dabei zentral für diese Idee, da er es ermöglicht die spezialisierten, kleinen Programmen einfach aneinander zu hängen. Ähnlich wie zum Beispiel bei einen Kinderwasserspielzeug mit Rohren, Schaufeln, Filtern usw..
+Neben dem Grund das `|>` ziemlich praktisch ist, haben ihn wir hier eingeführt, weil er Umgang mit Datenprozessierung im Zusammenhang mit `tidyverse` praktisch unabkömmlich ist. Die dahinterliegende Idee ist tatsächlich schon relativ lange bekannt in der Informatik [siehe @kernighan1984]. Anstatt große, komplizierte Funktionen zu schreiben die eine Vielzahl von Argumenten haben und mehrere unterschiedliche Aufgaben erledigen, werden lieber viele kleine, spezialisierte Programmer erstellt. Die spezialisierten Programme können dann zusamengesetzt werden um komplizierte Aufgaben zu erfüllen. Der pipe-operator ist dabei zentral für diese Idee, da er es ermöglicht die spezialisierten, kleinen Programmen einfach aneinander zu hängen. Ähnlich wie zum Beispiel bei einen Kinderwasserspielzeug mit Rohren, Schaufeln, Filtern usw..
 
 Um die Daten optimal mit dem `tidyverse` verarbeiten zu können, sollten die Daten im `tibble()` eine bestimmt Struktur haben.
 
@@ -245,15 +245,96 @@ df |> select(-gender)
 
 
 ### `mutate()`
-### `summarize()`
-### `group_by()`
-### `ungroup()`
-### `separate()`
-### `pivot_wider()`
-### `pivot_longer()`
-### `left_join()`
 
-Zusammenfassend ist das hier nur eine schnelle Übersicht über die möglichen Befehle gewesen. Eine exzellente Quelle ist das Buch R for Data Science von @wickham2023 das ihr auch kostenlos in der aktuellsten Form [online](https://r4ds.had.co.nz) findet.
+Wenn wir neue Variablen aus den bestehenden Variablen berechnen wollen, dann können wir dazu die `mutate()` Funktion benutzen. Zum Beispiel, wenn wir in unserem Datensatz die Sprunghöhe in Meter anstatt in Zentimeter vorliegen haben wollen.
+
+```{r}
+#| echo: true
+
+df |> mutate(cmj_m = cmj / 100)
+```
+
+### `summarize()`
+
+Mit der `summarize()` Funktion werden alle Beobachtung (Zeilen) in eine Zeile zusammengefasst. Wollen wir zum Beispiel die durchschnittliche Sprunghöhe über alle Beobachtung berechnen.
+
+```{r}
+#| echo: true
+
+df |> summarize(cmj_bar = mean(cmj))
+```
+
+`summarize()` kann auch mehrere Werte berechnen.
+
+```{r}
+#| echo: true
+
+df |> summarize(cmj_bar = mean(cmj), age_bar = mean(age))
+```
+
+
+### `group_by()`
+
+Die `summarize()` Funktion wird tatsächlich erst richtig mächtig im Zusammenhang mit der `group_by()` Funktion. Mit `group_by()` kann ein Datensatz anhand der Werte einer Variable in Untergruppen geschnitten werden. Wollen wir in unserem Beispiel die Mittelwerte für verschiedenen Zeitpunkte berechnen.
+
+```{r}
+#| echo: true
+
+df |> group_by(time) |> summarize(cmj_bar = mean(cmj))
+```
+
+Das gruppieren funktioniert auch über mehrere Variablen.
+
+```{r}
+#| echo: true
+
+df |> group_by(time, gender) |> summarize(cmj_bar = mean(cmj))
+```
+
+Die Kombination aus `filter()`, `group_by()` und `summarize()` deckt wahrscheinlich mehr als die Hälfte der Anwendungen bei der Datenanalyse ab. Die folgenden Befehle sind etwas spezialisiert.
+
+### `separate()`
+
+Mit dem `separate()` Befehle kann eine Variable in der mehrere Informationen gespeichert sind, in mehrere Variablen separiert werden.
+
+```{r}
+df_2 <- tibble(
+  Kondition = c('pre_trt','post_trt','pre_con','post_con'),
+  wert = 1:4
+)
+df_2
+```
+
+Die Variable Kondition hat zwei Variablen in einer kodiert (*untidy*). Mit `separate()` können wir Kondition aufteilen. `separate()` benötigt als Parameter neben dem Spaltennamen eine Vector der neuen Spaltennamen übergeben an das Funktionsargument `into`.
+
+```{r}
+#| echo: true
+
+df_2 |> separate(Kondition, into=c('time','group'))
+```
+
+### `pivot_wider()`
+
+Mit `pivot_wider()` können *tidy*-Datensätze von der long-Version in die wide-version umkodiert werden. Im einfachsten Fall benötigt `pivot_wider()` zwei Argumente. `names_from` wird der Variablenname übergeben, der einzelne `wide`-Variablen kodieren. `values_from` spezifiziert die einzutragenden Variablen.
+
+```{r}
+#| echo: true
+
+df_w <- df |> pivot_wider(names_from=time, values_from=cmj)
+df_w
+```
+
+### `pivot_longer()`
+
+Die Umkehrfunktion von `pivot_wider()` ist `pivot_longer()`. Wieder im einfachsten Fall müssen die umzukodierenden Spalten angegeben werden, zusammen mit dem neuen Spaltennamen für die Indizierung (`names_to`) und dem neuen Spaltennamen für die Werte (`values_to`).
+
+```{r}
+#| echo: true
+
+df_w |> pivot_longer(c(pre, post), names_to = "time", values_to = "cmj")
+```
+
+Zusammenfassend ist das hier nur eine schnelle Übersicht über die möglichen Befehle gewesen. Um die ins und outs der Funktionen zu verstehen, ist natürlich mehr Übung notwendig. Meistens hilft es aber schon zu wissen welche der Funktionen ungefähr helfen könnte um dann zusammen mit der Dokumentation eine Lösung zu finden. Eine exzellente Quelle für eine umfassendere Auseinandersetzung mit dem `tidyverse` ist das Buch *R for Data Science* von @wickham2023 das ihr auch kostenlos in der aktuellsten Form [online](https://r4ds.had.co.nz) findet.
 
 ## Daten in `R` visualisieren mit `ggplot()`
 
@@ -277,8 +358,6 @@ df <- tibble(
 ### `facet_grid()`
 ### `geom_density()` 
 ### `geom_histogram()`
-### `geom_pointrange()`
-### `geom_ribbon()`
 ### `labs()` und `lims()`
 ### `scale_x|y_continuous()`
 ### Darstellung modifizieren mit `theme()` 
