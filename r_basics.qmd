@@ -67,13 +67,183 @@ Wie immer, wenn ihr das Paket `readr` mit `library()` geladen habt, ist die Qual
 
 ### readxl
 
+Die gleichen Daten in einer Excel-Datei können wir mit der Funktion `read_xlsx()` aus dem Paket `readxl` in `R` laden. Wenn die Daten die folgende Form hat:
+
+```{r}
+#| label: fig-r-basics-excel 
+#| fig-cap: "Beispieldatei in Excel"
+
+knitr::include_graphics('pics/excel_example.png')
+```
+
+Die Daten können mit dem folgenden Befehl dann geladen werden.
+
+```{r}
+#| echo: true
+
+df <- readxl::read_xlsx('data/example_01.xlsx',
+                        sheet = 'data',
+                        range = 'A1:C5')
+df
+```
+
 ### haven
+
+Das gleiche Prinzip nochmal bei SPSS-Dateien (siehe @fig-r-bascis-spss).
+
+```{r}
+#| label: fig-r-basics-spss
+#| fig-cap: Beispieldatei in SPSS
+
+knitr::include_graphics('pics/spss_example.png')
+```
+
+Hier kann die Funktion `read_sav()` aus dem Paket `haven`.
+
+```{r}
+#| echo: true
+
+df <- haven::read_sav('data/example_01.sav')
+df
+```
+
 
 ## Daten in `R` prozessieren mit `tidyverse()`
 
+### Der Pipe operator `|>`
+
+In `R` gibt es einen sogenannten pipe-operator `|>` mit dem Rückgabe aus einer Funktion als das erste Argument einer nachfolgenden Funktion übergeben werden können. Dies ermöglicht es Code zu schreiben der sich wie das gesprochene Wort liest. Schauen wir uns ein einfaches Beispiel an. Wir wollen den Mittelwert eines Zahlenvektors berechnen und anschließend das Ergebnis auf die zweite Nachkommastelle runden. Normalerweise würden wir das wie folgt formulieren wenn wir keine Zwischenvariablen definieren wollen.
+
+```{r}
+#| echo: true
+
+vec <- c(1, 7, 3, -5.22, 5, 6.3)
+round(mean(vec), 2)
+```
+
+D.h. wir haben ein Schachtelung der Funktionen. Die `mean()` Funktion ist innerhalb der `round()` Funktion geschachtelt bzw. der Rückgabewert von `mean()` wird als erstes Argument an `round()` übergeben. Schauen wir uns nun an, wie wir das gleiche Programm mit dem pipe-operator durchführen würden.
+
+```{r}
+#| echo: true
+
+vec |> mean() |> round(2)
+```
+
+Was ist hier passiert. Die erste pipe `|>` übergibt ihr links stehendes Argument `vec` and das erste Argument der rechts stehenden `mean()`. `mean()` ist jetzt happy und berechnet den Mittelwert des Vektors. Jetzt kommt das die zweite pipe und nimmt wieder das linke Argument, das ist jetzt der berechnete Mittelwert, und übergibt diesen an das erste Argument von `round()`. Wenn ihr euch die Hilfe von `round()` anschaut, dann seht ihr, dass dies der zu rundende Wert ist. Was macht jetzt aber die `2` in `round(2)`. Nun, `|>` stellt den links stehenden Wert an die erste Stelle der rechts stehenden Funktion, dadurch rutsch die `2` an die zweite Argumentenstelle in `round()` und bestimmt somit die Anzahl der zu runden Stellen. Keine Sorge, mit etwas Übung geht euch `|>` in Fleisch und Blut über.
+
+Der Vorteil ist des pipe-Operators ist, dass ihr das Program einfach von links nach rechts lesen könnt. Nimm `vec`, stecke es in `mean()` und stecke das was rauskommt in `round(2)`. Bei dem ursprünglichen Programm musstet ihr euch von innen nach außen arbeiten und dabei immer im Blick behalten auf welcher Stufe ihr seid um die Parameterzuordnung richtig interpretieren zu können.
+
+Noch ein Beispiel, wir wollen den Mittelwert auf den Absolutwerten des Vektors berechnen. Nach der Standardmethode.
+
+```{r}
+#| echo: true
+
+round(mean(abs(vec)), 2)
+```
+
+Mit dem pipe-Operator
+
+```{r}
+#| echo: true
+
+vec |> abs() |> mean() |> round(2)
+```
+
+Der pipe-Operator `|>` ist so alltäglich, dass ihr in RStudio einen short-cut für ihn habt {{< kbd STRG+SHIFT+m >}}.
+
+Neben dem Grund das `|>` ziemlich praktisch ist, haben ihn wir hier eingeführt, weil er Umgang mit Datenprozessierung im Zusammenhang mit `tidyverse` praktisch unabkömmlich ist. Die dahinterliegende Idee ist tatsächlich schon relativ lange bekannt in der Informatik [siehe @kernigham1984]. Anstatt große, komplizierte Funktionen zu schreiben die eine Vielzahl von Argumenten haben und mehrere unterschiedliche Aufgaben erledigen, werden lieber viele kleine, spezialisierte Programmer erstellt. Die spezialisierten Programme können dann zusamengesetzt werden um komplizierte Aufgaben zu erfüllen. Der pipe-operator ist dabei zentral für diese Idee, da er es ermöglicht die spezialisierten, kleinen Programmen einfach aneinander zu hängen. Ähnlich wie zum Beispiel bei einen Kinderwasserspielzeug mit Rohren, Schaufeln, Filtern usw..
+
+Um die Daten optimal mit dem `tidyverse` verarbeiten zu können, sollten die Daten im `tibble()` eine bestimmt Struktur haben.
+
+Dabei immer daran denken, wollen wir das Ergebnis einer pipe weiterverwenden, müssen wir das Ergebnis auch wieder eine Variable zuweisen.
+
+```{r}
+#| echo: true
+abs_mean_2 <- vec |> abs() |> mean() |> round(2)
+abs_mean_2
+```
+
+
+### tidy-Data
+
+Zu tidy-Data gibt es in der einfachsten Form nur drei Regeln.
+
+1. Jede Spalte ist eine Variable
+2. Jede Zeile ist eine Beobachtung
+3. Jeder Zelle ist ein einzelner Eintrag
+
+Schauen wir uns wieder ein einfaches, fiktives Beispiel mit Sprunghöhen an.
+
+```{r}
+#| echo: true
+
+df <- tibble(
+  time = rep(c('pre','post'), 4),
+  gender = rep(c('m','f'), each=4),
+  age = rep(round(runif(4, 20, 40)),each=2),
+  cmj = round(rnorm(8, c(25,20), 2), 1)
+)
+df
+```
+
+Wir haben vier Spalten, `time`, `gender`, `age` und `cmj` die jeweils eine Variable darstellen. In jeder Zeile ist eine Beobachtung eine Sprunghöhe `cmj` einer Person eines Alters `age` und `gender` zu einem bestimmten Zeitpunkt `time`. Schaut also tidy aus.
+
+Diese Darstellung ist aber wahrscheinlich unterschiedlich zu derjenigen wie ihr solche Daten schon öfter gesehen habt. Wahrscheinlich nämlich eher so.
+
+```{r}
+df |> pivot_wider(names_from=time, values_from=cmj)
+```
+
+Diese Darstellung ist zwar kompakter aber entspricht nicht mehr den tidy-Anforderungen, da wir nun nicht mehr nur eine Beobachtung pro Zeile haben. Wir haben für jede Person die Sprunghöhe zu zwei Zeitpunkten in einer Zeile. Die Daten sind in dieser Darstellung also *untidy*. Die *tidy*-Version ist etwas länger und enthält redundante Informationen aber wir werden im Folgenden sehen, dass diese Darstellung in der Verarbeitung zahlreiche Vorteile hat. Dazu werden wir auch Funktionen kennenlernen mit denen wir zwischen diesen beiden Formaten hin- und herwechseln können. Die *tidy*-Darstellung wird als long-Format bezeichnet, während die *untidy*-Darstellung als wide-Format bezeichnet wird.
+
 ### `filter()`
-### `arrange()`
+
+Lernen wir jezt unseren ersten `tidyverse()` Befehl zur Datenmanipulation kennen. Die Befehle sind immer als Verben bezeichnet und die Regel ist, was im Namen draufsteht ist auch in der Packung drin. Der Befehl `filter` filtered somit die Daten. Dazu wir eine einfache Regel mittels der Vergleichsoperatoren angegeben. Wollen wir beispielsweise auf `gender == 'f' filtern, benutzen wir:
+
+```{r}
+#| echo: true
+
+df |> filter(gender == 'f')
+```
+
+Oder auf das Alter `age < 30`:
+
+```{r}
+#| echo: true
+
+df |> filter(age < 30)
+```
+
+Wir können auch mehrere Filteranweisungen zusammensetzen.
+
+```{r}
+#| echo: true
+
+df |> filter(age < 25, gender == 'f')
+```
+
+
+In diesem Sinne geht es jetzt immer weiter mit den Befehlen im `tidyverse`.
+
 ### `select()`
+
+Mit `select()` können wir einzelne Variablen aus einem `tibble()` auswählen.
+
+```{r}
+#| echo: true
+
+df |> select(time, gender)
+```
+
+oder mit einem `-` ausschließen.
+
+```{r}
+#| echo: true
+
+df |> select(-gender)
+```
+
+
 ### `mutate()`
 ### `summarize()`
 ### `group_by()`
@@ -81,9 +251,9 @@ Wie immer, wenn ihr das Paket `readr` mit `library()` geladen habt, ist die Qual
 ### `separate()`
 ### `pivot_wider()`
 ### `pivot_longer()`
-### `add_column()`
 ### `left_join()`
-### `map()`
+
+Zusammenfassend ist das hier nur eine schnelle Übersicht über die möglichen Befehle gewesen. Eine exzellente Quelle ist das Buch R for Data Science von @wickham2023 das ihr auch kostenlos in der aktuellsten Form [online](https://r4ds.had.co.nz) findet.
 
 ## Daten in `R` visualisieren mit `ggplot()`
 
