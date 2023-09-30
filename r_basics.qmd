@@ -578,18 +578,190 @@ So weit so gut, aber keine Darstellung des Mittelwerts ohne eine Darstellung der
 
 ### `geom_errorbar()`
 
-Um die Streuung in einem Säulendiagramm mit einzufügen, verwenden wir `geom_errorbar()`. Hier kommen endlich einmal zwei neue Abbildungen ins Spiel. `ymin` bestimmt das untere Ende des Fehlerbalkens, während `ymax` das obere Ende bestimmt. D.h. die Fehlerbalken sind müssen nicht unbedingt in beide Richtungen gleich lang sein.
+Um die Streuung in einem Säulendiagramm darzustellen, verwenden wir `geom_errorbar()`. Hier kommen endlich einmal zwei neue Abbildungen ins Spiel. `ymin` bestimmt das untere Ende des Fehlerbalkens, während `ymax` das obere Ende bestimmt. D.h. die Fehlerbalken sind müssen nicht unbedingt in beide Richtungen gleich lang sein.
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-col-02
+#| fig-cap: "Ein Säulendiagram mit `geom_col()`."
+
+ggplot(df_team, aes(team, m)) +
+  geom_col() +
+  geom_errorbar(aes(ymin = m - sd, ymax = m + sd))
+```
+
+In @fig-r-basics-col-02 können wir nun die Fehlerbalken sehen, aber schön sehen sie noch nicht besonders aus. Mit dem Argument `width` können wir spezifieren wie breit die Hüte sein sollen, während `linewidth` die Linienbreite spezifiziert. Passen wir auch gleich noch die Farbe etwas an.
+
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-col-03
+#| fig-cap: "Ein Säulendiagram mit `geom_col()`."
+
+ggplot(df_team, aes(team, m)) +
+  geom_col() +
+  geom_errorbar(aes(ymin = m - sd, ymax = m + sd), width = 0.3, color = 'red',
+                linewidth = 1.5)
+```
+
+Ein Problem das mit `geom_errorbar()` immer wieder auftaucht entsteht wenn es mehrere Werte für jeden $x$-Wert gibt. In der Standardeinstellung werden die Werte aufeinander gesetzt (stacked). Erstellen wir uns erst einmal einen passenden Datensatz.
 
 ```{r}
 #| echo: true
 
-ggplot(df_team, aes(team, m)) +
-  geom_col() +
-  geom_errorbar(aes(ymax = m - sd, ymax = m + sd))
+df_tg <- df |> group_by(team, group) |> summarize(m = mean(dv), sd = sd(dv))
+```
+```{r}
+df_tg |> knitr::kable(booktabs=T, digits = 3, linesep = '')
+```
+
+Schauen wir uns erst einmal nur die Säulen an.
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-col-04
+
+ggplot(df_tg, aes(team, m, fill = group)) +
+  geom_col()
+```
+
+In @fig-r-basics-col-04 sind die Mehrfachwerte aufeinandergestapelt. Dies ist in den seltensten Fällen die Darstellungsart die wir wirklich wollen. Wir können die Säulen nebeneinander setzen indem wir das Argument `position` in `geom_col()` verwenden.
+
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-col-05
+#| fig-label: "Gruppierte Säulen"
+
+ggplot(df_tg, aes(team, m, fill = group)) +
+  geom_col(position = 'dodge')
+```
+
+@fig-r-basics-col-05 sind schon besser aus. Es entsteht nun ein Problem wenn wir die Fehlerbalken dazufügen.
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-col-06
+#| fig-label: "Gruppierte Säulen mit Fehlerbalken"
+
+ggplot(df_tg, aes(team, m, fill = group)) +
+  geom_col(position = 'dodge') +
+  geom_errorbar(aes(ymin = m - sd, ymax = m + sd))
+```
+
+Die Fehlerbalken in @fig-r-basics-col-06 sind beide in der Mitte des $x$-Wertes plaziert. Mit `dodge`
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-col-07
+#| fig-label: "Gruppierte Säulen mit Fehlerbalken"
+
+ggplot(df_tg, aes(team, m, fill = group)) +
+  geom_col(position = 'dodge') +
+  geom_errorbar(aes(ymin = m - sd, ymax = m + sd), position = 'dodge')
+```
+
+Passt es jetzt wieder (siehe @fig-r-basics-col-07). Allerdings nur solange wie nicht die Breite verändern.
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-col-08
+#| fig-label: "Gruppierte Säulen mit falsch verschobenen Fehlerbalken"
+
+ggplot(df_tg, aes(team, m, fill = group)) +
+  geom_col(position = 'dodge') +
+  geom_errorbar(aes(ymin = m - sd, ymax = m + sd), position = 'dodge', width=.7)
+```
+
+Was jetzt passiert, `ggplot()` berechnet die Breite des `geom`s und verschiebt es entsprechend der Breite nach links oder rechts, so dass keine Überlappung besteht. Die einfachste Lösung besteht darin die Position der Fehlerbalken der Funktion `position_dodge()` direkt anzugeben.
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-col-09
+#| fig-label: "Gruppierte Säulen mit korrekten Fehlerbalken"
+
+ggplot(df_tg, aes(team, m, fill = group)) +
+  geom_col(position = 'dodge') +
+  geom_errorbar(aes(ymin = m - sd, ymax = m + sd),
+                position = position_dodge(width = .9), 
+                width=.7)
+```
+
+Warum das in @fig-r-basics-col-09 funktioniert erscheint zunächst etwas undurchsichtig. Es hat was damit zu tun, dass die Säulen in `geom_col()` standardmäßig eine Breite von `0.9` in den Einheiten des Graphen haben. Entsprechend werden die Säulen um diesen Wert gegeneinander verschoben. Mit der Funktion `position_dodge()` sorgen wir dafür, dass die Fehlerbalken ebenfalls um diesen Wert verschoben werden und nicht um deren eigene Breite. Würden wir die Breite der Säulen selbst spezifieren, dann würde die Fehlerbalken wieder nicht an der richtigen Position sitzen (siehe @fig-r-basics-col-10).
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-col-10
+#| fig-label: "Gruppierte Säulen mit korrekten Fehlerbalken"
+
+ggplot(df_tg, aes(team, m, fill = group)) +
+  geom_col(position = 'dodge', width = 0.5) +
+  geom_errorbar(aes(ymin = m - sd, ymax = m + sd),
+                position = position_dodge(width = .9), 
+                width=.7)
 ```
 
 ### `geom_histogram()`
-### `facet_grid()`
+
+Schauen wir uns letztes `geom` nun noch `geom_histogram()` an, mit dem wir Histogramme erstellen können. Wir erstellen dazu aber erst noch einen neuen Datensatz, da `df` für ein Histogram etwas unterbesetzt ist.
+
+```{r}
+#| echo: true
+#| fig-cap: "Beispiel für ein Histogram mit `geom_histogram()`"
+#| label: fig-r-basics-hist
+
+df_hi <- tibble(x = rnorm(100))
+ggplot(df_hi, aes(x)) + 
+  geom_histogram()
+```
+
+### `facet_grid()` und `facet_wrap()`
+
+Als nächstes kommen zwei der praktischsten Funktion in `ggplot2` überhaupt. Mit `facet_grid()` können wir ein Raster an Grafiken erstellen. Hier zwei einfache Beispiel für ein horizontales und eine vertikales Raster.
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-facet-01
+#| layout-ncol: 2
+#| fig-cap: "Zwei einfacher Beispiel für Grafikraster."
+#| fig-subcap:
+#|   - "Horizontales Raster"
+#|   - "Vertikales Raster"
+
+ggplot(df, aes(iv, dv)) +
+  geom_point() +
+  facet_grid(~team)
+ggplot(df, aes(iv, dv)) +
+  geom_point() +
+  facet_grid(team~.)
+```
+
+Das Raster wir in `facet_grid()` mittels einer Formel mit der `~` spezifiziert. Nach dem Muster `Vertikal~Horizontal`. Wenn wir ein vertikales Raster erstellen möchten müssen wir einen Punkt `.` in die Formel aus Syntaxgründen einfügen. Natürlich können wir auch beide gleichzeitig verwenden. Was bei unseren Datensatz nicht wirklich spannend aussieht, da wir zu wenig Daten dafür haben (siehe @fig-r-basics-facet-02).
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-facet-02
+#| fig-cap: "Eine vollständige Rastergrafik"
+
+ggplot(df, aes(iv, dv)) +
+  geom_line() +
+  geom_point() +
+  facet_grid(group ~ team)
+```
+
+Mit `facet_wrap()` kann ein ähnliche Effekt erreicht werden, nur das die Untergrafiken von links oben nach rechts unten aufgebaut werden und vor allem nützlich sind wenn wir viele Gruppen auf einmal anschauen wollen.
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-facet-03
+#| fig-cap "Ein Beispiel für `facet_wrap()`.
+
+df_fw <- tibble(id = paste0('P',1:10), Wert = 1:10, x = 1)
+ggplot(df_fw, aes(x,Wert)) +
+  geom_point(size=2) +
+  facet_wrap(~id)
+```
+
 ### `labs()` und `lims()`
 ### `scale_x|y_continuous()`
 ### `theme()` 
