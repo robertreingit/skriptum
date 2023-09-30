@@ -349,15 +349,249 @@ df <- tibble(
 )
 ```
 
+```{r}
+knitr::kable(df,
+             booktabs = TRUE,
+             linesep = '')
+```
+
 
 ### `geom_point()`
+
+Fangen mit dem einfachsten geometrischen Objekt an, dem Punkt bzw. den Punkten. Punkte sind mindestens durch eine $x$ und $y$-Position, eine Größe und eine Farbe gekennzeichnet. Schauen wir uns zunächst nur die Position an, und lassen die Farbe und die Größe auf den voreingestellten Werten.
+
+```{r}
+#| echo: true
+#| fig-cap: "Ein Streudiagramm"
+#| label: fig-r-basics-scatterplot
+
+ggplot(df, aes(x = dv, y = iv)) +
+  geom_point()
+```
+
+Die Funktion `aes()` bestimmt die Abbildung der Variablen auf die Skalen. Links vom Gleichheitszeichen steht die zu bestimmende Skala und rechts die dazugehörige Variable. Somit haben wir in @fig-r-basics-scatterplot ein einfache Streudiagramm der Daten erstellen.
+
+Da es sich bei `aes()` um eine ganz normale `R`-Funktion handelt können und `x` und `y` die ersten beiden Argumente der Funktion sind, hätten wir auch kürzer schreiben können.
+
+```{r}
+#| echo: true
+#| eval: false
+
+ggplot(df, aes(dv, iv)) +
+  geom_point()
+```
+
+Diese Schreibweise wird uns im Folgenden immer wieder begegnen. Wenn ihr euch die Hilfe für `geom_point()` anseht, dann stellt ihr fest, dass `geom_point()` auch wieder nur eine Funktion ist und als erstes Argument ebenfalls `mapping` hat. Daher können wir das Streudiagramm auch folgendermaßen erstellen.
+
+```{r}
+#| echo: true
+
+ggplot(df) +
+  geom_point(aes(dv, iv))
+```
+
+Der Unterschied zwischen dem Argument `mapping` in `ggplot()` und in `geom_point()` besteht darin, dass die Abbildung im ersten Falle für alle `geom` gilt, während im zweiten Fall die Abbildung nur `geom_point()` gilt. Wenn wir gleich mehrere `geom` aneinanderreihen wird der Unterschied klarer.
+
+Schauen wir uns als nächste zwei verschiedene Arten an, die Größe für die Punkte zu bestimmen. Hier gibt es auch wieder zwei Fälle zu unterscheiden. Einmal die Größe innerhalb von `aes()` zu bestimmen oder als Argument zu `geom_point()`. Im ersten Fall können wir dynamisch anhand der zugewiesenen Abbildungsvariable die Größe verändern, während im zweiten eine Größe für alle Punkte zugewiesen wird. Innerhalb von `aes()` können wir den Namen der Variable nehmen, während dies in `geom_point()` nicht möglich ist, hier müssen wir eine Zahl übergeben.
+
+```{r}
+#| echo: true
+#| layout-ncol: 2
+#| label: fig-r-basics-scattersize
+#| fig-cap: Definition der Punktgröße auf zwei Arten
+#| fig-height: 4
+#| fig-subcap:
+#|   - "Definition in `aes()`"
+#|   - "Definition in `geom_point()`"
+
+ggplot(df, aes(dv,iv, size=dv)) +
+geom_point()
+ggplot(df, aes(dv, iv)) +
+geom_point(size=4)
+```
+
+In @fig-r-basics-scattersize-1 sehen wir, dass die Größe der Punkte variiert und `ggplot()` auch noch eine Legende der Größen angefügt hat. In @fig-r-basics-scattersize-2 haben alle Punkte die gleiche Größe.
+
+Das gleiche Prinzip können wir auch auf die Farbe der Punkte anwenden.
+
+```{r}
+#| echo: true
+#| layout-ncol: 2
+#| label: fig-r-basics-scattercol
+#| fig-cap: Definition der Punktfarbe auf zwei Arten
+#| fig-height: 4
+#| fig-subcap:
+#|   - "Definition in `aes()`"
+#|   - "Definition in `geom_point()`"
+
+ggplot(df, aes(dv,iv, color = team)) +
+geom_point()
+ggplot(df, aes(dv, iv)) +
+geom_point(color = 'red')
+```
+
+Wenn die Farbe in `aes()` definiert wird, erhalten wir eine Legende und die Farbe wird anhand der Variable bestimmt (siehe @fig-r-basics-scattercol-1), während bei der Definition als Argument zu `geom_point()` alle Punkte die gleiche Farbe bekommen (siehe @fig-r-basics-scattercol-2).
+
+Natürlich können wir auch gleichzeitig die Farbei und die Größe bestimmen.
+
+```{r}
+#| echo: true
+#| layout-ncol: 2
+#| label: fig-r-basics-scattercolsize
+#| fig-cap: Definition der Punktfarbe und Punktgröße auf zwei Arten
+#| fig-height: 4
+#| fig-subcap:
+#|   - "Definition in `aes()`"
+#|   - "Definition in `geom_point()`"
+
+ggplot(df, aes(dv,iv, size = dv, color = team)) +
+geom_point()
+ggplot(df, aes(dv, iv)) +
+geom_point(size = 4, color = 'red')
+```
+
 ### `geom_line()`
+
+Schauen wir uns als nächstes `geom_line()` an. Wie der Name vermuten lässt, können wir mit diesem `geom` Linien erstellen. Linen werden zwischen aufeinanderfolgenden Punkten die eine $(x,y)$-Position haben gezogen. Daher sind die gleichen Abbildungen wie bei den Punkten möglich.
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-line-01
+#| fig-cap: "Linendiagramm"
+
+ggplot(df, aes(iv,dv)) +
+  geom_line()
+```
+
+Wenn wir zwei unterschiedlichen Linien für die Teams erstellen wollen, dann können wir das zum Beispiel über die Farbe steuern.
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-line-02
+#| fig-cap: "Liniendiagramm unterteilt nach Team"
+
+ggplot(df, aes(iv, dv, color = team)) +
+  geom_line()
+```
+
+Jetzt fehlt in @fig-r-basics-line-02 das Verbindungsstück zwischen den beiden Punkten das in @fig-r-basics-line-01 noch vorhanden war, da `ggplot()` den Datensatz in zwei Teildatensätze unterteilt.
+
+Wie oben schon angedeutet können wir mehrere `geom` miteinander kombinieren.
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-line-03
+#| fig-cap: "Ein kombiniertes Linien und Streudiagramm"
+
+ggplot(df, aes(iv, dv)) +
+  geom_line() +
+  geom_point()
+```
+
+Die Reihenfolge spielt dabei eine Rolle, `geom`s die später dazugefügt werden, liegen oberhalb von `geom`s die früher definiert wurden.
+
+```{r}
+#| echo: true
+#| layout-ncol: 2
+#| label: fig-r-basics-line-04
+#| fig-cap: Einfluss der Reihenfolge von `geom`s 
+#| fig-height: 4
+#| fig-subcap:
+#|   - "`geom_point()  vor `geom_line()`"
+#|   - "`geom_line()  vor `geom_point()`"
+
+ggplot(df, aes(iv, dv)) +
+  geom_point(color = 'red', size = 4) +
+  geom_line()
+ggplot(df, aes(iv, dv)) +
+  geom_line() + 
+  geom_point(color = 'red', size = 4) 
+```
+
+In @fig-r-basics-line-04-1 sehen wir, dass die Linien die Punkte durchschneiden, da sie oberhalb liegen, während in @fig-r-basics-line-04-2 die Linien hinter den Punkten liegen.
+
+Vielleicht ist es euch schon aufgefallen, das wir in den letzten beiden Beispielen den Mechanismus verwendet haben, dass die Abbilung in `ggplot()` definiert wurden und dann für bei beide `geom`s `geom_point()` und `geom_line()` angewendet wurden. Wenn wir die Abbildung nur ein `geom_point()` definiert hätten, dann würde `geom_point()` meckern, das es nicht weiß wo es die Punkte hinsetzen soll.
+
+```{r}
+#| echo: true
+#| error: true
+
+ggplot(df)  +
+  geom_line(aes(iv, dv)) + 
+  geom_point() 
+```
+
+Nachdem wir jetzt schon die Grundprinzipien kennengelernt haben, schauen wir uns die nächsten `geom`s etwas kürze an.
+
 ### `geom_boxplot()`
+
+Der Boxplot als eine praktische Art der Visualisierung sollte natürlich auch nicht fehlen und hat daher auch ein eigenes `geom` spendiert bekommen. Hier ist zu beachten, dass die Abbildung auf die $x$-Achse üblichweise nicht numerisch sondern entweder nominal oder ordinal ist. In der Praxis können auch Zeichenketten verwendet werden, die dann als Faktor interpretiert werden.
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-boxplot
+#| fig-cap: "Ein Boxplot mit `geom_boxplot()`."
+
+ggplot(df, aes(team, dv)) +
+  geom_boxplot()
+```
+
+Wir können wieder mehrere Abbildungen kombinieren und zum Beispiel getrennte Boxplots für die Teams und die Gruppen erstellen.
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-boxplot-2
+#| fig-cap: "Getrennte Boxplots nach Team und Gruppe."
+
+ggplot(df, aes(team, dv, fill=group)) +
+  geom_boxplot()
+```
+
 ### `geom_col()`
+
+Die nächste Art von Visualisierung sind Säulendiagramme. Hier müssen wir allerdings etwas Vorarbeit leisten. Bei Säulendiagrammen wird in den meisten Fällen der Mittelwert dargestellt. Daher müssen wir den Mittelwert zunächste berechnen.
+
+```{r}
+#| echo: true
+
+df_team <- df |> 
+  group_by(team) |> 
+  summarize(m = mean(dv), sd = sd(dv))
+```
+
+```{r}
+df_team |> knitr::kable(booktabs=TRUE, digits = 2)
+```
+
+Wir haben gleich auch noch die Standardabweichungen berechnet, da wir die gleich benötigen werden. Säulendiagramme können mit `geom_col()` erstellt werden. Wie bei `geom_boxplot()` sollte die $x$-Skala nominal sein.
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-col-01
+#| fig-cap: "Ein Säulendiagramm mit `geom_col()`."
+
+ggplot(df_team, aes(team, m)) +
+  geom_col()
+```
+
+So weit so gut, aber keine Darstellung des Mittelwerts ohne eine Darstellung der Streuung. Dazu benötigen wir allerdings ein weiteres `geom`.
+
 ### `geom_errorbar()`
-### `facet_grid()`
-### `geom_density()` 
+
+Um die Streuung in einem Säulendiagramm mit einzufügen, verwenden wir `geom_errorbar()`. Hier kommen endlich einmal zwei neue Abbildungen ins Spiel. `ymin` bestimmt das untere Ende des Fehlerbalkens, während `ymax` das obere Ende bestimmt. D.h. die Fehlerbalken sind müssen nicht unbedingt in beide Richtungen gleich lang sein.
+
+```{r}
+#| echo: true
+
+ggplot(df_team, aes(team, m)) +
+  geom_col() +
+  geom_errorbar(aes(ymax = m - sd, ymax = m + sd))
+```
+
 ### `geom_histogram()`
+### `facet_grid()`
 ### `labs()` und `lims()`
 ### `scale_x|y_continuous()`
-### Darstellung modifizieren mit `theme()` 
+### `theme()` 
+
+Insgesamt haben wir wieder nur die Oberfläche von `ggplot` gekratzt. Allerdings sollte ihr mit diesen wenigen `geom`s schon eine Großzahl eurer Anwendungsfälle abbilden können. Im Netz gibt es eine Reihe von sehr guten freien Quellen um sich eingehender mit `ggplot` auseinander zu setzen. Bei Problemen ist auch die extrem gute Dokumentation zu konsultieren. Dazu kommen mittlerweile auch eine Reihe von Zusatzbibliotheken um praktisch jede erdenkliche Art von Visualisierung zu erstellen.
