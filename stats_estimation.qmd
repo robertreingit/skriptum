@@ -64,7 +64,7 @@ ggplot(tibble(x = c(3.61, -2.23), y = 1:2, ), aes(x,y)) +
 
 Hätten wir das Ergebnis aus @fig-stats-est-prob-02 beobachtet, dann würde wir wahrscheinlich schon eher von einem widersprüchlichen Ergebnis in der Literatur sprechen. Wenn wir wieder unter Zwang einen Wert angeben müssten, dann wahrscheinlich einen in der Nähe von $D = 0$. In beiden Fällen haben wir aber unter der rein dichotomen Betrachtung das gleiche Ergebnis (1 x statisch signifikant + 1 x statistisch nicht signifikant). Daraus können wir schließen, dass wir bei der Interpretation von Forschungsergebnissen nicht nur auf statistisch signifikant ja oder nein schauen sollten. Wir müssen auch immer die die Effektrichtungen und deren Größe genauer anschauen um uns ein Bild des Forschungsstandes zu machen. Dazu gehört natürlich auch noch eine Betrachtung des Forschungsdesigns und insbesondere der Stichprobengröße $N$. Deren Einfluss schauen wir uns im Folgenden etwas genauer an.
 
-## Wie groß und präzise ist der beobachtete Effekt? 
+## Wie groß ist der beobachtete Effekt? 
 
 Aus den Ausführungen von eben ist also klar, dass wir den beobachteten Effekt auch dokumentieren müssen, da er für die Interpretation des Ergebnisse wichtig ist. Letztendlich ist die Größe des Effekts auch ausschlaggebend ob ich zum Beispiel eine Trainingsintervention mit meinen Athletinnen durchführe. Mir reicht es nicht zu wissen das ein statistisch signifikanter Effekt in Studien gefunden wurde, sondern ich möchte auch die Größe des Effekts wissen.
 
@@ -164,16 +164,11 @@ ggplot(aes(x,p)) +
   scale_y_continuous('Dichte')
 ```
 
-In @fig-stats-est-ci-04 ist unter der kompatible Bereich mittels einer Linie und eines Punktes dargestellt. Der Punkt zeigt den Wert der jeweiligen Hypothese an, während die Striche rechts und links die untere und die obere Grenze des kompatiblen Bereich zeigen.
-
-
-Plausibel unter einem gegebenem **$\alpha$-Level**!
-
-
-## Alle möglichen $\delta$s die plausibel sind
+In @fig-stats-est-ci-04 ist der mit den Daten kompatible Hypothesenbereich mittels einer Linie und eines Punktes dargestellt. Der Punkt zeigt den Wert der jeweiligen Hypothese an, während die Striche rechts und links die untere und die obere Grenze des kompatiblen Bereich darstellen. Die Grenzen des kompatiblen Bereichs sind eine Funktion des gewählten $\alpha$-Levels. Wenn mein $\alpha$ kleiner wird, dann dehen sich die beiden Striche aus, wenn mein $\alpha$ größer wird, dann verkürzen sie sich dementsprechend. Nochmal, ich verwende ja mein $\alpha$ um kritische Bereiche zu definieren. Tragen wir nun einmal alle Intervalle systematisch von links nach rechts ab, deren Hypothesen mit dem beobachteten Wert (den Daten) kompatibel sind. Diese führt dann zu der Darstellung in @fig-stats-est-ci-05.
 
 ```{r}
-#| fig.cap: "Konfidenzintervall (grün), Populationsparameter $\\delta$ und $\\alpha$-Level für die beobachtete Differenz (gelb)."
+#| fig-cap: "Kompatibles Intervall (grün), Populationsparameter $\\delta$ und $\\alpha$-Level für die beobachtete Differenz (gelb)."
+#| label: fig-stats-est-ci-05
 
 mu_s <- seq(150, 550, length.out=25) 
 q_s <- qnorm(alpha, mu_s, s_e)
@@ -182,7 +177,7 @@ df <- tibble(mu_s = mu_s,
              up = qnorm(1-alpha/2, mu_s, s_e)) %>%
   dplyr::mutate(inside = dplyr::if_else(mu_s >= c_i[1] & mu_s <= c_i[2], 'ja', 'nein'))
 ggplot(df, aes(x = mu_s, y = mu_s, ymin = lu, ymax = up, color = inside)) +
-  geom_hline(yintercept = d_hat, color = 'yellow') +
+  geom_hline(yintercept = d_hat, color = 'yellow', size=2) +
   geom_hline(yintercept = c_i, color = 'green') +
   geom_hline(yintercept = delta, color = 'black') +
   geom_pointrange(size=0.3) +
@@ -195,11 +190,19 @@ ggplot(df, aes(x = mu_s, y = mu_s, ymin = lu, ymax = up, color = inside)) +
   coord_flip() 
 ```
 
-## Was passiert wenn ich das Experiment ganz oft wiederhole?
+Der beobachetete Wert ist in Gelb abgetragen und wir schieben die Intervalle von links kommend nach rechts. In @fig-stats-est-ci-05 haben wir die Intervalle vertikal etwas versetzt um sie besser sichtbar zu machen. Das erste Intervall dessen linkes Ende die gelbe Line berüht ist dabei die Hypothese mit dem geringsten $\delta_{\text{low}}$ die noch kompatibel mit den Daten ist. Das gleiche gilt auf der rechten Seite mit der größten Hypothese $\delta_{\text{upper}}$ deren linker Rand die gelbe Linie gerade so noch streift.
+
+Wenn wir nun die Werte $\delta_{\text{lower}}$ und $\delta_{\text{upper}}$ als die Randwerte eines Intervallsfestlegen, dann sind alle Hypothesen zwischen diesen beiden Grenzen kompatibel mit den Daten. D.h. wenn einer dieser Wert initial unsere $H_0$ gewesen wäre, dann hätte wir die $H_0$ nicht abgelehnt. 
+
+Achtung, und das ist ein ganz großes Achtung, das sind alles Aussagen über die beobachteten Daten. Das ist keine Aussage über die tatsächliche $H_0$ mit der wir in das Experiment reingegangen sind. Das Verhältnis zwischen dieser $H_0$ und diesem Intervall schauen wir uns als nächstes an. Vorher werfen wir noch einmal einen kurzen Blick auf @fig-stats-est-ci-05. In Schwarz ist der tatsächliche wahre Populationswert abgetragen. Wir sehen, dass in diesem Fall der wahre Wert auch innerhalb des Intervalls liegt.
+
+Schauen wir uns nun an wie das aussieht, wenn wir das Experiment mehrmals wiederholen.
 
 ```{r}
-#| fig.cap: "Simulation von $n = 100$ Konfidenzintervallen."
-#| cache: true
+#| fig-cap: "Simulation von $n = 100$ Intervallen."
+#| cache: false 
+#| label: fig-stats-est-ci-06
+#| fig-height: 5
 
 foo <- function(mu = 500, se = 132, n = 20, alpha = 0.05) {
   sam <- rnorm(n, mu, se)
@@ -222,13 +225,28 @@ ggplot(df_2, aes(id, x_hat, color = inside)) +
   coord_flip()
 ```
 
-## Konfidenzintervall - Das Kleingedruckte
+In @fig-stats-est-ci-06 ist das Ergebnis von 100 Experimenten und den resultierenden Intervallen gezeigt. Der schwarze Strich zeigt wieder den wahren Populationswert an. Wir können erkennen, dass die Mehrheit der berechneten, kompatiblen Intervalle den wahren Wert auch tatsächlich enthält. Aber wieder Achtung, in der Realität führen wir das Experiment meistens nur einmal durch. Wenn ich jetzt die Frage stelle: *Was ist die Wahrscheinlichkeit das mein berechnetes Kompatibilitäsintervall den wahren Populationsparameter enthält?*
 
-- Das Konfidenzintervall für ein gegebenes $\alpha$-Niveau gibt nicht die Wahrscheinlichkeit an mit der der *wahre* Parameter in dem Intervall liegt.
-- Das Konfidenzintervall gibt alle mit den Daten kompatiblen Populationsparameter an.
-- Das $\alpha$-Niveau des Konfidenzintervalls gibt an bei welchem Anteil von Wiederholungen davon auszugehen ist, das das Konfidenzintervall den wahren Populationsparameter enthält. 
+Nun, entweder der Wert ist in dem Intervall enthalten oder er ist nicht enthalten. Also entweder $P(\text{enthalten}) = 0$ oder $P(\text{enthalten}) = 1$. Daher ist die Frage mit welcher Wahrscheinlichkeit das Intervall den wahren Parameter enthält nicht wirklich sinnvoll. Ich würde hoffen, dass ich bei meiner Durchführung des Experiment eines der grünen Intervalle habe, aber ich kann mir nicht sicher sein. Vielleicht habe ich Pech gehabt und ausgerechnet eines der roten Intervalle bekommen.
 
-## Konfidenzintervall herleiten nach @spiegelhalter2019 [p.241]
+Wir hatten vorhin hergeleitet, dass die Breite der Intervalle von unserem angesetzten $\alpha$ abhängt. Tatsächlich sagt dieses $\alpha$ etwas darüber aus, wie oft ich erwarten würde bei großer (unendlicher) Wiederholung des Experiments das das Intervall den wahren Populationsparameter enthält. D.h. wenn ich das ein $\alpha = 0.05$ ansetze. D.h. würde ich bei $1000$ Durchführungen erwarten, dass $950$ der Intervall den wahren Populationsparameter enthalten und entsprechend $50$ Intervall den Populationsparameter nicht enthalten. Nochmal, das ist eine Aussage über eine Wahrscheinlichkeit bei Wiederholung des Experiments. Eigentlich ist $1000$ auch nicht genug sondern eher was Richtung $\displaystyle{\lim_{N \to \infty}}$.
+
+Nachdem wir jetzt lange genug um den heißen Brei getanzt haben, das Intervall das mit den Daten kompatibel ist wird als Konfidenzintervall bezeichnet. Leider ist die Bezeichnung mit Konfidenz stark irreführend, da für Statistiker mit Konfidenz eben diese Eigenschaft bei Wiederholung des Experiments bezeichnet wird. In der Alltagssprache ist die Interpretation leider etwas abweichend. Die Aussage ich habe eine $95\%$ Konfidenz, das das Intervall den wahren Populationsparameter enthält ist daher auch eine falsche Interpretation. Richtiger wäre, wenn ich das Experiment sehr, sehr oft wiederhole dann bin ich konfident, das  $95\%$ der Intervalle den wahren Populationsparameter enthalten.
+
+Das Konfidenzintervall hat aber noch ein weiteres Merkmal. Wenn das Intervall sehr eng ist, dann ist nur eng umschriebene Menge von Hypothesen mit den Daten kompatibel. Anders herum, wenn das Intervall sehr breit ist, dann sind sehr unterschiedliche Hypothesen mit den Daten kompatibel. Die Breite ist dabei nicht nur vom $\alpha$-Niveau sondern auch von der Streuung vom Standardfehler der Stichprobenstatistik abhängig. Wenn die Streuung sehr klein ist, dann wird für gegebens $\alpha$ das Intervall schmaler als wenn die Streuung sehr groß ist. Daher ist das Konfidenzintervall auch ein Merkmal für die Präzision der Schätzung mittels der Daten.
+
+Das Konfidenzintervall hat aber noch ein weiteres Merkmal. Wenn das Intervall sehr eng ist, dann ist nur eng umschriebene Menge von Hypothesen mit den Daten kompatibel. Anders herum, wenn das Intervall sehr breit ist, dann sind sehr unterschiedliche Hypothesen mit den Daten kompatibel. Die Breite ist dabei nicht nur vom $\alpha$-Niveau sondern auch von der Streuung vom Standardfehler der Stichprobenstatistik abhängig. Wenn die Streuung sehr klein ist, dann wird für gegebens $\alpha$ das Intervall schmaler als wenn die Streuung sehr groß ist. Daher ist das Konfidenzintervall auch ein Merkmal für die Präzision der Schätzung mittels der Daten.
+
+::: {#def-confidence}
+
+## Konfidenzintervall  \index{Konfidenzintervall}
+
+Das Konfidenzintervall wird immer für ein gegebenes $\alpha$-Niveau berechnet. Das Konfidenzterinvall gibt nicht die Wahrscheinlichkeit an mit der ein *wahre* Parameter in dem Intervall liegt. Sondern, das Konfidenzintervall gibt alle mit den Daten kompatiblen Populationsparameter, alle kompatiblen $H_0$-Hypothesen an.
+Das $\alpha$-Niveau des Konfidenzintervalls gibt an bei welchem Anteil von Wiederholungen davon auszugehen ist, das das Konfidenzintervall den wahren Populationsparameter enthält. Die Breite des Konfidenzintervalls kann als eine Metrik der Präzision der Schätzung angesehen werden.
+
+:::
+
+Eine schöne Zusammenfassung zum Konfidenzintervall ist aus @spiegelhalter2019 [p.241]
 
 1. We use probability theory to tell us, for any particular population
 parameter, an interval in which we expect the observed statistic to lie
@@ -239,22 +257,23 @@ population parameters for which our statistic lies in their 95\%
 intervals. This we call a "95\% confidence interval".
 4. This resulting confidence interval is given the label "95\%" since, with
 repeated application, 95% of such intervals should contain the true
-value.^[Strictly speaking, a 95\% confidence interval does ***not*** mean there is a 95\% probability that this particular interval contains the true value [...]]
+value. Strictly speaking, a 95\% confidence interval does ***not*** mean there is a 95\% probability that this particular interval contains the true value [...]
 
 All clear? If it isn’t, then please be reassured that you have joined
 generations of baffled students.
 
+Als kleine Vorschau eine relativ allgemein gültige Formel um Konfidenzintervalle zu berechnen. Tatsächlich ist es nicht notwendig alle möglichen Intervalle aufzuzeichenen und dann zu schauen welche den beobachteten Wert enthalten.
 
-## Konfidenzintervall berechnen (Vorschau)
-
-$$
+\begin{equation*}
 \textrm{CI}_{1-\alpha} = \bar{x} \pm z_{\alpha/2} \times s_e 
-$$
+\end{equation*}
 
+Das Intervall ist immer ein Kombination aus einer berechneten Wert, in dem Fall der Mittelwert, der zum $\alpha$-Niveau gehörenden Quartile, hier $z_{\alpha/2}$, multipliziert mit dem Standardfehler $s_e$. Unglücklicherweise, wenn dieses Intervall als Zufallszahl vor dem Experiment bestimmt wird, dann ist es tatsächlich eine Wahrscheinlickeitsaussage. Aber wenn wir eine Realisierung der beteiligten Zufallszahlen, in diesem Fall der Intervallgrenzen, beobachtete haben dann ist keine Aussage über die Wahrscheinlichkeit mehr sinnvoll, wie wir in @fig-stats-est-ci-06 gesehen haben.
 
 ## Dualität von Signifikanztests und Konfidenzintervall
 
-Wenn das Konfidenzintervall mit Niveau $1-\alpha\%$ die $H_0$ nicht beinhaltet, dann wird auch bei einem Signifikanztest die $H_0$ bei einer Irrtumswahrscheinlichkeit von $\alpha$ abgelehnt.
+Als letzten, vorläufigen Punkt zu Konfidenzintervallen noch ein Abschnitt zum Verhältnis von Konfidenzintervallen und Signifikanztests. Wenn das Konfidenzintervall mit Niveau $1-\alpha\%$ die $H_0$ nicht beinhaltet, dann bedeutet dies nach unserer Herleitung, dass diese Hypothese nicht mit den beobachteten Daten kompatibel ist. D.h. bei einem Signifikanztest wird die $H_0$ bei einer Irrtumswahrscheinlichkeit von $\alpha$ abgelehnt. Wenn ich also das Konfidenzintervall und die getestete $H_0$ kenne, dann kann ich eine Aussage darüber machen ob das Ergebnis statistisch signifikant oder nicht ist. Anders herum wenn ich weiß, das das Ergebnis statistisch signifikant war, oder eben nicht, dann weiß ich auch ob die $H_0$ im Konfidenzintervall ist oder nicht. Es besteht eine Dualität zwischen beiden Konzepten, wobei mir das Konfidenzintervall deutlich mehr Information als der reine Signifikanztest gibt.
+
 
 
 
