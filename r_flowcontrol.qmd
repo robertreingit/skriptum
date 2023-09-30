@@ -11,20 +11,74 @@ knitr::opts_chunk$set(
 )
 ```
 
+Nachdem wir die Grunddatentypen in `R` kennengelernt haben schauen wir uns nun drei zentrale Konstrukte in der Programmierung an. Das sind Vergleiche und darauf aufbauend Bedingte Anweisungen und Verzweigungen und Schleifen. Fangen wir mit den Vergleichen an.
+
 ## Vergleiche 
+
+Bei Vergleichen wird zunächst einmal genau das gemacht, was im Namen drinsteht, es werden Sachen miteinander verglichen. Und wenn ich Sachen schreibe dann vor allem erste einmal Zahlen. Dann kennen wir auch schon die Grundoperatoren noch aus der Schule (siehe @tbl-comparisons).
+
+| Operator | Vergleich |
+| --- | --- |
+| $<$ | kleiner |
+| $>$ | größer |
+| $<=$ | kleiner oder gleich |
+| $>=$ | größer oder gleich |
+| $==$ | gleich |
+
+: Vergleichsoperatoren {#tbl-comparisons}
+
+Der einzige der etwas ungewohnt erscheinen dürfte ist der Vergleich auf Gleichheit `==`, aber das ist wieder nur Syntax. In `R` ist das Ergebnis eines Vergleichs ein logischer Wert.
 
 ```{r}
 #| echo: true
-m <- 1:6  # <1>
-m[m < 3]  # <2>
+
+3 < 6
+6 < 3
+6 == 6
 ```
 
-1. Der Variable `m` wird mit einem Vektor mit den Werten $[1,2, \dots, 6]$ gefüllt.
-2. Mittels eines Vergleichs werden alle Werte kleiner $3$ ausgegeben.
+Die Vergleichsoperator arbeiten dabei auch mit Vektoren.
+
+```{r}
+#| echo: true
+v_1 <- 1:6
+v_2 <- 2:7
+v_1 < 3
+3 < v_1
+v_1 < v_2
+```
+
+Wenn beide Objekte Vektoren sind, dann wird der Vergleich immer Element für Element durchgeführt. In beiden Fällen erhalten wir einen Vektor der entsprechenden Länge mit logischen Elementen.
+
+Zusammen mit dem subsetting operator `[]` können wir mit relativ wenig Aufwand Wert die eine bestimmte Bedingung erfüllt aus einem Vektor extrahieren. Zum Beispiel aus dem Vektor `v_1` alle Werte die kleiner $4$ sind.
+
+```{r}
+#| echo: true
+
+v_1[v_1 < 4]
+```
+
+Warum hat das funktioniert? Zuerst wird der Vergleich `v_1 < 4` von `R` durchgeführt, der Rückgabewert dieser Operation ist ein Vektor mit logischen Werten entsprechend des Vergleichs. Der Vektor hat die Länge von `v_1`, kann daher direkt dazu benutzt werden Elemente aus `v_1` die die Bedingung erfüllen zu extrahieren.
+
+Da wir logische Wert mit den logischen Operatoren verknüpfen können, ermöglicht dies auch komplizierte Vergleiche durchzuführe.
+
+```{r}
+#| echo: true
+
+v_1[v_1 < 3 | v_1 > 4]
+v_1[v_1 >= 3 & v_1 <= 4]
+```
+
+Die Vergleiche können wir auch gleich verwenden um bedingte Anweisungen zu verstehen.
 
 ## Bedingte Anweisungen und Verzweigungen 
 
+In @fig-r-flow-ifelse ist der Grundgerüst einer bedingten Anweisungen bzw. Verzweigung im Code dargestellt.
+
 ```{mermaid}
+%%| label: fig-r-flow-ifelse
+%%| fig-cap: "Bedingte Anweisungen."
+
 flowchart
 A[condition] --> B[TRUE]
 A[condition] --> C[FALSE]
@@ -32,8 +86,9 @@ B --> D[Ausdruck A]
 C --> E[Ausdruck B]
 ```
 
+Wir haben einen Ausdruck `condition` der entweder `WAHR` oder `FALSCH` sein kann, und entsprechend wird entweder `Ausdruck A` oder `Ausdruck B` ausgeführt. In `condition` wird überlicherweise in irgendeiner Form ein Vergleich vorgenommen.
 
-`if () {} else {}`
+Syntaktisch wird die Bedingte Anweisung in `R` folgendermaßen spezifiziert.
 
 ```{r}
 #| eval: false
@@ -41,21 +96,21 @@ C --> E[Ausdruck B]
 
 if (condition) { # <1>
   AusdruckA      # <2>
-} else {         # <3>
-  AusdruckB      # <4> 
+} else {         # 
+  AusdruckB      # <3> 
 }
 
 ```
 
-1. `condition` wird zu einem truth-Wert (`true,false`) evaluiert
-2. Wenn `condition` `TRUE` ist, wird `AusdruckA` ausgeführt.
-3. Wenn `condition` `FALSE` ist, wird der `else` Zweig ausgeführt.
-4. Im `else`-Zweig wird `AusdruckB` ausgeführt.
+1. Zunächst kommt das Schlüsselwort `if` gefolgt von einer Klammer mit dem Ausdruck `condition` der zu einem logischen Wert (`true,false`) evaluiert wird.
+2. Wenn `condition` `TRUE` ist, wird der `AusdruckA` innerhalb der geschweiften Klammern ausgeführt.
+3. Wenn `condition` `FALSE` ist, wird der `else` Zweig, bzw. der `AusdruckB` zwischen den geschweiften Klammern nach `else` ausgeführt.
 
-Beispiel
+Schauen wir uns ein einfaches Beispiel an:
 
 ```{r}
 #| echo: true
+
 m <- 0
 a <- 10
 b <- 20
@@ -67,20 +122,28 @@ if (a < b) {
 m
 ```
 
+Was passiert hier, der Wert von `m` wird unterschiedlich belegt, je nachdem welche Werte `a` und `b` haben. Mit diesem `ifelse`-Konstrukt können wir daher unterschiedliche Anweisungen in unseren Programmen ausführen lassen, in Abhängigkeit von bestimmten Bedingungen. Wir könnten zum Beispiel unsere eigene Absolutfunktion schreiben.
+
+```{r}
+#| echo: true
+
+my_abs <- function(x) {
+  if (x < 0) {
+    -x
+  } else {
+    x
+  }
+}
+my_abs(3)
+my_abs(0)
+my_abs(-3)
+```
 
 ## Schleifen
 
-```{mermaid}
-%%| fig-height: 4
+Als letztes Programmierkonstrukt kommen jetzt noch Schleifen, eine der Paradedisziplin von Computern, nämlich die gleiche Sache ganz oft hintereinander durchführen.
 
-stateDiagram-v2
-[*] --> item
-item --> Vector
-Vector --> item
-item --> Ausdruck
-item --> [*]
-```
-
+Die Syntax für eine Schleife in `R` ist wie folgt.
 
 ```{r}
 #| eval: false
@@ -92,16 +155,79 @@ for (item in vector) { # <1>
 
 ```
 
-1. In der Klammer werden zwei Ausdrücke benötigt. `item` ist ein Zähler der die Einträge des Vektors `vector` durchläuft.
-2. Jedes Mal wenn `item` mit einem neuen Wert belegt worden ist, wird `Ausdruck` ausgeführt und der jeweilige Wert von `item` steht im Ausdruck zur Verfügung.
+1. Als erstes kommt das Schlüsselwort `for` gefolgt von einer Klammer. In der Klammer werden zwei Ausdrücke benötigt. Eine Variable die hier `item` heißt, die als Schleifenzähler fungiert. Der Schleifenzähler durchläuft die Einträge des Vektors `vector` einen nach dem anderen.
+2. Jedes Mal wenn `item` mit einem neuen Wert belegt worden ist, wird `Ausdruck` zwischen den geschweiften Klammer `{}` ausgeführt. Der jeweilige aktuelle Wert von `item` steht im Ausdruck zur Verfügung.
 
-Beispiel
+Hört sich komplizierter an als es ist. Ein einfaches Beispiel:
+
+```{r}
+#| echo: true
+
+for (i in 1:4) {
+  cat('Ausdruck wird ausgeführt\n')
+  cat('i =', i, '\n')
+}
+```
+
+Wir verwenden in dem Code die `cat()` Funktion um die Wert auf der Kommandozeile auszugeben. Das Zeichen `\n` ist lediglich ein Sonderzeichen für neue Zeile. Was passiert in dem Code. Wir haben einen Vektor mit den Elementen von $1,2,3,4$. Die Variable `item` hat jetzt den Namen `i`. `i` wird Element für Element mit den Einträgen aus dem Vektor belegt und jedes mal wird der Ausdruck zwischen den Klammern ausgeführt.
+
+Ein wird könnten nun zum Beispiel den Vektor als Index für die Einträge in einen anderen Vektor mit Elementen ansehen und dementsprechend über die Einträge des anderen Vektoren mit `i` iterieren.
 
 ```{r}
 #| echo: true
 
 vec <- c('mama','papa','daughter','son') 
 for (i in 1:4) {
-  cat(i, ': ', vec[i], '\n')
+  cat('Ausdruck wird ausgeführt\n')
+  cat('i =', i, ': ', vec[i], '\n')
 }
 ```
+
+## Ein Beispiel
+
+Zum Abschluss schauen wir uns ein Beispiel aus der Statistik an zu Publikationsfilter und welche Auswirkung der Filter auf die Effektstärke hat.
+
+Wir machen führen wiederholte t-Tests aus. Wir gehen davon aus, dass es eine Effektstärke von $D = 0.1$ gibt. Dazu ziehen wir zwei Stichproben der Größe $n$ aus den entsprechenden Normalverteilung die unserer Populationen darstellen. Dann berechnen wir den t-Test und wenn es sich um ein statistisch signifikantes Ergebnis handelt dann speichern wir den Unterschied zwischen den beiden Gruppen. Da es sich um ein Zufallsexperiment handelt, wissen wir vorher nicht, wie viele Vergleiche statistisch signifikant werden und wir speichern müssen, daher erstellen wir einen Ergebnisvektor der gleichen Länge wie oft wir das Experiment durchführen. Wir setzen der Einfachheit halber $n = 10, \delta = 0.1, \sigma = 1, \alpha = 0.05$ (zweiseitig). Dadurch ist der Unterschied zwischen den beiden Stichproben auch direkt als Cohen's D Effektstärke zu interpretieren. Führen wir die Simulation $N_{sim} = 100$ durch. Mit der Funktion `rnorm()` können wir normalverteilte Zufallszahlen ziehen und mit `qt()` können wir den kritischen Wert der t-Verteilung bestimmen. In Code:
+
+```{r}
+#| echo: true
+
+n_sim <- 100
+n <- 10
+mu <- 0
+delta <- 0.1
+sigma <- 1
+df <- 2*n - 2
+kritischer_wert <- qt(0.975, df)
+ergebnis_vektor <- numeric(n_sim)
+for (i in 1:n_sim) {
+  # ziehen der Stichproben
+  stichprobe_a <- rnorm(n, mu, sigma)
+  stichprobe_b <- rnorm(n, delta, sigma)
+  
+  # zwischenwerte berechnen
+  a_bar <- mean(stichprobe_a)
+  b_bar <- mean(stichprobe_b)
+  a_sd <- sd(stichprobe_a)
+  b_sd <- sd(stichprobe_b)
+  
+  # t-Statistik berechnen
+  Delta <- abs(a_bar - b_bar)
+  s_pooled <- sqrt((a_sd**2 + b_sd**2)/2)
+  s_e <- s_pooled * sqrt(2/n)
+  t <- Delta/s_e
+  
+  # überprüfen auf statistische Signifikanz
+  if (t > kritischer_wert) {
+    ergebnis_vektor[i] <- Delta
+  }
+}
+
+statistisch_signifikant <- ergebnis_vektor[ergebnis_vektor > 0]
+D_bar <- mean(statistisch_signifikant)
+D_sd <- sd(statistisch_signifikant)
+cat('Die Effektstärke ist D =', D_bar,'+-', D_sd, '\n')
+```
+
+Als Hausaufgaben versucht das Programm nachzuvollziehen und das Ergebnis zu interpretieren.
+
