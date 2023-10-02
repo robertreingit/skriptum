@@ -5,6 +5,8 @@
 #| warning: false
 #| message: false
 source('_common.R')
+
+n_fig_pts <- 100
 ```
 
 Wie wir in den vorhergehenden Abschnitten gesehen haben, brauchen wir immer die Stichprobenverteilung um etwas über die beobachteten Daten ausssagen zu können. Im Lummerland-Beispiel haben wir die Stichprobenverteilung einfach direkt hergeleitet, da wir komplettes Wissen über die Population hatten. Dies hat uns ermöglicht alle möglichen zu beobachtenden Werte zu berechnen. Dieser Fall ist leider bei einem realen Experiment nicht gegeben, dann wenn wir die Population und den Effekt kennen, dann brauchen wir das Experiment gar nicht erst durchzuführen. Sondern wir wollen anhand unserer Stichprobe etwas über die Population aussagen. Wir benötigen aber nichts desto trotz die Stichprobenverteilung. Diese können wir herleiten, wenn wir in der Lage sind unserer Stichprobe mit einer uns bereits bekannten Verteilung zu verknüpfen. Die Verteilung ist dabei eine theoretische Verteilung und unsere Aufgabe ist zu zeigen, dass unsere Stichprobe die Voraussetzungen und Annahmen der theoretischen Verteilung erfüllt. Dazu setzen wir uns in diesem Abschnitt etwas eingehender mit dem Konzept der Verteilung auseinander und werden in diesem Zusammenhang verschiedene für uns relevanten theoretische Verteilungen kennenlernen.
@@ -634,35 +636,6 @@ ggplot(d_b, aes(z)) +
   facet_grid(~x)
 ```
 
-
-## t-Verteilung
-
-Die t-Verteilung ist der Normalverteilung sehr ähnlich. Sie hat allerdings immer den Erwartungswert $E[X] = 0$. Sie hat nur einen Parameter, die Freiheitsgrade $df$ die bestimmen wie stark die Flanken der Verteilung abfallen. In @fig-stats-dist-t-dist-01 sind verschiedene t-Verteilungen abgebildet.
-
-```{r}
-#| fig.cap: "Beispiel für verschiedene Dichtefunktionen der t-Verteilung"
-#| label: fig-stats-dist-t-dist-01
-
-n_fig_pts <- 130
-t_dist <- tibble(
-  x = seq(-5,5,length.out=n_fig_pts),
-  t1 = dt(x,1),
-  t3 = dt(x,3),
-  t10 = dt(x,10)
-) %>% tidyr::pivot_longer(-x, names_to='dist', values_to='v')
-ggplot(t_dist, aes(x,v,fill=dist, ymin=0, ymax=v)) +
-  geom_ribbon(alpha=0.3) +
-  geom_line() + 
-  scale_fill_discrete("Verteilungen",
-                      breaks = c('t1', 't3', 't10'),
-                      labels = c(expression(df==1),
-                                 expression(df==3),
-                                 expression(df==10))) +
-  labs(x = 'Werte', y = 'Dichte') 
-```
-
-Die t-Verteilung wird oft verwendet wenn neben dem Erwartungswert $\mu$ auch die Varianz $\sigma^2$ anhand der Stichprobe bestimmt wird. 
-
 ## $\chi^2$-Verteilung
 
 ```{r}
@@ -685,10 +658,56 @@ ggplot(chi_dist, aes(x,v,fill=dist, ymin=0, ymax=v)) +
   labs(x = 'Werte', y = 'Dichte') 
 ```
 
-## F-Verteilung
+Der $\chi^2$-Test tritt oft im Zusammenhang mit Testungen von Varianzen auf. Die Herleitung der $\chi^2$-Verteilung stammt aus der Normalverteilung, da die Summe von $n$ quadrierten, standardnormalverteilten Variablen einer $\chi^2$-Verteilung mit $n$ Freiheitgraden folgt.
+
+\begin{equation*}
+Q = \sum_{i=1}^n X_i^2 \sim \chi^2(n \text{ Freiheitsgraden})
+\end{equation*}
+
+Der Erwartungswert einer $\chi^2$-verteilten Zufallsvariable mit $df = k$ Freiheitsgraden ist $X$ ist $E[X] = k$ mit einer Varianz $Var(X) = 2k$.
+
+## t-Verteilung
+
+Die t-Verteilung ist in ihrem Aussehen der Normalverteilung sehr ähnlich. Es handelt sich um eine symmetrische Verteilung. Sie hat allerdings immer den Erwartungswert $E[X] = 0$. Die t-Verteilung hat nur einen Parameter, die Freiheitsgrade $df$. Die Freiheitsgrade bestimmen wie stark die Flanken der Verteilung abfallen. In @fig-stats-dist-t-dist-01 die t-Verteilungen mit $df = \{1, 3, 10\}$ abgebildet.
 
 ```{r}
-#| fig.cap: "Beispiele für verschiedene Dichtefunktion der F-Verteilung."
+#| fig-cap: "Beispiel für verschiedene Dichtefunktionen der t-Verteilung"
+#| label: fig-stats-dist-t-dist-01
+
+n_fig_pts <- 130
+t_dist <- tibble(
+  x = seq(-5,5,length.out=n_fig_pts),
+  t1 = dt(x,1),
+  t3 = dt(x,3),
+  t10 = dt(x,10)
+) %>% tidyr::pivot_longer(-x, names_to='dist', values_to='v')
+ggplot(t_dist, aes(x,v,fill=dist, ymin=0, ymax=v)) +
+  geom_ribbon(alpha=0.3) +
+  geom_line() + 
+  scale_fill_discrete("Verteilungen",
+                      breaks = c('t1', 't3', 't10'),
+                      labels = c(expression(df==1),
+                                 expression(df==3),
+                                 expression(df==10))) +
+  labs(x = 'Werte', y = 'Dichte') 
+```
+
+Wir können erkennen, dass die t-Verteilung mit $df = 1$ mehr Wahrscheinlichkeitsmaße in den Enden hat als die Verteilung mit $df = 10$. D.h., wenn die Anzahl der Freiheitsgrade größer ist, ist die t-Verteilung stärker um den Erwartungswert konzentriert.
+
+Die t-Verteilung wird oft verwendet wenn neben dem Erwartungswert $\mu$ auch die Varianz $\sigma^2$ anhand der Stichprobe bestimmt wird. Formal ist die t-Verteilung definiert als der Quotient einer Standardnormalverteilten und einer $\chi^2$-verteilten Zufallsvariable.
+
+\begin{equation*}
+t_{df} = \frac{Z}{\sqrt{\chi^2/df}}
+\end{equation*}
+
+
+## F-Verteilung
+
+Eine weitere Verteilung die uns oft begegnen wird, ist die F-Verteilung.
+
+```{r}
+#| label: fig-stats-dist-fdistex
+#| fig-cap: "Beispiele für verschiedene Dichtefunktion der F-Verteilung."
 
 chi_dist <- tibble(
   x = seq(0, 10, length.out=n_fig_pts),
@@ -707,5 +726,37 @@ ggplot(chi_dist, aes(x,v,fill=dist, ymin=0, ymax=v)) +
   labs(x = 'Werte', y = 'Dichte') 
 ```
 
+Formal berechnet sich die F-Verteilung über das Verhältnis zweier $\chi^2$-Verteilungen mit Freiheitsgraden $\text{df}_1$ und $\text{df}_2$. Formal:
 
+### Zusammenfassung
 
+Insgesamt fließen alle Verteilungen mit denen wir uns beschäftigen aus der Normalverteilung, was ihre zentrale Rolle in der Statistik erklärt (siehe @fig-stats-dist-distributions).
+
+```{mermaid}
+%%| fig-cap: "Zusammenhang der verschiedenen Verteilungen"
+%%| label: fig-stats-dist-distributions
+
+erDiagram
+    Normalverteilung ||--o{ Chiquadrat : erzeugt
+    Normalverteilung {
+        mu Mittelwert
+        sigma Standardabweichung
+    }
+    Chiquadrat ||--o{ F-Verteilung : erzeugt
+    Chiquadrat {
+        df Freiheitsgrade
+    }
+    F-Verteilung {
+        df1 Freiheitsgrade
+        df2 Freiheitsgrade
+    }
+    Normalverteilung ||--o{ Standardnormalverteilung : "erzeugt"
+    Standardnormalverteilung ||--o{ t-Verteilung : erzeugt
+    Chiquadrat ||--|{ t-Verteilung : erzeugt
+    t-Verteilung {
+        df Freiheitsgrade
+    }
+   
+```
+
+In den folgenden Ausführungen werden wir sehen, dass der Großteil der Statistik mit der wir uns auseinandersetzen darin besteht Werte anhand einer Stichprobe zu berechnen die wir mit uns bekannten theoretischen Verteilungen in Beziehung setzen können. Im Fall des Kleine Welt Problems konnten wir die Eigenschaften der auf der Stichprobe berechneten Werte vollständig untersuchen, da wir Kenntnis über die gesamte Population hatten. Dies ist in der Regel nicht der Fall. Um trotzdem zu rationalen Entscheidungen und Erkenntnissen über eine Population zu kommen versuchen wir daher zwischen unserer beobachteten Stichprobe und bekannten theoretischen Verteilung eine Beziehung herzuleiten. Dies geschieht in den meisten Fällen durch bestimmte Annahmen.
