@@ -622,7 +622,12 @@ $$
 
 In Worten besagt der Zentrale Grenzwertsatz, dass egal welche Ursprungsform die Verteilung einer Zufallsvariablen $X$ hat, wenn die Stichprobengröße gegen unendlich geht, die konvergiert die Differenz des Stichprobenmittelwerts und des Mittelwert der Verteilung geteilt durch den Stichprobenstandardfehler gegen die Standardnormalverteilung. Grenzwertsätz sind manchmal etwas schwierig zu interpretieren, da hier noch keine Aussage gemacht wird, wie groß die Stichprobe sein muss, damit diese Abschätzung valide ist. In der Praxis wird oft ab einer *gefühlt* großen Stichproben diese Abschätzung als zulässig angesehen. 
 
+In @fig-stats-dist-cltsim sind die Verteilungen drei Simulationen von binomialverteilten Zufallsstichproben der Größe $n = \{5, 30, 50\}$ abgebildet. Jede Simulation ist $400$ durchgeführt worden.
+
 ```{r}
+#| label: fig-stats-dist-cltsim
+#| fig-cap: "Simulation von derVerteilung von Mittelwerten aus binomialverteilten Zufallsstichproben mit $n = \\{5, 30, 50\\}$ und der Standardnormalverteilung."
+
 foo <- function(n_sim = 400, n = 30, k = 10, p = 0.5) tibble(
   x = n,
   y = replicate(n_sim, mean(rbinom(n, k, p))))
@@ -636,10 +641,15 @@ ggplot(d_b, aes(z)) +
   facet_grid(~x)
 ```
 
+Wir sehen, dass bei einer Stichprobengröße von $n = 30$ die Standardnormalverteilung schon eine passende Nährung der Stichprobenverteilung liefert. 
+
 ## $\chi^2$-Verteilung
 
+Als Nächstes lernen wir die $\chi^2$-Verteilung kennen. Die $\chi^2$-Verteilung hat Gegensatz zur Normalverteilung einen rein positiven Definitionsbereich. D.h. die $chi^2$-Verteilung ist nur auf positiven Werten definiert bzw. hat eine Dichte $>0$. Die $\chi^2$-Verteilung wird über einen Parameter den Freiheitsgrade $df$ parameterisiert. D.h. wie auch die Normalverteilung handelt es sich bei der $\chi^2$-Verteilung um eine Familien von Verteilungen. In @fig-stats-dist-chisq sind verschiedene $\chi^2$-Verteilungen für die Freiheitsgrade $df = \{1,3,5\}$ abgebildet.
+
 ```{r}
-#| fig.cap: "Beispiele für verschiedene Dichtefunktion der $\\chi^2$-Verteilung."
+#| fig-cap: "Beispiele für verschiedene Dichtefunktion der $\\chi^2$-Verteilung."
+#| label: fig-stats-dist-chisq
 
 chi_dist <- tibble(
   x = seq(0, 10, length.out=n_fig_pts),
@@ -658,7 +668,26 @@ ggplot(chi_dist, aes(x,v,fill=dist, ymin=0, ymax=v)) +
   labs(x = 'Werte', y = 'Dichte') 
 ```
 
-Der $\chi^2$-Test tritt oft im Zusammenhang mit Testungen von Varianzen auf. Die Herleitung der $\chi^2$-Verteilung stammt aus der Normalverteilung, da die Summe von $n$ quadrierten, standardnormalverteilten Variablen einer $\chi^2$-Verteilung mit $n$ Freiheitgraden folgt.
+Wie wir in @fig-stats-dist-chisq erkennen können, ändert die $\chi^2$-Verteilung in Abhängigkeit von den Freiheitsgraden ihre Form relativ stark. Mit zunehmenden Freiheitsgeraden, ähnelt die Form allerdings immer mehr derjenigen einer Normalverteilung. In @fig-stats-dist-chisqnorm sind einer $\chi^2$-Verteilung mit $df = 30$ und einer Normalverteilung mit $\mu = 30, \sigma^2 = 60$ abgebildet.
+
+```{r}
+#| fig-cap: "Vergleich der Dichten für einer $\\chi^2$-Verteilung mit $df = 30$ und einer Normalverteilung mit $\\mu=30, \\sigma^2=60$"
+#| label: fig-stats-dist-chisqnorm
+x <- seq(5, 55, length.out=100)
+df <- tibble(x, p_c = dchisq(x, 30), p_n = dnorm(x, 30, sqrt(60))) |> 
+  tidyr::pivot_longer(cols=c(p_c,p_n), names_to='dist', values_to='p')
+ggplot(df, aes(x,p, fill=dist)) + 
+  geom_line(color='black') +
+  geom_ribbon(aes(ymin=0,ymax=p), alpha=.5) +
+  scale_fill_discrete('Verteilung',labels = c(
+    expression(chi[30]^2),
+    expression(paste('Normal ', mu==30)))) +
+  labs(x = 'Werte', y = 'Dichte')
+```
+
+Wir können erkennen, dass sich die Verteilungen schon relativ gut ähneln, wobei die $\chi^2$-Verteilung nicht vollständig symmetrisch ist.
+
+Der $\chi^2$-Test tritt oft im Zusammenhang mit Testungen von Varianzen auf. Die Herleitung der $\chi^2$-Verteilung stammt tatsächlich aus der Normalverteilung, da die Summe von $n$ quadrierten, standardnormalverteilten Variablen einer $\chi^2$-Verteilung mit $n$ Freiheitgraden folgt.
 
 \begin{equation*}
 Q = \sum_{i=1}^n X_i^2 \sim \chi^2(n \text{ Freiheitsgraden})
@@ -668,7 +697,7 @@ Der Erwartungswert einer $\chi^2$-verteilten Zufallsvariable mit $df = k$ Freihe
 
 ## t-Verteilung
 
-Die t-Verteilung ist in ihrem Aussehen der Normalverteilung sehr ähnlich. Es handelt sich um eine symmetrische Verteilung. Sie hat allerdings immer den Erwartungswert $E[X] = 0$. Die t-Verteilung hat nur einen Parameter, die Freiheitsgrade $df$. Die Freiheitsgrade bestimmen wie stark die Flanken der Verteilung abfallen. In @fig-stats-dist-t-dist-01 die t-Verteilungen mit $df = \{1, 3, 10\}$ abgebildet.
+Die t-Verteilung ist in ihrem Aussehen der Normalverteilung sehr ähnlich. Bei der t-Verteilung handelt sich ebenfalls um eine symmetrische Verteilung, die allerdings immer den Erwartungswert $E[X] = 0$. Die Form der t-Verteilung wird über einen Parameter, die Freiheitsgrade $df$, bestimmt. Die Freiheitsgrade beeinflussen dabei wie stark die Flanken der Verteilung abfallen. In @fig-stats-dist-t-dist-01 sind die t-Verteilungen mit den Freiheitsgraden $df = \{1, 3, 10\}$ abgebildet.
 
 ```{r}
 #| fig-cap: "Beispiel für verschiedene Dichtefunktionen der t-Verteilung"
@@ -692,7 +721,7 @@ ggplot(t_dist, aes(x,v,fill=dist, ymin=0, ymax=v)) +
   labs(x = 'Werte', y = 'Dichte') 
 ```
 
-Wir können erkennen, dass die t-Verteilung mit $df = 1$ mehr Wahrscheinlichkeitsmaße in den Enden hat als die Verteilung mit $df = 10$. D.h., wenn die Anzahl der Freiheitsgrade größer ist, ist die t-Verteilung stärker um den Erwartungswert konzentriert.
+Wir können erkennen, dass die t-Verteilung mit $df = 1$ mehr Wahrscheinlichkeitsmasse in den Enden hat als die Verteilung mit $df = 10$. Man bezeichnet sie mit die Verteilung hat schwerer Enden was ausdrückt, dass die Varianz der Verteilung größer ist. 
 
 Die t-Verteilung wird oft verwendet wenn neben dem Erwartungswert $\mu$ auch die Varianz $\sigma^2$ anhand der Stichprobe bestimmt wird. Formal ist die t-Verteilung definiert als der Quotient einer Standardnormalverteilten und einer $\chi^2$-verteilten Zufallsvariable.
 
@@ -700,10 +729,33 @@ Die t-Verteilung wird oft verwendet wenn neben dem Erwartungswert $\mu$ auch die
 t_{df} = \frac{Z}{\sqrt{\chi^2/df}}
 \end{equation*}
 
+In @fig-stats-dist-tnorm sind eine Standarnormalverteilung $\Phi(x)$ und eine t-Verteilung mit $df = 3$ abgebildet.
+
+```{r}
+#| fig-cap: "Vergleich der Standardnormalverteilung (rot) mit einer t-Verteilung mit $df = 3$ (grün)."
+#| label: fig-stats-dist-tnorm
+
+df_tn <- tibble(
+  x = seq(-5,5,length.out=100),
+  t = dt(x, 3),
+  n = dnorm(x)
+) |> pivot_longer(c(t,n), names_to = 'dist', values_to = 'p')
+ggplot(df_tn, aes(x,p,fill=dist)) +
+  geom_ribbon(aes(ymin=0, ymax=p), alpha=.5) +
+  geom_line() +
+  scale_fill_discrete('Verteilung',
+                      labels=c(
+                        expression(Phi(X)),
+                        expression(t[3])
+                      )) +
+  labs(x = 'Werte', y = 'Dichte')
+```
+
+Wir können wiederum erkennen, dass die t-Verteilung schwerere Enden als die Standardnormalverteilung hat.
 
 ## F-Verteilung
 
-Eine weitere Verteilung die uns oft begegnen wird, ist die F-Verteilung.
+Eine weitere Verteilung die uns oft begegnen wird, ist die F-Verteilung. Ähnlich wie die $\chi^2$-Verteilung, hat die $F$-Verteilung auch nur einen positiven Definitionsbereich. Die Familie der $F$-Verteilungen ist mittels zweier Parameter spezifiziert $F(m,n)$. Diese werden als ebenfalls als Freiheitsgrade $m = df_1$ und $n = df_2$ bezeichnet.
 
 ```{r}
 #| label: fig-stats-dist-fdistex
@@ -726,11 +778,22 @@ ggplot(chi_dist, aes(x,v,fill=dist, ymin=0, ymax=v)) +
   labs(x = 'Werte', y = 'Dichte') 
 ```
 
-Formal berechnet sich die F-Verteilung über das Verhältnis zweier $\chi^2$-Verteilungen mit Freiheitsgraden $\text{df}_1$ und $\text{df}_2$. Formal:
+Wie wir in @fig-stats-dist-fdistex sehen, ändert sich die Form der $F$-Verteilung relativ stark in Abhängigkeit von den Freiheitsgraden. Formal berechnet sich die F-Verteilung als das Verhältnis zweier $\chi^2$-Verteilungen mit Freiheitsgraden $\text{df}_1$ und $\text{df}_2$. 
 
-### Zusammenfassung
+\begin{equation*}
+F_{df_1,df_2} = \frac{\chi_{df_1}^2/df_1}{\chi_{df_2}^2/df_2}
+\end{equation*}
 
-Insgesamt fließen alle Verteilungen mit denen wir uns beschäftigen aus der Normalverteilung, was ihre zentrale Rolle in der Statistik erklärt (siehe @fig-stats-dist-distributions).
+Der Erwartungswert berechnet sich nach $E[F_{df_1,df_2}] = \frac{df_2}{df_2-2}$. Wenn eine Zufallsvariable $X$ einer $t$-Verteilung mit $n$ Freiheitgraden folgt, dann folgt $X^2$ einer $F$-Verteilung mit $df_1 = 1, df_2 = n$ Freiheitsgraden.
+
+\begin{equation*}
+X \sim t_{df} \Rightarrow X^2 \sim F(1,df)
+\end{equation*}
+
+
+## Zusammenfassung
+
+Insgesamt gehen alle Verteilungen mit denen wir uns beschäftigen auf die Normalverteilung zurück. Das betont noch einmal die zentrale Rolle der Normalverteilung in der Statistik (siehe @fig-stats-dist-distributions).
 
 ```{mermaid}
 %%| fig-cap: "Zusammenhang der verschiedenen Verteilungen"
@@ -746,6 +809,7 @@ erDiagram
     Chiquadrat {
         df Freiheitsgrade
     }
+    Binomialverteilung ||..o{ Standardnormalverteilung: "Mittelwert ZGS" 
     F-Verteilung {
         df1 Freiheitsgrade
         df2 Freiheitsgrade
@@ -755,6 +819,10 @@ erDiagram
     Chiquadrat ||--|{ t-Verteilung : erzeugt
     t-Verteilung {
         df Freiheitsgrade
+    }
+    Binomialverteilung {
+        p Wahrscheinlichkeit
+        n Wiederholungen
     }
    
 ```
