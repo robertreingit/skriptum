@@ -19,13 +19,15 @@ p <- ggplot(jump, aes(v_ms, jump_m)) + geom_point() +
        y = 'Sprungweite[m]') 
 ```
 
-Wenn ein einfaches lineares Modell gefittet wurde ist eine zentrale Frage welche Vorhersagen anhand des Modell getroffen werden können. Die Vorhersagen $\hat{y}_i$ liegen auf der vorhergesagten Regressionsgerade und berechnen sich nach dem Modell für einen gegeben $x$-Wert. 
+Wenn ein einfaches lineares Modell gefittet wurde, ist eine zentrale Fragestellung welche Vorhersagen anhand des Modells getroffen werden können. Wir hatten schon vorher gesehen, dass Vorhersagen mittels eines *hats* über der Variable angezeigt werden. Beim einfachen linearen Regressionmodell liegen die vorhergesagten Werte $\hat{y}_i$ auf der berechneten Regressionsgerade. Da die Regressionsgerade anhand des Modells berechnet wird, berechnet sich der Werte $\hat{y}_i$ für einen gegeben $x$-Wert nach. 
 
-$$
+\begin{equation}
 \hat{y} = \hat{\beta_0} + \hat{\beta_0} x
-$$
+\end{equation}
 
-Wie schon mehrfach besprochen unterliegt die Regressionsgerade inherent der Unsicherheit bezüglich der geschätzen Modellkoeffizienten $\hat{\beta}_0$ und $\hat{\beta}_1$. Diese Unsicherheit überträgt sich auf die geschätzen Werte  $\hat{y}_i$ und muss daher bei deren Interpretation berücksichtigt werden.
+Wie schon mehrfach besprochen ist die Regressionsgerade inherent unsicher. Wir haben Unsicherheiten bezüglich der geschätzen Modellkoeffizienten $\hat{\beta}_0$ und $\hat{\beta}_1$ und diese Unsicherheit überträgt sich daher auf die geschätzen Werte $\hat{y}_i$. Dies Unsicherheit muss daher bei deren Interpretation der Werte berücksichtigt werden.
+
+### Berechnung von $\hat{y}_i$ in `R`
 
 In @fig-pred-01 sind die bereits behandelten Sprungdaten gegen die Anlaufgeschwindigkeiten zusammen mit der Regressionsgeraden und vorhergesagten Werten (rot) abgetragen.
 
@@ -49,7 +51,7 @@ In `R` können die vorhergesagten Werte des mittels `lm()` gefitteten Modells mi
 predict(mod)[1:5] 
 ```
 
-Wir haben uns hier nur die ersten fünf Werte ausgeben lassen, da nur demonstriert werden soll wie die `predict()`-Funktion angewendet werden kann. Um eine Anwendung zu geben, so können mittels `predict()` die Residuen auch von Hand ohne die `resid()`-Funktion erhalten werden.
+Der Übersicht halber haben uns nur die ersten fünf Werte ausgeben lassen. Als kleine Anwendung, können wir mittels `predict()` die Residuen auch von Hand ohne die `resid()`-Funktion berechnen.
 
 ```{r}
 #| echo=T
@@ -58,12 +60,9 @@ Wir haben uns hier nur die ersten fünf Werte ausgeben lassen, da nur demonstrie
 resid(mod)[1:5]
 ```
 
-Wiederum nur zur Demonstration die ersten fünf Wert um die Äquivalenz der beiden Methoden zu demonstrieren.
-
 Meistens liegt das Interesse jedoch weniger auf den vorhergesagten Werten $\hat{y}_i$ für die gemessenen Werte, sondern es sollen Werte vorhergesagt werden für $x$-Werte die nicht im Datensatz enthalten sind. Operational ändert sich nichts, es wird immer noch das gefittete Modell verwendetet und es müssen lediglich neue $x$-Werte übergeben werden.
 
 In `R` kann dies mittels des zweite Parameter in `predict()` erreicht werden. Soll zum Beispiel die Sprungweite für eine Anlaufgeschwindigkeit von $v = 11.5[m/s]$ berechnen werden, muss zunächst ein neues `tibble()` erstellt werden, welches den gewünschten $x$-Wert enthält. Dabei muss der Spaltenname in dem neuen `tibble()` demjenigen im Original-`tibble()` entsprechen. Ansonsten funktioniert die Anwendung von `predict()` nicht.
-
 
 ```{r}
 #| echo: true
@@ -84,7 +83,7 @@ D.h., bei einer Anlaufgeschwindigkeit von $v = 11.5[m/s]$ ist anhand des Modells
 
 ## Unsicherheit in der Vorhersage 
 
-Wie schon angesprochen ist unser Modell natürlich mit Unsicherheiten behaftet. Diese drücken sich in den Standardfehler für die beiden Koeffizienten $\hat{\beta_0}$ und $\hat{\beta_1}$ (siehe @tbl-pred-01).
+Wie schon angesprochen ist unser Modell mit Unsicherheiten behaftet. Diese drücken sich in den Standardfehler für die beiden Koeffizienten $\hat{\beta_0}$ und $\hat{\beta_1}$ aus (siehe @tbl-pred-01).
 
 ```{r}
 #| label: tbl-pred-01
@@ -98,44 +97,46 @@ broom::tidy(mod) |> select(term, estimate, "std.error") |>
   )
 ```
 
-
 Der vorhergesagte Wert $\hat{y}$ ist daher für sich alleine ist noch nicht brauchbar, da auch Informationen über dessen Unsicherheit notwendig sind um die Ergebnisse korrekt zu interpretieren.
 
 Es können zwei unterschiedliche Anwendungsfälle voneinander unterschieden werden. 
 
-1. Der mittlere, erwartete Wert $\hat{\bar{y}}_{neu}$
+1. Der mittlere, erwartete Wert $\hat{\bar{y}}_{neu}$ (auch $\hat{E}[y|x]$)
 2. Die Vorhersage eines einzelnen Wertes  $\bar{y}_{neu}$
 
-Im konkreten Fall werden damit zwei unterschiedliche Fragestellungen beantwortet. Im 1. Fall lautet die Frage, ich habe eine Trainingsgruppe und möchte wissen was der mittlere Wert der Gruppe anhand des Modells ist, wenn alle eine bestimmte Anlaufgeschwindigkeit $v_{neu}$ haben. Im 2. Fall lautet die Frage welche Weite eine einzelne Athletin für die Anlaufgeschwindigkeit $v_{neu}$ springen sollte. In beiden Fällen werden keiner genau den Wert des Regressionsmodells treffen, aber im 1. Fall der Gruppe werden sich Streuungen nach oben bzw. nach unten gegenseitig im Schnitt ausbalancieren während im 2. Fall der einzelnen Athletin dies nicht der Fall ist. Daher hat die Vorhersage im 2. Fall eine höhere Unsicherheit. Diese Unterschied sollte sich dementsprechend in den Varianzen der beiden Vorhersagen wiederspiegeln.
+Im konkreten Fall werden damit zwei unterschiedliche Fragestellungen beantwortet. Im 1. Fall lautet die Frage, ich habe eine Trainingsgruppe und möchte wissen was der mittlere Wert der Gruppe anhand des Modells ist, wenn alle eine bestimmte Anlaufgeschwindigkeit $v_{neu}$ haben. Im 2. Fall lautet die Frage welche Weite eine einzelne Athletin für die Anlaufgeschwindigkeit $v_{neu}$ springen sollte. In beiden Fällen werden die Athleten nicht genau den Wert des Regressionsmodells treffen. Heuristisch können wir aber einsehen, dass im 1. Fall der Gruppenvorhersage die auftretenden Streuungen nach oben bzw. nach unten sich gegenseitig im Schnitt ausbalancieren sollten. Im 2. Fall der einzelnen Athletin ist dies nicht der Fall. Daher ist die Vorhersage im 2. Fall mit einer höhere Unsicherheit behatete. Diese Unterschied sollte sich dementsprechend in den Varianzen der beiden Vorhersagen wiederspiegeln.
 
-Wie bereits erwähnt, der vorhergesagte Wert $\hat{y}_{neu}$ ist in beiden Fällen gleich und entsprecht der oben beschriebenen Methode anhand des Modell $y_{neu} = \hat{\beta}_0 + \hat{\beta}_1 \times x_{\text{neu}}$. 
+Der vorhergesagte Wert $\hat{y}_{neu}$ ist in beiden Fällen gleich und entspricht der oben beschriebenen Methode anhand des Modell $y_{neu} = \hat{\beta}_0 + \hat{\beta}_1 \times x_{\text{neu}}$.
 
-
-Für den erwarteten Mittelwert errechnet sich die Varianz nach:
+Die Varianz für den ersten Fall, für den erwarteten Mittelwert errechnet nach:
 
 \begin{equation}
 Var(\hat{\bar{y}}_{neu}) = \hat{\sigma}^2 \left[\frac{1}{n} + \frac{(x_{neu} - \bar{x})^2}{\sum(x_i - \bar{x})^2}\right] = \hat{\sigma}_{\hat{\bar{y}}_{neu}}^2
+\label{eq-slm-pred-hatbary}
 \end{equation}
 
-Das dazugehörige Konfidenzintervall errechnet sich danach mittels:
+Das dazugehörige Konfidenzintervall errechnet sich mittels:
 
 \begin{equation}
 \hat{\bar{y}}_{neu} \pm q_{t(1-\alpha/2;n-2)} \times \hat{\sigma}_{\hat{\bar{y}}_{neu}}
 \end{equation}
 
-Die Varianz für die Vorhersage eines einzelnen Wertes errechnet sich:
+Die Varianz für die Vorhersage eines einzelnen Wertes errechnet sich dagegen nach:
 
 \begin{equation}
 Var(\hat{y}_{neu}) = \hat{\sigma}^2 \left[1 + \frac{1}{n} + \frac{(x_{neu} - \bar{x})^2}{\sum(x_i - \bar{x})^2}\right] = \hat{\sigma}^2 + \hat{\sigma}_{\hat{\bar{y}}_{neu}}^2 = \hat{\sigma}_{\hat{y}_{neu}}^2
+\label{eq-slm-pred-haty}
 \end{equation}
 
-Was wiederum zu dem folgenden Konfidenzintervall führt:
+In Formel \eqref{eq-slm-pred-haty} sehen wir, dass sich die Varianz für einen einezelnen vorhergesagten Wert $\hat{y}$ aus zwei Komponenten zusammensetzt. Einmal die Varianz aufgrund des vorhgesagten Mittelwerts und zusätzlich die Varianz auf Grund des Modells $\sigma^2$. Insgesamt für das zu dem folgenden Konfidenzintervall:
 
 \begin{equation}
 \hat{y}_{neu} \pm q_{t(1-\alpha/2;n-2)} \times \hat{\sigma}_{\hat{y}_{neu}}
 \end{equation}
 
-In beiden Fällen ist der Term
+Da wir $\sigma^2$ in den seltensten Fällen kennen, sondern ebenfalls anhand der Daten schätzen, wird der bereits besprochene Schätzer $\hat{\sigma}^2 = MSE$ verwendet.
+
+In beiden Berechnungen (Formeln \eqref{eq-slm-pred-haty} und \eqref{eq-slm-pred-hatbary}) ist der folgende Term enthalten:
 
 $$
 \frac{(x_{neu} - \bar{x})^2}{\sum(x_i - \bar{x})^2}
@@ -143,44 +144,75 @@ $$
 
 enthalten. Anhand des Zählers kann abgeleitet werden, dass die Unsicherheit der Vorhersage mit dem Abstand vom Mittelwert der $x$-Werte zunimmt. Rein heuristisch macht dies Sinn, da davon ausgegangen werden kann, dass um den Mittelwert der $x$-Werte auch die meiste Information über $y$ vorhanden ist und dementsprechend umso weiter die Werte sich vom $\bar{x}$ entfernen die Information abnimmt. Im Nenner ist wiederum wie auch beim Standardfehler $\sigma_{\beta_1}$ des Steigungskoeffizienten $\beta_1$ zu sehen, dass die Varianz abnimmt mit der Streuung der $x$-Werte. Daher, wenn eine Vorhersage in einem bestimmten Bereich von $x$-Werten durchgeführt werden soll, dann sollte darauf geachtet werden möglichst diesen Bereich auch zu samplen um die Unsicherheit so klein wie möglich zu halten.
 
+## Vorhersagen in `R` mit `predict()` (continued)
 
-## Vorhersagen in R mit `predict()`
+In `R` kann die Art des Konfidenzintervalls für die Vorhersage mittels des dritten Arguments zu `predict()` bestimmt werden. Dabei steht `confidence` für das Konfidenzintervall der mitteleren Vorhersage und `prediction` für das Konfidenzintervall eines einzelnen Wertes. 
 
 ### Erwarteter Mittelwert
 ```{r}
-#| echo=T
+#| echo: true
+
 df <- data.frame(v_ms = 11.5) # oder tibble(v_ms = 11.5)
 predict(mod, newdata = df, interval = 'confidence')
 ```
 
 ### Individuelle Werte
-```{r, echo=T}
+```{r}
+#| echo: true
+ 
 predict(mod, newdata = df, interval = 'prediction')
 ```
 
-## Konfidenzintervalle graphisch
+Wir sehen hier, das das Konfidenzintervall, wie erwartet für den individuellen Wert $\hat{y}$ weiter ist, als das Konfidenzband für den mittleren Wert $\hat{\bar{y}}$.
+
+### Konfidenzband für die Regressiongerade
+
+In oftmals ist auch ein Konfidenzband für die gesamte Regressiongerade von Interesse. In diesem Fall kann das Konfidenzband über die folgende Formel nach der Working-Hotelling-Methode abgeschätzt werden.
+
+\begin{equation}
+\bar{Y} \pm W \sigma_{\hat{\bar{Y}}_{new}}
+\label{eq-slm-pred-hotelling}
+\end{equation}
+
+Mit $W^2 = 2 F(1-\alpha,2, n-2)$, wobei $F(1-\alpha,2,n-2)$ die Quartile der $F$-Verteilung mit $(2,n-2)$ Freiheitsgraden ist.
+
+In @fig-slm-pred-confband ist das Konfidenzband nach Formel \eqref{eq-slm-pred-hotelling} abgetragen.
 
 ```{r}
+#| label: fig-slm-pred-confband
+#| fig-cap: "Konfidenzbänder für $\\hat{E}[y|x]$ und $\\hat{y}$."
+ 
 newdata <- data.frame(v_ms = seq(6, 14, length.out = 30))
-ci_co <- predict(mod, newdata = newdata, interval = 'confidence')
-newdata$y_hat <- ci_co[,1]
-newdata$ci_low <- ci_co[,2]
-newdata$ci_up <- ci_co[,3]
-newdata$jump_m <- newdata$y_hat 
-ci_pr <- predict(mod, newdata = newdata, interval = 'predict')
-newdata <- newdata %>% dplyr::mutate(y_hat = ci_co[,1],
-                              ci_low = ci_co[,2], ci_up = ci_co[,3],
-                              pr_low = ci_pr[,2], pr_up = ci_pr[,3])
-p + geom_line(data = newdata, aes(x = v_ms, y = y_hat)) +
-  geom_abline(intercept = coef(mod)[1], slope = coef(mod)[2])  +
-  geom_ribbon(data = newdata, aes(x = v_ms, ymin = pr_low, ymax = pr_up), alpha = .5) + 
-  geom_ribbon(data = newdata, aes(ymin = ci_low, ymax = ci_up), alpha = .5, fill='red') +
+f_q <- sqrt(2*qf(0.95, 2, nrow(jump) - 2))
+x_bar <- mean(jump$v_ms)
+X_dev <- (newdata$v_ms - x_bar)**2/sum((jump$v_ms - x_bar)**2)
+s_ybar <- sqrt(sigma(mod)**2 * (1/nrow(jump) + X_dev))
+newdata <- newdata |>
+  dplyr::mutate(
+    jump_m = predict(mod, newdata = newdata),
+    y_low = jump_m - f_q*s_ybar,
+    y_up  = jump_m + f_q*s_ybar
+    )
+p + 
+  geom_line(data = newdata, aes(x = v_ms, y = jump_m)) +
+  geom_abline(intercept = coef(mod)[1], slope = coef(mod)[2]) +
+  geom_ribbon(data = newdata, aes(x = v_ms, ymin = y_low, ymax = y_up), alpha = .5) #+ geom_smooth(method='lm', alpha=.1, fill = 'red') +
   lims(x = c(6,12))
 ```
 
-Weiterführende Literatur sind @kutner2005
+Wir können sehen, das das Konfidenzband für Band gegen Ende der Werte breiter wird. Insbesondere wenn die Vorhersage außerhalb des Bereichs der beobachteten Daten geht, wird die Unsicherheit und damit das Band breiter.
 
-## $R^2$ und Root-mean-square
+Weiterführende Informationen findet ihr beispielsweise in [@kutner2005, S.52ff].
+
+## Die Modellgüte beurteilen 
+
+### Root-men-square $\hat{\sigma}^2$
+
+Wie wir bereits bei der betrachtung von Vorhersagen gesehen haben, ist die Verbundene Unsicherheit ursächlich in den Formeln \eqref{eq-slm-pred-haty} und \eqref{eq-slm-pred-hatbary} von der Residualvarianz $\sigma^2$ bzw. derem Schätzer $\hat{\sigma}^2 = MSE$ abhängig. Daher kann dieser Wert auch direkt als ein Kriterium der Modellgüte betrachtet werden. Insbesondere die Wurzel aus diesem Wert kann direkt interpretiert werden, da sie die gleichen Einheiten wie die abhängige Variable $y$ besitzt. Dabei ist weniger die absolute Höhe der Residualsvarianz von Interesse sondern immer in Bezug auf die konkrete Fragestellung.
+
+Im vorliegenden Fall haben wir beispielsweise für das Sprungbeispiel $\hat{sigma} = `r round(sigma(mod),2)` beobachtet. D.h. im Mittel liegen unser Modell knapp einen viertel Meter daneben. Ob eine derart große Abweichung das Modell unbrauchbar bei der Entscheidungsfindung ist, ist keine Entscheidung die über die Statistik getroffen werden kann, sondern diese Entscheidung muss durch die Anwenderin des Modell getroffen werden.
+
+### $R^2$ als Maß für die Modellgüte
 
 ```{r}
 set.seed(12)
@@ -196,7 +228,6 @@ simple$yshat <- paste('hat(y)[',1:n,']')
 
 ## Einfaches Modell
 
-\scriptsize
 ```{r}
 #| echo: true
 
