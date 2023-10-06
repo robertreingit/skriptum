@@ -332,7 +332,6 @@ round(cor(df),3)
 
 D.h. $X_1$ und $X_2$ korrelieren praktisch überhaupt nicht miteinander (Warum ist die Korrelation $r_{x_1x_2}$ nicht exakt $=0$). D.h. $X_1$ enthält keine Informationen über $X_2$ und dementsprechend sollte die beiden Beiträge zum Modell unabhängig voneinander sein.
 
-
 ## Was passiert wenn Prädiktoren stark miteinander korrelieren?
 
 Schauen wir uns nun einen neuen Datensatz an [Beispiel aus @kutner2005]. Im Rahmen einer Untersuchung sind Körperfettmessungen durchgeführt an $20$ Personen durchgeführt worden. Neben einer Gesamtkörpermessung wurde auch der Körperfettanteil am Oberarm, Unterarm und am Oberschenkel bestimmt. In @tbl-mlm-basics-bodyfat-01 ist ein Ausschnitt der Daten angebildet.
@@ -403,54 +402,90 @@ mat |> knitr::kable(
 )
 ```
 
-Wir sehen, dass hier die Koeffizienten sich sehr stark ändern in Abhängigkeit von welche anderen Variablen in dem Modell enthalten sind. Beispielsweise änder der Koeffizient für den Oberschenkel nicht nur seine Größe und auch sein Vorzeichen, je nachdem ob der Ober- oder der Unterarm oder beide im Modell enthalten sind.
+Wir sehen, dass hier die Koeffizienten sich sehr stark ändern in Abhängigkeit von welche anderen Variablen in dem Modell enthalten sind. Beispielsweise änder der Koeffizient für den Oberschenkel nicht nur seine Größe und auch sein Vorzeichen, je nachdem ob der Ober- oder der Unterarm oder beide im Modell enthalten sind. Wenn mehrer Variablen in einem Modell miteinander korrelieren, dann wird dies als Multikollinearität bezeichnet.
 
 
-## Multikollinearität^[informell nach @kutner2005 [pp. 407]]
+## Multikollinearität
+
+::: {#def-multicollinearity}
+## Multikollinearität
+
+Wenn in einem Modell Prädiktorvariablen miteinander korrelieren, dann wird dies als Multikollinearität \index{Multikollinearität} bezeichnet.
+
+:::
+
+Multikollinearität hat verschiedene Einflüsse auf das Modell die sich vor allem hinsichtlich der Stabilität der Koeffizienten auswirken, wenn Prädiktorvariablen aus dem Modell herausgenommen werden bzw. dazugenommen werden. Dazu beeinflusst Multikollinearität auch die Größe der Standardfehler der geschätzten Koeffizienten $\hat{\beta}_j$.
+
+Multikollinearität hat unter anderem die folgenden Effekte:
 
 - Große Änderungen in den Koeffizienten wenn Prädiktoren ausgelassen/eingefügt werden
 - Koeffizienten haben eine andere Richtung als erwartet
 - Hohe (einfache) Korrelationen zwischen Prädiktoren
 - Breite Konfidenzintervalle für "wichtige" Prädiktoren $b_j$ 
 
-$$
+Es lässt sich zeigen, dass die Varianz der geschätzen Modellkoefizienten $b_j$ die folgende Form hat (siehe Formel \eqref{eq-mlm-basics-varb_j}:
+
+\begin{equation}
 \widehat{\text{Var}}(b_j) = \frac{\hat{\sigma}^2}{(n-1)s_j^2}\frac{1}{1-R_j^2} 
-$$
+\label{eq-mlm-basics-varb_j}
+\end{equation}
 
+Der Term $R_j^2$ wird als multipler Korrelationskoeffizient bezeichnet und berechnet sich als der Determinationskoeffizienten der Prädiktorvariablen $x_i, i\neq j$ auf die Prädiktorvariable $x_j$. D.h. es wird ein Regressionsmodell gerechnet bei dem die Prädiktorvariable $x_j$ als abhängige Variable verwendet wird und mittels der anderen $p-1$ Präditkorvariablen modelliert wird.
 
-$R_j^2$ = Multipler Korrelationskoeffizient der Prädiktoren auf Prädiktorvariable $j$.
+Der zweiter Term in Formel \eqref{eq-mlm-basics-varb_j} $\frac{1}{1-R_j^2}$ wird als Variance Inflation Factor (VIF) \index{Variance Inflation Factor} bezeichnet. Anhand des VIF kann ein Modell relativ einfach, zumindest heuristisch, auf Multikollinearitäten überprüft werden. Dabei wird für jede Prädiktorvariable die VIF bestimmt. Manchmal wird in der Literatur auch die sogenannte Tolerance = $\frac{1}{VIF}$ betrachtet.
 
-## Variance Inflation Factor (VIF)
-
-$$
+\begin{equation*}
 \text{VIF}_j = \frac{1}{1-R_j^2}
-$$
+\end{equation*}
 
-\vspace{1cm}
+Üblicherweise wird der größte VIF Wert betrachtet um die Multikollinearität eines Modells zu bewerten.
 
 :::{.callout-tip}
 Wenn VIF > 10 ist, dann deutet dies auf hohe Multikollinearität hin.
 :::
 
-^[Manchmal wird auch Tolerance = $\frac{1}{VIF}$ betrachtet.]
+Hinsichtlich des Einflusses bzw. des Umgangs bei Multikollinearität muss unterschieden werden, welches Ziel die Modellierung verfolgt. Das Problem das durch die Multikollinearität entsteht ist, basiert darauf das das Modell nicht eindeutig zuordnen kann, welche der korrelierten Varible zuständig ist für die beobachteten Veränderungen in der abhängigen Variablen. Multikollinearität vermindert dabei nicht unsere Fähigkeit Mittelwerte $E[y|x]$ vorherzusagen oder einen guten Modellfit zu erhalten. Allerdings verkompliziert sich die Interpretation der Modellkoeffizienten $b_j$. Dadurch das die Prädiktorvariablen miteinander korrelieren, kann es beispielsweise gar nicht praktisch möglich sein die Variablen einzeln zu variieren, wodurch die Interpretation des Koeffizienten $b_j$ als die Veränderung von $y$ bei Veränderung von $x_j$ um eine Einheit problematisch wird. Weiterhin, dadurch das durch die Multikollinearität die Varianzen der Modelkoeffizienten vergrößert werden, kann es zu dem Fall kommen, dass ein Modellkoeffizienten $b_j$ statistisch nicht signifikant ist, obwohl eindeutig ein Zusammenhang zwischen $x_j$ und $y$ besteht. Zusätzlich, dadurch das die Modellkoeffizienten sich stark verändern können bei Veränderung des Modells ist deren Interpretation grundsätzlich problematisch. 
 
+### Variance Inflation Factor (VIF) in `R`
 
-## Variance Inflation Factor (VIF)
+In `R` können wir den VIF am einfachsten über zwei Funktionen berechnen. Einmal über die `vif()`-Funktion aus dem Paket `car`.
+
 ```{r}
 #| echo: true
 
 car::vif(mod_full) 
 ```
-^[car::vif berechnet generalized variance inflation factor wenn Prädiktoren Faktoren oder Polynome sind [@fox2011.] ]
 
-Üblicherweise wird der größte Wert betrachtet um die Multikollinearität zu bewerten.
-
-
-## Wenn Prädiktoren sich gegenseitig maskieren^[adaptiert nach @mcelreath2016]
+Eine weitere Möglichkeit besteht mittels der Funktion `check_collinearity()` aus dem `performance` Paket.
 
 ```{r}
-#| fig.height=2.5,
-#| fig.cap="x_pos maskiert den Einfluss von x_neg"
+#| echo: true
+#| eval : false
+
+performance::check_collinearity(mod_full)
+```
+
+```{r}
+#| label: tbl-mlm-basics-collin
+#| tbl-cap: "Ausgabe von `check_collinearity()`"
+
+performance::check_collinearity(mod_full) |>
+  knitr::kable(
+    booktabs = TRUE
+  )
+```
+
+In @tbl-mlm-basics-collin sehen wir, dass  `check_collinearity()` auch noch Konfidenzintervalle und besagte Tolerance ausgibt. In jedem Fall, sehen wir, dass wenn wir die Daumenregel $VIF > 10$ anwenden, wir hohe Multikollinearität in unserem Modell aufweisen, was auch die großen Veränderung in den Koeffizienten bei Hinzu- bzw. Entnahme der Prädiktorvariblen erkärt.
+
+## Verhältnis der Prädiktorvariblen $x_j$ untereinander
+
+Insgesamt sind aus der operativen Seite durch den Übergang von der einfachen zur multiplen Regression keine großen Neuerungen hinzugekommen. Allerdings müssen jetzt, wir schon bezüglich der Multikollinearität gesehen haben, das Verhältnis der Prädiktorvariablen $X_j$ untereinander näher betrachtet werden. Das folgenden Beispiel ist @mcelreath2016 entnommen und zeigt, dass sich Variablen auch gegenseitig maskieren können und wiederum große Veränderungen in den Modellkoeffizienten auftreten können, wenn Variablen hinzugenommen bzw. weggelassen werden.
+
+Um den Effekt der Maskierung leichter nachvollziehen zu können erstellen wir uns wieder einen einfachen Datensatz mit zwei Prädiktorvariablen $X_{pos}$ und $X_{neg}$. $X_{pos}$ ist positiv mit $Y$ korreliert, während $X_{neg}$ negativ mit $Y$ korreliert. Allerdings zeigen die beiden Variablen untereinander ebenfalls eine positive Korrelation. In @fig-mlm-basics-mask-01 ist die Korrelationsmatrize der drei Variablen abgebildet.
+
+```{r}
+#| fig-cap: "x_pos maskiert den Einfluss von x_neg"
+#| label: fig-mlm-basics-mask-01
 
 N <- 100
 set.seed(123)
@@ -462,41 +497,30 @@ df <- tibble(y, x_pos, x_neg)
 GGally::ggpairs(df) + theme(text = element_text(size = 10))
 ```
 
-## Wenn Prädiktoren sich gegenseitig maskieren
+In @tbl-mlm-basics-mask-02 sind die verschiedenen Modellkoeffizienten für wenn jeweils nur eine der Variablen in das Modell eingeht bzw. wenn beide Variablen im Modell enthalten sind.
 
 ```{r}
+#| label: tbl-mlm-basics-mask-02
+#| tbl-cap: "Koeffizienten und Standardfehler der unterschiedlichen Modelle."
+
 co_1 <- lm(y ~ x_pos, df)
 co_2 <- lm(y ~ x_neg, df)
-lm_tbl_knitr(co_1, long=F)
-```
-
-```{r}
-lm_tbl_knitr(co_2, long=F)
-```
-
-```{r}
 co_3 <- lm(y ~ x_pos + x_neg, df)
-lm_tbl_knitr(co_3, long=F)
+mat <- matrix(NA, nr = 3, nc = 3)
+foo <- function(mod) paste0('$', round(coef(mod),2), '\\pm ', round(sqrt(diag(vcov(mod))),2), '$')
+mat[1,1:2] <- foo(co_1) 
+mat[2,c(1,3)] <- foo(co_2) 
+mat[3,] <- foo(co_3)
+rownames(mat) <- c('pos','neg','pos + neg')
+mat |> knitr::kable(
+  booktabs = TRUE,
+  col.names = c('$\\beta_0 \\pm s_e$', '$\\beta_{pos} \\pm s_e$', '$\\beta_{neg} \\pm s_e$'),
+  escape = FALSE
+)
 ```
 
-## Multiple Regression
-
-Aus der einfachen Regression
-
-$$
-y_i = \beta_0 + \beta_1 x_i + \epsilon_i
-$$
-
-wird
-
-$$
-y_i = \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \dots + \beta_K x_{Ki} + \epsilon_i
-$$
-
-mit K Prädiktorvariablen und Multikollinearität.
-
+Wir können erkennen, dass die Größe der Koeffizienten wiederum stark davon abhängt welches Modell gefittet wird. Für das Modell mit nur dem positiven Prädiktor ist der Modellkoeffizient $b_{pos}$ auch nicht statistisch signifikant. Sondern erst wenn beide Variablen in dem Modell inkludiert sind ist der Koeffizient ebenfalls statistisch signifikant. Zusammenfassend ist es entsprechend wichtig dass bei der Modellierung theoretische Vorüberlegungen die relevanten Variablen identifizieren und nicht einfach nur hin und her probiert wird. Zumindest wenn es darum geht der größer der Koeffizienten auch inhaltliche Bedeutung zuzuweisen.
 
 ## Zum Nacharbeiten
 
 Die folgenden Texte eignen sich gut um die Inhalte noch einmal zu vertiefen. @pos_multiple_regression diskutiert noch mal eingehend was passiert wenn Variablen miteinander korrelieren und wie sich das auf die Schätzer für die Koeffizienten auswirkt. [@kutner2005, p.278-288] und [@fox2011, p.325-327] sind nochmal als Zusammenfassungen zu lesen.
-

@@ -415,13 +415,12 @@ div.csl-indent {
   <li><a href="#added-variable-plots" id="toc-added-variable-plots" class="nav-link" data-scroll-target="#added-variable-plots"><span class="header-section-number">15.2</span> Added-variable plots</a></li>
   <li><a href="#was-passiert-wenn-eine-prädiktorvariable-weggelassen-wird" id="toc-was-passiert-wenn-eine-prädiktorvariable-weggelassen-wird" class="nav-link" data-scroll-target="#was-passiert-wenn-eine-prädiktorvariable-weggelassen-wird"><span class="header-section-number">15.3</span> Was passiert wenn eine Prädiktorvariable weggelassen wird?</a></li>
   <li><a href="#was-passiert-wenn-prädiktoren-stark-miteinander-korrelieren" id="toc-was-passiert-wenn-prädiktoren-stark-miteinander-korrelieren" class="nav-link" data-scroll-target="#was-passiert-wenn-prädiktoren-stark-miteinander-korrelieren"><span class="header-section-number">15.4</span> Was passiert wenn Prädiktoren stark miteinander korrelieren?</a></li>
-  <li><a href="#multikollinearität" id="toc-multikollinearität" class="nav-link" data-scroll-target="#multikollinearität"><span class="header-section-number">15.5</span> Multikollinearität</a></li>
-  <li><a href="#variance-inflation-factor-vif" id="toc-variance-inflation-factor-vif" class="nav-link" data-scroll-target="#variance-inflation-factor-vif"><span class="header-section-number">15.6</span> Variance Inflation Factor (VIF)</a></li>
-  <li><a href="#variance-inflation-factor-vif-1" id="toc-variance-inflation-factor-vif-1" class="nav-link" data-scroll-target="#variance-inflation-factor-vif-1"><span class="header-section-number">15.7</span> Variance Inflation Factor (VIF)</a></li>
-  <li><a href="#wenn-prädiktoren-sich-gegenseitig-maskieren" id="toc-wenn-prädiktoren-sich-gegenseitig-maskieren" class="nav-link" data-scroll-target="#wenn-prädiktoren-sich-gegenseitig-maskieren"><span class="header-section-number">15.8</span> Wenn Prädiktoren sich gegenseitig maskieren</a></li>
-  <li><a href="#wenn-prädiktoren-sich-gegenseitig-maskieren-1" id="toc-wenn-prädiktoren-sich-gegenseitig-maskieren-1" class="nav-link" data-scroll-target="#wenn-prädiktoren-sich-gegenseitig-maskieren-1"><span class="header-section-number">15.9</span> Wenn Prädiktoren sich gegenseitig maskieren</a></li>
-  <li><a href="#multiple-regression" id="toc-multiple-regression" class="nav-link" data-scroll-target="#multiple-regression"><span class="header-section-number">15.10</span> Multiple Regression</a></li>
-  <li><a href="#zum-nacharbeiten" id="toc-zum-nacharbeiten" class="nav-link" data-scroll-target="#zum-nacharbeiten"><span class="header-section-number">15.11</span> Zum Nacharbeiten</a></li>
+  <li><a href="#multikollinearität" id="toc-multikollinearität" class="nav-link" data-scroll-target="#multikollinearität"><span class="header-section-number">15.5</span> Multikollinearität</a>
+  <ul class="collapse">
+  <li><a href="#variance-inflation-factor-vif-in-r" id="toc-variance-inflation-factor-vif-in-r" class="nav-link" data-scroll-target="#variance-inflation-factor-vif-in-r"><span class="header-section-number">15.5.1</span> Variance Inflation Factor (VIF) in <code>R</code></a></li>
+  </ul></li>
+  <li><a href="#verhältnis-der-prädiktorvariblen-x_j-untereinander" id="toc-verhältnis-der-prädiktorvariblen-x_j-untereinander" class="nav-link" data-scroll-target="#verhältnis-der-prädiktorvariblen-x_j-untereinander"><span class="header-section-number">15.6</span> Verhältnis der Prädiktorvariblen <span class="math inline">\(x_j\)</span> untereinander</a></li>
+  <li><a href="#zum-nacharbeiten" id="toc-zum-nacharbeiten" class="nav-link" data-scroll-target="#zum-nacharbeiten"><span class="header-section-number">15.7</span> Zum Nacharbeiten</a></li>
   </ul>
 </nav>
     </div>
@@ -974,26 +973,32 @@ Y_{\text{Körperfettanteil}} = \beta_0 + \beta_1 \cdot X_{\text{Oberarm}} + \bet
 </div>
 </div>
 </div>
-<p>Wir sehen, dass hier die Koeffizienten sich sehr stark ändern in Abhängigkeit von welche anderen Variablen in dem Modell enthalten sind. Beispielsweise änder der Koeffizient für den Oberschenkel nicht nur seine Größe und auch sein Vorzeichen, je nachdem ob der Ober- oder der Unterarm oder beide im Modell enthalten sind.</p>
+<p>Wir sehen, dass hier die Koeffizienten sich sehr stark ändern in Abhängigkeit von welche anderen Variablen in dem Modell enthalten sind. Beispielsweise änder der Koeffizient für den Oberschenkel nicht nur seine Größe und auch sein Vorzeichen, je nachdem ob der Ober- oder der Unterarm oder beide im Modell enthalten sind. Wenn mehrer Variablen in einem Modell miteinander korrelieren, dann wird dies als Multikollinearität bezeichnet.</p>
 </section>
 <section id="multikollinearität" class="level2" data-number="15.5">
-<h2 data-number="15.5" class="anchored" data-anchor-id="multikollinearität"><span class="header-section-number">15.5</span> Multikollinearität<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></h2>
+<h2 data-number="15.5" class="anchored" data-anchor-id="multikollinearität"><span class="header-section-number">15.5</span> Multikollinearität</h2>
+<div id="def-multicollinearity" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 15.1 (Multikollinearität) </strong></span>Wenn in einem Modell Prädiktorvariablen miteinander korrelieren, dann wird dies als Multikollinearität bezeichnet.</p>
+</div>
+<p>Multikollinearität hat verschiedene Einflüsse auf das Modell die sich vor allem hinsichtlich der Stabilität der Koeffizienten auswirken, wenn Prädiktorvariablen aus dem Modell herausgenommen werden bzw. dazugenommen werden. Dazu beeinflusst Multikollinearität auch die Größe der Standardfehler der geschätzten Koeffizienten <span class="math inline">\(\hat{\beta}_j\)</span>.</p>
+<p>Multikollinearität hat unter anderem die folgenden Effekte:</p>
 <ul>
 <li>Große Änderungen in den Koeffizienten wenn Prädiktoren ausgelassen/eingefügt werden</li>
 <li>Koeffizienten haben eine andere Richtung als erwartet</li>
 <li>Hohe (einfache) Korrelationen zwischen Prädiktoren</li>
 <li>Breite Konfidenzintervalle für “wichtige” Prädiktoren <span class="math inline">\(b_j\)</span></li>
 </ul>
-<p><span class="math display">\[
+<p>Es lässt sich zeigen, dass die Varianz der geschätzen Modellkoefizienten <span class="math inline">\(b_j\)</span> die folgende Form hat (siehe Formel <span class="math inline">\(\eqref{eq-mlm-basics-varb_j}\)</span>:</p>
+<p><span class="math display">\[\begin{equation}
 \widehat{\text{Var}}(b_j) = \frac{\hat{\sigma}^2}{(n-1)s_j^2}\frac{1}{1-R_j^2}
-\]</span></p>
-<p><span class="math inline">\(R_j^2\)</span> = Multipler Korrelationskoeffizient der Prädiktoren auf Prädiktorvariable <span class="math inline">\(j\)</span>.</p>
-</section>
-<section id="variance-inflation-factor-vif" class="level2" data-number="15.6">
-<h2 data-number="15.6" class="anchored" data-anchor-id="variance-inflation-factor-vif"><span class="header-section-number">15.6</span> Variance Inflation Factor (VIF)</h2>
-<p><span class="math display">\[
+\label{eq-mlm-basics-varb_j}
+\end{equation}\]</span></p>
+<p>Der Term <span class="math inline">\(R_j^2\)</span> wird als multipler Korrelationskoeffizient bezeichnet und berechnet sich als der Determinationskoeffizienten der Prädiktorvariablen <span class="math inline">\(x_i, i\neq j\)</span> auf die Prädiktorvariable <span class="math inline">\(x_j\)</span>. D.h. es wird ein Regressionsmodell gerechnet bei dem die Prädiktorvariable <span class="math inline">\(x_j\)</span> als abhängige Variable verwendet wird und mittels der anderen <span class="math inline">\(p-1\)</span> Präditkorvariablen modelliert wird.</p>
+<p>Der zweiter Term in Formel <span class="math inline">\(\eqref{eq-mlm-basics-varb_j}\)</span> <span class="math inline">\(\frac{1}{1-R_j^2}\)</span> wird als Variance Inflation Factor (VIF) bezeichnet. Anhand des VIF kann ein Modell relativ einfach, zumindest heuristisch, auf Multikollinearitäten überprüft werden. Dabei wird für jede Prädiktorvariable die VIF bestimmt. Manchmal wird in der Literatur auch die sogenannte Tolerance = <span class="math inline">\(\frac{1}{VIF}\)</span> betrachtet.</p>
+<p><span class="math display">\[\begin{equation*}
 \text{VIF}_j = \frac{1}{1-R_j^2}
-\]</span></p>
+\end{equation*}\]</span></p>
+<p>Üblicherweise wird der größte VIF Wert betrachtet um die Multikollinearität eines Modells zu bewerten.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1007,10 +1012,10 @@ Tipp
 <p>Wenn VIF &gt; 10 ist, dann deutet dies auf hohe Multikollinearität hin.</p>
 </div>
 </div>
-<p><a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
-</section>
-<section id="variance-inflation-factor-vif-1" class="level2" data-number="15.7">
-<h2 data-number="15.7" class="anchored" data-anchor-id="variance-inflation-factor-vif-1"><span class="header-section-number">15.7</span> Variance Inflation Factor (VIF)</h2>
+<p>Hinsichtlich des Einflusses bzw. des Umgangs bei Multikollinearität muss unterschieden werden, welches Ziel die Modellierung verfolgt. Das Problem das durch die Multikollinearität entsteht ist, basiert darauf das das Modell nicht eindeutig zuordnen kann, welche der korrelierten Varible zuständig ist für die beobachteten Veränderungen in der abhängigen Variablen. Multikollinearität vermindert dabei nicht unsere Fähigkeit Mittelwerte <span class="math inline">\(E[y|x]\)</span> vorherzusagen oder einen guten Modellfit zu erhalten. Allerdings verkompliziert sich die Interpretation der Modellkoeffizienten <span class="math inline">\(b_j\)</span>. Dadurch das die Prädiktorvariablen miteinander korrelieren, kann es beispielsweise gar nicht praktisch möglich sein die Variablen einzeln zu variieren, wodurch die Interpretation des Koeffizienten <span class="math inline">\(b_j\)</span> als die Veränderung von <span class="math inline">\(y\)</span> bei Veränderung von <span class="math inline">\(x_j\)</span> um eine Einheit problematisch wird. Weiterhin, dadurch das durch die Multikollinearität die Varianzen der Modelkoeffizienten vergrößert werden, kann es zu dem Fall kommen, dass ein Modellkoeffizienten <span class="math inline">\(b_j\)</span> statistisch nicht signifikant ist, obwohl eindeutig ein Zusammenhang zwischen <span class="math inline">\(x_j\)</span> und <span class="math inline">\(y\)</span> besteht. Zusätzlich, dadurch das die Modellkoeffizienten sich stark verändern können bei Veränderung des Modells ist deren Interpretation grundsätzlich problematisch.</p>
+<section id="variance-inflation-factor-vif-in-r" class="level3" data-number="15.5.1">
+<h3 data-number="15.5.1" class="anchored" data-anchor-id="variance-inflation-factor-vif-in-r"><span class="header-section-number">15.5.1</span> Variance Inflation Factor (VIF) in <code>R</code></h3>
+<p>In <code>R</code> können wir den VIF am einfachsten über zwei Funktionen berechnen. Einmal über die <code>vif()</code>-Funktion aus dem Paket <code>car</code>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">vif</span>(mod_full) </span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -1018,122 +1023,138 @@ Tipp
 708.8429 564.3434 104.6060 </code></pre>
 </div>
 </div>
-<p><a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
-<p>Üblicherweise wird der größte Wert betrachtet um die Multikollinearität zu bewerten.</p>
-</section>
-<section id="wenn-prädiktoren-sich-gegenseitig-maskieren" class="level2" data-number="15.8">
-<h2 data-number="15.8" class="anchored" data-anchor-id="wenn-prädiktoren-sich-gegenseitig-maskieren"><span class="header-section-number">15.8</span> Wenn Prädiktoren sich gegenseitig maskieren<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a></h2>
+<p>Eine weitere Möglichkeit besteht mittels der Funktion <code>check_collinearity()</code> aus dem <code>performance</code> Paket.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>performance<span class="sc">::</span><span class="fu">check_collinearity</span>(mod_full)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <div class="cell">
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div id="tbl-mlm-basics-collin" class="anchored">
+<table class="table table-sm table-striped small">
+<caption>Tabelle&nbsp;15.7: Ausgabe von <code>check_collinearity()</code></caption>
+<colgroup>
+<col style="width: 8%">
+<col style="width: 9%">
+<col style="width: 11%">
+<col style="width: 12%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 17%">
+<col style="width: 18%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Term</th>
+<th style="text-align: right;">VIF</th>
+<th style="text-align: right;">VIF_CI_low</th>
+<th style="text-align: right;">VIF_CI_high</th>
+<th style="text-align: right;">SE_factor</th>
+<th style="text-align: right;">Tolerance</th>
+<th style="text-align: right;">Tolerance_CI_low</th>
+<th style="text-align: right;">Tolerance_CI_high</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">triceps</td>
+<td style="text-align: right;">708.8429</td>
+<td style="text-align: right;">383.98652</td>
+<td style="text-align: right;">1309.2486</td>
+<td style="text-align: right;">26.62410</td>
+<td style="text-align: right;">0.0014107</td>
+<td style="text-align: right;">0.0007638</td>
+<td style="text-align: right;">0.0026043</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">thigh</td>
+<td style="text-align: right;">564.3434</td>
+<td style="text-align: right;">305.76950</td>
+<td style="text-align: right;">1042.2977</td>
+<td style="text-align: right;">23.75591</td>
+<td style="text-align: right;">0.0017720</td>
+<td style="text-align: right;">0.0009594</td>
+<td style="text-align: right;">0.0032704</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">midarm</td>
+<td style="text-align: right;">104.6060</td>
+<td style="text-align: right;">56.91565</td>
+<td style="text-align: right;">192.9714</td>
+<td style="text-align: right;">10.22771</td>
+<td style="text-align: right;">0.0095597</td>
+<td style="text-align: right;">0.0051821</td>
+<td style="text-align: right;">0.0175699</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>In <a href="#tbl-mlm-basics-collin">Tabelle&nbsp;<span>15.7</span></a> sehen wir, dass <code>check_collinearity()</code> auch noch Konfidenzintervalle und besagte Tolerance ausgibt. In jedem Fall, sehen wir, dass wenn wir die Daumenregel <span class="math inline">\(VIF &gt; 10\)</span> anwenden, wir hohe Multikollinearität in unserem Modell aufweisen, was auch die großen Veränderung in den Koeffizienten bei Hinzu- bzw. Entnahme der Prädiktorvariblen erkärt.</p>
+</section>
+</section>
+<section id="verhältnis-der-prädiktorvariblen-x_j-untereinander" class="level2" data-number="15.6">
+<h2 data-number="15.6" class="anchored" data-anchor-id="verhältnis-der-prädiktorvariblen-x_j-untereinander"><span class="header-section-number">15.6</span> Verhältnis der Prädiktorvariblen <span class="math inline">\(x_j\)</span> untereinander</h2>
+<p>Insgesamt sind aus der operativen Seite durch den Übergang von der einfachen zur multiplen Regression keine großen Neuerungen hinzugekommen. Allerdings müssen jetzt, wir schon bezüglich der Multikollinearität gesehen haben, das Verhältnis der Prädiktorvariablen <span class="math inline">\(X_j\)</span> untereinander näher betrachtet werden. Das folgenden Beispiel ist <span class="citation" data-cites="mcelreath2016">McElreath (<a href="references.html#ref-mcelreath2016" role="doc-biblioref">2016</a>)</span> entnommen und zeigt, dass sich Variablen auch gegenseitig maskieren können und wiederum große Veränderungen in den Modellkoeffizienten auftreten können, wenn Variablen hinzugenommen bzw. weggelassen werden.</p>
+<p>Um den Effekt der Maskierung leichter nachvollziehen zu können erstellen wir uns wieder einen einfachen Datensatz mit zwei Prädiktorvariablen <span class="math inline">\(X_{pos}\)</span> und <span class="math inline">\(X_{neg}\)</span>. <span class="math inline">\(X_{pos}\)</span> ist positiv mit <span class="math inline">\(Y\)</span> korreliert, während <span class="math inline">\(X_{neg}\)</span> negativ mit <span class="math inline">\(Y\)</span> korreliert. Allerdings zeigen die beiden Variablen untereinander ebenfalls eine positive Korrelation. In <a href="#fig-mlm-basics-mask-01">Abbildung&nbsp;<span>15.6</span></a> ist die Korrelationsmatrize der drei Variablen abgebildet.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-mlm-basics-mask-01" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
-<p><img src="mlm_basics_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption class="figure-caption">x_pos maskiert den Einfluss von x_neg</figcaption>
+<p><img src="mlm_basics_files/figure-html/fig-mlm-basics-mask-01-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption class="figure-caption">Abbildung&nbsp;15.6: x_pos maskiert den Einfluss von x_neg</figcaption>
 </figure>
 </div>
 </div>
 </div>
-</section>
-<section id="wenn-prädiktoren-sich-gegenseitig-maskieren-1" class="level2" data-number="15.9">
-<h2 data-number="15.9" class="anchored" data-anchor-id="wenn-prädiktoren-sich-gegenseitig-maskieren-1"><span class="header-section-number">15.9</span> Wenn Prädiktoren sich gegenseitig maskieren</h2>
+<p>In <a href="#tbl-mlm-basics-mask-02">Tabelle&nbsp;<span>15.8</span></a> sind die verschiedenen Modellkoeffizienten für wenn jeweils nur eine der Variablen in das Modell eingeht bzw. wenn beide Variablen im Modell enthalten sind.</p>
 <div class="cell">
 <div class="cell-output-display">
+<div id="tbl-mlm-basics-mask-02" class="anchored">
 <table class="table table-sm table-striped small">
-<caption>Modellfit</caption>
+<caption>Tabelle&nbsp;15.8: Koeffizienten und Standardfehler der unterschiedlichen Modelle.</caption>
+<colgroup>
+<col style="width: 13%">
+<col style="width: 25%">
+<col style="width: 30%">
+<col style="width: 30%">
+</colgroup>
 <thead>
 <tr class="header">
 <th style="text-align: left;"></th>
-<th style="text-align: right;"><span class="math inline">\(\hat{\beta}\)</span></th>
-<th style="text-align: right;"><span class="math inline">\(s_e\)</span></th>
+<th style="text-align: left;"><span class="math inline">\(\beta_0 \pm s_e\)</span></th>
+<th style="text-align: left;"><span class="math inline">\(\beta_{pos} \pm s_e\)</span></th>
+<th style="text-align: left;"><span class="math inline">\(\beta_{neg} \pm s_e\)</span></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">(Intercept)</td>
-<td style="text-align: right;">0.235</td>
-<td style="text-align: right;">0.135</td>
+<td style="text-align: left;">pos</td>
+<td style="text-align: left;"><span class="math inline">\(0.24\pm 0.13\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(0.22\pm 0.15\)</span></td>
+<td style="text-align: left;"></td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">x_pos</td>
-<td style="text-align: right;">0.218</td>
-<td style="text-align: right;">0.147</td>
+<td style="text-align: left;">neg</td>
+<td style="text-align: left;"><span class="math inline">\(0.23\pm 0.12\)</span></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(-0.62\pm 0.1\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">pos + neg</td>
+<td style="text-align: left;"><span class="math inline">\(0.14\pm 0.1\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(0.85\pm 0.12\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(-0.98\pm 0.1\)</span></td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
-<div class="cell">
-<div class="cell-output-display">
-<table class="table table-sm table-striped small">
-<caption>Modellfit</caption>
-<thead>
-<tr class="header">
-<th style="text-align: left;"></th>
-<th style="text-align: right;"><span class="math inline">\(\hat{\beta}\)</span></th>
-<th style="text-align: right;"><span class="math inline">\(s_e\)</span></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">(Intercept)</td>
-<td style="text-align: right;">0.228</td>
-<td style="text-align: right;">0.116</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">x_neg</td>
-<td style="text-align: right;">-0.618</td>
-<td style="text-align: right;">0.103</td>
-</tr>
-</tbody>
-</table>
 </div>
-</div>
-<div class="cell">
-<div class="cell-output-display">
-<table class="table table-sm table-striped small">
-<caption>Modellfit</caption>
-<thead>
-<tr class="header">
-<th style="text-align: left;"></th>
-<th style="text-align: right;"><span class="math inline">\(\hat{\beta}\)</span></th>
-<th style="text-align: right;"><span class="math inline">\(s_e\)</span></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">(Intercept)</td>
-<td style="text-align: right;">0.135</td>
-<td style="text-align: right;">0.096</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">x_pos</td>
-<td style="text-align: right;">0.850</td>
-<td style="text-align: right;">0.123</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">x_neg</td>
-<td style="text-align: right;">-0.976</td>
-<td style="text-align: right;">0.099</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p>Wir können erkennen, dass die Größe der Koeffizienten wiederum stark davon abhängt welches Modell gefittet wird. Für das Modell mit nur dem positiven Prädiktor ist der Modellkoeffizient <span class="math inline">\(b_{pos}\)</span> auch nicht statistisch signifikant. Sondern erst wenn beide Variablen in dem Modell inkludiert sind ist der Koeffizient ebenfalls statistisch signifikant. Zusammenfassend ist es entsprechend wichtig dass bei der Modellierung theoretische Vorüberlegungen die relevanten Variablen identifizieren und nicht einfach nur hin und her probiert wird. Zumindest wenn es darum geht der größer der Koeffizienten auch inhaltliche Bedeutung zuzuweisen.</p>
 </section>
-<section id="multiple-regression" class="level2" data-number="15.10">
-<h2 data-number="15.10" class="anchored" data-anchor-id="multiple-regression"><span class="header-section-number">15.10</span> Multiple Regression</h2>
-<p>Aus der einfachen Regression</p>
-<p><span class="math display">\[
-y_i = \beta_0 + \beta_1 x_i + \epsilon_i
-\]</span></p>
-<p>wird</p>
-<p><span class="math display">\[
-y_i = \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \dots + \beta_K x_{Ki} + \epsilon_i
-\]</span></p>
-<p>mit K Prädiktorvariablen und Multikollinearität.</p>
-</section>
-<section id="zum-nacharbeiten" class="level2" data-number="15.11">
-<h2 data-number="15.11" class="anchored" data-anchor-id="zum-nacharbeiten"><span class="header-section-number">15.11</span> Zum Nacharbeiten</h2>
+<section id="zum-nacharbeiten" class="level2" data-number="15.7">
+<h2 data-number="15.7" class="anchored" data-anchor-id="zum-nacharbeiten"><span class="header-section-number">15.7</span> Zum Nacharbeiten</h2>
 <p>Die folgenden Texte eignen sich gut um die Inhalte noch einmal zu vertiefen. <span class="citation" data-cites="pos_multiple_regression">Altman und Krzywinski (<a href="references.html#ref-pos_multiple_regression" role="doc-biblioref">2015</a>)</span> diskutiert noch mal eingehend was passiert wenn Variablen miteinander korrelieren und wie sich das auf die Schätzer für die Koeffizienten auswirkt. <span class="citation" data-cites="kutner2005">(<a href="references.html#ref-kutner2005" role="doc-biblioref">Kutner u.&nbsp;a. 2005, p.278–288</a>)</span> und <span class="citation" data-cites="fox2011">(<a href="references.html#ref-fox2011" role="doc-biblioref">Fox 2011, p.325–327</a>)</span> sind nochmal als Zusammenfassungen zu lesen.</p>
 
 
@@ -1151,15 +1172,6 @@ Kutner, Michael H, Christopher J Nachtsheim, John Neter, und William Li. 2005. <
 McElreath, Richard. 2016. <em>Statistical rethinking, A Bayesian Course with Examples in R and Stan</em>. 1. Aufl. Boca Raton: CRC Press.
 </div>
 </div>
-</section>
-<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
-<hr>
-<ol>
-<li id="fn1"><p>informell nach <span class="citation" data-cites="kutner2005">Kutner u.&nbsp;a. (<a href="references.html#ref-kutner2005" role="doc-biblioref">2005</a>, pp.&nbsp;407)</span><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2"><p>Manchmal wird auch Tolerance = <span class="math inline">\(\frac{1}{VIF}\)</span> betrachtet.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn3"><p>car::vif berechnet generalized variance inflation factor wenn Prädiktoren Faktoren oder Polynome sind <span class="citation" data-cites="fox2011">(<a href="references.html#ref-fox2011" role="doc-biblioref">Fox 2011</a>.)</span> <a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn4"><p>adaptiert nach <span class="citation" data-cites="mcelreath2016">McElreath (<a href="references.html#ref-mcelreath2016" role="doc-biblioref">2016</a>)</span><a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-</ol>
 </section>
 
 </main> <!-- /main -->
