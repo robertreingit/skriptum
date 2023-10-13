@@ -362,7 +362,7 @@ binom_pdist <- function(p = 0.5, n = 10) {
     p = pbinom(x, n, p)
   ) |> 
     ggplot(aes(x, p, xend=x, yend=0)) +
-    geom_segment(size=1.5) +
+    geom_segment(linewidth = 1.5) +
     geom_point(size=4) +
     scale_x_continuous('Anzahl Kopf', breaks = 0:n) +
     scale_y_continuous(expression(paste('Wahrscheinlichkeit ', P(X<=x))))
@@ -392,7 +392,84 @@ In @fig-stats-dist-dbinom30 sehen wir, dass wir zum Beispiel recht überrascht w
 
 Setzen wir unser Kriterium z.B. bei 2% an. Die Entscheidung wird jetzt folgendermaßen getroffen. Wenn wir einen Wert beobachten der unter der Annahme einer fairen Münze die wir $30\times$ aus dem Bereich der Werte von $\leq2\%$ kommt. Dann sehen wir dies als Evidenz gegen die Annahme an.
 
-Im Folgenden werden vier verschiedene Verteilungen noch einmal etwas genauer vorgestellt, da diese Verteilung immer wieder im weiteren Verlauf auftauchen werden. Dies sind die Normalverteilung, die $t$-Verteilung, die $\chi^2$-Verteilung und die $F$-Verteilung. Dabei ist es, außer bei der Normalverteilung, weniger wichtig sich die Formeln einzuprägen sondern es soll eher darum gehen die Form der Verteilung, den Wertebereich und die Parameter der Verteilung zu kennen. Also zum Beispiel wird die Normalverteilung durch zwei Parameter $\mu$ und $\sigma^2$ spezifiziert während die $\chi^2$-Verteilung nur über einen einzelnen Parameter den Freiheitsgrad $df$ bestimmt wird. Streng genommen wird auch nicht über vier Verteilungen gesprochen, sondern es handelt sich um jeweils Verteilungsfamilien, da es beispielsweise nicht die eine Normalverteilung gibt, sondern die Form wie eben beschrieben von den beiden Parametern abhängt. Dies gilt in gleichem Maßen ebenfalls für die anderen behandelten Verteilungen.
+In diesem Zusammenhang wird später auch noch einmal die Umkehrfunktion der Verteilungsfunktion praktisch werden. Diese Funktion wird als die Quartilfunktion bezeichnet. Angewandt auf @fig-stats-sig-pbinom-2 sieht die Quartilfunktion wie folgt aus.
+
+```{r}
+#| layout-ncol: 2
+#| label: fig-stats-sig-qbinom
+#| fig-cap: "Zusammenhang zwischen der Verteilungs- und der Quantilfunktion bei $p = 0.5, n = 10$"
+#| fig-subcap: 
+#|   - Verteilungsfunktion $P(X \leq x)$
+#|   - Quantilefunktion
+
+binom_qdist <- function(p = 0.5, n = 10) {
+  tibble(
+    x = pbinom(0:10, 10, 0.5),
+    q = qbinom(x, n, p)
+  ) |> 
+    ggplot(aes(x, q, xend=x, yend=0)) +
+    geom_segment(linewidth=1.5) +
+    geom_point(size=4) +
+    scale_x_continuous('Quantile', breaks=seq(0,1,.05)) +
+    scale_y_continuous('Anzahl Kopf[#]', breaks=1:10)
+}
+binom_pdist()
+binom_qdist()
+```
+
+D.h. in @fig-stats-sig-qbinom-2 können wir auf der $x$-Achse eine Quantile ablesen, also einen Wahrscheinlichkeit für $P(X \leq x)$ und auf der $y$-Achse steht die dazugehörende Anzahl von Kopf. Der Graph hat eine etwas eigenwillige Form, der darauf zurück zu führen ist, dass wir aufgrund der Struktur des Experiment nur wenige mögliche Ausgänge $[0,1,\ldots,10]$ haben.
+
+Konkret in der Anwendung, könnten wir zum Beispiel $\alpha = 0.2$ ansetzen. Dann würden wir links und rechts jeweils $10\%$ abschneiden und als kritische Bereiche ansehen. In @fit-stats-sig-qbinom-2 können wir dann ablesen, dass bei einem Ausgang von $\leq 2$ oder $\geq 9$ Köpfen wird *überrascht* sein würden.
+
+::: {#def-quartilfunktion}
+## Quartilfunktion
+
+Die Quartilfunktion ist die Umkehrfunktion der Verteilungsfunktion. Die Quartilfunktion gibt für eine gegeben Wahrscheinlichkeit den Wert der Zufahlsvariablen an.
+
+:::
+
+## Übergang von diskreten zur kontinuierlichen Verteilungen
+
+Das Beispiel der Binomialverteilung sollte dazu dienen die Herleitung der verschiedenen Verteilungsfunktionen einmal von Grund auf aufzubauen und damit hoffentlich nachvollziehbar zu machen. In den Fällen die wir im folgenden Untersuchen, betrachten wir jedoch in den meisten Fällen kontinuierliche Verteilungen, d.h. die Zufallsvariable kann, zumindest theoretisch, alle Werte auf dem reellen Zahlenstrahl von $[-\infty, \infty]$ annehmen. Konzeptionelle ändert sich beim Übergang zu kontinuierlichen Zahlen zunächst einmal nichts. Die Herleitung ist allerdings etwas komplizierter, so dass wir die Ergebnisse hier nur zur *Kenntnis* nehmen.
+
+Ein grundlegender Unterschied besteht darin, dass wir keine Wahrscheinlichkeits- sondern eine Dichtefunktion haben. Der Unterschied rührt daher, dass wir unsere bisherige *informelle* Herleitung der Wahrscheinlichkeit bei einer kontinuierlichen Funktion nicht anwenden können. Schauen wir dazu kurz die folgende Normalverteilung an, die wir weiter unten noch mal im Detail betrachten.
+
+```{r}
+#| fig.cap: Beispiel für die Dichtefunktion eine kontinuierlichen Verteilung.
+#| label: fig-stats-dist-cdist
+
+dnorm_plot()
+```
+
+Der Wertebereich der Funktion ist $[-\infty,\infty]$. D.h. wenn ich jetzt die Wahrscheinlichkeit für einen einzelnen Werte, z.B. $x = 1$ mit unserem bisherigen Ansatz berechnen möchte, dann bekomme ich das Problem, dass die mögliche Anzahl von Ausgängen $\infty$ ist. Wenn ich daher mit unserem bisherigen Ansatz reingehen, dann erhalten wir.
+
+\begin{equation}
+P(X = 1) = \frac{1}{\infty} = 0
+\label{eq-p-cont-inf}
+\end{equation}
+
+D.h. die Wahrscheinlichkeit einen speziellen Wert zu bekommen ist $=0$. Um diesen Unterschied zur Wahrscheinlichkeitsfunktion klarzustellen wird daher daher von Dichtefunktionen gesprochen. Eine saubere Definition erfordert etwas mehr mathematische Details als für unsere weitere Anwendung notwendig ist. Daher lassen wir das hier erst einmal so stehen.
+
+Wir wollen aber trotzdem in der Lage sein Wahrscheinlichkeiten zu bestimmen. Dies können, sobald wir nicht mehr von einzlenen Werten von Intervallen sprechen. z.B. was ist die Wahrscheinlichkeit unter der Dichtefunktion in @fig-stats-dist-cdist einen Werte $0 \leq x \leq 1$ zu beobachten. Hier können wir wieder das Modell der diskreten Wahrscheinlichkeitsfunktion nehmen und summieren die Höhe aller Werte $f(x)$ zwischen $0 \leq x \leq 1$ auf (siehe @fig-stats-dist-cdist-02).
+
+```{r}
+#| fig.cap: Beispiel für die Dichtefunktion eine kontinuierlichen Verteilung und Fläche der Werte $0 \leq x \leq 1$.
+#| label: fig-stats-dist-cdist-02
+
+dnorm_plot() +
+  geom_ribbon(data = tibble(x = seq(0,1,length.out=20),p=dnorm(x)),
+              aes(ymin = 0, ymax = p), fill = 'yellow', alpha = .5)
+```
+
+Das erinnert uns natürlich zurück an die Schule und und die gelbe Fläche in @fig-stats-dist-cdist-02 unter der Kurve ist natürlich das Integral der Funktion über diesen Wertebereich. Formal folgt daher für die Wahrscheinlichkeit:
+
+\begin{equation*}
+P(X = 0 \leq x \leq 1) = \int_{x=0}^1 f(x) dx
+\end{equation*}
+
+Insgesamt können wir aber immer das mentale Modell aus der Binomialverteilung anwenden und müssen nur zur Kenntnis nehmen das Integrale anstatt Summen gebildet werden. Dies wird in unserer Arbeit aber kaum eine Rolle spielen, da die Berechnung für uns von Funktionen vorgenommen wird.
+
+Im Folgenden werden vier verschiedene theoretische Verteilungen noch einmal etwas genauer vorgestellt, da diese Verteilung immer wieder im weiteren Verlauf auftauchen werden. Dies sind die Normalverteilung, die $t$-Verteilung, die $\chi^2$-Verteilung und die $F$-Verteilung. Dabei ist es, außer bei der Normalverteilung, weniger wichtig sich die Formeln einzuprägen sondern es soll eher darum gehen die Form der Verteilung, den Wertebereich und die Parameter der Verteilung zu kennen. Also zum Beispiel wird die Normalverteilung durch zwei Parameter $\mu$ und $\sigma^2$ spezifiziert während die $\chi^2$-Verteilung nur über einen einzelnen Parameter den Freiheitsgrad $df$ bestimmt wird. Streng genommen wird auch nicht über vier Verteilungen gesprochen, sondern es handelt sich um jeweils Verteilungsfamilien, da es beispielsweise nicht die eine Normalverteilung gibt, sondern die Form wie eben beschrieben von den beiden Parametern abhängt. Dies gilt in gleichem Maßen ebenfalls für die anderen behandelten Verteilungen.
 
 ### Binomialverteilung in `R`
 
@@ -695,6 +772,16 @@ Q = \sum_{i=1}^n X_i^2 \sim \chi^2(n \text{ Freiheitsgraden})
 
 Der Erwartungswert einer $\chi^2$-verteilten Zufallsvariable mit $df = k$ Freiheitsgraden ist $X$ ist $E[X] = k$ mit einer Varianz $Var(X) = 2k$.
 
+### $\chi^2$-Verteilung in `R`
+
+Dem üblichen Muster folgend heißen die Funktion für die $\chi^2$-Verteilung in `R` `dchisq()`, `pchisq()`, `qchisq()` und `rchisq()`. Um zehn Zufallszahlen aus der $\chi^2$-Verteilung mit $df = 10$ zu ziehen verwenden wir.
+
+```{r}
+#| echo: true
+
+rchisq(10, 10)
+```
+
 ## t-Verteilung
 
 Die t-Verteilung ist in ihrem Aussehen der Normalverteilung sehr ähnlich. Bei der t-Verteilung handelt sich ebenfalls um eine symmetrische Verteilung, die allerdings immer den Erwartungswert $E[X] = 0$. Die Form der t-Verteilung wird über einen Parameter, die Freiheitsgrade $df$, bestimmt. Die Freiheitsgrade beeinflussen dabei wie stark die Flanken der Verteilung abfallen. In @fig-stats-dist-t-dist-01 sind die t-Verteilungen mit den Freiheitsgraden $df = \{1, 3, 10\}$ abgebildet.
@@ -753,6 +840,16 @@ ggplot(df_tn, aes(x,p,fill=dist)) +
 
 Wir können wiederum erkennen, dass die t-Verteilung schwerere Enden als die Standardnormalverteilung hat.
 
+### $t$-Verteilung in `R`
+
+Dem üblichen Muster folgend heißen die Funktion für die $t$-Verteilung in `R` `dt()`, `pt()`, `qt()` und `rt()`. Um zehn Zufallszahlen aus der $t$-Verteilung mit $df = 10$ zu ziehen verwenden wir.
+
+```{r}
+#| echo: true
+
+rt(10, 10)
+```
+
 ## F-Verteilung
 
 Eine weitere Verteilung die uns oft begegnen wird, ist die F-Verteilung. Ähnlich wie die $\chi^2$-Verteilung, hat die $F$-Verteilung auch nur einen positiven Definitionsbereich. Die Familie der $F$-Verteilungen ist mittels zweier Parameter spezifiziert $F(m,n)$. Diese werden als ebenfalls als Freiheitsgrade $m = df_1$ und $n = df_2$ bezeichnet.
@@ -790,6 +887,15 @@ Der Erwartungswert berechnet sich nach $E[F_{df_1,df_2}] = \frac{df_2}{df_2-2}$.
 X \sim t_{df} \Rightarrow X^2 \sim F(1,df)
 \end{equation*}
 
+### $F$-Verteilung in `R`
+
+Wenig überraschend heißen die Funktion für die $F$-Verteilung in `R` `df()`, `pf()`, `qf()` und `rf()`. Daher um zum Beispiel die $0.95$-Quantile für die $F$-Verteilung mit $df_1 = 2, df_2 = 30$ zu erhalten verwenden wir.
+
+```{r}
+#| echo: true
+
+qf(0.95, 2, 3)
+```
 
 ## Zusammenfassung
 
@@ -828,3 +934,4 @@ erDiagram
 ```
 
 In den folgenden Ausführungen werden wir sehen, dass der Großteil der Statistik mit der wir uns auseinandersetzen darin besteht Werte anhand einer Stichprobe zu berechnen die wir mit uns bekannten theoretischen Verteilungen in Beziehung setzen können. Im Fall des Kleine Welt Problems konnten wir die Eigenschaften der auf der Stichprobe berechneten Werte vollständig untersuchen, da wir Kenntnis über die gesamte Population hatten. Dies ist in der Regel nicht der Fall. Um trotzdem zu rationalen Entscheidungen und Erkenntnissen über eine Population zu kommen versuchen wir daher zwischen unserer beobachteten Stichprobe und bekannten theoretischen Verteilung eine Beziehung herzuleiten. Dies geschieht in den meisten Fällen durch bestimmte Annahmen.
+
