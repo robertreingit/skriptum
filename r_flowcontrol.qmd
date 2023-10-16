@@ -139,7 +139,7 @@ my_abs(0)
 my_abs(-3)
 ```
 
-## Schleifen
+## `for`-Schleifen
 
 Als letztes Programmierkonstrukt kommen jetzt noch Schleifen, eine der Paradedisziplin von Computern, nämlich die gleiche Sache ganz oft hintereinander durchführen.
 
@@ -183,7 +183,8 @@ for (i in 1:4) {
 }
 ```
 
-## Ein Beispiel
+
+### Ein längeres Beispiel mit `for`
 
 Zum Abschluss schauen wir uns ein Beispiel aus der Statistik an zu Publikationsfilter und welche Auswirkung der Filter auf die Effektstärke hat.
 
@@ -230,4 +231,73 @@ cat('Die Effektstärke ist D =', D_bar,'+-', D_sd, '\n')
 ```
 
 Als Hausaufgaben versucht das Programm nachzuvollziehen und das Ergebnis zu interpretieren.
+
+## Wiederholungen mit `replicate()`
+
+Eine weitere Möglichkeit `R` eine Gruppe von Anweisungen wiederholt durchführen zu lassen, kann mittels der Funktion `replicate()` erreicht werden. In den meisten Fällen wird `replicate()` verwendet um eine Simulation durchzuführen. D.h. das Beispiel von eben könnte ebenfalls mittels `replicate()` programmiert werden. `replicate()` hat zwei Hauptargumente. Das erste `n` bestimmt die Anzahl der Wiederholungen während das zweite Argument eine Anweisung, in den meisten Fällen eine Funktion ist.
+
+Nehmen wir als Anwendungsfall, dass wir wiederholt Mittelwerte $\bar{x}$ aus einer Zufallsstichprobe erzeugen wollen. Wir ziehen beispielsweise eine Stichprobe von $n = 20$ Werten aus einer Normalverteilung mit den Parametern $\mu = 3, \sigma = .7$. Und wir wollen uns die Stichprobenverteilung der Mittelwerte ansehen. Wir beginnen mit einem einfach proof-of-concept.
+
+```{r}
+#| echo: true
+mu <- 3
+sigma <- 0.7
+n <- 20
+
+x_bar <- mean(rnorm(n, mu, sigma))
+cat('Der beobachtete Mittelwert ist: ', x_bar, '\n')
+```
+
+Okay, funktioniert. Wir wollen diese Anweisung jetzt nicht einmal sondern $100$mal durchführen. Dazu stecken wir sie in eine Funktion (streng genommen brauchen wir das nicht, aber damit es besser generalisiert machen wir hier etwas mehr Aufwand). Die Parameter für die Normalverteilung setzen wir in der Signatur der Funktion als Standardwerte.
+
+```{r}
+#| echo: true
+
+x_bar_func <- function(n = 20, mu = 3, sigma = 0.7) {
+  mean(rnorm(n, mu, sigma))
+}
+```
+
+Wenn wir `x_bar_func()` aufrufen, erhalten wir entsprechend einen zufälligen Mittelwert aus einer Stichrprobe der Größe $n = `r n`$ aus der Normalverteilung $\mathcal{N}(`r mu`, `r sigma`)$.
+
+```{r}
+#| echo: true
+
+x_bar_func()
+```
+
+Diese Funktion können wir nun an `replicate()` als zweiters Argument übergeben mit dem ersten Argument der Anzahl der Wiederholungen. Starten wir erst mal nur mit $N_{sim} = 5$ Wiederholungen, um den Überblick zu behalten. 
+
+```{r}
+#| echo: true
+
+N_sim <- 5
+replicate(N_sim, x_bar_func())
+```
+
+Als Rückgabewert von `x_bar_func()` erhalten wir einen Vektor mit den Rückgabewerten von `x_bar_func()`. Dementsprechend können wir den Rückgabewert an eine Variable zuweisen und können uns zum Beispiel ein Histogramm der Mittelwert erzeugen.
+
+```{r}
+#| echo: true
+
+N_sim <- 100
+x_bar_s <- replicate(N_sim, x_bar_func())
+hist(x_bar_s)
+```
+
+Zusammenfassend, beginnen wir mit der Definition einer Funktion welche die benötigten Werte erzeugt. Diese Funktion übergeben wir an `replicate()` und können so einfach bestimmte Werte generieren.
+
+Der Vollständigkeit halber eine Ausführung mit einer `for`-Schleife.
+
+```{r}
+#| echo: true
+
+x_bar_s2 <- numeric(N_sim)
+for (i in 1:N_sim) {
+  x_bar_s2[i] <- x_bar_func()
+}
+hist(x_bar_s2)
+```
+
+Hier sehen wir, dass der Code nicht viel länger ist, wir aber expliziter uns um die Zuweisung der Ergebnisse kümmern müssen, während dies bei `replicate()` automatisch stattfindet. D.h. wenn wir mit der Schleifenvariable nichts explizit machen müssen/wollen, dann bietet `replicate()` eine Alternative zu `for`-Schleifen.
 
