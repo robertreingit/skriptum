@@ -259,7 +259,7 @@ Um mit `R` effektiv zu arbeiten ist ein zumindest oberflächliches Verständnis 
 
 ### Numerisch
 
-Wie bereits beschreiben, ist einer der einfachsten Datentypen ein numerischer Wert wie `1`, `123345` `12.3456`. Es gibt noch eine Unterscheidung in `R` zwischen ganzzahligen Werten (integer) und Dezimalzahlen (float), wobei für die meisten Anwendungsfälle die Unterscheidung nicht von großer Bedeutung ist. Das Dezimaltrennzeichen in `R` ist ein Punkt `.`.
+Wie bereits beschreiben, ist einer der einfachsten Datentypen ein numerischer Wert wie `1`, `123345` `12.3456`. Es gibt noch eine Unterscheidung in `R` zwischen ganzzahligen Werten (integer) und Dezimalzahlen (double), wobei für die meisten Anwendungsfälle die Unterscheidung nicht von großer Bedeutung ist. Das Dezimaltrennzeichen in `R` ist ein Punkt `.`.
 
 ```{r}
 #| echo: true
@@ -269,7 +269,8 @@ dezimal_zahl
 typeof(dezimal_zahl)
 typeof(12.345)
 ```
-Integer Werte werden `R` mit einem angehängtem `L` spezifiziert. Wir kein `L` angehängt geht `R` per default bei Zahlen immer von einer Dezimalzahl aus.
+
+Integer Werte werden in `R` mit einem angehängtem `L` spezifiziert. Wir kein `L` angehängt geht `R` per default bei Zahlen immer von einer Dezimalzahl aus.
 
 ```{r}
 #| echo: true
@@ -285,7 +286,7 @@ Die numerischen Werte erlauben die üblichen mathematischen Operationen.
 
 ### Zeichenketten (Strings)
 
-Der nächste Datentyp sind Zeichenketten (strings). Zeichenketten repräsentieren Textdaten und werden oft für die Manipulation von Texten und die Verarbeitung von Zeichen verwendet. Zeichenketten können mit einfachen Anführungszeichen (`'`) oder doppelten Anführungszeichen (`"`) erstellt werden.
+Der nächste Datentyp sind Zeichenketten (character in den meisten anderen Programmiersprachen strings). Zeichenketten repräsentieren Textdaten und werden oft für die Manipulation von Texten und die Verarbeitung von Zeichen verwendet. Zeichenketten können mit einfachen Anführungszeichen (`'`) oder doppelten Anführungszeichen (`"`) erstellt werden.
 
 ```{r}
 #| echo: true
@@ -297,7 +298,7 @@ typeof(s_1)
 
 In `R` wird der Typ von Zeichenketten als `character` bezeichnet.
 
-Bezüglich der Anführungszeiche, besteht semantisch kein Unterschied zwischen den einfachen und den doppelten Anführungszeichen und es ist mehr ein Zeichen persönlicher Präferenz welche Art benutzt werden. Ein Anwendungsfall wo die Art von Bedeutung ist, erfolgt wenn innerhalb der Zeichenketten Anführungszeichen benötigt werden. Dann müssen die äußeren Zeichenketten der jeweils andere Typ sein, da ansonsten `R` die Zeichenkette nicht als solche erkennt. Also zum Beispiel wenn ich als Zeichenkette den Wert: `Er sagte: "Nein"!`, benötige, verwende ich die einfachen Anführungszeichen um `R` zu signalisieren das ich eine Zeichenkette benötige.
+Bezüglich der Anführungszeiche, besteht semantisch kein Unterschied zwischen den einfachen und den doppelten Anführungszeichen und es ist mehr ein Zeichen persönlicher Präferenz welche Art benutzt wird. Ein Anwendungsfall wo die Art von Bedeutung ist, erfolgt wenn innerhalb der Zeichenketten Anführungszeichen benötigt werden. Dann müssen die äußeren Zeichenketten der jeweils andere Typ sein, da ansonsten `R` die Zeichenkette nicht als solche erkennt. Also zum Beispiel wenn ich als Zeichenkette den Wert: `Er sagte: "Nein"!`, benötige, verwende ich die einfachen Anführungszeichen um `R` zu signalisieren das ich eine Zeichenkette benötige.
 
 ```{r}
 #| echo: true
@@ -359,14 +360,14 @@ Der nächste Datentyp sind sogenannte logische Werte oder Wahrheitswerte. Logisc
 | $\cap$ | TRUE | FALSE |
 | --- | --- | --- |
 | TRUE | TRUE | FALSE |
-| TRUE | FALSE | FALSE |
+|  FALSE | FALSE | FALSE |
 
 : Verknüpfung mit $\cap$
 
 | $\cup$ | TRUE | FALSE |
 | --- | --- | --- |
 | TRUE | TRUE | TRUE |
-| TRUE | TRUE | FALSE |
+| FALSE | TRUE | FALSE |
 
 : Verknüpfung mit $\cup$
 
@@ -399,7 +400,7 @@ falsch | falsch
 
 Logische Werte sind vor allem bei der Ablaufkontrolle und beim Indexieren wichtig.
 
-Logische Werte können in numerische Werte konvergiert werden, dabei wird `FALSE` zu $0$ und `TRUE` zu $1$. Mit der Funktion `as.numeric()` können wir Objekte von einem Typ in einen numerischen Typ konvergieren.
+Logische Werte können in numerische Werte konvertiert (coercion) werden, dabei wird `FALSE` zu $0$ und `TRUE` zu $1$. Mit der Funktion `as.numeric()` können wir zum Beispiel Objekte von einem Typ in einen numerischen Typ konvergieren.
 
 ```{r}
 #| echo: true
@@ -418,6 +419,24 @@ as.logical(1.23)
 as.logical(0)
 ```
 
+Die Konvertierung von einem Datentyp in einen anderen Datentyp passiert zum Teil auch automatisch. Gebe ich zum Beispiel den foglenden Ausdruck ein:
+
+```{r}
+#| echo: true
+
+1 & TRUE
+```
+
+Erhalten wir als Ergebnis des Ausdrucks den Wert `TRUE`. Der Operator `&` kann nur mit logischen Werten arbeiten. Wir haben aber einen numerischen und einen logischen Wert übergeben. `R` versucht daher zunächst den nicht-logischen Wert in einen logischen Wert zu konvertieren. In dem Falle geht das problemlos da numerische Werte, wie oben gesprochen, nach der folgenden Regel konvertiert werden.
+
+\begin{equation*}
+\text{logical}(x) = \begin{cases}
+\text{F}, \text{if } x = 0 \\
+\text{T}, \text{if } x \neq 0
+\end{cases}
+\end{equation*}
+
+Nach dieser Regel wird die `1` in `TRUE` konvertiert und dann der neue Ausdruck `TRUE & TRUE` ausgewertet, der dann entsprechend zu `TRUE` führt.
 
 ### Vektoren
 
@@ -467,7 +486,7 @@ Wenn der Index außerhalb des erlaubten Bereichs ist, dann wird ein `NA` für `(
 v_1[10]
 ```
 
-`R` erlaubt die Verwendung von Vektoren zum subsetten. Beispielweise wenn ich das 1. und 3. Element aus $v_2$ extrahieren möchte, kann ich einen Vektor mit den beiden Elemente $1$ und $3$, $v_{\text{index}} = (1,3)$ und übergebe diesen an `[]`.
+`R` erlaubt die Verwendung von Vektoren zum subsetten. Wenn ich das 1. und 3. Element aus $v_2$ extrahieren möchte, kann ich einen Vektor mit den beiden Elementen $1$ und $3$, $v_{\text{index}} = (1,3)$ an `[]` übergeben.
 
 ```{r}
 v_i <- c(1,3)
@@ -480,7 +499,7 @@ Das funktioniert ebenfalls ohne den Zwischenvektor.
 v_2[c(1,3)]
 ```
 
-Der zurückgegebene Wert ist dann auch wieder ein Vektor. Wir können dadurch zum Beispiel einen Vektor erstellen, der länger ist als der Ursprungsvektor.
+Der zurückgegebene Wert ist dann auch wieder ein Vektor. Wir können dadurch zum Beispiel einen Vektor erstellen, der länger als der Ursprungsvektor ist.
 
 ```{r}
 v_1[c(1,1,2,2,3,3)]
@@ -505,6 +524,8 @@ Das funktioniert auch wieder mit Vektoren.
 v_lang <- c(1,2,3,4,5,6,7)
 v_lang[-c(2,3,6)]
 ```
+
+Bei all diesen Anwendungen ist immer darauf zu achten, dass solange keine Zuweisung mittels `<-` ausgeführt, der jeweilige Vektor nicht verändert wird. 
 
 Auf numerische Vektoren können die gängigen mathematischen Operatoren (`+-*/`) angewendet werden. Die Operationen werden elementweise ausgeführt.
 
@@ -532,7 +553,7 @@ Multiplikation mit einem Skalar folgt der üblichen Skalarmultiplikation von Vek
 v_1 * 3
 ```
 
-Eine etwas unglückliche gewählte Operation von `R` ist, dass auch Vektoren mit unterschiedlichen Längen addiert (subtrahiert, multipliziert, dividiert) werden können. Allerdings nur wenn die Länge des längeren Vektors eine Vielfaches des kürzeren Vektors ist. `R` wiederholt dann die Abfolge  der Elemente des kürzeren Vektors so oft bis die Länge des längeren Vektors erreicht wird.
+Eine etwas unglückliche gewählte Operation von `R` ist, dass auch Vektoren mit unterschiedlichen Längen addiert (subtrahiert, multipliziert, dividiert) werden können. Allerdings nur wenn die Länge des längeren Vektors ein Vielfaches des kürzeren Vektors ist. `R` wiederholt dann die Abfolge  der Elemente des kürzeren Vektors so oft bis die Länge des längeren Vektors erreicht wird.
 
 ```{r}
 v_5 <- c(1,2)
@@ -542,14 +563,14 @@ v_5 + v_6
 
 Dieses Verhalten ist wie gesagt etwas unglücklich gewählt, da sich sehr schnell subtile Fehler in den Code einschleichen können. Diese sind erfahrungsgemäß nur sehr schwer wieder ausfindig zu machen. Daher sollte auf diese Feature möglichst verzichtet werden.
 
-Das subsetting wird auch benutzt, wenn ich einem bestehenden Vektor Werte zuweisen will. Will ich zum Beispiel bei $v_1$ den zweiten Wert von einer $2$ in eine $20$ ändern. Dann verwende ich wiederum `[]` und weise die entsprechende Anzahl von indizierten Werteplätzen zu.
+Das subsetting wird auch benutzt, wenn ich einem bestehenden Vektor Werte zuweisen will. Möchte ich zum Beispiel bei $v_1$ den zweiten Wert von einer $2$ in eine $20$ ändern. Dann verwende ich wiederum `[]` mit dem Indexwert `2` weise den entsprechend wert `20` zu.
 
 ```{r}
 v_1[2] <- 20
 v_1
 ```
 
-Oder eben mehrere Werte
+Dies funktioniert auch für mehrere Werte
 
 ```{r}
 v_1[1:2] <- c(10, 100)
