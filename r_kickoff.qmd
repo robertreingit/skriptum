@@ -654,35 +654,43 @@ Da Vektoren ein zentraler Datentyp in `R` sind, ist es wichtig sich möglichst e
 
 ### Matrizen
 
-Matrizen sind rechteckige und damit zweidimensionale Datenstrukturen, die aus Zeilen und Spalten bestehen und als Verallgemeinerung von Vektoren zu verstehen sind. Matrizen werden häufig für numerische Berechnungen, wie in der linearen Algebra, verwendet. In `R` können aber genauso wie Vektoren Werte mit Zeichenketten oder logischen Werten haben. Wir werden uns allerdings auf numerische Matrizen beschränken, da diese am ehesten benötigt werden.
+Matrizen sind rechteckige und damit zweidimensionale Datenstrukturen, die aus Zeilen und Spalten bestehen und als Verallgemeinerung von Vektoren zu verstehen sind. Matrizen liegen zahllosen Berechnungen in der Statistik zugrunde, auch wenn diese vorwiegend im Hintergrund stattfinden. In `R` können Matrizen genauso wie Vektoren auch Werte wie Zeichenketten oder logischen Werten haben. Wir werden uns allerdings auf numerische Matrizen beschränken, da diese am ehesten benötigt werden.
 
-Eine Matrize der Dimension $m \times n$ wird in der Mathematik wir folgt definiert.
+Eine Matrize der Dimension $m \times n$ wird in der Mathematik wie folgt definiert.
 
 \begin{equation}
-A = a_{ij} = \begin{pmatrix}a_{11} & \ldots & a_{1n} \\
+A = (a_{ij}) = \begin{pmatrix}a_{11} & \ldots & a_{1n} \\
 \vdots & & \vdots \\
 a_{m1} & \ldots & a_{mn}
 \end{pmatrix}
 \end{equation}
 
-Matrizen werden in `R` mit der Funktion `matrix()` erstellt. Der erste Parameter gibt die einzelnen Werte an gefolgt von der Anzahl der Zeilen (`nrow`) und der Anzahl der Spalten (`ncol`).
+In `R` werden Matrizen mit der `matrix()`-Funktion erzeugt. In den meisten Fällen sind zwei von drei Parametern notwenig. Der erste Parameter gibt die einzelnen Werte an gefolgt von der Anzahl der Zeilen (`nrow`) und der Anzahl der Spalten (`ncol`). Meist sind nur zwei Parameter notwendig, da wenn z.B. $m\times n$ Werte an `matrix()` übergeben werden, dann kann nach Angabe der Anzahl der Zeilen, die Anzahl der Spalten hergeleitet werden bzw. genauso andersherum.
+
+```{r}
+matrix(1:6, nrow = 3, ncol = 2)
+matrix(1:6, nrow = 3)
+matrix(1:6, ncol = 2)
+```
+
+Wie immer, wenn die Matrize weiter benötigt wird, dann muss der Rückgabewert von `matrix()` einer Variable zugewiesen werden.
 
 ```{r}
 mat_1 <- matrix(1:4, nrow=2, ncol = 2)
 mat_1
 ```
 
-Um Elemente in der Matrize zu manipulieren oder zu extrahieren verwendet ihr wieder den subsetting Operator `[]` mit dem Unterschied dass ihr jetzt zwei Indexe angeben müsst nach dem Muster `mat[zeile,spalte]`. Wie beim Vektor sind Vektoren, logische Werte und negative Werte erlaubt. Wenn ihr eine Dimension weglasst, werden entsprechend alle Zeilen oder Spalten angesteuert.
+Um Elemente in der Matrize zu manipulieren oder zu extrahieren verwendet wir wieder den subsetting Operator `[]`. Im Unterschied zum Vektor, der nur eine Dimension hat, müssen bei einer Matrize dzwei Indezis angegeben werden. Die Spezifikation erfolgt nach dem Muster `mat[zeile,spalte]`. Wie beim Vektor sind bei der Indizierung Vektoren, logische Werte und negative Werte erlaubt. Wenn ihr eine Dimension weglasst, werden entsprechend alle Zeilen bzw. Spalten angesteuert.
 
 ```{r}
-mat_1[1,1]
-mat_1[2,2]
-mat_1[,1]
-mat_1[2,]
-mat_1[-2,1]
+mat_1[1,1] # Element a_11
+mat_1[2,2] # Element a_22
+mat_1[,1]  # Elemente a_i1
+mat_1[2,]  # Elemente a_2j
+mat_1[-2,1] # alle Elemente der ersten Spalte ohne Zeile 2
 ```
 
-Über das subsetting könnt entsprechend auch die indexierten Werte neu belegen.
+Über das subsetting können den indizierten Werte in der Matrize neue Werte zugewiesen werden.
 
 ```{r}
 mat_0 <- matrix(0, nr=6, nc = 3)
@@ -692,7 +700,7 @@ mat_0[5,2:3] <- -13
 mat_0
 ```
 
-Matrizen können wie Vektoren auf zwei Arten multipliziert werden. Entweder die elementweise Art über `*` oder Matrizenmultiplikation über `%*%` nach dem Muster.
+Matrizen können wie Vektoren auf zwei Arten multipliziert werden. Entweder die Elementweise mittels `*` oder Matrizenmultiplikation über `%*%` nach dem Muster.
 
 \begin{gather*}
 \begin{bmatrix}
@@ -773,9 +781,9 @@ dim(D)
 A + D
 ```
 
-Mit der Funktion `diag()` wird eine quadratische Diagonalmatrize \index{Diagonalmatrize} erstellt.
+Mit der Funktion `diag()` kann eine quadratische Diagonalmatrize \index{Diagonalmatrize} erzeugt werden. Eine Diagonalmatrize hat nur auf der sogenannten Hauptdiagonalen Einträge, während alle anderen Werte $=0$ sind (siehe Formel \eqref{eq-r-kickoff-diag}).
 
-$$
+\begin{equation}
 \begin{pmatrix}
 d_{11}& 0      & 0 & \cdots & 0 \\
 0     & d_{22} & 0 &        &\vdots \\
@@ -783,7 +791,8 @@ d_{11}& 0      & 0 & \cdots & 0 \\
 \vdots&        &   &        &  \\
 0     &  \cdots &  &        & d_{nn}
 \end{pmatrix}
-$$
+\label{eq-r-kickoff-diag}
+\end{equation}
 
 Eine in der Statistik und generell in der linearen Algebra wichtige Matrize ist die Einheitsmatrize $\mathbf{I}_n$. Die Einheitsmatrize \index{Einheitsmatrize} ist eine Diagonalmatrize bei der alle Einträge auf der Hauptdiagonalen $=1$ sind.
 
@@ -829,6 +838,13 @@ A^T = a_{ji} = \begin{pmatrix}a_{11} & \ldots & a_{m1} \\
 \vdots & & \vdots \\
 a_{n1} & \ldots & a_{mn}
 \end{pmatrix}
+\end{align*}
+
+Ein anschauliches Beispiel:
+
+\begin{align*}
+(a_{ij}) &= \begin{pmatrix} 1 & 3 & 5 \\ 2 & 4 & 6\end{pmatrix} \\
+(a_{ij})^T = (a_{ji}) &= \begin{pmatrix} 1 & 2 \\ 3 & 4 \\ 5 & 6 \end{pmatrix} 
 \end{align*}
 
 ```{r}
