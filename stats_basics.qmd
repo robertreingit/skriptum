@@ -243,7 +243,7 @@ Der Unterschied zwischen den beiden Gruppen ist natürlich auch zum Teil auf die
 id_s2 <- c(12,2,19,4,8,16)
 ```
 
-Sei $i = \{`r paste(id_s2, collapse=',')`\}$ eine zweite Stichprobe. Dies würde zu den folgenden Werten führen nach der Intervention führen.
+Sei $i = \{`r paste(id_s2, collapse=',')`\}$ eine zweite Stichprobe. Dies würde zu den folgenden Werten nach der Intervention führen.
 
 ```{r}
 #| label: tbl-sts-basics-sample-2
@@ -257,7 +257,7 @@ world_ex_2 <- world_ex_2 |>
 world_ex_2_hat <- world_ex_2 |> group_by(Gruppe) |> summarize(Kraft = mean(Kraft))
 D_2 <- round(diff(world_ex_2_hat$Kraft))
 
-world_ex_1 |> 
+world_ex_2 |> 
   kable(
     booktabs=TRUE, 
     col.names = c('ID', 'Kraft[N]','Gruppe'))
@@ -271,13 +271,13 @@ world_ex_1 |>
 diff_dotplot(world_ex_2, world_ex_2_hat)
 ```
 
-In @fig-sts-basics-ex-2-dotplot sind wiederum die Datenpunkte, Mittelwerte und der Unterschied abgetragen. In diesem Fall ist allerdings die Differenz zwischen den beiden Gruppen genau in der anderen Richtung $D = `r D_2`$. Daher würden wir dieses Ergebnisses genau in der anderen Richtung interpretieren. Das Krafttraining führt nicht nur zu keiner Verbesserung in der Kraftfähigkeit, sondern sogar zu einer Verschlechterung!
+In @fig-sts-basics-ex-2-dotplot sind wieder die Datenpunkte, Mittelwerte und der Unterschied in den Mittelwerten zwischen den beiden Gruppen abgetragen. In diesem Fall ist allerdings die Differenz zwischen den beiden Gruppen genau in der anderen Richtung $D = `r D_2`$. Daher würden wir dieses Ergebnis genau in der anderen Richtung interpretieren. Das Krafttraining führt nicht nur zu keiner Verbesserung in der Kraftfähigkeit, sondern sogar zu einer Verschlechterung!
 
 ```{r}
 id_s3 <- c(6,5,7,20,14,16) 
 ```
 
-Es hätte aber auch sein können, das wir noch eine andere Stichprobe gezogen hätten, z.B. $i = \{`r paste(id_s3, collapse=',')`\}$. Mit dieser Stichprobe würden wir zu folgenden Ergebnis kommen (siehe @tbl-sts-basics-ex-3). 
+Es hätte aber auch sein können, dass wir noch eine andere Stichprobe gezogen hätten, z.B. $i = \{`r paste(id_s3, collapse=',')`\}$. Mit dieser Stichprobe würden wir zu folgenden Ergebnis kommen (siehe @tbl-sts-basics-ex-3). 
 
 ```{r}
 #| tbl-cap: "Mittelwertsdaten aus Experiment 3 und der Unterschied $D$ zwischen den beiden Gruppenmittelwerten"
@@ -303,9 +303,9 @@ world_ex_3_hat |>
   
 ```
 
-In diesem Fall haben wird zwar wieder einen positiven Unterschied zwischen den beiden Gruppen in der zu erwartenden Richtung gefunden. Der Unterschied von $D = `r D_3`$ ist allerdings deutlich kleiner als das tatsächlichen $\Delta = `r d_gr`$. Daher würden wir möglicherweise das Ergebnis so interpretieren, dass wir das Krafttraining als ineffektiv bewerten und keine Empfehlung für das Training ausprechen würden.
+In diesem Fall haben wird zwar wieder einen positiven Unterschied zwischen den beiden Gruppen in der zu erwartenden Richtung gefunden. Der Unterschied von $D = `r D_3`$ ist allerdings deutlich kleiner als der tatsächliche Unterschied $\Delta = `r d_gr`$. Daher würden wir möglicherweise das Ergebnis so interpretieren, dass wir das Krafttraining als ineffektiv bewerten und keine Empfehlung für das Training aussprechen.
 
-Zu beachten ist, dass keines der Ergebnisse 100% korrekt ist. Entweder der Unterschied zwischen den beiden Gruppen ist deutlich zu groß, oder in der anderen Richtung oder deutlich zu klein. Das Ergebnis des Experiments hängt ursächlich damit zusammen, welche Stichprobe gezogen wird. Diese Phänomen gilt in jedem Fall generell für jedes Ergebnis eines Experiments. Das Phänomen, das der Wert der berechneten Statistik zwischen Wiederholungen des Experiments schwankt wird als Stichprobenvariabilität bezeichnet.  
+Zu beachten ist, dass keines der Ergebnisse 100% korrekt ist. Entweder ist der Unterschied zwischen den beiden Gruppen deutlich zu groß, oder in der falschen Richtung oder deutlich zu klein. Das Ergebnis des Experiments hängt ursächlich damit zusammen, welche Zufallsstichprobe gezogen wird. Diese Phänomen gilt in jedem Fall generell für jedes Ergebnis eines Experiments. Das Phänomen, das der Wert der berechneten Statistik zwischen Wiederholungen des Experiments schwankt wird als Stichprobenvariabilität bezeichnet.  
 
 ::: {#def-sample-variability}
 ## Stichprobenvariabilität
@@ -313,18 +313,20 @@ Zu beachten ist, dass keines der Ergebnisse 100% korrekt ist. Entweder der Unter
 Durch die Anwendung von Zufallsstichproben, variiert eine auf den Daten berechnete Statistik. Die Variabilität wird als Stichprobenvariabilität\index{Stichprobenvariabilität} bezeichnet.
 :::
 
-Streng genommen, führt die Stichprobenvariabilität für sich genommen noch nicht dazu, das sich die Statistik zwischen Wiederholungen des Experiments verändert, sondern die zu untersuchenden Werte in der Population müssen selbst auch noch eine Streuung aufweisen. Wenn wir eine Population untersuchen würden, bei der alle Personen die gleiche Beinkraft hätten, würden unterschiedliche Stichproben immer den gleichen Mittelwert haben und wiederholte Durchführungen des Experiment würden immer wieder zu dem selben Ergebnis führen. Dieser Fall ist in der Realität aber praktisch nie gegeben und sämtlich Parameter für die wir uns interessieren zeigen immer eine natürlich Streuung in der Population. Diese Streuung in der Population führt daher zu dem besagten Ergebnis, das das gleiche Experiment mehrmals wiederholt zu unterschiedlichen Zufallsstichproben führt und dementsprechend immer zu unterschiedlichen Ergebnissen führt. Das Ergebnis ist inherent variable bzw. unsicher.
+Streng genommen, führt die Stichprobenvariabilität für sich genommen noch nicht dazu, das sich die Statistik zwischen Wiederholungen des Experiments verändert, sondern die zu untersuchenden Werte in der Population müssen selbst auch noch eine Streuung aufweisen. Wenn wir eine Population untersuchen würden, bei der alle Personen die gleiche Beinkraft hätten, würden unterschiedliche Stichproben immer den gleichen Mittelwert haben und wiederholte Durchführungen des Experiment würden immer wieder zu dem selben Ergebnis führen. Dieser Fall ist in der Realität aber praktisch nie gegeben und sämtliche Parameter für die wir uns interessieren zeigen immer eine natürlich Streuung in der Population. Diese Streuung in der Population führt daher zu dem besagten Effekt, das das gleiche Experiment mehrmals wiederholt zu unterschiedlichen Zufallsstichproben führt und dementsprechend immer zu unterschiedlichen Ergebnissen führt. Das Ergebnis ist inherent variable bzw. unsicher.
 
-Daher ist eine der zentrale Aufgabe der Statistik mit dieser Variabilität umzugehen und die Forscherin in die Lage zu versetzen trotzdem rationale Entscheidungen zu treffen. Eine implizite Kernannahme dabei ist, das wir mit Hilfe von Daten überhaupt etwas über die Welt lernen können. D.h. das uns die Erhebung von Daten überhaupt auch in die Lage versetzt rationale Entscheidungen zu treffen. Entscheidungen wie ein spezialisiertes Krafttraining mit einer klinischen Population durchzführen oder eine bestimmte taktische Variante mit meiner Mannschaft zu trainieren um die Gegner besser auszuspielen. Alle diese Entscheidungen sollten rational vor dem Hintergrund von Variabilität und Unsicherheit getroffen werden und auch möglichst oft zu korrekten Entscheidungen führen. Wie wir sehen werden, kann uns die Statistik leider nicht garantieren immer die korrekte Entscheidungen zu treffen. Nochmal auf den Punkt gebracht nach @wild2000 [p.28]
+Daher ist eine der zentrale Aufgabe der Statistik mit dieser Variabilität umzugehen und Forscherinnen in die Lage zu versetzen trotzdem rationale Entscheidungen zu treffen. Eine implizite Kernannahme dabei ist, dass wir mit Hilfe von Daten überhaupt etwas über die Welt lernen können. D.h. das uns die Erhebung von Daten auch in die Lage versetzt rationale Entscheidungen zu treffen. Entscheidungen wie ein spezialisiertes Krafttraining mit einer klinischen Population durchzführen oder eine bestimmte taktische Variante mit meiner Mannschaft zu trainieren um die Gegner besser auszuspielen. Alle diese Entscheidungen sollten rational vor dem Hintergrund von Variabilität und Unsicherheit getroffen werden und auch möglichst oft zu korrekten Entscheidungen führen. Wie wir sehen werden, kann uns die Statistik leider nicht garantieren immer die korrekte Entscheidungen zu treffen. Nochmal auf den Punkt gebracht nach @wild2000 [p.28]
 
 > The subject matter of statistics is the process of finding out more about the real world by collecting and then making sense of data.
 
-Untersuchen wir jedoch zunächst das Phänomen, das Wiederholungen des gleichen Experiments zu unterschiedlichen Ergebnissen führt, weiter. In unserem Beispiel aus Lummerland haben wir nämlich den Vorteil, das uns die Wahrheit bekannt ist. In @fig-sts-basics-d-dist-1 ist die Verteilung unsere bisheringen drei $D$s abgetragen.
+Untersuchen wir jedoch zunächst das Phänomen weiter, das Wiederholungen des gleichen Experiments zu unterschiedlichen Ergebnissen führen. In unserem Lummerlandbeispiel haben wir nämlich den Vorteil, dass uns die Wahrheit bekannt ist. Diesen Umstand können wir uns zu Nutze machen.
+
+In @fig-sts-basics-d-dist-1 ist die Verteilung unsere bisherigen drei $D$s abgetragen.
 
 ```{r}
-#| fig.cap: "Bisherige Verteilung der Unterschiede $D$"
+#| fig-cap: "Bisherige Verteilung der Unterschiede $D$"
 #| label: fig-sts-basics-d-dist-1
-#| fig.height: 1.8
+#| fig-height: 1.8
 
 ggplot(tibble(D = c(D_1, D_2, D_3)), aes(x = D)) +
   geom_histogram(bins = 30) +
@@ -333,7 +335,7 @@ ggplot(tibble(D = c(D_1, D_2, D_3)), aes(x = D)) +
 ```
 
 
-Die drei Werte liegen ja relativ weiter auseinander. Eine Anschlussfrage könnte daher sein: "*Welche weiteren Werte sind denn überhaupt möglich mit der vorliegenden Population?*".
+Die drei Werte liegen relativ weit auseinander. Eine Anschlussfrage könnte daher sein: "*Welche weiteren Werte sind denn überhaupt mit der vorliegenden Population möglich ?*".
 
 ## Die Stichprobenverteilung
 
