@@ -14,7 +14,7 @@ Im Folgenden beschäftigen wir uns mit experimentellen Design. D.h. wir untersuc
 
 ## Zuteilung der Stichprobengrößen in zwei Gruppen
 
-Wir möchten den Unterschied bezüglich des Mittelwerts zwischen zwei Gruppen $1$ und $2$ untersuchen. In Gruppe $1$ haben wir eine Stichprobengröße von $n_1$ und entsprechend eine Stichprobegröße $n_2$ in Gruppe $2$. Den Unterschied zwischen den beiden Mittelwerten aus den Gruppen berechnen wir wie bekannt nach.
+Die folgenden Beispiel sind alle aus @goos2011 entnommen. Wir möchten den Unterschied bezüglich des Mittelwerts zwischen zwei Gruppen $1$ und $2$ untersuchen. In Gruppe $1$ haben wir eine Stichprobengröße von $n_1$ und entsprechend eine Stichprobegröße $n_2$ in Gruppe $2$. Den Unterschied zwischen den beiden Mittelwerten aus den Gruppen berechnen wir wie bekannt nach.
 
 \begin{equation}
 D = \bar{X}_1 - \bar{X}_2
@@ -100,3 +100,49 @@ tibble(n_1 = 1:11, n_2 = seq(11,1), v_d = var_d12(n_1, sigma_1, sigma_2), se_d =
 In @tbl-ed-basics-sample-02 sind wieder die verschiedenen Werte für $\sigma^2(D)$, $\sigma_e(D)$ und die Effizienz berechnet worden. Wir können sehen, dass jetzt nicht mehr das Design mit gleichgroßen Stichproben optimal ist, sondern das Design mit $n_1 = 3$ und $n_2 = 9$. D.h. die ungleiche Varianz in den beiden Gruppen hat dazu geführt, dass der minimale Standardfehler dann eingenommen wird, wenn wir einen größere Stichprobe aus Gruppe $2$ ziehen als aus Gruppe $1$.
 
 Wenn wir diese nicht gewusst hätten und in beiden Gruppen wieder mit $n_i = 6$ gearbeitet hätten, hätten wir somit $20\%$ Effizienz eingebüßt. Intuitiv macht diese ungleiche Verteilung auch Sinn. Da die Varianz in Gruppe $2$ größer ist, ist auch unserer Unsicherheit über den Mittelwert in dieser Gruppe größer. Um diese Unsicherheit auszugleichen erhöhen wir die Stichprobenanzahl im Verhältnis zu Gruppe $1$ um mehr Information über die diese Gruppe zu erhalten. Intuitiv macht diese ungleiche Verteilung auch Sinn. Da die Varianz in Gruppe $2$ größer ist, ist auch unserer Unsicherheit über den Mittelwert in dieser Gruppe größer. Um diese Unsicherheit auszugleichen erhöhen wir die Stichprobenanzahl im Verhältnis zu Gruppe $1$ um mehr Information über die diese Gruppe zu erhalten.
+
+Schauen wir uns ein Beispiel an, bei dem die Unterschied in den Varianzen zwischen den beiden Gruppen nicht ganz so extrem sind (siehe @tbl-ed-basics-sample-03).
+
+```{r}
+#| tbl-cap: "Abhängigkeit der Varianz und des Standardfehler von $D$ mit der Stichprobenverteilung bei ungleicher Varianz $\\sigma_1^2 = 1, \\sigma_2^2=2$"
+#| label: tbl-ed-basics-sample-03
+
+n <- 12
+sigma_1 <- 1
+sigma_2 <- 2
+tibble(n_1 = 1:11, n_2 = seq(11,1), v_d = var_d12(n_1, sigma_1, sigma_2), se_d = sqrt(v_d), eff = min(v_d)/v_d) |> 
+  kable(
+    booktabs = TRUE,
+    linesep = '',
+    escape = FALSE,
+    col.names = c('$n_1$','$n_2$', '$\\sigma^2(D)$', '$\\sigma_e(D)$', 'Effizienz'),
+    digits = 2
+  )
+```
+
+In @tbl-ed-basics-sample-03 sehen wir wieder, das das effizienteste Design nicht gleich große Stichproben in den beiden Gruppen hat, sondern hier würde das Design mit $n_1 = 5$ und $n_2 = 7$ den niedrigsten Standardfehler zeigen. Der Verlust an Effizienz bei gleich großen Gruppen wäre hier praktisch zu vernachlässigen. D.h. wenn wir keine genauen Information haben wie sich die Varianzen in den beiden Gruppen verhalten, aber wir keine großen Unterschiede erwarten, dann sind wir mit gleichgroßen Gruppen wahrscheinlich oft gut bedient.
+
+Untersuchen wir die Effizienz noch einmal aus einer anderen Perspektive, nämlich des Budget das uns zur Verfügung steht. Nehmen wir an wir müssen die Untersuchung in einem Speziallabor durchführen und wir haben nur eine begrenzte Zeit zur Verfügung. Wir untersuchen wieder zwei Gruppen bei denen aber die Vorbereitung des Experiment doppelt solange für Gruppe $2$ dauert im Vergleich zu Gruppe $1$. Zum Beispiel in Gruppe $1$ benötigen wir das Labor für eine Stunde während wir für Teilnehmerinnen und Teilnehmer aus Gruppe $2$ zwei Stunden benötigen. In Gruppe $2$ ist vielleicht eine spezielle Patientenpopulation bei der wir mehr Zeit einplanen müssen. Wir haben aber nur insgesamt $24$ Stunden das Labor zu Verfügung. Wir setzen wieder $\sigma^2 = 1$ an. Wie sollten wir die Gruppengrößen zuteilen?
+
+Wir können jetzt nicht einfach die gleiche Tabelle wie in den obigen Fällen benutzen, da wir unser Zeitbudget beachten müssen. Mit etwas ausprobieren kommen wir zu folgendem Ergebnis.
+
+```{r}
+#| tbl-cap: "Abhängigkeit der Varianz und des Standardfehler von $D$ bei $\\sigma_i^2 = 1$ und Budgetbeschränkungen von $24$ Stunden"
+#| label: tbl-ed-basics-sample-04
+
+n <- 12
+tibble(n_1 = seq(22,2,-2), n_2 = 1:11, zeit = n_1  + 2*n_2, v_d = 1/n_1 + 1/n_2, se_d = sqrt(v_d), eff = min(v_d)/v_d) |>  
+  kable(
+    booktabs = TRUE,
+    linesep = '',
+    escape = FALSE,
+    col.names = c('$n_1$','$n_2$', 'Kosten', '$\\sigma^2(D)$', '$\\sigma_e(D)$', 'Effizienz'),
+    digits = 2
+  )
+```
+
+Wir sehen wieder in @tbl-ed-basics-sample-04, dass eine ungleiche Verteilung in die Gruppen die höchste Effizienz hat. Der Effekt hier, ist dass wir hier eine Balance finden müssen zwischen den größten Anzahl einer Teilnehmerinnen und Teilnehmer und der Ungleichheit der Stichprobengrößen.
+
+Zusammenfassend können wir sagen, dass bei Vergleichen zweier Gruppen das Design mit gleich großen Stichproben in beiden Gruppen die Beste Wahl ist. In Abhängigkeit wie sich die Varianzen zwischen den Gruppen verhalten und oder auch welche Randbedingungen wir für die Durchführung des Experiment haben können die Aussagen sehr unterschiedlich sein. Daher macht es Sinn sich für seinen speziellen Fall etwas Gedanken zu machen welches Design den bestmöglichen Output liefert und vielleicht nicht einfach nur ein Standarddesign aus der Schublade. Die Problematik eine informierte Entscheidung diesbezüglich zu treffen wird in den folgenden Kapitel immer wieder aufgegriffen.
+
+
