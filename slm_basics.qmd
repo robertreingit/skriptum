@@ -93,11 +93,14 @@ $$
 
 Wir bezeichnen die beiden Variablen $m$, die Steigung, und $b$, den y-Achsenabschnitt, mit neuen Variablen die ebenfalls einen Index erhalten. Aus $m$ wird $\beta_1$ und aus $b$ wird $\beta_0$. Damit wird der y-Achsenabschnitt mit $\beta_0$ bezeichnet und die Steigung wird mit $\beta_1$ bezeichnet. Dann wir aus unserer Gleichung:
 
-$$
+\begin{equation}
 y_i = \beta_0 + \beta_1 x_i
-$$ {#eq-slm-psform-beta}
+\label{eq-slm-psform-beta}
+\end{equation}
 
-Das ist immer noch unsere einfache Punkt-Steigungsform, wir haben lediglich den Index $i$ eingeführt um unterschiedliche $y-x$-Wertepaare zu bezeichnen und wir haben den $y$-Achsenabschnitt und die Steigung mit neuen Symbolen versehen.
+Formel \eqref{eq-slm-psform-beta} ist immer noch unsere einfache Punkt-Steigungsform, wir haben lediglich den Index $i$ eingeführt um unterschiedliche $y-x$-Wertepaare zu bezeichnen und wir haben den $y$-Achsenabschnitt und die Steigung mit neuen Symbolen versehen. Wenn wir uns später mit der multiplen linearen Regression beschäftigen und nicht mehr nur eine einzige $x$-Variable haben, dann vereinfacht die Benutzung von $\beta$s die Schreibweise, da wir einfach zusätzliche $\beta$s anhängen und mit einem fortlaufenden Index (z.B. $\beta_2, \beta_3, \ldots$) versehen.
+
+## Funktionaler versus stochastischer Zusammenhang zwischen zwei Variablen
 
 Bei dem bisherigen Zusammenhang handelt es sich um einen funktionalen Zusammenhang\index{Funktionaler Zusammenhang} zwischen den beiden Variablen $x$ und $y$. Funktional deswegen, weil wir eine definiertes mathematisches Modell angeben können, d.h. wir haben eine präzise mathematische Funktion welche die Beziehung zwischen den beiden Variablen beschreibt. Wenn wir den Wert für $x$ kennen, dann können wir einen, einzigen Wert für $y$ ausreichnen indem wir den Wert $x$ in Formel \eqref{eq-slm-psform-1} einsetzen. Aus der Schule kennen wir noch die Darstellung $y = f(x)$. Streng genommen ist diese Darstellung für Formel \eqref{eq-slm-psform-1} nicht ausreichend, denn um den Wert für $y$ auszurechnen benötigen wir auch noch Kenntnis über die Werte $m$ und $b$, bzw. in unsere weiteren Darstellung $\beta_0$ und $\beta_1$. Daher sollte der Zusammenhang eigentlich mit $y = f(x, \beta_0, \beta_1)$ bezeichnet werden. Es gilt aber immernoch, für gegebene $x, \beta_0$ und $\beta_1$ ist der Wert für $y$ fest determiniert.
 
@@ -127,24 +130,26 @@ ggplot(jump, aes(v_ms, jump_m)) +
        y = 'Sprungweite[m]') 
 ```
 
-In @fig-slm-basics-jump-1 sind zwei Punkte rot markiert. Die beiden Werte haben praktisch die gleichen $x$-Werte allerdings unterscheiden sich die $y$-Werte deutlich von einander. Und dies sind nicht die einzigen Beispielpaare bei denen die $x$-Werte nahe beiandern liegen, während die $y$-Werte deutlich weiter voneiander entfernt liegen als bei einen funktionalen Zusammenhang nach Formel \eqref{eq-slm-psform-1} zu erwarten wäre. Diese Abweichungen kommen durch zufällige Einflussfaktoren wie eben zum Beispiel die Veränderungen angesprochener biologischer Faktoren und Messunsicherheiten. Beim Beispiels des Weitsprung spielen auch noch externe Einflüsse, wie beispielsweise Windverhältnisse, eine Rolle. Vielleicht wenn es sich um den gleichen Springer handelt, hat er auch beim zweiten Mal keine Lust mehr gehabt. Wenn die Punkte zwei unterschiedliche Springer sind, dann kommt auch dazu, dass zwei Weitspringer bei identischer Anlaufgeschwindigkeit unterschiedliche Sprungfähigkeiten haben oder auch technisch nicht gleich gesprungen sind und so weiter und so fort. Insgesamt führen alle diese Einflüsse dazu, dass wir nicht mehr einen streng funktionalen Zusammenhang zwischen unseren beiden Variablen $x$ der Anlaufgeschwindigkeit und $y$ der Sprungweite vorfinden. Wie wir mit diesen Einflüssen umgehen ist das zentrale Thema des nächsten Abschnitts und markiert auch unseren Eingang zur einfachen linearen Regression.
+In @fig-slm-basics-jump-1 sind zwei Punkte rot markiert. Die beiden Werte haben praktisch den gleichen $x$-Wert unterscheiden sich allerdings bezüglich ihrer $y$-Werte deutlich voneinander. Und dies sind nicht die einzigen Beispielpaare bei denen die $x$-Werte nahe beiandern liegen, während die $y$-Werte klar voneiander getrennt sind. Dies ist im Unterschied zu einen funktionalen Zusammenhang nach Formel \eqref{eq-slm-psform-1}. Bei einem rein funktionalen Zusammenhang wird jedem $x$-Wert nur genau ein $y$-Wert zugeordent.
+
+Die Abweichungen kommen durch zufällige Einflussfaktoren wie eben zum Beispiel die Veränderungen angesprochener biologischer Faktoren und Messunsicherheiten. Beim Beispiels des Weitsprung spielen auch noch externe Einflüsse, wie beispielsweise Windverhältnisse, eine Rolle. Vielleicht wenn es sich um den gleichen Springer handelt, hat er auch beim zweiten Mal keine Lust mehr gehabt. Wenn die Punkte zwei unterschiedliche Springer sind, dann kommt auch dazu, dass zwei Weitspringer bei identischer Anlaufgeschwindigkeit unterschiedliche Sprungfähigkeiten haben oder auch technisch nicht gleich gesprungen sind und so weiter und so fort. Insgesamt führen alle diese Einflüsse dazu, dass wir nicht mehr einen streng funktionalen Zusammenhang zwischen unseren beiden Variablen $x$ der Anlaufgeschwindigkeit und $y$ der Sprungweite vorfinden. Es handelt sich um einen stochastischen Zusammenhang zwischen den beiden Variablen. Wie wir mit diesen zufälligen Einflüssen umgehen ist das zentrale Thema des nächsten Abschnitts und markiert auch unseren Eingang zur einfachen linearen Regression.
 
 ## Die einfache lineare Regression
 
-Bleiben wir bei unserem Beispiel aus @fig-slm-basics-jump-1 und interpretieren das als praktisches Problem. Wir sind eine Weitsprungtrainerin und stehen jetzt vor der Aufgabe in unserem Training etwas zu verändern um die Weitsprungleistung zu verbessern. Wir haben wir haben uns dazu entschlossen am Anlauf etwas zu verbessern wissen jetzt aber nicht ob, das wirklich lohnenswert ist. Von einer befreundeten Trainerin haben wir einen Datensatz bekommen von Anlaufgeschwindigkeiten und den dazugehörigen Sprungweiten. Schauen wir uns zunächst die einmal die Struktur der Daten an.
+Bleiben wir bei unserem Beispiel aus @fig-slm-basics-jump-1. Wir versetzen uns in die Lage einer Weitsprungtrainerin und die vor der Aufgabe steht ihr Training zu optimieren um die Weitsprungleistung ihrer Athleten zu verbessern. Wir haben uns dazu entschlossen am Anlauf etwas zu verbessern wissen jetzt aber nicht ob das wirklich lohnenswert ist. Von einer befreundeten Trainerin haben wir einen Datensatz bekommen mit Anlaufgeschwindigkeiten und den dazugehörigen Sprungweiten. Schauen wir uns zunächst die einmal die Struktur der Daten an.
 
 ```{r}
 #| label: tbl-slm-basics-jump-1
 #| tbl-cap: "Ausschnitt der Sprungdaten"
 
-jump |> select(jump_m, v_ms) |>
+jump |> select(jump_m, v_ms) |> 
   head(n = 7) |>  
   kable(booktabs=TRUE,
                linesep="",
                digits = 2)
 ```
 
-In @tbl-slm-basics-jump-1 ist ein Ausschnitt Sprungdaten abgebildet. Wir haben eine einfache Struktur der Daten. Wir haben eine Tabelle mit zwei Spalten. `jump_m` bezeichnet die Sprungweiten und `v_ms` die Anlaufgeschwindigkeiten. Damit wir die Datenpaare voneinander unterscheiden bzw. identifzieren können führen wir unseren bereits besprochenen Index $i$ und können so einzelne Paare ansprechen.
+In @tbl-slm-basics-jump-1 sind die ersten $7$ Zeilen der Sprungdaten abgebildet. Die Daten zeigen eine einfache Struktur mit zwei Spalten. `jump_m` bezeichnet die Sprungweiten und `v_ms` die Anlaufgeschwindigkeiten. Damit wir die Datenpaare voneinander unterscheiden bzw. identifzieren können führen wir unseren bereits besprochenen Index $i$ und können so einzelne Paare ansprechen.
 
 ```{r}
 #| label: tbl-slm-basics-jump-2
@@ -156,7 +161,9 @@ jump |> select(i, jump_m, v_ms) |>
                digits = 2)
 ```
 
-Das waren bisher aber nur Formalitäten. Wir wollen jetzt denn Zusammenhang zwischen den beiden Variablen modellieren. Wir könnten wahrscheinlich auch einfach Pi-mal-Daumen abschätzen wie groß der Zusammenhang ist. Wenn wir jetzt aber einen unserer Läufer haben, der z.B. etwa $9m/s$ anläuft, welchen Vergleichswerte nehmen wir dann aus @fig-slm-basics-jump-1. Den unteren oder den oberen der beiden roten Werte? Oder vielleicht den Mittelwert? Welchen Wert nehmen wir wenn unserer Athlete $9.7m/s$ anläuft. Da haben wir leider keinen Vergleichswert in unserer Tabelle. Daher wäre es schon ganz praktisch eine Formel nach dem Muster von @eq-slm-psform-beta zu haben. Wie wir allerdings schon festgestellt haben, geht dies nicht so einfach da wir eben das Problem mit den Einflussfaktoren haben, die dazu führen, dass die Werte eben nicht streng auf eine Gerade liegen. Somit liegt die Herausforderung nun eine Gerade zu finden die möglichst *genau* die Daten wiederspiegelt.
+Daher hat zum Beispiel der dritte Datenpunkt $i = 3$  die Datenwerte $\text{jump} = `r round(jump[["jump_m"]][2],2)`$ und $\text{v}_3 = `r round(jump[["v_ms"]][3],2)`$.
+
+Das waren bisher aber nur Formalitäten. Wir wollen jetzt denn Zusammenhang zwischen den beiden Variablen modellieren. Wir könnten wahrscheinlich auch einfach Pi-mal-Daumen abschätzen wie groß der Zusammenhang ist. Wenn wir jetzt aber einen unserer Läufer haben, der z.B. etwa $9m/s$ anläuft, welchen Vergleichswerte nehmen wir dann aus Formel \eqref{fig-slm-basics-jump-1}. Den unteren oder den oberen der beiden roten Werte? Oder vielleicht den Mittelwert? Welchen Wert nehmen wir wenn unserer Athlete $9.7m/s$ anläuft. Da haben wir leider keinen Vergleichswert in unserer Tabelle. Daher wäre es schon ganz praktisch eine Formel nach dem Muster von Formel \eqref{eq-slm-psform-beta} zu haben. Wie wir allerdings schon festgestellt haben, geht dies nicht so einfach da wir eben das Problem mit den Einflussfaktoren haben, die dazu führen, dass die Werte nicht präzise auf eine Gerade liegen. Somit liegt die Herausforderung nun darin, eine Gerade zu finden die möglichst *genau* die Daten wiederspiegelt.
 
 
 ```{r}
@@ -179,13 +186,11 @@ ggplot(jump, aes(v_ms, jump_m)) +
        y = 'Sprungweite[m]') 
 ```
 
-In @fig-slm-basics-line-1 sind die Daten zusammen mit verschiedenen möglichen Geraden abgebildet. Eine kurze Überlegung macht schnell klar, dass es im Prinzip unendlich viele unterschiedliche Geraden gibt die durch die Datenpunkte gelegt werden können. D.h. es gibt unendlich viele Kombinationen von $\beta_0$ und $\beta_1$, die die jeweiligen Geraden bezeichnen. Daher muss jetzt eine Kriterium gefunden werden, welches ermöglicht aus diesen unendlich vielen Geraden eine auszuwählen die im Sinne des Kriterium optimal ist.
+In @fig-slm-basics-line-1 sind die Daten zusammen mit verschiedenen möglichen Geraden abgebildet. Eine kurze Überlegung macht schnell klar, dass es im Prinzip unendlich viele unterschiedliche Geraden gibt die durch die Datenpunkte gelegt werden können. Da jede Gerade durch die beiden Parameter $\beta_0$ und $\beta_1$ spezifiziert ist, gibt es somit auch unendlich viele Kombinationen von $\beta_0$ und $\beta_1$, die die jeweiligen Geraden definieren. Um nun eine spezielle Gerade aus den unendlich vielen Geraden auswählen zu können, benötigen wir ein Kriterium welches definiert was eine besser passende versus eine schlechter passende Gerade durch die gegebenen Punkte ist. D.h. wir such eine Geraden die im Sinne des Kriterium *optimal* ist. Tatsächlich gibt es dort auch verschiedene Möglichkeiten Kriterien zu entwickeln. Dasjenige Kriterium das am weitesten verbreitet ist und auch intuitiv nachvollziehbar ist basiert auf den quadrierten Abweichungen der Gerade von den Datenpunkten (engl. least squares). Versuchen wir daher nun die Herleitung der least squares schrittweise nachzuvollziehen.
 
-Tatsächlich gibt es dort auch verschiedene Möglichkeiten Kriterien anzuwenden, dasjenige dass jedoch am weitesten verbreitet ist aus verschiedenen Gründen sind die quadratierten Abweichungen von der Gerade. Schauen wir uns die Herleitung dazu schrittweise an. In @fig-slm-basics-line-2 ist zur Übersicht nur ein Ausschnitt der Daten zusammen mit einer möglichen Gerade eingezeichnet. Die senkrechten Abweichungen der Geraden zu den jeweiligen Datenpunkten sind rot eingezeichnet. Es ist ersichtlich, dass für diese Wahl der Geraden es zwei Punkte gibt die tatsächlich auch ziemlich genau auf der Geraden liegen während die anderen Punkte zum Teil oberhalb bzw. unterhalb der Geraden liegen. Das Kriterium wäre jetzt dementsprechen die jenige Geraden aus den unendlich vielen zu finden, bei der diese Abweichung ein Minimum annehmen. 
+## Methode der kleinsten Quadrate
 
-$$
-\text{min}\sum_{i=1}^n y_i - (\beta_0 + \beta_1 x_i) = \sum_{i=1}^n y_i - \beta_0 - \beta_1 x_i
-$$
+Fangen wir dazu zunächst einmal nur mit den einfachen Abweichunge, also nicth den quadrierten Abweichungen an. In @fig-slm-basics-line-2 ist zur Übersicht nur ein Ausschnitt der Daten zusammen mit einer möglichen Gerade eingezeichnet. Die senkrechten Abweichungen der Geraden zu den jeweiligen Datenpunkten sind rot eingezeichnet. Es ist ersichtlich, dass für diese Wahl der Geraden es zwei Punkte gibt die ziemlich genau auf der Geraden liegen während die anderen Punkte zum Teil oberhalb bzw. unterhalb der Geraden liegen. Das Kriterium wäre jetzt dementsprechen die jenige Geraden aus den unendlich vielen zu finden, bei der die Abweichung (die roten Linien) ein Minimum annehmen. 
 
 ```{r}
 #| fig.cap: "Abweichungen der Gerade von der Datenpunkten für die Daten mit eine Anlaufgeschwindigkeit zwischen $8m/s$ und $10m/s$."
@@ -202,44 +207,55 @@ ggplot(jump |> filter(v_ms > 8, v_ms < 10), aes(v_ms, jump_m)) +
        y = 'Sprungweite[m]') 
 ```
 
-Unglücklicherweise haben die einfachen Abweichungen die unhandliche Eigenschaft, dass dann die *Gerade* $y_i = \hat{y}$ optimal ist. 
+Um die Abweichungen (rote Linien) berechnen zu können benötigen wir die dazugehörenden Punkte auf der Geraden. Wenn wir die Gerade schon hätten, dann wäre das kein Problem. Die Punkte auf der Geraden sind genau diejenigen $y$-Werte die für die jeweiligen $x$-Werte berechnen $\beta_0 + \beta_1 x_i$. Die Abweichung für einen Punkt lässt sich dann wie folgt berechnen:
 
-$$
-\sum_{i=1}^n y_i - \hat{y} = \sum_i^n y_i - \sum_{i=1}^n \hat{y} = \sum_{i=1}^n y_i - n\hat{y} = \sum_{i=1}^n y_i - n\frac{1}{n}\sum_{i=1}^n y_i = \sum_{i=1}^n y_i - \sum_{i=1}^n y_i= 0
-$$
+\begin{equation*}
+\text{Abweichung}_i = y_i - (\beta_0 + \beta_1 x_i)
+\end{equation*}
 
-Wir können das Kriterium aber auch noch etwas schärfer machen. Wenn wir sagen, dass wir größere Abweichungen stärker gewichten wollen als kleinere Abweichungen. D.h. große Abweichungen zwischen der Gerade und den Datenpunkten sollten stärker berücksichtigt werden, als kleine Abweichungen. Dies können wir erreichen indem wir die Abweichungen noch zusätzlich quadrieren. Dies hat auch noch den Vorteil noch verschiedene andere mathematische Vorteile, unter anderem führt dies dazu, dass wir eine Gerade erhalten, die auch tatsächlich die Steigung der Punkte berücksichtigt und nicht einfache nur eine horizontale Gerade durch die Punkte zeichnet. Dementsprechend erhalten wir die folgende Funktion, die es zu minimieren gilt:
+Entsprechend führt unser Kriterium zu Summation der Abweichungen für alle Punkte.
 
-$$
-\text{min} \sum_{i=1}^n(y_i - (\beta_0 + \beta_1 x_i))^2
-$$ {#eq-slm-basics-rms-1}
+\begin{equation*}
+\text{min}\sum_{i=1}^n y_i - (\beta_0 + \beta_1 x_i) = \sum_{i=1}^n y_i - \beta_0 - \beta_1 x_i
+\end{equation*}
 
-Die Abweichungen zwischen der zu findenden Gerade und den Datenpunkten werden als Residuen $e_i$ bezeichnet. Dementsprechend ist die Minimierungsgleichung auch als:
+Wir verschärfen das Kriterium nun noch etwas indem wir größere Abweichungen stärker gewichten wollen als kleinere Abweichungen. D.h. große Abweichungen zwischen der Gerade und den Datenpunkten sollen stärker berücksichtigt werden, als kleine Abweichungen. Dies können wir erreichen indem wir die Abweichungen quadrieren. Dementsprechend erhalten wir die folgende Funktion:
+
+\begin{equation}
+E(\beta_0, \beta_1) = \sum_{i=1}^n(y_i - (\beta_0 + \beta_1 x_i))^2
+\label{eq-slm-basics-rms-1}
+\end{equation}
+
+Mit $E(\beta_0, \beta_1)$ wird ausgedrückt, dass die Summe von der Wahl der beiden Parameter $\beta_0$ und $\beta_1$ abhängt. $E$ ist eine Funktion von $\beta_0$ und $\beta_1$. Um unsere Gerade zu bestimmen suchen wir daher nun das Minimum von $E$ ($E$ nach englisch error).
+
+Die Abweichungen der Punkte auf der Gerade von den tatsächlichen Datenpunkten spielen in der weiteren Betrachtung immer wieder eine wichtige Rolle und haben daher einen eigenen Term. Die Abweichungen werden als Residuen $e_i$ bezeichnet. Dementsprechend kann die Minimierungsgleichung auch mit:
 
 $$
 \text{min} \sum_{i=1}^n e_i^2
 $$
-darzustellen, mit $e_i := y_i - (\beta_0 + \beta_1 x_i)$. Führen wir noch eine weitere Bezeichnung $E$ ein, mit der wir die Minimierungsfunktion bezeichnen ($E$ nach englisch error).
+dargestellt werden. Es gilt $e_i := y_i - (\beta_0 + \beta_1 x_i)$. Insgesamt:
 
-$$
-E = \sum_{i=1}^n e_i^2 = \sum_{i=1}^n (y_i - \beta_0 - \beta_1 x_i)^2
-$$
+\begin{equation*}
+E(\beta_0, \beta_1) = \sum_{i=1}^n e_i^2 = \sum_{i=1}^n (y_i - \beta_0 - \beta_1 x_i)^2
+\end{equation*}
 
-Das Minimum läßt sich finden, indem die partiellen Ableitungen von $E$ nach $\beta_0$ und $\beta_1$ berechnet werden und, wie wir es aus der Schule kennen, die Ableitungen gleich Null gesetzt werden.
+Das Minimum läßt sich nun bestimmen, indem wir die partiellen Ableitungen von $E$ nach $\beta_0$ und $\beta_1$ berechnet werden und, wie wir es aus der Schule kennen, diese gleich Null setzen.
 
 \begin{align*}
-\frac{\partial E}{\partial \beta_0} &= -2 \sum_{i=1}^n (y_i - \beta_0 - \beta_1 x_i) = 0 \\
-\frac{\partial E}{\partial \beta_1} &= -2 \sum_{i=1}^n x_i (y_i - \beta_0 - \beta_1 x_i) = 0
+\frac{\partial E(\beta_0, \beta_1)}{\partial \beta_0} &= -2 \sum_{i=1}^n (y_i - \beta_0 - \beta_1 x_i) = 0 \\
+\frac{\partial E(\beta_0, \beta_1)}{\partial \beta_1} &= -2 \sum_{i=1}^n x_i (y_i - \beta_0 - \beta_1 x_i) = 0
 \end{align*}
 
-Diese Gleichungen lassen sich umstellen und nach $\beta_0$ und $\beta_1$ auflösen:
+Dies Gleichungen bilden ein Gleichungssystem mit zwei Unbekannten $\beta_0$ und $\beta_1$ und können mittels etwas Algebra nach $\beta_0$ und $\beta_1$ aufgelöst werden (siehe @sec-step-by-step-normal). Dies führt zu den folgenden Lösungen für $\beta_0$ und $\beta_1$:
 
 \begin{align}
+\label{eq-slm-basics-norm-1} 
 \hat{\beta_1} &= \frac{\sum_{i=1}^n (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^n (x_i - \bar{x})^2} \\
-\hat{\beta_0} &= \bar{y} - \hat{\beta_1} \bar{x} \label{eq-slm-basics-norm1}
+\label{eq-slm-basics-norm-2}
+\hat{\beta_0} &= \bar{y} - \hat{\beta_1} \bar{x} 
 \end{align} 
 
-$\bar{x}$ und $\bar{y}$ sind wieder die Mittelwerte von $x_i$ und $y_i$. Diese beiden Gleichungen werden als die Normalengleichungen bezeichnet.
+$\bar{x}$ und $\bar{y}$ sind die Mittelwerte von $x_i$ und $y_i$. Diese beiden Gleichungen werden als die Normalengleichungen \index{Normalengleichungen} bezeichnet.
 
 Wir führen noch einen weiteren Term ein, den vorhergesagten Wert $\hat{y}_i$ von $y_i$ anhand der Geradengleichung. Das Hütchen über $y_i$ ist dabei immer das Signal dafür, das es sich um einen abgeschätzten Wert handelt. Wenn wir $\beta_0$ und $\beta_1$ anhand der Normalengleichung bestimmen, dann sind das mit großer Wahrscheinlichkeit nicht die *wahren* Werte aus der Population, sondern wir haben sie nur anhand der Daten abgeschätzt. Daher bekommen die berechneten Werte ebenfalls ein Hütchen $\hat{\beta}_0$ und $\hat{\beta}_1$. Insgesamt nimmt die lineare Geradengleichung dann die folgende Form an:
 
@@ -247,7 +263,7 @@ $$
 \hat{y}_i = \hat{\beta}_0 + \hat{\beta}_1 \cdot x_i
 $$
 
-Graphisch sind die $\hat{y}_i$s die Werte auf der Geraden für die gegebenen $x_i$-Werte.
+D.h. die Residuen können auch mittels $e_i = y_i - \hat{y}_i$ dargestellt werden. Graphisch sind die $\hat{y}_i$s die Werte auf der Geraden für die gegebenen $x_i$-Werte.
 
 ```{r}
 #| fig.cap: "Die vorhergesaten Werte $\\hat{y}_i$ auf der Gerade."
@@ -265,7 +281,7 @@ ggplot(jump |> filter(v_ms > 8, v_ms < 10), aes(v_ms, jump_m)) +
        y = 'Sprungweite[m]') 
 ```
 
-Für den vorliegenden Fall der Weitsprungdaten erhalten wir die Werte für die Koeffizienten nach Einsetzen der beobachteten Werte in Formel \eqref{eq-slm-basics-norm1} mit $\hat{\beta}_0 = -0.14$ und $\hat{\beta}_1 = 0.76$. Somit folgt für die Geradengleichung:
+Gehen wir zurück zu unseren Weitsprungdaten. Wenn wir die Datenpunkte in die Normalengleichungen Formeln \eqref{eq-slm-basics-norm-1} und \eqref{eq-slm-basics-norm-2} einsetzen, dann erhalten wir für die Koeffizienten die Werte $\hat{\beta}_0 = -0.14$ und $\hat{\beta}_1 = 0.76$. Somit folgt für die Geradengleichung:
 
 $$
 \hat{y}_i = -0.14 + 0.76 \cdot x_i
@@ -340,8 +356,9 @@ kable(ab_ii,
       digits = 2)
 ```
 
+Wir können in @tbl-slm-basics-gradient erkennen, das das Wertepaar für $\beta_0$ und $\beta_1$, welches wir mit Hilfe der Normalengleichung bestimmt haben, denn kleinesten Abweichungswert hat. Also im Sinne unseres Kriteriums ein Optimum darstellt.
 
-### Schritt-für-Schritt Herleitung der Normalengleichungen
+### Schritt-für-Schritt Herleitung der Normalengleichungen (advanced) {#sec-step-by-step-normal}
 
 Um die Herleitung der Normalengleichungen Schritt-für-Schritt nachvollziehen zu können benötigen wir zunächst einmal ein paar algebraische Tricks.
 
@@ -442,9 +459,9 @@ Somit erhält man die beiden Normalengleichungen der Regression.
 
 ## Was bedeuten die Koeffizienten?
 
-Gehen wir zurück nun zu unseren Ausgangsproblem der Weitspringer, was haben wir jetzt durch die Berechnung der Gerade eigentlich gewonnen? Dazu müssen wir erst einmal verstehen was die beiden Koeffizienten $\hat{\beta}_0$ und $\hat{\beta}_1$ bedeuten. Wenn wir zurück zu @eq-slm-psform-1 gehen, haben die beiden Koeffzienten den $y$-Achsenabschnitt und die Steigung der Geraden beschrieben. In unserem Beispiel haben wir anhand der Daten einen $y$-Achsenabschnitt $\hat{\beta}_0$ von $-0.14$ berechnet. D.h ein Weitspringer der mit einer Anlaufgeschwindigkeit von $x = 0$ anläuft, landet $14$cm hinter der Sprunglinie. Dies macht offensichtlich nicht viel Sinn (warum?). Der Grund warum hier ein offensichtlich unrealistischere Wert berechnet wurde, werden wir später noch genauer betrachten. Wir können trotzdem zwei Eigenschaften von $\hat{\beta}_0$ beobachten. 1) der Koeffizient hat eine Einheit, nämlich die gleiche Einheit wie die Variable $y$. 2) Ob der Wert zu interpretieren ist, hängt von der Verteilung der Daten ab. Schauen wir uns nun den Steigungskoeffizienten $\hat{\beta}_0$ an. Der Steigungskoeffizient in @eq-slm-psform-1 zeigt an, wie sich der $y$-Wert verändert, wenn sich der $x$-Wert um einen Einheit verändert. In unserem Fall welcher Unterschied zu erwarten ist zwischen zwei Weitspringern die sich in der Anlaufgeschwindigkeit um eine $m/s$ unterscheiden. D.h. der Steigungskoeffizient ist ebenfalls in der Einheit der $y$-Variable zu interpretieren.
+Gehen wir zurück nun zu unseren Ausgangsproblem der Weitspringer, was haben wir jetzt durch die Berechnung der Gerade eigentlich gewonnen? Dazu müssen wir erst einmal verstehen was die beiden Koeffizienten $\hat{\beta}_0$ und $\hat{\beta}_1$ bedeuten. Wenn wir zurück zu Formel \eqref{eq-slm-psform-1} gehen, haben die beiden Koeffzienten den $y$-Achsenabschnitt und die Steigung der Geraden beschrieben. In unserem Beispiel haben wir anhand der Daten einen $y$-Achsenabschnitt $\hat{\beta}_0$ von $-0.14$ berechnet. D.h ein Weitspringer der mit einer Anlaufgeschwindigkeit von $x = 0$ anläuft, landet $14$cm hinter der Sprunglinie. Dies macht offensichtlich nicht viel Sinn (warum?). Der Grund warum hier ein offensichtlich unrealistischere Wert berechnet wurde, werden wir später noch genauer betrachten. Wir können trotzdem zwei Eigenschaften von $\hat{\beta}_0$ beobachten. 1) der Koeffizient hat eine Einheit, nämlich die gleiche Einheit wie die Variable $y$. 2) Ob der Wert zu interpretieren ist, hängt von der Verteilung der Daten ab. Schauen wir uns nun den Steigungskoeffizienten $\hat{\beta}_0$ an. Der Steigungskoeffizient in Formel \eqref{eq-slm-psform-1} zeigt an, wie sich der $y$-Wert verändert, wenn sich der $x$-Wert um einen Einheit verändert. In unserem Fall welcher Unterschied zu erwarten ist zwischen zwei Weitspringern die sich in der Anlaufgeschwindigkeit um eine $m/s$ unterscheiden. D.h. der Steigungskoeffizient ist ebenfalls in der Einheit der $y$-Variable zu interpretieren.
 
-Unsere Trainerin kann jetzt die berechnete Gerade dazu nehmen um zu überprüfen ob es sich lohnen würde Trainingszeit in den Anlauf zu stecken und welche Verbesserung dort zu erwarten sind. Allerdings fehlt dazu noch etwas, wir wissen nämlich noch nicht ob die berechnete Gerade auch wirklich die Daten gut wiederspiegelt. Im Beispiel erscheint dies anhand der Grafik als relativ plausibel. Das muss aber nicht immer so sein. Wir können nämlich für alle möglichen Daten eine Gerade berechnen ohne das diese Gerade die Daten wirklich auch nur annährend korrekt wiedergibt. In Formel \eqref{eq-slm-basics-norm1} steht nirgends für welche Daten die Berechnung nur erlaubt ist.
+Unsere Trainerin kann jetzt die berechnete Gerade dazu nehmen um zu überprüfen ob es sich lohnen würde Trainingszeit in den Anlauf zu stecken und welche Verbesserung dort zu erwarten sind. Allerdings fehlt dazu noch etwas, wir wissen nämlich noch nicht ob die berechnete Gerade auch wirklich die Daten gut wiederspiegelt. Im Beispiel erscheint dies anhand der Grafik als relativ plausibel. Das muss aber nicht immer so sein. Wir können nämlich für alle möglichen Daten eine Gerade berechnen ohne das diese Gerade die Daten wirklich auch nur annährend korrekt wiedergibt. In den Formeln \eqref{eq-slm-basics-norm-1} und \eqref{eq-slm-basics-norm-2} steht nirgends für welche Daten die Berechnung nur erlaubt ist.
 
 ```{r}
 #| fig.cap: "Gefittete Gerade durch die Daten einer Funktion $f(x) = x^3$."
@@ -481,7 +498,7 @@ tibble(
 
 Im nächsten Kapitel werden wir uns daher damit beschäftigen die Repräsentation der Daten näher zu betrachten und zu präzisieren.
 
-Wir nehmen noch eine weitere Eigenschaft der Gerade mit, die zunächst nichts mit der Interpretation der Koeffizienten zu tun hat, aber später noch mal von Interesse sein wird. Die Gerade hat nämlich die Eigenschaft durch den Punkt ($\bar{x}$, $\bar{y}$) zu gehen. Dies kann daran gesehen werden wenn in die Gleichung $\bar{x}$ für $x_i$ eingesetzt wird. Anhand der Normalgleichungen kann die Geradengleichung in der Form.
+Wir nehmen noch eine weitere Eigenschaft der Gerade mit, die zunächst nichts mit der Interpretation der Koeffizienten zu tun hat, aber später noch mal von Interesse sein wird. Die Gerade hat nämlich die Eigenschaft durch den Punkt ($\bar{x}$, $\bar{y}$) zu gehen. Dies kann daran gesehen werden wenn in die Gleichung $\bar{x}$ für $x_i$ eingesetzt wird. Anhand der Formel \eqref{eq-basics-norm-2} der Normalgleichungen kann die Geradengleichung in der folgenden Form dargestellt werden.
 
 $$
 y_i = \hat{\beta}_0 + \hat{\beta}_1 \cdot x_i = \underbrace{\bar{y} - \hat{\beta}_1 \bar{x}}_{\text{Def. }\hat{\beta}_0} + \hat{\beta}_1 \cdot x_i
@@ -514,23 +531,23 @@ ggplot(jump, aes(v_ms, jump_m)) +
   labs(x = 'Anlaufgeschwindigkeit [m/s]', y = 'Sprungweite [m]')
 ```
 
-Eine Eigenschaft die im weiteren Verständnis immer wieder auftaucht bezieht sich auf die $x$-Werte. Bei der Regression wird im Allgemeinen davon ausgegangen, dass die beobachteten $x$-Werte fixiert sind. D.h. trotzdem die $x$-Werte bei einem Experiment zufällig sein können, werden diese in den nachfolgenden Schritten als fixiert angesehen. Daher ist in der Formel $Y_i = \beta_0 + \beta_1 X_i + \epsilon_i$ auch nur $\epsilon_i$ die einzige zufällige Variable.
+Eine Eigenschaft die im weiteren Verständnis immer wieder auftaucht bezieht sich auf die $x$-Werte. Bei der Regression wird im Allgemeinen davon ausgegangen, dass die beobachteten $x$-Werte fixiert sind. D.h. trotzdem die $x$-Werte bei einem Experiment zufällig sein können, werden diese in den nachfolgenden Schritten als fixiert angesehen.
 
 ## Die einfache lineare Regression in `R`
 
 In `R` wird eine Regression mit der Funktion `lm()` berechnet. Die für uns zunächst wichtigsten Parameter von `lm()` sind der erste Parameter `formula` und der zweite Parameter `data`. Mit der Formel wird der Zusammenhang zwischen den Variablen beschrieben, dabei können die Namen bzw. Bezeichner aus dem `tibble()` benutzt werden, die an den zweiten Parameter `data` übergeben werden. D.h. die Spaltennamen aus dem `tibble()` werden in `formula` verwendet.
 
-In unserem Weitsprungbeispiel konnten wir in @tbl-slm-basics-jump-1 sehen, das das `tibble()` zwei Spalten mit den Namen `v_ms`, den Anlaufgeschwindigkeiten, und `jump_m`, den Weitsprungweiten enthielt. Dementsprechend, müssen wir diese beiden Bezeichner in `formula` verwenden, um unser Regressionsmodell zu beschreiben. Die Form der Modellbeschreibung folgt, dabei einer bestimmten Syntax die wir uns zunächst anschauen müssen. Zentrales Element der Syntax ist das Tilde Zeichen `~` (Win: ALTGR++, MacOS: ___),  welches interpretiert wird als *modelliert mit*. Der Term der auf der linken Seite steht bezeichnet die abhängige Variable während die Terme auf der rechten Seite der Tilde stehen die unabhängige Variablen spezifizieren. Dementsprechend kann der Satz *"Y wird mittels X modelliert"* in die Formelsyntax mit `Y ~ X` übersetzt. Die komplette Syntax orientiert sich an eine Arbeit von @wilkinson1973.
+In unserem Weitsprungbeispiel konnten wir in @tbl-slm-basics-jump-1 sehen, das das `tibble()` zwei Spalten mit den Namen `v_ms`, den Anlaufgeschwindigkeiten, und `jump_m`, den Weitsprungweiten enthielt. Dementsprechend, müssen wir diese beiden Bezeichner in `formula` verwenden, um unser Regressionsmodell zu beschreiben. Die Form der Modellbeschreibung folgt, dabei einer bestimmten Syntax die wir uns zunächst anschauen müssen. Zentrales Element der Syntax ist das Tilde Zeichen `~` (WIN: {{< kbd ALTGR-+ >}}, MAC: {{< kbd ALT-n >}}),  welches interpretiert wird als *modelliert mit*. Der Term der auf der linken Seite steht bezeichnet die abhängige Variable während die Terme auf der rechten Seite der Tilde stehen die unabhängige Variablen spezifizieren. Dementsprechend kann der Satz *"Y wird mittels X modelliert"* in die Formelsyntax mit `Y ~ X` übersetzt. Die komplette Syntax orientiert sich an eine Arbeit von @wilkinson1973.
 
-Wenn ein konstanter in der Syntax benötigt wird, dann wird dieser mit einer $1$ bezeichnet. Also zum Beispiel wenn wir @eq-slm-psform-beta modellieren wollen benutzen wir die Syntax `y ~ 1 + x`. Die beiden Koeffizienten $\beta_0$ und $\beta_1$ brauchen wir nicht explizit anzugeben, sondern `R` generiert uns automatisch anhand der Bezeichner Koeffizienten, die allerdings die Namen der Bezeichner bekommen. Dazu kommt noch eine Besonderheit, dass `R` bei einer Regressionsgleichung automatisch davon ausgeht, dass ein konstanter Term verwendet werden soll, d.h. der Term `+1` wird automatisch dazugefüht. Wenn wir ein Modell ohne einen $y$-Achsenabschnitt fitten wollen, dann müssen wir dies `R` explizit mitteilen, indem wir `-1` der linken Seite hinzufügen, also z.B. `y ~ x - 1`. Die Syntax generalisiert dann später einfach, wenn zusätzliche Terme in der multiplen Regression benötigt werden, in dem weitere unabhängige Variablen durch `+` dazugefügt werden. Dementsprechend würde sich die Formel `y ~ x_1 + x_1` übersetzen in *die abhängige Variable $y$ wird mittels der unabhängigen Variablen `x_1` und `x_2` und einem konstaten Term modelliert*. In @tbl-slm-basics-formelsyntax sind weitere Beispiele für die Struktur der Formelsyntax für `lm()` gezeigt.
+Wenn ein konstanter in der Syntax benötigt wird, dann wird dieser mit einer $1$ bezeichnet. Also zum Beispiel wenn wir die Formel \eqref{eq-slm-psform-beta} modellieren wollen benutzen wir die Syntax `y ~ 1 + x`. Die beiden Koeffizienten $\beta_0$ und $\beta_1$ brauchen wir nicht explizit anzugeben, sondern `R` generiert uns automatisch anhand der Bezeichner Koeffizienten, die allerdings die Namen der Bezeichner bekommen. Dazu kommt noch eine Besonderheit, dass `R` bei einer Regressionsgleichung automatisch davon ausgeht, dass ein konstanter Term verwendet werden soll, d.h. der Term `+1` wird automatisch dazugefüht. Wenn wir ein Modell ohne einen $y$-Achsenabschnitt fitten wollen, dann müssen wir dies `R` explizit mitteilen, indem wir `-1` der linken Seite hinzufügen, also z.B. `y ~ x - 1`. Die Syntax generalisiert dann später einfach, wenn zusätzliche Terme in der multiplen Regression benötigt werden, in dem weitere unabhängige Variablen durch `+` dazugefügt werden. Dementsprechend würde sich die Formel `y ~ x_1 + x_1` übersetzen in *die abhängige Variable $y$ wird mittels der unabhängigen Variablen `x_1` und `x_2` und einem konstaten Term modelliert*. In @tbl-slm-basics-formelsyntax sind weitere Beispiele für die Struktur der Formelsyntax für `lm()` gezeigt.
 
 Table: Formelsyntaxbeispiele für `lm()` (y-Ab = y-Achsenabshnitt, StKoef = Steigungskoeffizient) {#tbl-slm-basics-formelsyntax}
 
 | Modell | Formel |  Erklärung |
 |---|---|---|
 | $y=\beta_0$ | `y ~ 1` | y-Ab
-| $y=\beta_0+\beta x$ | `y ~ x` | y-Ab und StKoef |
-| $y=\beta_0+\beta_1x_1+\beta_2x_2$ | `y ~ x1 + x2` | y-Ab und 2 StKoe |
+| $y=\beta_0+\beta_1 \times x_1$ | `y ~ x` | y-Ab und StKoef |
+| $y=\beta_0+\beta_1 \times x_1+\beta_2 \times x_2$ | `y ~ x1 + x2` | y-Ab und 2 StKoe |
 
 Wenn wir jetzt also unsere Weitsprungdaten modellieren wollen, verwenden wir die folgenden Befehle.
 
@@ -611,7 +628,7 @@ Oder mit den Standard `R`-Grafiksystem. Hier kann der Funktion `abline()` das ge
 #| fig.height: 4
 
 plot(jump_m ~ v_ms, data = jump)
-abline(mod, color = 'red')
+abline(mod, col = 'red')
 ```
 
 Schauen wir uns noch mal ein ganz einfaches Beispiel, bei dem wir tatsächlich wissen welcher Zusammenhang zwischen den beiden Variablen. Wir halten das Beispiel ganz einfache und nehmen vier verschiedene $x$-Werte mit $x_i = i$. Wir setzen $\beta_0 = 1$ und $\beta_1 = 0.5$. Wir generieren die vier Werte mit `R`, speichern diese in einem `tibble()` mit dem Bezeichner `data` und berechnen die resultierenden Koeffizienten mittels `lm()`.
@@ -629,4 +646,4 @@ coef(mod)
 
 Und tatsächlich können wir die korrekten Koeffizienten mittels der einfachen linearen Regression wiedergewinnen. Diesen Ansatz mittels synthetisch generierten Daten die eingeführten Konzepte und Ansätze zu überprüfen werden wir im weiteren Verlauf des Skripts immer wieder anwenden, da er die Möglichkeit bietet relativ einfach und nachvollziehbar das Verhalten verschiedener Ansätze auszutesten. 
 
-Zusammenfassend lässt sich sagen, das wir jetzt gelernt haben wie wir ein einfaches Regressionmodell der Form @eq-slm-psform-beta an einen beliebigen Datensatz fitten können. Die Berechnung der beiden Koeffizienten $\beta_0$ und $\beta_1$ erfolgt mittels Formel \eqref{eq-slm-basics-norm1}. Dabei berechnen wir die Koeffizienten nicht von Hand sondern lassen die von `R` mittels der `lm()` durchführen. Die Berechnung ist dabei vollkommen mechanisch und die Koeffizienten per-se sagen nichts darüber aus, ob das lineare Modell die Daten tatsächlich auch widerspiegelt. Dazu müssen wir noch etwas mehr Theorie aufbauen um Aussagen darüber zu treffen ob das Modell adäquat ist. Dies gehen wir in den folgenden Abschnitten und Kapiteln an.
+Zusammenfassend lässt sich sagen, das wir jetzt gelernt haben wie wir ein einfaches Regressionmodell der Form Formel \eqref{eq-slm-psform-beta} an einen beliebigen Datensatz fitten können. Die Berechnung der beiden Koeffizienten $\beta_0$ und $\beta_1$ erfolgt mittels Formeln \eqref{eq-slm-basics-norm-1} und \eqref{eq-slm-basics-norm-2}. Dabei berechnen wir die Koeffizienten nicht von Hand sondern lassen die von `R` mittels der `lm()` durchführen. Die Berechnung ist dabei vollkommen mechanisch und die Koeffizienten per-se sagen nichts darüber aus, ob das lineare Modell die Daten tatsächlich auch widerspiegelt. Dazu müssen wir noch etwas mehr Theorie aufbauen um Aussagen darüber zu treffen ob das Modell adäquat ist. Dies gehen wir in den folgenden Abschnitten und Kapiteln an.
