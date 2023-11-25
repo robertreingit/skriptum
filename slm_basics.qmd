@@ -478,9 +478,9 @@ ggplot(aes(x,y)) +
 
 ```
 
-In @fig-slm-basics-cubepoly sind synthetische Daten der Funktion $f(x) = x^3$ abgebildet und die mittels \eqref{eq-slm-basics-norm1} berechneten Gerade eingezeichnet. Die Gerade ist zwar in der Lage die ansteigenden Werte zu modellieren aber eben nicht Schwingungen die durch die kubische Abhängigkeit zustande kommen. Aber, nichts verhindert die Anwendung der Formel auf die Daten.
+In @fig-slm-basics-cubepoly sind synthetische Daten der Funktion $f(x) = x^3$ abgebildet und die mittels \eqref{eq-slm-basics-norm-1} berechneten Gerade eingezeichnet. Die Gerade ist zwar in der Lage die ansteigenden Werte zu modellieren aber eben nicht Schwingungen die durch die kubische Abhängigkeit zustande kommen. Aber, nichts verhindert die Anwendung der Formel auf die Daten!
 
-Der gleiche Effekt ist auch in @fig-slm-basics-sinus wieder zu beobachten. Hier besteht eine sinusförmige Abhängigkeit zwischen $y$ und $x$. Wir können wieder \eqref{eq-slm-basics-norm1} anwenden und erhalten auch ein Ergebnis für $\hat{\beta}_0$ und $\hat{\beta}_1$. Allerdings repräsentiert die Gerade in keinster Weise den tatsächlichen Zusammenhang zwischen den Daten.
+Der gleiche Effekt ist auch in @fig-slm-basics-sinus wieder zu beobachten. Hier besteht eine sinusförmige Abhängigkeit zwischen $y$ und $x$. Wir können wieder die Normalengleichungen anwenden und erhalten wieder ein Ergebnis für $\hat{\beta}_0$ und $\hat{\beta}_1$. Allerdings repräsentiert die Gerade in keinster Weise den tatsächlichen Zusammenhang zwischen den Daten wie in @fig-slm-basics-sinus zu beobachten ist.
 
 ```{r}
 #| fig.cap: "Gefittete Gerade durch die Daten einer Funktion $f(x) = sin(x) + 3$."
@@ -498,19 +498,19 @@ tibble(
 
 Im nächsten Kapitel werden wir uns daher damit beschäftigen die Repräsentation der Daten näher zu betrachten und zu präzisieren.
 
-Wir nehmen noch eine weitere Eigenschaft der Gerade mit, die zunächst nichts mit der Interpretation der Koeffizienten zu tun hat, aber später noch mal von Interesse sein wird. Die Gerade hat nämlich die Eigenschaft durch den Punkt ($\bar{x}$, $\bar{y}$) zu gehen. Dies kann daran gesehen werden wenn in die Gleichung $\bar{x}$ für $x_i$ eingesetzt wird. Anhand der Formel \eqref{eq-basics-norm-2} der Normalgleichungen kann die Geradengleichung in der folgenden Form dargestellt werden.
+Wir nehmen noch eine weitere Eigenschaft der Gerade mit, die zunächst nichts mit der Interpretation der Koeffizienten zu tun hat, aber später noch mal von Interesse sein wird. Die Gerade hat nämlich die Eigenschaft durch den Punkt ($\bar{x}$, $\bar{y}$) zu gehen. Dies kann daran gesehen werden wenn in die Gleichung $\bar{x}$ für $x_i$ eingesetzt wird. Anhand der Formel \eqref{eq-slm-basics-norm-2} der Normalgleichungen kann die Geradengleichung in der folgenden Form dargestellt werden.
 
 $$
 y_i = \hat{\beta}_0 + \hat{\beta}_1 \cdot x_i = \underbrace{\bar{y} - \hat{\beta}_1 \bar{x}}_{\text{Def. }\hat{\beta}_0} + \hat{\beta}_1 \cdot x_i
 $$
 
-Wird jetzt für $x_i$ der Wert $\bar{x}$ eingesetzt folgt daher.
+Wird jetzt für $x_i$ der Mittelwer der $x$-Werte $\bar{x}$ eingesetzt folgt daraus.
 
 $$
 y_i = \bar{y} - \hat{\beta}_1 \bar{x} + \hat{\beta}_1 \bar{x} = \bar{y}
 $$
 
-D.h. für den Wert $\bar{x}$ nimmt die Geradengleichung der Wert $\bar{y}$ an. Für die Sprungdaten ist die auch noch mal in @fig-slm-basics-hatxy graphisch dargestellt.
+D.h. für den Wert $\bar{x}$ nimmt die Geradengleichung der Wert $\bar{y}$ an. Für die Sprungdaten ist diese Eigenschaft auch noch mal in @fig-slm-basics-hatxy graphisch dargestellt.
 
 ```{r}
 #| fig.cap: "Regressionsgerade der Sprungdaten und der Punkt $(\\bar{x}, \\bar{y})$"
@@ -531,7 +531,7 @@ ggplot(jump, aes(v_ms, jump_m)) +
   labs(x = 'Anlaufgeschwindigkeit [m/s]', y = 'Sprungweite [m]')
 ```
 
-Eine Eigenschaft die im weiteren Verständnis immer wieder auftaucht bezieht sich auf die $x$-Werte. Bei der Regression wird im Allgemeinen davon ausgegangen, dass die beobachteten $x$-Werte fixiert sind. D.h. trotzdem die $x$-Werte bei einem Experiment zufällig sein können, werden diese in den nachfolgenden Schritten als fixiert angesehen.
+Eine weitere Eigenschaft die in weiteren Behandlung der Regression immer wieder auftaucht bezieht sich auf die $x$-Werte. Bei der Regression wird im Allgemeinen davon ausgegangen, dass die beobachteten $x$-Werte fixiert sind. D.h. trotzdem die $x$-Werte bei einem Experiment möglicherweise zufällige Werte angenommen haben, werden diese in den nachfolgenden Analyseschritten als fixiert bzw. gegeben angesehen.
 
 ## Die einfache lineare Regression in `R`
 
@@ -539,17 +539,19 @@ In `R` wird eine Regression mit der Funktion `lm()` berechnet. Die für uns zun�
 
 In unserem Weitsprungbeispiel konnten wir in @tbl-slm-basics-jump-1 sehen, das das `tibble()` zwei Spalten mit den Namen `v_ms`, den Anlaufgeschwindigkeiten, und `jump_m`, den Weitsprungweiten enthielt. Dementsprechend, müssen wir diese beiden Bezeichner in `formula` verwenden, um unser Regressionsmodell zu beschreiben. Die Form der Modellbeschreibung folgt, dabei einer bestimmten Syntax die wir uns zunächst anschauen müssen. Zentrales Element der Syntax ist das Tilde Zeichen `~` (WIN: {{< kbd ALTGR-+ >}}, MAC: {{< kbd ALT-n >}}),  welches interpretiert wird als *modelliert mit*. Der Term der auf der linken Seite steht bezeichnet die abhängige Variable während die Terme auf der rechten Seite der Tilde stehen die unabhängige Variablen spezifizieren. Dementsprechend kann der Satz *"Y wird mittels X modelliert"* in die Formelsyntax mit `Y ~ X` übersetzt. Die komplette Syntax orientiert sich an eine Arbeit von @wilkinson1973.
 
-Wenn ein konstanter in der Syntax benötigt wird, dann wird dieser mit einer $1$ bezeichnet. Also zum Beispiel wenn wir die Formel \eqref{eq-slm-psform-beta} modellieren wollen benutzen wir die Syntax `y ~ 1 + x`. Die beiden Koeffizienten $\beta_0$ und $\beta_1$ brauchen wir nicht explizit anzugeben, sondern `R` generiert uns automatisch anhand der Bezeichner Koeffizienten, die allerdings die Namen der Bezeichner bekommen. Dazu kommt noch eine Besonderheit, dass `R` bei einer Regressionsgleichung automatisch davon ausgeht, dass ein konstanter Term verwendet werden soll, d.h. der Term `+1` wird automatisch dazugefüht. Wenn wir ein Modell ohne einen $y$-Achsenabschnitt fitten wollen, dann müssen wir dies `R` explizit mitteilen, indem wir `-1` der linken Seite hinzufügen, also z.B. `y ~ x - 1`. Die Syntax generalisiert dann später einfach, wenn zusätzliche Terme in der multiplen Regression benötigt werden, in dem weitere unabhängige Variablen durch `+` dazugefügt werden. Dementsprechend würde sich die Formel `y ~ x_1 + x_1` übersetzen in *die abhängige Variable $y$ wird mittels der unabhängigen Variablen `x_1` und `x_2` und einem konstaten Term modelliert*. In @tbl-slm-basics-formelsyntax sind weitere Beispiele für die Struktur der Formelsyntax für `lm()` gezeigt.
+Wenn ein konstanter in der Syntax benötigt wird, dann wird dieser mit einer $1$ bezeichnet. Also zum Beispiel wenn wir die Formel \eqref{eq-slm-psform-beta} modellieren wollen benutzen wir die Syntax `y ~ 1 + x`. Die beiden Koeffizienten $\beta_0$ und $\beta_1$ brauchen wir nicht explizit anzugeben, sondern `R` generiert uns automatisch anhand der Bezeichner Koeffizienten, die allerdings die Namen der Bezeichner bekommen. Dazu kommt noch eine Besonderheit, dass `R` bei einer Regressionsgleichung automatisch davon ausgeht, dass ein konstanter Term verwendet werden soll, d.h. der Term `+1` wird automatisch dazugefüht. Wenn wir ein Modell ohne einen $y$-Achsenabschnitt fitten wollen, dann müssen wir dies `R` explizit mitteilen, indem wir `-1` der linken Seite hinzufügen, also z.B. `y ~ x - 1`. Die Syntax generalisiert dann später einfach, wenn zusätzliche Terme in der multiplen Regression benötigt werden, in dem weitere unabhängige Variablen durch `+` dazugefügt werden. Dementsprechend würde sich die Formel `y ~ x_1 + x_1` übersetzen in *die abhängige Variable $y$ wird mittels der unabhängigen Variablen `x_1` und `x_2` und einem konstaten Term modelliert*.
 
-Table: Formelsyntaxbeispiele für `lm()` (y-Ab = y-Achsenabshnitt, StKoef = Steigungskoeffizient) {#tbl-slm-basics-formelsyntax}
+In @tbl-slm-basics-formelsyntax sind weitere Beispiele für die Syntax von Formeln für `lm()` gezeigt.
+
+Table: Formelsyntaxbeispiele für `lm()` (y-Ab = y-Achsenabschnitt, StKoef = Steigungskoeffizient) {#tbl-slm-basics-formelsyntax}
 
 | Modell | Formel |  Erklärung |
-|---|---|---|
-| $y=\beta_0$ | `y ~ 1` | y-Ab
+|---|---|-----|
+| $y=\beta_0$ | `y ~ 1` | y-Achsenabschnitt
 | $y=\beta_0+\beta_1 \times x_1$ | `y ~ x` | y-Ab und StKoef |
 | $y=\beta_0+\beta_1 \times x_1+\beta_2 \times x_2$ | `y ~ x1 + x2` | y-Ab und 2 StKoe |
 
-Wenn wir jetzt also unsere Weitsprungdaten modellieren wollen, verwenden wir die folgenden Befehle.
+Um unsere Weitsprungdaten mittels `lm()` zu modellieren, müssen wir den folgenden Befehl verwenden.
 
 ```{r}
 #| echo: true
@@ -557,7 +559,9 @@ Wenn wir jetzt also unsere Weitsprungdaten modellieren wollen, verwenden wir die
 lm(jump_m ~ v_ms, data = jump)
 ```
 
-Per default ist das Ergebnis von `lm()` nicht wirklich besonders hilfreich und es werden nur die beiden berechneten Koeffizienten ausgegeben. Dabei bezeichnet der Term `(Intercept)` den automatisch dazugefügten konstanten Term in der Formel, sprich den $y$-Achsenabschnitt $\hat{\beta}_0$ und mit `v_ms` den Steigungskoeffizienten $\hat{\beta}_1$. Um aus `lm()` mehr Informationen heraus zu bekommen, ist es sinnvoll das Ergebnis einen Variable zuzuweisen. In dem vorliegenden Arbeit wird dazu in den meisten Fällen eine Variante des Bezeichners `mod` benutzt, als Kurzform vom *model*. Diese Bezeichnung ist aber wie alle Bezeichner in `R` vollkommen willkürlich und entspringt nur der Tippfaulheit des Autors.
+Der Rückgabewert von `lm()` ist in der Form nicht besonders hilfreich und es werden nur die beiden berechneten Koeffizienten ausgegeben. Dabei bezeichnet der Term `(Intercept)` den automatisch dazugefügten konstanten Term in der Formel, sprich den $y$-Achsenabschnitt $\hat{\beta}_0$ und mit `v_ms` den Steigungskoeffizienten $\hat{\beta}_1$.
+
+Um aus `lm()` mehr Informationen heraus zu bekommen, ist es sinnvoll das Ergebnis von `lm()` einer Variable zuzuweisen. In dem vorliegenden Arbeit wird dazu in den meisten Fällen eine Variante des Bezeichners `mod` benutzt, als Kurzform vom *model*. Diese Bezeichnung ist aber wie alle Bezeichner in `R` vollkommen willkürlich und entspringt nur der Tippfaulheit des Autors.
 
 ```{r}
 #| echo: true
@@ -565,7 +569,7 @@ Per default ist das Ergebnis von `lm()` nicht wirklich besonders hilfreich und e
 mod <- lm(jump_m ~ v_ms, data = jump)
 ```
 
-Um jetzt mehr Informationen aus dem gefitteten `lm()`-Objekt zu bekommen werden Helferfunktion verwendet. Die wichtigste Funktion ist die `summary()`-Funktion (`?summary.lm`).
+Um mehr Informationen aus dem gefitteten `lm()`-Objekt zu bekommen kann nun eine der zahlreichen Helferfunktionen verwendet werden. Die wichtigste Funktion ist die `summary()`-Funktion (`?summary.lm`).
 
 ```{r}
 #| echo: true
@@ -573,17 +577,17 @@ Um jetzt mehr Informationen aus dem gefitteten `lm()`-Objekt zu bekommen werden 
 summary(mod)
 ```
 
-Hier bekommen wir schon deutlich mehr Informationen mitgeteilt. Als erstes die Formell die wir `lm()` übergeben haben. Dann folgt ein Abschnitt über die Residuen, gefolgt von den Koeffzienten und im unteren Abschnitt noch weitere Statistiken. Wir konzentrieren uns zunächst einmal nur auf die Tabelle im Abschnitt `Coefficients`. Hier begegnen uns wieder in der ersten Spalte die Bezeichner für die beiden $\beta$s in Form von $\beta_0$ `(Intercept)` und $\beta_1$ `v_ms`. In der zweiten Spalte daneben stehen die berechneten Koeffizienten die wir jetzt schon mehrmals gesehen haben. Die weiteren Spalten ignorieren wir hier zunächst. Im Laufe der folgenden Kapitel werden wir uns die weiteren Statistiken anschauen und deren Bedeutung verstehen.
+Hier bekommen wir schon deutlich mehr Informationen mitgeteilt. Ganz oben, als erstes wird die `lm()` übergebene Formel angezeigt. Es folgt ein Abschnitt über die Residuen, gefolgt von den Koeffzienten (`Coefficients`) und im unteren Abschnitt noch weitere Statistiken. Wir konzentrieren uns zunächst einmal nur auf die Tabelle im Abschnitt `Coefficients`. Hier begegnen uns wieder in der ersten Spalte die Bezeichner für die beiden $\beta$s in Form von $\beta_0$ `(Intercept)` und $\beta_1$ `v_ms`. In der zweiten Spalte daneben stehen die berechneten Koeffizienten die wir jetzt schon mehrmals gesehen haben. Die weiteren Spalten ignorieren wir zunächst. Im Laufe der folgenden Kapitel werden wir uns die weiteren Statistiken anschauen und deren Bedeutung erarbeiten.
 
 Bei der Benutzung von `lm()` werden uns noch weitere Helferfunktionen begegnen, die den Umgang mit dem gefitteten Modell vereinfachen. Wollen wir zum Beispiel die beiden Koeffiziente aus dem Modell extrahieren können wir dazu die Funktion `coefficients()` oder auch nur kurz `coef()` verwenden.
-Koeffizienten und Standardschätzfehler
+
 ```{r}
 #| echo: true
  
 coef(mod)
 ```
 
-Die Funktion `coef()` gibt einen Vektor benannten Vektor zurück der entweder über die Bezeichner oder einfach über die Position der Koeffizienten angesprochen werden kann. Möchte ich zum Beispiel den Steigungskoeffizienten verwendent werwende ich:
+Die Funktion `coef()` gibt einen benannten Vektor zurück der entweder über die Bezeichner oder einfach über die Position der Koeffizienten angesprochen werden kann. Möchte ich zum Beispiel den Steigungskoeffizienten extrahieren, kann ich die folgende Syntax verwenden:
 
 ```{r}
 #| echo: true
@@ -599,7 +603,7 @@ oder
 coef(mod)['v_ms']
 ```
 
-Ein etwas übersichtlicher Zugang ist wieder zunächst einmal das Ergebnis von `coef()` einer Variablen zuweisen und diese dann weiter benutzen.
+Ein etwas übersichtlichere Arbeitsweise ist wieder zunächst einmal das Ergebnis von `coef()` einer Variablen zuweisen und diese dann weiter benutzen.
 
 ```{r}
 #| echo: true
