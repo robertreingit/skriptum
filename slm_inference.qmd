@@ -7,32 +7,40 @@
 source('_common.R')
 ```
 
-Nachdem wir im vorhergehenden Kapitel gelehrnt haben, wie wir ein Regressionsgerade an einen Datensatz fitten. Stellt sich nun die Frage ob die Regressionsgerade tatsächlich einen relevanten Zusammenhang zwischen den beiden Variablen beschreibt. Da das einfache lineare Modelle zwei Parameter $\beta_0$ und $\beta_1$ beinhaltet kann diese Fragestellung auf beide Koeffizienten angewendet werden. D.h. wir fragen uns ob das Modell einen statistisch signifikanten Zusammenhang zwischen den beiden Variablen beschreibt. Bezogen auf die beiden Parameter, ist der Parameter $\hat{\beta}_0$ statistisch signifikant und ist der Parameter $\hat{\beta}_1$ statistisch signifikant? Um unseren Werkzeugsatz zu statistischer Signifikanz anwenden zu können brauchen wir aber erst einmal wieder eine Verteilung bei der wir kritische Bereiche markieren können um zu entscheiden ob eine beobachtete Statistik statistisch signifikant ist. Wie behalten dabei im Hinterkopf das statistische Signifikanz nicht das Gleiche ist wie praktische Relevanz.
+Nachdem wir im vorhergehenden Kapitel gelernt haben, wie wir eine Regressionsgerade an einen Datensatz fitten, stellt sich nun die Frage ob die Regressionsgerade tatsächlich einen relevanten Zusammenhang zwischen den beiden Variablen $x$ und $y$ beschreibt.
+
+Da das einfache lineare Modelle zwei Parameter $\beta_0$ und $\beta_1$ (siehe Formel \eqref{eq-slm-psform-beta} beinhaltet kann diese Fragestellung auf beide Koeffizienten angewendet werden. D.h. wir können uns fragen ob das Modell einen statistisch signifikanten Zusammenhang zwischen den beiden Variablen beschreibt. Bezogen auf die beiden Parameter, ist der Parameter $\hat{\beta}_0$ statistisch signifikant und ist der Parameter $\hat{\beta}_1$ statistisch signifikant? Um unseren Werkzeugsatz zur statistischen Signifikanz anwenden zu können brauchen wir aber erst einmal wieder eine Verteilung bei der wir kritische Bereiche identifizieren können um zu entscheiden ob eine beobachtete Statistik statistisch signifikant ist. Wir behalten dabei immer im Hinterkopf, das statistische Signifikanz nicht das Gleiche ist wie praktische Relevanz bzw. der Beweis einer Abweichung von einer gegebenen statistischen Hypothese.
 
 ## Statistische Überprüfung von $\beta_1$ und $\beta_0$
 
-Der erste Schritt um eine Verteilung zu bekommen ist allerdings, dass wir zunächst einmal eine Zufallsvariable benötigen. Bisher haben wir den Zusammenhang zwischen Variablen über die Formel
+Der erste Schritt um eine Referenzverteilung zu erhalten ist besteht zunächst erst einmal wieder darin, dass wir zunächst einmal eine Zufallsvariable benötigen. Bisher haben wir den Zusammenhang zwischen Variablen über die Formel
 
 $$
 y_i = \beta_0 + \beta_1 \cdot x_i
 $$
 
-beschrieben. In dieser Form ist allerdings noch kein zufälliges Element vorhanden. Für ein gegebenes $x_i$ bekommen wir ein genau spezifiziertes $y_i$. Allerdings haben wir bei der Herleitung gesehen, dass die Daten in den seltensten Fällen genau auf der Gerade liegen, sondern wir die Parameter $\hat{\beta}_0$ und $\hat{beta}_1$ so gewählt haben, dass die quadrierten Abweichungen, die Residuen $\epsilon_i$ minimal werden. Dies Residuen verwenden wir jetzt um eine zufälliges Element in unsere Regression rein zu bekommen. Ein mögliche Annahme ist, das die Residuen beispielsweise Normalverteilt sind.
+beschrieben. In dieser Form ist allerdings noch gar kein zufälliges Element vorhanden. Für ein gegebenes $x_i$ bekommen wir ein genau ein spezifiziertes $y_i$. Allerdings hatten wir schon bei der Herleitung gesehen, dass reale Daten in den seltensten Fällen genau auf der Gerade liegen, sondern wir die Parameter $\hat{\beta}_0$ und $\hat{beta}_1$ so gewählt haben, dass die quadrierten Abweichungen, die Residuen $\epsilon_i$ minimal werden. Diese Residuen verwenden wir nun um eine zufälliges Element in unsere Regression rein zu bekommen. Dazu müssen wir den Residuen $\epsilon_i$ eine Verteilung zuweisen. Wir hatten im Rahmen der vorhergehenden Herleitung zur statistischen Signifikanz auch schon verschiedene theoretische Verteilungen kennengelernt. In diesem Zusammenhang hat sich die Normalverteilung als besonders praktsich erwiesen bzw. als eine Verteilung in in verschiedenen Anwendung eine passable Nährung an reale Daten liefert. Daher gehen im folgenden davon aus, dass die Residuen $\epsilon_i$ einer Normalverteilung folgen. Intuitive bei der Herleitung der Geradengleichung mittels der Methode der kleinsten Quadrate hatten wir gesehen, dass die Abweichungen in etwa, in Abhängigkeit von der absoluten Abweichung, gleichmäßig oberhalb und unterhalb der Geraden verteilt waren.
 
-Warum könnte dies Sinn machen. In dem vorhergehenden Weitsprungbeispiel haben wir informell hergeleitet, dass die Weitsprungleistung von unzähligen weiteren Faktoren beeinflusst werden kann, welche dazu führen, dass für eine gegebene Anlaufgeschwindigkeit nicht immer die gleiche Weitsprungweite erzielt wird. Generell, ist diese Art der Begründung bei biologischen System meistens plausibel. In vorhergehenden Abschnitt haben wir dazu aber auch noch gesehen, dass die Normalverteilung eben gut geeignet ist, um solche Prozesse, bei denen viele kleine additive Effekt auftreten. Dieser Argumentation folgend ist es plausibel diese Einflüsse auch beim Regressionsfall mittels einer Normalverteilung zu modellieren. Dazu führen wir noch eine weitere Annahme an, nämlich dass diese Einflüsse im Mittel in gleichen Maßen die Werte nach nach oben wie auch nach unten ablenken. D.h. die Werte nach oben und unten von der Regressionsgerade abweichen. Dies erlaubt uns jetzt die Annahme genau zu spezifizieren.
+In behandelten Weitsprungbeispiel hatten wir informell hergeleitet, dass die Weitsprungleistung von unzähligen Faktoren beeinflusst werden kann, welche dazu führen, dass für eine gegebene Anlaufgeschwindigkeit nicht immer die gleiche Weitsprungweite erzielt wird. Generell, ist diese Art der Begründung bei biologischen System meistens plausibel. In vorhergehenden Abschnitt haben wir dazu aber auch noch gesehen, dass die Normalverteilung eben gut geeignet ist, um solche Prozesse, bei denen viele kleine additive Effekt auftreten. Dieser Argumentation folgend ist es also durchaus plausibel diese Einflüsse auch bei der Regression mittels einer Normalverteilung zu modellieren.
 
-$$
+Insgesamt erlaubt uns dies diese Annahme wie folgt mathematisch zu formulieren.
+
+\begin{equation}
 \epsilon_i \sim \mathcal{N}(0, \sigma^2)
-$$
+\label{eq-slm-inf-epsilon-norm}
+\end{equation}
 
-D.h also, wir gehen davon aus, dass die Residuen normalverteilt sind, mit einem Mittelwert von $\mu = 0$ und einer noch näher zu spezifizierenden Varianz $\sigma^2$. Das führt dann zu der folgenden Formulierung des Regressionsmodells.
+In Formel \eqref{eq-slm-inf-epsilon-norm} drücken wir aus, dass die Residuen $\epsilon_i$ also die Abweichungen vom vorhergesagten Wert $\hat{y}_i$ zum beobachtetgen Wert $y_i$ einer Normalverteilung folgen mit einem Mittelwert von $\mu = 0$ und einer noch näher zu spezifizierenden Varianz $\sigma^2$. Der Mittelwert $\mu=0$ drückt dabei unsere Erwartung aus, dass im Mittel die Abweichung von der Geraden nach oben und nach unten sich gegenseitig aufheben. Der Skalenparameter $\sigma^2$ drückt dabei die Streuung der Werte um die Gerade herum aus. D.h. wenn $\sigma^2$ größer wird, dann streuen die Werte stärker um die Gerade herum bzw. entsprechend entgegengesetzt wenn $\sigma^2$ kleiner ist.
+
+Insgesamt führt dies zu der folgenden Formulierung des einfachen Regressionsmodells.
 
 \begin{equation}
 Y_i = \beta_0 + \beta_1 \cdot x_i + \epsilon_i, \quad \epsilon_i \sim \mathcal{N}(0, \sigma^2)
 \label{eq-slm-inf-simple-reg}
 \end{equation}
 
-Bezüglich der Residuen $\epsilon_i$ lässt sich noch eine weitere Spezifikation machen, auf die wir später noch öfter zurückgreifen werden. Da die Datenpunkt unabhängig voneinander sind, sind die Kovariancen zwischen den Residuen $=0$ oder formaler $cov(e_i,e_j) = 0,~für~i\neq j$. Daher lassen sich die Varianzen und Kovarianzen von $\epsilon_i$ in Form einer sogenannten Varianz-Kovarianz-Matrize schreiben. Matrizen hatten wir schon in der Einführung zu `R` kennengelernt. Die Varianz-Kovarianz-Matrize bekommt per Konvention das Zeichen $\Sigma$. 
+Bezüglich der Residuen $\epsilon_i$ lässt sich noch eine weitere Spezifikation machen, auf die wir später noch öfter zurückgreifen werden. Bisher sind wir davon ausgegangen, dass die einzelnen Datenpunkt unabhängig voneinander sind. D.h. jeder einzelne Wert ist nicht beeinflusst durch einen der anderen Werte. In unserem Beispiel waren die Anlaufgeschwindigkeit-Sprungweit-Paare jeweils von unterschiedlichen Athleten. In diesem Fall sind die Kovariancen zwischen den Residuen $=0$, formale $cov(e_i,e_j) = 0,~für~i\neq j$. Daher lassen sich die Varianzen und Kovarianzen von $\epsilon_i$ in Form einer sogenannten Varianz-Kovarianz-Matrize schreiben. Matrizen hatten wir schon in der Einführung zu `R` kennengelernt. Die Varianz-Kovarianz-Matrize bekommt per Konvention das Zeichen $\Sigma$ und $\mathbf{I}_n$ bezeichnet die Einheitsmatrize.
+
 \begin{equation*}
 \Sigma = \begin{pmatrix}
 \sigma^2 & 0 & \cdots & 0 \\
@@ -47,7 +55,7 @@ Bezüglich der Residuen $\epsilon_i$ lässt sich noch eine weitere Spezifikation
 \end{pmatrix} = \sigma^2 \mathbf{I}_n
 \end{equation*}
 
-Die Annahmen des Modells, das ein linearer Zusammenhang zwischen $Y$ und  $X$ besteht, die einzelnen $N$ Datenpunkte unabhängig voneinander sind und die Residuen einer multivariaten Normalverteilung mit $\epsilon \sim \mathcal{N}(0,\sigma^2\mathbf{I}_n)$ folgen werden als Gauss-Markov-Modell bezeichnet. $\mathbf{I}_n$ bezeichnet die Einheitsmatrize.
+Die Annahmen des Modells, das ein linearer Zusammenhang zwischen $Y$ und  $X$ besteht, die einzelnen $N$ Datenpunkte unabhängig voneinander sind und die Residuen einer multivariaten Normalverteilung mit $\epsilon \sim \mathcal{N}(0,\sigma^2\mathbf{I}_n)$ folgen werden als Gauss-Markov-Modell bezeichnet. 
 
 ::: {#def-gauss-markov}
 ## Gauss-Markov-Modell
@@ -55,7 +63,7 @@ Die Annahmen des Modells, das ein linearer Zusammenhang zwischen $Y$ und  $X$ be
 Besteht zwischen $N$ unabhängigen Datenpunkten $(y_i,x_i)$ ein linearer Zusammenhang der Form $Y = \beta_0 + \beta_1 \cdot X + \epsilon$ zwischen den Variablen $X$ und $Y$ und sind die Datenpunkte unabhängigvoneinander und die $\epsilon$ folgen einer multivariaten Normalverteilung $\epsilon \sim \mathcal{N}(0, \sigma^2 \mathbf{I}_n)$ dann wird dieses Modell als Gauss-Markov-Modell bezeichnet.
 :::
 
-$Y$ wird jetzt groß geschrieben, da es sich um eine Zufallsvariable handelt. Dies führt jetzt dazu, das das Regressionsmodell in zwei Teile unterschieden werden kann. Einmal einen deterministischen Teil $\beta_0 + \beta_1 \cdot x$ und einen stochastischen Teil $\epsilon_i$. Dies führt dazu, dass $Y_i$ ebenfalls stochastisch und somit zu einer Zufallsvariable wird.
+$Y$ wird jetzt groß geschrieben, da es sich um eine Zufallsvariable handelt. Unter einer multivariaten Normalverteilung können wir uns Verallgemeinerung der uns bekannten Normalverteilung vorstellen. Beispielsweise hat eine zweidimensionale Normalverteilung die Form eines Zuckerhuts. Dieser Teil ist für unsere weitere Betrachtung aber erst einmal nicht von weiterem Interesse. Unserer Formulierung des Regressionsmodells nach Formel \eqref{eq-slm-inf-simple-reg}  führt nun dazu, dass wir das Regressionsmodell in zwei Teile unterscheiden können. Einmal einen deterministischen Teil $\beta_0 + \beta_1 \cdot x$ und einen stochastischen Teil $\epsilon_i$. Da $Y_i$ durch die Addition der beiden Teile berechnet führt, führt dies dazu, dass $Y_i$ ebenfalls stochastisch ist und somit zu einer Zufallsvariable wird.
 
 Schauen wir uns weiter an, wie sich $Y_i$ verhält, wenn wir $X_i$ als Konstante $X$ mit ein bestimmten Wert annehmen. Dann wird aus Formel\eqref{eq-slm-inf-simple-reg} $Y_i = \beta_0 + \beta_i \cdot x + \epsilon_i$. Folglich bleibt der deterministische Teil immer gleich, wird zu einer Konstante. Da $\epsilon_i$ normalverteilt ist ist $Y_i$ ebenfalls normalverteilt. Der Mittelwert der Normalverteilung von $Y_i$ $\mu_{Y_i}$ ist allerdings nicht gleich Null, sondern die Normalverteilung von $\epsilon_i$ wird um die Konstante $\beta_0 + \beta_1 \cdot x$ verschoben (siehe @fig-slm-inf-epsilon-1). Das führt dazu, dass $Y_i$ der Verteilung $\mathcal{N}(\beta_0 + \beta_1 x)$ folgt.
 
@@ -98,9 +106,9 @@ Wenn wir die Verteilungen von $Y$ graphisch führ beispielweise drei verschieden
 include_graphics('pics/Stats_Figures.png')
 ```
 
-In @fig-slm-inf-epsilon-2 ist klar zu sehen, wie für jeden der drei Punkte von $X$ die beobachteten $Y$-Werte einer Normalverteilung. Die Breite der Verteilung ist an jedem Punkte gleich, nämlich $=\sigma^2$ während der Mittelwert der Gleichung $\beta_0 + \beta_1 X$ folgend entlang der Regressionsgerade verschoben ist.
+In @fig-slm-inf-epsilon-2 ist klar zu sehen, wie für jeden der drei Punkte von $X$ die beobachteten $Y$-Werte einer Normalverteilung folgen. Die Streuung der Verteilung ist an jedem der $X$-Punkte gleich, nämlich $=\sigma^2$. Dagegen ist der Mittelwert der Verteilung der $Y_i$-Wert der Gleichung $\beta_0 + \beta_1 X$ folgend entlang der Regressionsgerade verschoben.
 
-Wenn wir uns zurück an die Ausführungen zur statistischen Signifikanz erinnern, dann haben wir in dem Zusammenhang vom einem datengenerierenden Prozess gesprochen (@def-dgp) (DGP). In unserem jetzigen Modell können wir dementsprechend zwei Komponenten als Teile des DGP identizifieren. Entsprechend Formel\eqref{eq-slm-inf-simple-reg} besteht der DGP aus dem deterministischen Teil $\beta_0 + \beta_1 X$ und dem stochastischen Teil $\epsilon_i \sim \mathcal{N}(0,\sigma^2)$. Diese Einsicht können wir verwenden um die Eigenschaften dieses Modells bezüglich Aussagen über statistische Signifikanz zu untersuchen.
+Wenn wir uns zurück an die Ausführungen zur statistischen Signifikanz erinnern, dann haben wir in dem Zusammenhang vom einem datengenerierenden Prozess gesprochen (@def-dgp) (DGP). In unserem jetzigen Modell können wir dementsprechend zwei Komponenten als Teile des DGP identizifieren. Entsprechend Formel\eqref{eq-slm-inf-simple-reg} besteht der DGP aus dem deterministischen Teil $\beta_0 + \beta_1 X$ und dem stochastischen Teil $\epsilon_i \sim \mathcal{N}(0,\sigma^2)$. Diese Einsicht können wir verwenden um die Eigenschaften dieses Modells zu möglichen Aussagen hinsichtlich statistisches Signifikanz zu untersuchen.
 
 Wir fokussieren uns jetzt auf ein vereinfachtes Modell bei dem wir zusätzlich noch $\beta_0 = 0$ setzen, und wir uns erst mal nur für die Eigenschaften von $\beta_1$ interessieren. Gehen wir nun davon aus, dass zwischen $X$ und $Y$ der Zusammenhang $\beta_1 = 1$ besteht. D.h. wenn $X$ um eine Einheit vergrößert wird, dann wird $Y$ ebenfalls um eine Einheit größer.
 
