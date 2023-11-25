@@ -418,10 +418,13 @@ div.csl-indent {
    
   <ul>
   <li><a href="#statistische-überprüfung-von-beta_1-und-beta_0" id="toc-statistische-überprüfung-von-beta_1-und-beta_0" class="nav-link active" data-scroll-target="#statistische-überprüfung-von-beta_1-und-beta_0"><span class="header-section-number">12.1</span> Statistische Überprüfung von <span class="math inline">\(\beta_1\)</span> und <span class="math inline">\(\beta_0\)</span></a></li>
-  <li><a href="#herleitung-der-eigenschaften-von-hatbeta_1" id="toc-herleitung-der-eigenschaften-von-hatbeta_1" class="nav-link" data-scroll-target="#herleitung-der-eigenschaften-von-hatbeta_1"><span class="header-section-number">12.2</span> Herleitung der Eigenschaften von <span class="math inline">\(\hat{\beta}_1\)</span></a></li>
-  <li><a href="#maximum-likelihood-methode-bei-der-einfachen-linearen-regression" id="toc-maximum-likelihood-methode-bei-der-einfachen-linearen-regression" class="nav-link" data-scroll-target="#maximum-likelihood-methode-bei-der-einfachen-linearen-regression"><span class="header-section-number">12.3</span> Maximum-likelihood Methode bei der einfachen linearen Regression(*)</a></li>
+  <li><a href="#teststatistik-für-beta_0" id="toc-teststatistik-für-beta_0" class="nav-link" data-scroll-target="#teststatistik-für-beta_0"><span class="header-section-number">12.2</span> Teststatistik für <span class="math inline">\(\beta_0\)</span></a></li>
+  <li><a href="#teststatistik-für-beta_0-1" id="toc-teststatistik-für-beta_0-1" class="nav-link" data-scroll-target="#teststatistik-für-beta_0-1"><span class="header-section-number">12.3</span> Teststatistik für <span class="math inline">\(\beta_0\)</span></a></li>
   <li><a href="#konfidenzintervalle-für-die-koeffizienten" id="toc-konfidenzintervalle-für-die-koeffizienten" class="nav-link" data-scroll-target="#konfidenzintervalle-für-die-koeffizienten"><span class="header-section-number">12.4</span> Konfidenzintervalle für die Koeffizienten</a></li>
-  <li><a href="#weiteres-material" id="toc-weiteres-material" class="nav-link" data-scroll-target="#weiteres-material"><span class="header-section-number">12.5</span> Weiteres Material</a></li>
+  <li><a href="#weitere-hilfsfunktionen-für-lm-in-r" id="toc-weitere-hilfsfunktionen-für-lm-in-r" class="nav-link" data-scroll-target="#weitere-hilfsfunktionen-für-lm-in-r"><span class="header-section-number">12.5</span> Weitere Hilfsfunktionen für <code>lm()</code> in <code>R</code></a></li>
+  <li><a href="#weiteres-material" id="toc-weiteres-material" class="nav-link" data-scroll-target="#weiteres-material"><span class="header-section-number">12.6</span> Weiteres Material</a></li>
+  <li><a href="#herleitung-der-eigenschaften-von-hatbeta_1-advanced" id="toc-herleitung-der-eigenschaften-von-hatbeta_1-advanced" class="nav-link" data-scroll-target="#herleitung-der-eigenschaften-von-hatbeta_1-advanced"><span class="header-section-number">12.7</span> Herleitung der Eigenschaften von <span class="math inline">\(\hat{\beta}_1\)</span> (advanced)</a></li>
+  <li><a href="#maximum-likelihood-methode-bei-der-einfachen-linearen-regression-advanced" id="toc-maximum-likelihood-methode-bei-der-einfachen-linearen-regression-advanced" class="nav-link" data-scroll-target="#maximum-likelihood-methode-bei-der-einfachen-linearen-regression-advanced"><span class="header-section-number">12.8</span> Maximum-likelihood Methode bei der einfachen linearen Regression (advanced)</a></li>
   </ul>
 </nav>
     </div>
@@ -509,7 +512,7 @@ Y_i = \beta_0 + \beta_1 \cdot x_i + \epsilon_i, \quad \epsilon_i \sim \mathcal{N
 <p></p><figcaption class="figure-caption">Abbildung&nbsp;12.1: Relation der Lageparameter von <span class="math inline">\(e_i\)</span> und <span class="math inline">\(Y_i\)</span></figcaption><p></p>
 </figure>
 </div>
-<p>Daraus folgt jetzt aber zusätzlich, dass für jedes gegebenes <span class="math inline">\(X\)</span> die <span class="math inline">\(Y\)</span>-Werte einer Normalverteilung folgen. Lediglich die Verschiebung des Mittelwert der jeweiligen <span class="math inline">\(Y\)</span>-Normalverteilung hängt von <span class="math inline">\(X\)</span> über die Formel <span class="math inline">\(\beta_0 + \beta_1 \cdot X\)</span> zusammen. Formal:</p>
+<p>Daraus folgt zusätzlich, dass für jedes gegebenes <span class="math inline">\(X\)</span> die <span class="math inline">\(Y\)</span>-Werte einer Normalverteilung folgen. Lediglich die Verschiebung des Mittelwert der jeweiligen <span class="math inline">\(Y\)</span>-Normalverteilung hängt von <span class="math inline">\(X\)</span> über die Formel <span class="math inline">\(\beta_0 + \beta_1 \cdot X\)</span> zusammen. Formal:</p>
 <p><span class="math display">\[
 Y|X \sim N(\beta_0+ \beta_1 X,\sigma^2)
 \]</span></p>
@@ -525,13 +528,14 @@ Y|X \sim N(\beta_0+ \beta_1 X,\sigma^2)
 </div>
 </div>
 </div>
-<p>In <a href="#fig-slm-inf-epsilon-2">Abbildung&nbsp;<span>12.2</span></a> ist klar zu sehen, wie für jeden der drei Punkte von <span class="math inline">\(X\)</span> die beobachteten <span class="math inline">\(Y\)</span>-Werte einer Normalverteilung folgen. Die Streuung der Verteilung ist an jedem der <span class="math inline">\(X\)</span>-Punkte gleich, nämlich <span class="math inline">\(=\sigma^2\)</span>. Dagegen ist der Mittelwert der Verteilung der <span class="math inline">\(Y_i\)</span>-Wert der Gleichung <span class="math inline">\(\beta_0 + \beta_1 X\)</span> folgend entlang der Regressionsgerade verschoben.</p>
+<p>In <a href="#fig-slm-inf-epsilon-2">Abbildung&nbsp;<span>12.2</span></a> ist klar zu sehen, wie für jeden der drei Punkte von <span class="math inline">\(X\)</span> die beobachteten <span class="math inline">\(Y\)</span>-Werte einer Normalverteilung folgen. Die Streuung der Verteilung ist an jedem der <span class="math inline">\(X\)</span>-Punkte gleich, nämlich <span class="math inline">\(=\sigma^2\)</span>. Dagegen ist der Mittelwert der Verteilung der <span class="math inline">\(Y_i\)</span>-Wert der Gleichung <span class="math inline">\(\beta_0 + \beta_1 X\)</span> folgend entlang der Regressionsgerade verschoben. Dies erklärt warum die Verteilung von <span class="math inline">\(Y\)</span> vom <span class="math inline">\(X\)</span>-Wert abhängt. Die Verteilung von <span class="math inline">\(Y\)</span> ist im Gauss-Markov-Modell immer normalverteilt mit einer konstanten Varianz <span class="math inline">\(\sigma^2\)</span>, der Mittelwert <span class="math inline">\(\mu\)</span> der Verteilung hängt aber vom <span class="math inline">\(X\)</span>-Wert ab und verändert sich nach <span class="math inline">\(\beta_0 + \beta_1 X\)</span>.</p>
 <p>Wenn wir uns zurück an die Ausführungen zur statistischen Signifikanz erinnern, dann haben wir in dem Zusammenhang vom einem datengenerierenden Prozess gesprochen (<a href="stats_significance.html#def-dgp">Definition&nbsp;<span>7.1</span></a>) (DGP). In unserem jetzigen Modell können wir dementsprechend zwei Komponenten als Teile des DGP identizifieren. Entsprechend Formel<span class="math inline">\(\eqref{eq-slm-inf-simple-reg}\)</span> besteht der DGP aus dem deterministischen Teil <span class="math inline">\(\beta_0 + \beta_1 X\)</span> und dem stochastischen Teil <span class="math inline">\(\epsilon_i \sim \mathcal{N}(0,\sigma^2)\)</span>. Diese Einsicht können wir verwenden um die Eigenschaften dieses Modells zu möglichen Aussagen hinsichtlich statistisches Signifikanz zu untersuchen.</p>
-<p>Wir fokussieren uns jetzt auf ein vereinfachtes Modell bei dem wir zusätzlich noch <span class="math inline">\(\beta_0 = 0\)</span> setzen, und wir uns erst mal nur für die Eigenschaften von <span class="math inline">\(\beta_1\)</span> interessieren. Gehen wir nun davon aus, dass zwischen <span class="math inline">\(X\)</span> und <span class="math inline">\(Y\)</span> der Zusammenhang <span class="math inline">\(\beta_1 = 1\)</span> besteht. D.h. wenn <span class="math inline">\(X\)</span> um eine Einheit vergrößert wird, dann wird <span class="math inline">\(Y\)</span> ebenfalls um eine Einheit größer.</p>
-<p><span id="eq-slm-inf-sim-mod-1"><span class="math display">\[
+<p>Wir fokussieren uns jetzt auf ein vereinfachtes Modell bei dem wir <span class="math inline">\(\beta_0 = 0\)</span> setzen. D.h. der <span class="math inline">\(y\)</span>-Achsenabschnitt der Regressionsgeraden ist <span class="math inline">\(=0\)</span> und wir betrachten erst mal nur die Eigenschaften von <span class="math inline">\(\beta_1\)</span>. Gehen wir nun davon aus, dass zwischen <span class="math inline">\(X\)</span> und <span class="math inline">\(Y\)</span> der Zusammenhang <span class="math inline">\(\beta_1 = 1\)</span> besteht. D.h. der Steigungskoeffzient hat den Wert <span class="math inline">\(=1\)</span>, was dazu führt, dass wenn <span class="math inline">\(X\)</span> um eine Einheit vergrößert wird, dann vergrößert sich <span class="math inline">\(Y\)</span> ebenfalls um eine Einheit. Die Gerade würde somit genau die 1. Winkelhalbierende beschreiben. Formal erhalten wir:</p>
+<p><span class="math display">\[\begin{equation}
 Y = 0 + 1 \cdot X + \epsilon, \quad \epsilon\sim\mathcal{N}(0,\sigma^2)
-\tag{12.1}\]</span></span></p>
-<p>Jetzt müssen wir noch einen Wert für <span class="math inline">\(\sigma^2\)</span> festlegen. Sei dieser einfach einmal <span class="math inline">\(\sigma = \frac{1}{2}\)</span>. Jetzt können wir <code>R</code> benutzen um <em>Experimente</em>, also Beobachtungen, anhand dieses DGP zu simulieren. Der Einfachheit halber legen wir ein übersichtliches <span class="math inline">\(N = 12\)</span> fest und nehmen uns jeweils drei <span class="math inline">\(X\)</span>-Werte z.B. mit <span class="math inline">\(X \in \{-1, 0, 1\}\)</span>, d.h. wir ziehen für jeden <span class="math inline">\(X\)</span>-Wert vier <span class="math inline">\(Y\)</span>-Werte.</p>
+\label{eq-slm-inf-sim-mod-1}
+\end{equation}\]</span></p>
+<p>Jetzt müssen wir allerdings noch einen Wert für <span class="math inline">\(\sigma^2\)</span> bzw. <span class="math inline">\(\sigma\)</span> festlegen. Sei dieser der Einfachheit halber <span class="math inline">\(\sigma = \frac{1}{2}\)</span>. Jetzt können wir <code>R</code> benutzen um <em>Experimente</em>, also Beobachtungen, anhand dieses DGP zu simulieren. Der Überschaubarkeit wegen besteht unser Datensatz nur <span class="math inline">\(N = 12\)</span> Punkten die sich drei <span class="math inline">\(X\)</span>-Werte z.B. mit <span class="math inline">\(X \in \{-1, 0, 1\}\)</span> verteilen. Somit generieren wir für jeden <span class="math inline">\(X\)</span>-Wert vier unterschiedliche <span class="math inline">\(Y\)</span>-Werte. In <code>R</code> code übertragen könnten wir das folgende Programm erstellen.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">12</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>beta_0 <span class="ot">&lt;-</span> <span class="dv">0</span></span>
@@ -542,73 +546,86 @@ Y = 0 + 1 \cdot X + \epsilon, \quad \epsilon\sim\mathcal{N}(0,\sigma^2)
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">y_i =</span> beta_0 <span class="sc">+</span> beta_1 <span class="sc">*</span> x_i <span class="sc">+</span> <span class="fu">rnorm</span>(N, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> sigma)</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Wenn wir uns die generierten Daten anschauen, dann sehen wir wenig überraschend 12 verschiedene Werte für <span class="math inline">\(y_i\)</span> und jeweils <span class="math inline">\(3 \times 4\)</span> verschiedene Werte für <span class="math inline">\(x_i\)</span> (siehe <a href="#tbl-slm-inf-sim-1">Tabelle&nbsp;<span>12.1</span></a>).</p>
+<p>Wenn wir uns die generierten Daten anschauen, dann sehen wir wenig überraschend <span class="math inline">\(12\)</span> verschiedene Werte für <span class="math inline">\(y_i\)</span> und jeweils <span class="math inline">\(3 \times 4\)</span> verschiedene Werte für <span class="math inline">\(x_i\)</span> (siehe <a href="#tbl-slm-inf-sim-1">Tabelle&nbsp;<span>12.1</span></a>).</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="tbl-slm-inf-sim-1" class="anchored">
 <table class="table table-sm table-striped small">
-<caption>Tabelle&nbsp;12.1: Eine Simulation des Modells <a href="#eq-slm-inf-sim-mod-1">Gleichung&nbsp;<span>12.1</span></a></caption>
+<caption>Tabelle&nbsp;12.1: Eine Simulation des Modells <span class="quarto-unresolved-ref">?eq-slm-inf-sim-mod-1</span></caption>
 <thead>
 <tr class="header">
+<th style="text-align: right;">i</th>
 <th style="text-align: right;">x_i</th>
 <th style="text-align: right;">y_i</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
+<td style="text-align: right;">1</td>
 <td style="text-align: right;">-1</td>
-<td style="text-align: right;">-1.00</td>
+<td style="text-align: right;">-0.89</td>
 </tr>
 <tr class="even">
+<td style="text-align: right;">2</td>
 <td style="text-align: right;">-1</td>
-<td style="text-align: right;">-0.59</td>
+<td style="text-align: right;">-0.38</td>
 </tr>
 <tr class="odd">
+<td style="text-align: right;">3</td>
 <td style="text-align: right;">-1</td>
-<td style="text-align: right;">-0.96</td>
+<td style="text-align: right;">-1.06</td>
 </tr>
 <tr class="even">
+<td style="text-align: right;">4</td>
 <td style="text-align: right;">-1</td>
-<td style="text-align: right;">-1.23</td>
+<td style="text-align: right;">-1.55</td>
 </tr>
 <tr class="odd">
+<td style="text-align: right;">5</td>
 <td style="text-align: right;">0</td>
-<td style="text-align: right;">0.40</td>
+<td style="text-align: right;">-0.16</td>
 </tr>
 <tr class="even">
+<td style="text-align: right;">6</td>
 <td style="text-align: right;">0</td>
 <td style="text-align: right;">-0.31</td>
 </tr>
 <tr class="odd">
+<td style="text-align: right;">7</td>
 <td style="text-align: right;">0</td>
-<td style="text-align: right;">0.79</td>
+<td style="text-align: right;">0.35</td>
 </tr>
 <tr class="even">
+<td style="text-align: right;">8</td>
 <td style="text-align: right;">0</td>
-<td style="text-align: right;">0.14</td>
+<td style="text-align: right;">0.88</td>
 </tr>
 <tr class="odd">
+<td style="text-align: right;">9</td>
 <td style="text-align: right;">1</td>
-<td style="text-align: right;">0.18</td>
+<td style="text-align: right;">1.14</td>
 </tr>
 <tr class="even">
+<td style="text-align: right;">10</td>
 <td style="text-align: right;">1</td>
-<td style="text-align: right;">1.27</td>
+<td style="text-align: right;">1.26</td>
 </tr>
 <tr class="odd">
+<td style="text-align: right;">11</td>
 <td style="text-align: right;">1</td>
-<td style="text-align: right;">0.71</td>
+<td style="text-align: right;">1.00</td>
 </tr>
 <tr class="even">
+<td style="text-align: right;">12</td>
 <td style="text-align: right;">1</td>
-<td style="text-align: right;">0.83</td>
+<td style="text-align: right;">1.11</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
 </div>
-<p>Wenn wir die Daten graphisch darstellen erhalten wir (<a href="#fig-slm-inf-sim-1">Abbildung&nbsp;<span>12.3</span></a>):</p>
+<p>Graphish dargestellt erhalten wir (<a href="#fig-slm-inf-sim-1">Abbildung&nbsp;<span>12.3</span></a>):</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(dat_sim_1, <span class="fu">aes</span>(x_i, y_i)) <span class="sc">+</span> </span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -622,16 +639,16 @@ Y = 0 + 1 \cdot X + \epsilon, \quad \epsilon\sim\mathcal{N}(0,\sigma^2)
 </div>
 </div>
 <p>Ebenfalls wenig überraschend, die Punkte sind auf den <span class="math inline">\(x\)</span>-Werten <span class="math inline">\(-1, 0\)</span> und <span class="math inline">\(1\)</span> zentriert und liegen nicht alle aufeinander, da sie einer Zufallsstichprobe aus <span class="math inline">\(\mathcal{N}(0, \frac{1}{4})\)</span> entspringen.</p>
-<p>Jetzt können für diese Daten unsere Normalengleichungen anwenden und Werte für <span class="math inline">\(\hat{\beta}_0\)</span> und <span class="math inline">\(\hat{\beta}_1\)</span> berechnen. Oder wir lassen das von <code>R</code> machen.</p>
+<p>Für die Daten können wir unsere Normalengleichungen anwenden und Werte für <span class="math inline">\(\hat{\beta}_0\)</span> und <span class="math inline">\(\hat{\beta}_1\)</span> berechnen, oder wir lassen das von <code>R</code> mittels der Funktion <code>lm()</code> machen.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>mod_sim_1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(y_i <span class="sc">~</span> x_i, dat_sim_1)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(mod_sim_1)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>(Intercept)         x_i 
- 0.01928823  0.84742748 </code></pre>
+   0.114462    1.050884 </code></pre>
 </div>
 </div>
-<p>Wir sehen, dass die berechneten Werte für <span class="math inline">\(\beta_0\)</span> und <span class="math inline">\(\beta_1\)</span> schon in der Nähe der tatsächlichen Werte liegen (siehe <span class="quarto-unresolved-ref">?eq-slm-inf-mod-1</span>), aber auf Grund der Stichprobenvariabilität eben nicht genau auf diesen Werten. Was passiert denn jetzt, wenn ich das Ganze noch einmal durchlaufen lassen?</p>
+<p>Wir sehen, dass die berechneten Werte für <span class="math inline">\(\beta_0\)</span> und <span class="math inline">\(\beta_1\)</span> schon in der Nähe der <em>wahren</em> Werte liegen (siehe Formel <span class="math inline">\(\eqref{eq-slm-inf-sim-mod-1}\)</span>). Die Werte entsprechen nicht exakt den <em>wahren</em> Werten auf Grund der Stichprobenvariabilität die auf Grund der Benutzung von <code>rnorm()</code> in unserer Simulation resultiert. Was passiert, wenn ich das Ganze noch einmal durchlaufen lassen?</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>dat_sim_2 <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">x_i =</span> <span class="fu">rep</span>(<span class="sc">-</span><span class="dv">1</span><span class="sc">:</span><span class="dv">1</span>, <span class="at">each=</span><span class="dv">4</span>),</span>
@@ -641,10 +658,11 @@ Y = 0 + 1 \cdot X + \epsilon, \quad \epsilon\sim\mathcal{N}(0,\sigma^2)
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(mod_sim_2)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>(Intercept)         x_i 
- 0.06918968  1.03838734 </code></pre>
+ -0.1913293   0.7950044 </code></pre>
 </div>
 </div>
-<p>Wieder wenig überraschend, da jedes Mal wenn ich <code>rnom()</code> eine neue Ziehung aus der Normalverteilung generiert wird, erhalte ich neue Werte für <span class="math inline">\(y_i\)</span> und dementsprechend andere Werte für <span class="math inline">\(\hat{\beta}_0\)</span> und <span class="math inline">\(\hat{\beta}_1\)</span>. Nochmal, warum? <strong>Stichprobenvariabilität</strong>! Jetzt sind wir wieder bei dem gleichen Prinzip, das wir im Rahmen der kleinen Welt ausgiebig behandelt haben. Schauen wir uns jetzt doch einfach mal was passiert wenn wir die Simulation nicht <span class="math inline">\(2\times\)</span> sondern z.B. <span class="math inline">\(1000\times\)</span> durchführen.</p>
+<p>wir erhalten einen neuen Satz von <span class="math inline">\(\hat{\beta_0}\)</span> und <span class="math inline">\(\hat{\beta_1}\)</span>. Wiederum wenig überraschend, da jedes Mal wenn ich <code>rnom()</code> aufrufe, eine neue Ziehung aus der Normalverteilung generiert wird. Somit erhalten wir neue Werte für <span class="math inline">\(y_i\)</span> und dementsprechend andere Werte für <span class="math inline">\(\hat{\beta}_0\)</span> und <span class="math inline">\(\hat{\beta}_1\)</span>. Nochmal, warum? <strong>Stichprobenvariabilität</strong>! Jetzt sind wir wieder bei dem gleichen Prinzip, das wir im Rahmen der kleinen Welt ausgiebig behandelt haben.</p>
+<p>Schauen wir uns jetzt doch einfach mal an was passiert wenn wir die Simulation nicht <span class="math inline">\(2\times\)</span> sondern z.B. <span class="math inline">\(1000\times\)</span> durchführen.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>N_sim <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>beta_1_s <span class="ot">&lt;-</span> <span class="fu">numeric</span>(N_sim)</span>
@@ -656,7 +674,7 @@ Y = 0 + 1 \cdot X + \epsilon, \quad \epsilon\sim\mathcal{N}(0,\sigma^2)
 <span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  beta_1_s[i] <span class="ot">&lt;-</span> <span class="fu">coef</span>(model_temporaer)[<span class="dv">2</span>]</span>
 <span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Wir erhalten jetzt einen Vektor <code>beta_1_s</code> mit <span class="math inline">\(1000\)</span> beobachteten <span class="math inline">\(\hat{\beta}_1\)</span>. Da das etwas viele Werte sind um die uns einzeln anzuschauen, erstellen ein Histogramm der <span class="math inline">\(\hat{\beta}_1\)</span>s. (<a href="#fig-slm-inf-hist-sim-1">Abbildung&nbsp;<span>12.4</span></a>).</p>
+<p>Wir erhalten jetzt einen Vektor <code>beta_1_s</code> mit <span class="math inline">\(1000\)</span> beobachteten <span class="math inline">\(\hat{\beta}_1\)</span>. Da das etwas viele Werte sind um die uns einzeln anzuschauen, erstellen wir ein Histogramm der <span class="math inline">\(\hat{\beta}_1\)</span>s. (<a href="#fig-slm-inf-hist-sim-1">Abbildung&nbsp;<span>12.4</span></a>).</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(beta_1_s, <span class="at">xlab =</span> <span class="fu">expression</span>(<span class="fu">hat</span>(beta)[<span class="dv">1</span>]), <span class="at">main=</span><span class="st">''</span>)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> beta_1, <span class="at">col=</span><span class="st">'red'</span>, <span class="at">lty=</span><span class="dv">2</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -669,10 +687,12 @@ Y = 0 + 1 \cdot X + \epsilon, \quad \epsilon\sim\mathcal{N}(0,\sigma^2)
 </div>
 </div>
 </div>
-<p>In <a href="#fig-slm-inf-hist-sim-1">Abbildung&nbsp;<span>12.4</span></a> begegnet uns zunächst einmal wieder unsere altbekannte Glockenkurve. Schön ist, dass deren Mittelwert im Bereich des wahren Werts von <span class="math inline">\(\beta_1\)</span> liegt und Werte mit größer werdender Abweichung vom wahren Wert in ihrer Häufigkeit abnehmen. Aber die Häufigkeit ist nicht Null, sondern eben nur geringer. Werte in der Nähe von <span class="math inline">\(\beta_1\)</span> weisen dagegen eine größere Häufigkeit aufweisen. Das sollte uns jetzt auch irgendwie zufrieden stimmen, denn dies bedeutet, dass wir in der Lage sind mit unserem Regressionsmodell im Mittel tatsächlich den korrekten Wert abzuschätzen. Allerdings, wie immer, bei einer einzelnen Durchführung des Experiments können wir alles von perfekt spot-on bis komplett danebenliegen und würden es nicht wissen.</p>
-<p>Wir können jetzt aber auch wieder ganz parallel zu unseren Herleitungen in der kleinen Welt einen Entscheidungsprozess spezifizieren. Wenn <a href="#fig-slm-inf-hist-sim-1">Abbildung&nbsp;<span>12.4</span></a> den DGP beschreibt und das die Verteilung der zu erwartenden <span class="math inline">\(\hat{\beta}_1\)</span> unter dem Modell sind. Bei der Dürchführung eines neuen Experiments, dann würden wir sagen, dass wenn unserer beobachteter Wert in den Rändern der Verteilung von <a href="#fig-slm-inf-hist-sim-1">Abbildung&nbsp;<span>12.4</span></a> liegt, das wir eher nicht davon ausgehen, dass unserer neues Experiment den gleichen DGP zugrundeliegen hat. D.h wir definieren uns jetzt Grenzen am oberen und am unteren Rand der Verteilung. Wenn jetzt ein neuer beobachteter Wert entweder unterhalb der unteren Grenze oder oberhalb der oberen Grenze liegt, dann sagen wir: <em>Wir sind jetzt aber sehr überrascht diesen Wert zu sehen, wenn der dem gleichen datengenerierenden Prozess entstammen soll. Daher glauben wir nicht, dass dieses Experiment den gleichen DGP besitzt.</em></p>
-<p>Um diese Entscheidung treffen zu können, müssen wir also Grenzen definieren. Dazu können wir zunächst einmal einfach die Quantilen der Verteilung nehmen und schneiden z.B. unten <span class="math inline">\(2.5\%\)</span> und oben <span class="math inline">\(2.5\%\)</span> ab. So kommen wir dann insgesamt auf <span class="math inline">\(5\%\)</span>, um auf die übliche Irrtumswahrscheinlichkeit von <span class="math inline">\(\alpha = 0.05\)</span> zu kommen. Dazu benutzen wir <code>R</code> und zwar <code>quantile()</code>-Funktion^[Im folgenden Snippet werden die Werte auf zwei Kommastellen mit <code>round()</code> der besseren Darstellung wegen gerundet).</p>
+<p>In <a href="#fig-slm-inf-hist-sim-1">Abbildung&nbsp;<span>12.4</span></a> begegnet uns zunächst einmal wieder unsere altbekannte Glockenkurve. Was uns positiv stimmen sollte ist, dass der Mittelwert der Verteilung im Bereich des wahren Werts von <span class="math inline">\(\beta_1\)</span> (rote Linie) liegt und Werte mit größer werdender Abweichung vom wahren Wert in ihrer Häufigkeit abnehmen. Aber die Häufigkeit ist nicht Null, sondern eben nur geringer. Werte in der Nähe von <span class="math inline">\(\beta_1\)</span> weisen dagegen eine größere Häufigkeit auf. Dies zeigt, dass wir in der Lage sind mit unserem Regressionsmodell im Mittel tatsächlich den <em>wahren</em> Wert <span class="math inline">\(\beta_1\)</span> abzuschätzen. Allerdings, wie immer, bei einer einzelnen Durchführung des Experiments können wir alles von perfekt spot-on bis komplett danebenliegen und würden es nicht wissen.</p>
+<p>Wir können jetzt aber auch wieder ganz parallel zu unseren Herleitungen in der kleinen Welt einen Entscheidungsprozess spezifizieren. Wenn <a href="#fig-slm-inf-hist-sim-1">Abbildung&nbsp;<span>12.4</span></a> den DGP beschreibt und das die Verteilung der zu erwartenden <span class="math inline">\(\hat{\beta}_1\)</span> unter dem Modell sind. Bei der Durchführung eines neuen Experiments, dann würden wir sagen, dass wenn unserer beobachteter Wert in den Rändern der Verteilung von <a href="#fig-slm-inf-hist-sim-1">Abbildung&nbsp;<span>12.4</span></a> liegt, das wir eher nicht davon ausgehen, dass unserer neues Experiment den gleichen DGP zugrundeliegen hat. D.h wir definieren uns Grenzen (kritische Werte) am oberen und am unteren Rand der Verteilung. Wenn ein beobachteter Wert entweder unterhalb der unteren Grenze oder oberhalb der oberen Grenze liegt, dann interpretieren wir dies im Sinne: <em>Wir sind jetzt aber sehr überrascht diesen Wert zu sehen, wenn der dem gleichen datengenerierenden Prozess entstammen soll. Daher glauben wir nicht, dass dieses Experiment den gleichen DGP besitzt.</em></p>
+<p>Um diese Entscheidung treffen zu können, müssen wir also Grenzen definieren. Dazu können wir zunächst einmal einfach die Quantilen der Verteilung nehmen und schneiden z.B. unten <span class="math inline">\(2.5\%\)</span> und oben <span class="math inline">\(2.5\%\)</span> ab. So kommen wir dann insgesamt auf <span class="math inline">\(5\%\)</span>, um auf die übliche Irrtumswahrscheinlichkeit von <span class="math inline">\(\alpha = 0.05\)</span> zu kommen. Dazu benutzen wir in <code>R</code> die <code>quantile()</code>-Funktion^[Im folgenden Snippet werden die Werte auf zwei Kommastellen mit <code>round()</code> der besseren Darstellung wegen gerundet).</p>
 <div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>crit_vals <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">quantile</span>(beta_1_s, <span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.975</span>)), <span class="dv">2</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>crit_vals</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> 2.5% 97.5% 
  0.65  1.35 </code></pre>
@@ -689,7 +709,7 @@ Y = 0 + 1 \cdot X + \epsilon, \quad \epsilon\sim\mathcal{N}(0,\sigma^2)
 </div>
 </div>
 </div>
-<p>Führen wir nun ein Experiment noch einmal durch. Wir beobachten einen Wert für <span class="math inline">\(\hat{\beta}_1\)</span> von <span class="math inline">\(1.46\)</span>. Dieser Wert liegt außerhalb unseres definierten Intervalls <span class="math inline">\([0.65, 1.35]\)</span>, daher sehen wir diesen Wert als derart unwahrscheinlich unter dem angenommenen DGP, das wir sagen: <em>Wir glauben nicht, dass diesem Experiment nicht der angenommene DGP zugrunde liegt</em>. Graphisch wieder dargestellt (siehe <a href="#fig-slm-inf-hist-sim-3">Abbildung&nbsp;<span>12.6</span></a>).</p>
+<p>Führen wir nun ein Experiment einmal durch. Wir beobachten einen Wert für <span class="math inline">\(\hat{\beta}_1\)</span> von <span class="math inline">\(1.46\)</span>. Dieser Wert liegt außerhalb unseres definierten Intervalls <span class="math inline">\([0.65, 1.35]\)</span>, daher sehen wir diesen Wert als derart unwahrscheinlich unter dem angenommenen DGP, das wir sagen: <em>Wir glauben nicht, dass diesem Experiment der angenommene DGP zugrunde liegt</em>. Graphisch führt dies zu <a href="#fig-slm-inf-hist-sim-3">Abbildung&nbsp;<span>12.6</span></a>.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-slm-inf-hist-sim-3" class="quarto-figure quarto-figure-center anchored">
@@ -701,67 +721,75 @@ Y = 0 + 1 \cdot X + \epsilon, \quad \epsilon\sim\mathcal{N}(0,\sigma^2)
 </div>
 </div>
 <p>Daher würden wir diesen Wert als statisisch signifikant bezeichnen und würden unsere Annahme ablehnen.</p>
-<p>Jetzt sind wir aber etwas hin und her zwischen Experiment, Annahmen und Schlussfolgerungen gesprungen. Normalerweise kennen wir die Stichprobenverteilung nicht vor dem Experiment, sondern, wir sind am dem Wert <span class="math inline">\(\beta_1\)</span> interessiert. Wenn wir den Wert schon wissen würden, dann müssten wir ja gar kein Experiment mehr durchführen. D.h. wir haben eigentlich noch keinen klaren Vorkenntnisse. Mit welcher Annahme gehen wir dann in das Experiment rein? Nun, wir schon bei kleinen Welt Beispiel, starten wir mit der Annahme das zwischen den beiden Variablen kein Zusammenhang besteht. Übertragen auf die Modellparameter also, dass kein linearer Zusammenhang zwischen den beiden Variablen besteht.</p>
+</section>
+<section id="teststatistik-für-beta_0" class="level2" data-number="12.2">
+<h2 data-number="12.2" class="anchored" data-anchor-id="teststatistik-für-beta_0"><span class="header-section-number">12.2</span> Teststatistik für <span class="math inline">\(\beta_0\)</span></h2>
+<p>Jetzt sind wir aber etwas hin und her gesprungen zwischen der Simulation, Experiment, Annahmen und Schlussfolgerungen. Normalerweise kennen wir die Stichprobenverteilung vor dem Experiment nicht, sondern, wir sind am dem Wert <span class="math inline">\(\beta_1\)</span> interessiert. Wenn wir den Wert schon wissen würden, dann müssten wir ja gar kein Experiment mehr durchführen. D.h. wir haben eigentlich noch keine klaren Vorkenntnisse. Mit welcher Annahme gehen wir dann in das Experiment rein? Nun, wie schon bei dem kleinen Welt Beispiel, starten wir mit der Annahme das zwischen den beiden Variablen <span class="math inline">\(X\)</span> und <span class="math inline">\(Y\)</span> kein Zusammenhang besteht. Übertragen auf den Modellparameter <span class="math inline">\(\beta_1\)</span> bedeutet dies, dass kein linearer Zusammenhang zwischen den beiden Variablen besteht. D.h. Information über <span class="math inline">\(X\)</span> gibt mir keine Informationen über <span class="math inline">\(Y\)</span>. Formal:</p>
 <p><span class="math display">\[\begin{align*}
 H_0: \beta_1 &amp;= 0 \\
 H_1: \beta_1 &amp;\neq 0
 \end{align*}\]</span></p>
 <p>Um die Stichprobenverteilung unter der <span class="math inline">\(H_0\)</span> formal Herleitung zu können, ist der Erwartungswert von <span class="math inline">\(\hat{\beta}_1\)</span> und dessen Standardfehler notwendig. Es lässt sich zeigen, dass die folgenden Zusammenhänge unter den gesetzten Annahmen bestehen:</p>
-<p><span class="math display">\[
-E[\hat{\beta}_0] = \beta_0
-\]</span></p>
-<p>Also der Schätzer von <span class="math inline">\(\beta_1\)</span> ist erwartungstreu (biased) und der Standardfehler des Schätzer lässt sich wie folgt bestimmen.</p>
-<p><span id="eq-slm-beta1-se"><span class="math display">\[
+<p><span class="math display">\[\begin{equation}
+E[\hat{\beta}_1] = \beta_1
+\end{equation}\]</span></p>
+<p>Der Schätzer <span class="math inline">\(\hat{\beta_1}\)</span> aus den Normalengleichungen von <span class="math inline">\(\beta_1\)</span> ist erwartungstreu (unbiased). Der Standardfehler des Schätzer lässt sich wie folgt bestimmen.</p>
+<p><span class="math display">\[\begin{equation}
 \sigma_{\beta_1} = \sqrt{\frac{\sigma^2}{\sum{(X_i - \bar{X})^2}}}
-\tag{12.2}\]</span></span></p>
-<p>Hier taucht jetzt zum ersten Mal der Parameter <span class="math inline">\(\sigma^2\)</span> formal auf. Wo kommt diese Variance her? Sie gehört zu unserer Annahme der Verteilung der <span class="math inline">\(\epsilon_i \sim \mathcal{N}(0,\sigma^2)\)</span>. Bisher haben wir aber noch gar keine Möglichkeit kennen gelerntm, diese abzuschätzen. Wieder nach etwas motivierten Starren auf die verschiedenen Formeln, könnte heuristisch plausibel sein, dass die Varianz, also die Streuung der <span class="math inline">\(\epsilon_i\)</span> mit der Streuung unserer Werte um die Regressionsgerade zusammenhängen könnten. Formal hatten wir diese als Residuen bezeichnet und mit <span class="math inline">\(e_i = \hat{y}_i - y_i\)</span> bezeichnet. Vormals hatten wir diese Abweichungen als Fehler bezeichnet, aber unter den jetzt eingeführten Annahmen, handelt es sich nicht wirklich um Fehler, sondern die Abweichungen sind eine Folge davon, dass <span class="math inline">\(Y_i\)</span> für jeden Wert von <span class="math inline">\(X_i\)</span> nicht nur einen einzigen Wert hat, sondern eben einer Verteilung folgt <span class="math inline">\(Y_i|X_i \sim \mathcal{N}(\beta_0 + beta_1, \sigma^2)\)</span> deren Form über die <span class="math inline">\(\epsilon_i\)</span> bestimmt wird.</p>
-<p>Die <span class="math inline">\(e_i\)</span> sind tatsächlich die Schätzer für die <em>wahren</em> <span class="math inline">\(\epsilon_i\)</span> also <span class="math inline">\(e_i = \hat{\epsilon_i} = \hat{y}_i - y_i\)</span>. Es lässt sich nun wieder zeigen, dass mittels dieser <span class="math inline">\(e_i\)</span> ein erwartungstreuer Schätzer für <span class="math inline">\(\sigma^2\)</span> erzeugen lässt. Nämlich die mittleren quadrierten Abweichungen (MSE).</p>
-<p><span id="eq-slm-sigma"><span class="math display">\[
+\label{eq-slm-beta1-se}
+\end{equation}\]</span></p>
+<p>Hier taucht jetzt zum ersten Mal der Parameter <span class="math inline">\(\sigma^2\)</span> formal auf. Wo kommt diese Varianz her? Sie gehört zu unserer Annahme der Verteilung der <span class="math inline">\(\epsilon_i \sim \mathcal{N}(0,\sigma^2)\)</span>. Bisher haben wir aber noch gar keine Möglichkeit kennen gelerntm, diese abzuschätzen.</p>
+<p>Wieder nach etwas motivierten Starren auf die verschiedenen Formeln, könnte heuristisch plausibel sein, dass die Varianz, also die Streuung der <span class="math inline">\(\epsilon_i\)</span> mit der Streuung unserer Werte um die Regressionsgerade zusammenhängen könnten. Formal hatten wir diese als Residuen bezeichnet und mit <span class="math inline">\(e_i = \hat{y}_i - y_i\)</span> bezeichnet. Vormals hatten wir diese Abweichungen als Fehler bezeichnet, aber unter den jetzt eingeführten Annahmen, handelt es sich nicht wirklich um Fehler, sondern die Abweichungen sind eine Folge davon, dass <span class="math inline">\(Y_i\)</span> für jeden Wert von <span class="math inline">\(X_i\)</span> nicht nur einen einzigen Wert hat, sondern eben einer Verteilung folgt <span class="math inline">\(Y_i|X_i \sim \mathcal{N}(\beta_0 + beta_1, \sigma^2)\)</span> deren Form über die <span class="math inline">\(\epsilon_i\)</span> bestimmt wird.</p>
+<p>Die <span class="math inline">\(e_i\)</span> sind tatsächlich die Schätzer für die <em>wahren</em> <span class="math inline">\(\epsilon_i\)</span> also <span class="math inline">\(e_i = \hat{\epsilon_i} = \hat{y}_i - y_i\)</span>. Es lässt sich nun wieder zeigen, dass mittels dieser <span class="math inline">\(e_i\)</span> ein erwartungstreuer Schätzer für <span class="math inline">\(\sigma^2\)</span> erzeugt werden kann. Nämlich die mittleren quadrierten Abweichungen (MSE = mean squared error).</p>
+<p><span class="math display">\[\begin{equation}
 \hat{\sigma} = \frac{\sqrt{\sum_{i=1}^N e_i^2}}{N-2} = \frac{\text{SSE}}{N-2} = \text{MSE}
-\tag{12.3}\]</span></span></p>
-<p>Da das später immer wieder auftauchen wird, hier auch noch mal in die zwei Komponenten zerlegt. Der Zähler wird als Summe der quadrierten Abweichungen (SSE) bezeichnet und durch den Term <span class="math inline">\(N-2\)</span>, der als Freiheitsgerade bezeichnet wird, geteilt. Dann mit die Formel und deren Bezeichnung <em>mittlere</em> Abweichung zusammenpasst, wäre es schöner wenn die Summe durch die Anzahl <span class="math inline">\(N\)</span> der Terme geteilt wird, allerdings verhält sich das in diesem Fall ähnlich wie bei der Varianz einer Stichprobe wo die Summe auch durch <span class="math inline">\(N-1\)</span> geteilt wird (zur Erinnerung <span class="math inline">\(s = \frac{\sum_{i=1}^N (x_i - \bar{x})^2}{N-1}\)</span>). Jetzt wird dementsprechend nicht durch <span class="math inline">\(N-1\)</span> sondern durch <span class="math inline">\(N-2\)</span> geteilt.</p>
-<p>Für unser Problem der Stichprobenverteilung ist jetzt aber wichtiger, dass wir mittels <a href="#eq-slm-sigma">Gleichung&nbsp;<span>12.3</span></a> den Standardfehler von <span class="math inline">\(\hat{\beta}_1\)</span> bestimmen können, indem wir für <span class="math inline">\(\sigma^2\)</span> das mittels der Daten ermittelte <span class="math inline">\(\hat{\sigma}^2\)</span> einsetzen.</p>
-<p><span id="eq-slm-hatbeta1-se"><span class="math display">\[
+\label{eq-slm-sigma}
+\end{equation}\]</span></p>
+<p>Da das später immer wieder auftauchen wird, hier auch noch mal in die zwei Komponenten zerlegt. Der Zähler wird als Summe der quadrierten Abweichungen (SSE = sum of squared error) bezeichnet und durch den Term <span class="math inline">\(N-2\)</span>, der als Freiheitsgerade bezeichnet wird, geteilt. Damit die Formel und deren Bezeichnung <em>mittlere</em> Abweichung zusammenpasst, wäre es schöner wenn die Summe durch die Anzahl <span class="math inline">\(N\)</span> der Terme geteilt wird, allerdings verhält sich das in diesem Fall ähnlich wie bei der Varianz einer Stichprobe wo die Summe auch durch <span class="math inline">\(N-1\)</span> geteilt wird (zur Erinnerung <span class="math inline">\(s = \frac{\sum_{i=1}^N (x_i - \bar{x})^2}{N-1}\)</span>). Für MSE wird dementsprechend nicht durch <span class="math inline">\(N-1\)</span> sondern durch <span class="math inline">\(N-2\)</span> geteilt.</p>
+<p>Für unser Problem der Stichprobenverteilung ist jetzt aber wichtiger, dass wir mittels Formel <span class="math inline">\(\eqref{eq-slm-sigma}\)</span> den Standardfehler von <span class="math inline">\(\hat{\beta}_1\)</span> bestimmen können, indem wir für <span class="math inline">\(\sigma^2\)</span> das mittels der Daten ermittelte <span class="math inline">\(\hat{\sigma}^2\)</span> einsetzen.</p>
+<p><span class="math display">\[\begin{equation}
 \hat{\sigma}_{\beta_1} = \sqrt{\frac{\hat{\sigma}^2}{\sum{(X_i - \bar{X})^2}}}
-\tag{12.4}\]</span></span></p>
+\label{eq-slm-hatbeta1-se}
+\end{equation}\]</span></p>
 <p>Dies erlaubt uns jetzt nach unserem bereits bekannten Muster eine Teststatistik für die <span class="math inline">\(H_0\)</span> herzuleiten:</p>
 <p><span class="math display">\[
 t = \frac{\hat{\beta}_1 - \beta_1}{\hat{\sigma}_{\beta_1}}
 \]</span></p>
 <p>Unter der <span class="math inline">\(H_0\)</span> mit <span class="math inline">\(\beta_1 = 0\)</span> wird daraus</p>
-<p><span id="eq-slm-beta1-statistic"><span class="math display">\[
+<p><span class="math display">\[\begin{equation}
 t = \frac{\hat{\beta}_1}{\hat{\sigma}_{\beta_1}}
-\tag{12.5}\]</span></span></p>
+\label{eq-slm-beta1-statistic}
+\end{equation}\]</span></p>
 <p>Diese Teststatistik folgt einer t-Verteilung mit <span class="math inline">\(N-2\)</span> Freiheitsgeraden. Da diese Formel wieder etwas aus der Luft gegriffen erscheint, hier noch mal eine Simulation zusammen mit der theoretischen Testverteilung.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">45</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>n_sim <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">runif</span>(N, <span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>)</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>sigma <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>experiment <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(N, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> sigma)</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(y<span class="sc">~</span>x)</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  b <span class="ot">&lt;-</span> <span class="fu">coef</span>(mod)[<span class="dv">2</span>]</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="at">beta_0 =</span> <span class="fu">coef</span>(mod)[<span class="dv">1</span>],</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">beta_1 =</span> <span class="fu">coef</span>(mod)[<span class="dv">2</span>],</span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">sigma =</span> <span class="fu">sigma</span>(mod))</span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>betas <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">replicate</span>(n_sim, <span class="fu">experiment</span>()))</span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>betas <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">beta_0 =</span> betas[,<span class="dv">1</span>],</span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>                <span class="at">beta_1 =</span> betas[,<span class="dv">2</span>],</span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>                <span class="at">sigma =</span> betas[,<span class="dv">3</span>]) <span class="sc">|&gt;</span> </span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>   <span class="at">s_e_beta_1 =</span> <span class="fu">sqrt</span>(sigma<span class="sc">**</span><span class="dv">2</span><span class="sc">/</span><span class="fu">sum</span>( (x <span class="sc">-</span> <span class="fu">mean</span>(x))<span class="sc">**</span><span class="dv">2</span>)),</span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>   <span class="at">t =</span> beta_1 <span class="sc">/</span> s_e_beta_1)</span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>t_theoretical <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">t =</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">3</span>, <span class="dv">3</span>, <span class="at">length.out =</span> <span class="dv">150</span>),</span>
-<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">p =</span> <span class="fu">dt</span>(t, N <span class="sc">-</span> <span class="dv">2</span>)</span>
-<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(betas, <span class="fu">aes</span>(t)) <span class="sc">+</span></span>
-<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="fu">aes</span>(<span class="at">y =</span> ..density..), <span class="at">bins =</span> <span class="dv">20</span>) <span class="sc">+</span></span>
-<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> t_theoretical, <span class="fu">aes</span>(t, p), <span class="at">color =</span> <span class="st">'red'</span>) <span class="sc">+</span></span>
-<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"t"</span>, <span class="at">y =</span> <span class="st">'Relative Häufigkeit'</span>) </span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">45</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>n_sim <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">runif</span>(N, <span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>sigma <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>experiment <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(N, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> sigma)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(y<span class="sc">~</span>x)</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  b <span class="ot">&lt;-</span> <span class="fu">coef</span>(mod)[<span class="dv">2</span>]</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="at">beta_0 =</span> <span class="fu">coef</span>(mod)[<span class="dv">1</span>],</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">beta_1 =</span> <span class="fu">coef</span>(mod)[<span class="dv">2</span>],</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">sigma =</span> <span class="fu">sigma</span>(mod))</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>betas <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">replicate</span>(n_sim, <span class="fu">experiment</span>()))</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>betas <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">beta_0 =</span> betas[,<span class="dv">1</span>],</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>                <span class="at">beta_1 =</span> betas[,<span class="dv">2</span>],</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>                <span class="at">sigma =</span> betas[,<span class="dv">3</span>]) <span class="sc">|&gt;</span> </span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>   <span class="at">s_e_beta_1 =</span> <span class="fu">sqrt</span>(sigma<span class="sc">**</span><span class="dv">2</span><span class="sc">/</span><span class="fu">sum</span>( (x <span class="sc">-</span> <span class="fu">mean</span>(x))<span class="sc">**</span><span class="dv">2</span>)),</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>   <span class="at">t =</span> beta_1 <span class="sc">/</span> s_e_beta_1)</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>t_theoretical <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">t =</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">3</span>, <span class="dv">3</span>, <span class="at">length.out =</span> <span class="dv">150</span>),</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">p =</span> <span class="fu">dt</span>(t, N <span class="sc">-</span> <span class="dv">2</span>)</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(betas, <span class="fu">aes</span>(t)) <span class="sc">+</span></span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="fu">aes</span>(<span class="at">y =</span> ..density..), <span class="at">bins =</span> <span class="dv">20</span>) <span class="sc">+</span></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> t_theoretical, <span class="fu">aes</span>(t, p), <span class="at">color =</span> <span class="st">'red'</span>) <span class="sc">+</span></span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"t"</span>, <span class="at">y =</span> <span class="st">'Relative Häufigkeit'</span>) </span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-slm-inf-beta1-dist" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
@@ -772,9 +800,9 @@ t = \frac{\hat{\beta}_1}{\hat{\sigma}_{\beta_1}}
 </div>
 </div>
 <p>In <a href="#fig-slm-inf-beta1-dist">Abbildung&nbsp;<span>12.7</span></a> können wir sehen, dass die theoretische Verteilung in rot die beobachtete Verteilung sehr gut abschätzt.</p>
-<p>In <code>R</code> kann der Wert <span class="math inline">\(\hat{\sigma}^2\)</span> über die Funktion <code>sigma()</code> aus dem gefitteten <code>lm()</code>-Modell extrahiert werden.</p>
+<p>In <code>R</code> kann der Wert <span class="math inline">\(\hat{\sigma}\)</span> über die Funktion <code>sigma()</code> aus dem gefitteten <code>lm()</code>-Modell extrahiert werden.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sigma</span>(mod)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sigma</span>(mod)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.2369055</code></pre>
 </div>
@@ -793,7 +821,7 @@ t = \frac{\hat{\beta}_1}{\hat{\sigma}_{\beta_1}}
 <p>Aber wie immer, leider steht uns bei einem realen Experiment diese Information nicht zur Verfügung und wir haben nur einen einzelnen Wert, der alles von komplett daneben bis ziemlich perfekt sein kann.</p>
 <p>Schauen wir uns noch einmal die Ausgabe zu unserem Weitsprungmodell mittels <code>summary()</code> an. Unter Residual Standard Error sehen wir, dass hier <span class="math inline">\(\hat{\sigma}\)</span> angegeben wird. Dieser Wert wird auch als mittlerer Schätzfehler bezeichnet und kann als Maß verwendet werden, welche Abweichung das Modell im Mittel hat. Die Einheit sind wieder in den Einheiten der abhängigen Variable, so kann auch schon abgeschätzt werden mit welcher Präzision das Modell die Daten fittet.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mod)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mod)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -816,30 +844,88 @@ F-statistic: 942.6 on 1 and 43 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 <p>In unserem Fall beobachten wir <span class="math inline">\(0.24m\)</span>. Diesen Wert muss jetzt unsere Trainerin im Sinne der Weitsprungleistung der deren Varianz interpretieren und ein Abschätzung treffen zu können.</p>
+</section>
+<section id="teststatistik-für-beta_0-1" class="level2" data-number="12.3">
+<h2 data-number="12.3" class="anchored" data-anchor-id="teststatistik-für-beta_0-1"><span class="header-section-number">12.3</span> Teststatistik für <span class="math inline">\(\beta_0\)</span></h2>
 <p>Nach der Herleitung der Teststatistik für <span class="math inline">\(\beta_1\)</span>, können wir jetzt auch weitere Teil der Ausgabe von <code>summary()</code> interpretieren. In der Tabelle stehen entsprechend die Standardfehler für <span class="math inline">\(\hat{\beta}_1\)</span> und <span class="math inline">\(\hat{\beta}_0\)</span>. Für <span class="math inline">\(\beta_0\)</span> wird genau die gleiche Vorgehensweise wie auch bei <span class="math inline">\(\beta_1\)</span> angewendet. Die Nullhypothese <span class="math inline">\(H_0\)</span> ist hier ebenfalls das der Parameter standardmäßig als Null angesetzt wird. Der Standardfehler von <span class="math inline">\(\beta_0\)</span> errechnet sich nach:</p>
 <p><span class="math display">\[\begin{equation}
 \sigma^2[\beta_0] = \sigma^2\left(\frac{1}{n} + \frac{\bar{x}^2}{\sum_{i=1}^n (x_i - \bar{x})^2}\right)
 \label{eq-slm-inf-beta0-se}
 \end{equation}\]</span></p>
-<p>An Formel <span class="math inline">\(\eqref{eq-slm-inf-beta-0-se}\)</span> ist zu erkennen, dass wenn die <span class="math inline">\(X\)</span>-Werte den Mittelwert <span class="math inline">\(0\)</span> haben, dass <span class="math inline">\(\sigma^2[\beta_0]\)</span> gleich dem Standardfehler für den Mittelwert SEM wird. Was auch wiederum Sinn macht, da in diesem Fall <span class="math inline">\(\beta_0 = \bar{y}\)</span> gilt.</p>
-<p>Dies führt dies zu den beiden zu überprüfenden Hypothesen für <span class="math inline">\(\beta_0\)</span>:</p>
+<p>An Formel <span class="math inline">\(\eqref{eq-slm-inf-beta0-se}\)</span> ist zu erkennen, dass wenn die <span class="math inline">\(X\)</span>-Werte den Mittelwert <span class="math inline">\(0\)</span> haben, dass <span class="math inline">\(\sigma^2[\beta_0]\)</span> gleich dem Standardfehler für den Mittelwert SEM wird. Was auch wiederum Sinn macht, da in diesem Fall <span class="math inline">\(\beta_0 = \bar{y}\)</span> gilt.</p>
+<p>Dies führt zu den beiden Hypothesen für <span class="math inline">\(\beta_0\)</span>:</p>
 <p><span class="math display">\[\begin{align*}
 H_0: \beta_0 &amp;= 0 \\
 H_1: \beta_0 &amp;\neq 0
 \end{align*}\]</span></p>
 <p>Dementsprechend überprüft die Hypothesentestung ob der <span class="math inline">\(y\)</span>-Achsenabschnitt gleich Null ist. Hier sollte berücksichtigt werden, dass diese Hypothese in den seltensten Fällen tatsächlich auch von Interesse ist und lediglich besagt, dass entweder der <span class="math inline">\(y\)</span>-Achsenabschnitt durch den Nullpunkt geht, oder dass wenn tatsächlich <span class="math inline">\(\beta_1 = 0\)</span> gilt, der Mittelwert von <span class="math inline">\(y\)</span> gleich Null ist, was ebenfalls in den seltensten Fällen von Interesse ist.</p>
-<p>Die Spalten 3 und 4 in <code>summary()</code> unter <code>Coefficients:</code> können jetzt interpretiert werden, da es sich hierbei um die <span class="math inline">\(t\)</span>-Teststatistik handelt und den entsprechenden p-Wert unter der jeweiligen <span class="math inline">\(H_0\)</span>. Die Hypothesen sind ungerichtet.</p>
+<p>Mit den beiden Teststatistiken für <span class="math inline">\(\beta_0\)</span> und <span class="math inline">\(\beta_1\)</span> können wir nun auch die Spalten 3 und 4 in der Ausgabe von <code>summary()</code> unter <code>Coefficients</code> interpretieren` Es handelt sich hierbei um den jeweiligen <span class="math inline">\(t\)</span>-Wert der Koeffizienten <span class="math inline">\(\hat{\beta_0}\)</span> und <span class="math inline">\(\hat{\beta_1}\)</span>. Entsprechend ist der p-Wert unter der jeweiligen <span class="math inline">\(H_0\)</span>. Standardmäßig sind die Hypothesen ungerichtet.</p>
 </section>
-<section id="herleitung-der-eigenschaften-von-hatbeta_1" class="level2" data-number="12.2">
-<h2 data-number="12.2" class="anchored" data-anchor-id="herleitung-der-eigenschaften-von-hatbeta_1"><span class="header-section-number">12.2</span> Herleitung der Eigenschaften von <span class="math inline">\(\hat{\beta}_1\)</span></h2>
+<section id="konfidenzintervalle-für-die-koeffizienten" class="level2" data-number="12.4">
+<h2 data-number="12.4" class="anchored" data-anchor-id="konfidenzintervalle-für-die-koeffizienten"><span class="header-section-number">12.4</span> Konfidenzintervalle für die Koeffizienten</h2>
+<p>Wie wir im oberen Abschnitt gesehen haben, sind unsere Schätzer für die Koeffizienten <span class="math inline">\(\beta_0\)</span> und <span class="math inline">\(\beta_1\)</span> mit Unsicherheiten behaftet die sich in Form der Standardfehler <span class="math inline">\(\sigma[\beta_0]\)</span> und <span class="math inline">\(\sigma[\beta_1]\)</span> ausdrücken. Die Standardfehler können wie bereits in kleine Welt Abschnitt dazu verwendet werden um Konfidenzintervalle für die beiden Koeffizienten zu bestimmen.</p>
+<p><span class="math display">\[\begin{equation}
+\hat{\beta_j} \pm q_{t_{\alpha/2,df=N-2}} \times \hat{\sigma}_{\beta_j}
+\label{eq-slm-inf-conf-0}
+\end{equation}\]</span></p>
+<p>Wie in Formel<span class="math inline">\(\eqref{eq-slm-inf-conf-0}\)</span> zu sehen berechnet sich das Konfidenzintervall nach dem üblichen Muster: Schätzer <span class="math inline">\(\pm\)</span> Quantile <span class="math inline">\(\times\)</span> Standardfehler. Im vorliegenden Falle wird die Quantile aus der <span class="math inline">\(t\)</span>-Verteilung mit <span class="math inline">\(N-2\)</span> Freiheitsgarden bestimmt. Wie vorher bereits betont, das Konfidenzintervall erlaubt keine Aussage über die Wahrscheinlichkeit mit der der wahre Koeffizient in dem Intervall liegt, sondern gibt an welche <span class="math inline">\(H_0\)</span>-Hypothesen mit den Daten kompatibel sind. Daher soll in der Ergebnisdokumentation das Konfidenzintervall angegeben und spätenstens in der Diskussion die obere und die untere Schranke diskutiert werden.</p>
+<p>In <code>R</code> kann das Konfidenzintervall direkt mit der Funktion <code>confint()</code> berechnet und ausgegeben werden.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">confint</span>(mod)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                 2.5 %    97.5 %
+(Intercept) -0.6076488 0.3305767
+v_ms         0.7111082 0.8110957</code></pre>
+</div>
+</div>
+<p>Wie schon vorher im Rahmen der Besprechung der Normalverteilungs ist eine gute Daumenregel <span class="math inline">\(2 \times s_e\)</span> um das Konfidenzintervall schnell abzuschätzen.</p>
+<p>Wie die Koeffizienten haben die Konfidenzintervall die gleiche Einheit wie die abhängige Variable und können daher direkt interpretiert werden. Im vorliegenden Fall sollte daher besprochen werden welche Bedeutung ein Koeffizient von <span class="math inline">\(\beta_1 = 0.7\)</span> bzw. von <span class="math inline">\(\beta_1 = 0.8\)</span> für die Interpretation des Modell hat.</p>
+<p>Noch einmal zu erwähnen ist, dass die beiden Parameter <span class="math inline">\(\hat{\beta}_0\)</span> und <span class="math inline">\(\hat{\beta}_1\)</span> welche die Regressionsgerade beschreiben, Schätzer für die Parameter aus einer Population sind der die beiden Parameter <span class="math inline">\(\beta_0\)</span> und <span class="math inline">\(\beta_1\)</span> den zugrundeliegenden Zusammenhang zwischen den beiden Variablen beschreiben. Diese Betrachtung ist parallel zu derjenigen, wenn wir z.B. anhand des Mittelwerts <span class="math inline">\(\bar{x}\)</span> den wahren Populationsmittelwert <span class="math inline">\(\mu\)</span> versuchen zu schätzen. D.h. wir haben eine Populationsregressionsgerade, die wir mit Hilfe der Daten versuchen zu schätzen. Die <em>wahre</em> Regressionsgerade werden wir aber niemals mit 100%-iger Sicherheit bestimmen, eben genausowenig wie wir den Populationsmittelwert <span class="math inline">\(\mu\)</span> nicht mittels <span class="math inline">\(\bar{x}\)</span> bestimmen können.</p>
+</section>
+<section id="weitere-hilfsfunktionen-für-lm-in-r" class="level2" data-number="12.5">
+<h2 data-number="12.5" class="anchored" data-anchor-id="weitere-hilfsfunktionen-für-lm-in-r"><span class="header-section-number">12.5</span> Weitere Hilfsfunktionen für <code>lm()</code> in <code>R</code></h2>
+<p>Wenn einmal direkt die Standardfehler verwendet werden können, können diese mittels der Funktion <code>vcov()</code> bestimmt werden.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vcov</span>(mod)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>             (Intercept)          v_ms
+(Intercept)  0.054109711 -0.0056996717
+v_ms        -0.005699672  0.0006145425</code></pre>
+</div>
+</div>
+<p><code>vcov()</code> gibt die Varianz-Kovarianz Matrize für die Modellparameter aus (Achtung eine andere Matrize als oben im Zusammenhang mit dem Gauss-Markov-Modell!). Die Standardfehler sind dann entsprechend den Parameter die Wurzel der Werte auf der Hauptdiagonalen.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sqrt</span>(<span class="fu">diag</span>(<span class="fu">vcov</span>(mod)))</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(Intercept)        v_ms 
+ 0.23261494  0.02478997 </code></pre>
+</div>
+</div>
+<p>Entsprechend könnten wir die Konfidenzintervalle auch von-Hand ausreichnen. Zum Beispiel das Konfidenzintervall für <span class="math inline">\(\hat{\beta_1}\)</span>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>beta_s <span class="ot">&lt;-</span> <span class="fu">coef</span>(mod)[<span class="dv">2</span>]</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>s_e <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">diag</span>(<span class="fu">vcov</span>(mod)))</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>q_t <span class="ot">&lt;-</span> <span class="fu">qt</span>(<span class="fl">0.975</span>, <span class="dv">43</span>)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>beta_s <span class="sc">+</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>) <span class="sc">*</span> q_t <span class="sc">*</span> s_e[<span class="dv">2</span>]</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.7111082 0.8110957</code></pre>
+</div>
+</div>
+</section>
+<section id="weiteres-material" class="level2" data-number="12.6">
+<h2 data-number="12.6" class="anchored" data-anchor-id="weiteres-material"><span class="header-section-number">12.6</span> Weiteres Material</h2>
+<p>Eine schnelle Zusammenfassung findet ihr in <span class="citation" data-cites="pos_simple_regression">Altman und Krzywinski (<a href="references.html#ref-pos_simple_regression" role="doc-biblioref">2015</a>)</span>, während <span class="citation" data-cites="kutner2005">Kutner u.&nbsp;a. (<a href="references.html#ref-kutner2005" role="doc-biblioref">2005</a>)</span> die Lineare Regression detailliert herleitet. Für die eben besprochenen Themen ist vor allem Abschnitt (S.40-48) von Interesse.</p>
+</section>
+<section id="herleitung-der-eigenschaften-von-hatbeta_1-advanced" class="level2" data-number="12.7">
+<h2 data-number="12.7" class="anchored" data-anchor-id="herleitung-der-eigenschaften-von-hatbeta_1-advanced"><span class="header-section-number">12.7</span> Herleitung der Eigenschaften von <span class="math inline">\(\hat{\beta}_1\)</span> (advanced)</h2>
 <p>Um den Schätzer <span class="math inline">\(\hat{\beta}_1\)</span> für <span class="math inline">\(\beta_1\)</span> formal herzuleiten. Beginnen wir zunächst mit der folgenden Formel, wobei wir im folgenden den Schätzer mit <span class="math inline">\(b_1\)</span> bezeichnen.</p>
 <p><span id="eq-b1-k1Yi"><span class="math display">\[
 b_1 = \sum k_i Y_i
-\tag{12.6}\]</span></span></p>
+\tag{12.1}\]</span></span></p>
 <p>D.h. wir zeigen zunächst, dass <span class="math inline">\(b_1\)</span> durch eine lineare Kombination der <span class="math inline">\(Y_i\)</span>-Werte berechnet werden kann. Die Koeffizienten <span class="math inline">\(k_i\)</span> der Summe sind dabei wie folgt definiert:</p>
 <p><span id="eq-defn-ki"><span class="math display">\[
 k_i = \frac{X_i - \bar{X}}{\sum(X_i - \bar{X})^2}
-\tag{12.7}\]</span></span></p>
+\tag{12.2}\]</span></span></p>
 <p>Der Grund für diese zunächst etwas uneinsichtige Definition wird im Weiteren klarer werden. Zunächst haben die <span class="math inline">\(k_i\)</span> verschieldene Eigenschaften die wir uns später zunutze machen wollen. Zunächst erst einmal noch ein paar Identitäten die wir später auch noch verwenden.</p>
 <p>Die erste Identität bezieht sich auf das Kreuzprodukt der Abweichungen von <span class="math inline">\(X_i\)</span> und <span class="math inline">\(Y_i\)</span> von ihren jeweiligen Mittelwerten.</p>
 <p><span class="math display">\[\begin{align*}
@@ -850,11 +936,11 @@ k_i = \frac{X_i - \bar{X}}{\sum(X_i - \bar{X})^2}
 <p><span class="math display">\[
 \sum(X_i-\bar{X})^2 = \sum(X_i - \bar{X})X_i
 \]</span></p>
-<p>Werden die jeweiligen <span class="math inline">\(k_i\)</span> mit den dazugehörigen <span class="math inline">\(X_i\)</span> multipliziert und die Definition der <span class="math inline">\(k_i\)</span> (siehe <a href="#eq-defn-ki">Gleichung&nbsp;<span>12.7</span></a>) beachten, erhalten wir:</p>
+<p>Werden die jeweiligen <span class="math inline">\(k_i\)</span> mit den dazugehörigen <span class="math inline">\(X_i\)</span> multipliziert und die Definition der <span class="math inline">\(k_i\)</span> (siehe <a href="#eq-defn-ki">Gleichung&nbsp;<span>12.2</span></a>) beachten, erhalten wir:</p>
 <p><span class="math display">\[
 \sum k_i X_i = \frac{\sum(X_i - \bar{X})X_i}{\sum(X_i-\bar{X})^2} = \frac{\sum(X_i-\bar{X})^2}{\sum(X_i-\bar{X})^2} = 1
 \]</span></p>
-<p>D.h. Die Summe der <span class="math inline">\(k_i X_i\)</span> ist gleich <span class="math inline">\(1\)</span>. Aus der Definition <a href="#eq-defn-ki">Gleichung&nbsp;<span>12.7</span></a> folgt weiterhin.</p>
+<p>D.h. Die Summe der <span class="math inline">\(k_i X_i\)</span> ist gleich <span class="math inline">\(1\)</span>. Aus der Definition <a href="#eq-defn-ki">Gleichung&nbsp;<span>12.2</span></a> folgt weiterhin.</p>
 <p><span class="math display">\[
 \sum k_i = \sum \left(\frac{X_i-\bar{X}}{\sum(X_i-\bar{X})^2}\right)= \frac{\sum(X_i-\bar{X})}{\sum(X_i-\bar{X})^2} = \frac{0}{\sum(X_i-\bar{X})^2} = 0
 \]</span></p>
@@ -883,8 +969,8 @@ b_1 &amp;= \frac{\sum(X_i - \bar{X})(Y_i - \bar{Y})}{\sum(X_i - \bar{X})^2} \\
 <p>Wir erhalten die bereits eingeführte Formel. Wiederum eine Einsicht aus der Herleitung der Formel folgt, dass die Varianz <span class="math inline">\(\sigma^2\)</span> als konstant angesehen wird, d.h. <span class="math inline">\(\sigma_i^2 = \sigma^2\)</span>. Dies hat uns erlaubt im zweiten Schritt <span class="math inline">\(\sigma^2\)</span> aus der Summe heraus zu ziehen. Wenn die Varianz <span class="math inline">\(\sigma^2\)</span> nicht konstant ist, dann ist der berechnete Standardfehler für <span class="math inline">\(\hat{\beta}_1 = b_1\)</span> nicht korrekt.</p>
 <p>Eine interessante Eigenschaft des Standardfehler von <span class="math inline">\(\hat{\beta}_1\)</span> ist in Formel <span class="math inline">\(\eqref{eq-slm-inf-beta1-deriv}\)</span> zu sehen. Im Nenner stehen die Abweichungen der <span class="math inline">\(X\)</span>-Werte vom Mittelwert <span class="math inline">\(\hat{X}\)</span>. D.h. wenn die <span class="math inline">\(X\)</span>-Werte weiter auseinander sind, dann führt dies dazu, dass der Standardfehler <span class="math inline">\(\sigma^2[b_1]\)</span> kleiner wird. Intuitive macht dies auch Sinn, wenn ich eine Gerade bestimmen will, dann ist es einfacher die Gerade anhand weit auseinander liegenden Stütztwerten zu bestimmen im Vergleich zu wenn ich eng beinander liegende <span class="math inline">\(X\)</span>-Werte verwende.</p>
 </section>
-<section id="maximum-likelihood-methode-bei-der-einfachen-linearen-regression" class="level2" data-number="12.3">
-<h2 data-number="12.3" class="anchored" data-anchor-id="maximum-likelihood-methode-bei-der-einfachen-linearen-regression"><span class="header-section-number">12.3</span> Maximum-likelihood Methode bei der einfachen linearen Regression(*)</h2>
+<section id="maximum-likelihood-methode-bei-der-einfachen-linearen-regression-advanced" class="level2" data-number="12.8">
+<h2 data-number="12.8" class="anchored" data-anchor-id="maximum-likelihood-methode-bei-der-einfachen-linearen-regression-advanced"><span class="header-section-number">12.8</span> Maximum-likelihood Methode bei der einfachen linearen Regression (advanced)</h2>
 <p>Ein anderer Herleitung für <span class="math inline">\(\beta_0\)</span> und <span class="math inline">\(\beta_1\)</span> kann über die sogenannten Maximum-Likelihood-Methode durchgeführt werden. Dabei gehen die Verteilungsannahmen der Variablen direkt in die Herleitung ein.</p>
 <p>Im Zuge der theoretischen Verteilungen haben wir die Dichtefunktion kennengelernt. Für eine gegebene Zufallsvariable kann die Dichte für einen gegebenen Wert, z.B. <span class="math inline">\(y_i\)</span>, über die Dichtefunktion berechnet werden. Wenn ein Zufallsvariable <span class="math inline">\(X\)</span> einer Normalverteilung folgt, dann wird die Verteilung von <span class="math inline">\(X\)</span> mittels der bereits kennengelernte Dichtefunktion der Normalverteilung beschrieben.</p>
 <p><span class="math display">\[\begin{equation*}
@@ -1020,30 +1106,6 @@ L(\beta_0, \beta_1, \sigma^2|y_i) &amp;= \left(\frac{1}{\sqrt{2\pi \sigma^2}}\ri
 \Leftrightarrow\mkern40mu &amp;&amp; \beta_0= \bar{y} - \beta_1 \bar{x}
 \end{alignat}\]</span></p>
 <p>Die Herleitung für <span class="math inline">\(\beta_1\)</span> ist ebenfalls gleich derjenigen die aus den Normalengleichungen entsteht. Nochmal zum Unterschied, bei den Normalengleichungen sind keine Annahmen über die Verteilung der Werte eingeflossen. Einzig, wir haben eine Methode gesucht, die die quadrierten Residuen minimiert. Dagegen beruht die Herleitung der Gleichungen aus der Maximum-Likelihood Methode direkt auf eine spezifischen Verteilungsannahme. Im Fall der lineare Regression führen beide Methoden zum gleichen Ergebnis. Die Maximum-Likelihood-Methode kann jedoch auch in Fällen angewendet werden bei denen die Methode der quadrierten Abweichungen nicht funktioniert. Wichtig für unsere Anwendung ist das zugrundeliegende Prinzip bzw. den Unterschied zu verstehen.</p>
-</section>
-<section id="konfidenzintervalle-für-die-koeffizienten" class="level2" data-number="12.4">
-<h2 data-number="12.4" class="anchored" data-anchor-id="konfidenzintervalle-für-die-koeffizienten"><span class="header-section-number">12.4</span> Konfidenzintervalle für die Koeffizienten</h2>
-<p>Wie wir im oberen Abschnitt gesehen haben, sind unsere Schätzer für die Koeffizienten <span class="math inline">\(\beta_0\)</span> und <span class="math inline">\(\beta_1\)</span> mit Unsicherheiten behaftet die sich in Form der Standardfehler ausdrücken. Wir können nun, diese standardfehler wiederum verwenden um Konfidenzintervalle für die Koeffizienten zu bestimmen.</p>
-<p><span class="math display">\[\begin{equation}
-\hat{\beta_j} \pm q_{t_{\alpha/2,df=N-2}} \times \hat{\sigma}_{\beta_j}
-\label{eq-slm-inf-conf-0}
-\end{equation}\]</span></p>
-<p>Wie in Formel<span class="math inline">\(\eqref{eq-slm-inf-conf-0}\)</span> zu sehen berechnet sich das Konfidenzintervall nach dem üblichen Muster: Schätzer <span class="math inline">\(\pm\)</span> Quantile <span class="math inline">\(\times\)</span> Standardfehler. Im vorliegenden Falle wird die Quantile aus der <span class="math inline">\(t\)</span>-Verteilung mit <span class="math inline">\(N-2\)</span> Freiheitsgarden bestimmt. Wie vorher bereits betont, das Konfidenzintervall erlaubt keine Aussage über die Wahrscheinlichkeit mit der der wahre Koeffizient in dem Intervall liegt, sondern gibt an welche <span class="math inline">\(H_0\)</span>-Hypothesen mit den Daten kompatibel sind. Daher soll in der Ergebnisdokumentation das Konfidenzintervall angegeben und spätenstens in der Diskussion die obere und die untere Schranke diskutiert werden.</p>
-<p>In <code>R</code> kann das Konfidenzintervall mit der Funktion <code>confint()</code> berechnet und ausgegeben werden.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">confint</span>(mod)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>                 2.5 %    97.5 %
-(Intercept) -0.6076488 0.3305767
-v_ms         0.7111082 0.8110957</code></pre>
-</div>
-</div>
-<p>Wie die Koeffizienten haben die Konfidenzintervall die gleiche Einheit wie die abhängige Variable und können daher direkt interpretiert werden. Im vorliegenden Fall sollte daher besprochen werden welche Bedeutung ein Koeffizient von <span class="math inline">\(\beta_1 = 0.7\)</span> bzw. von <span class="math inline">\(\beta_1 = 0.8\)</span> für die Interpretation des Modell hat.</p>
-<p>Noch einmal zu erwähnen ist, dass die beiden Parameter <span class="math inline">\(\hat{\beta}_0\)</span> und <span class="math inline">\(\hat{\beta}_1\)</span> welche die Regressionsgerade beschreiben, Schätzer für die Parameter aus einer Population sind der die beiden Parameter <span class="math inline">\(\beta_0\)</span> und <span class="math inline">\(\beta_1\)</span> den zugrundeliegenden Zusammenhang zwischen den beiden Variablen beschreiben. Diese betrachtung ist parallel zu derjenigen, wenn wir z.B. anhand des Mittelwerts <span class="math inline">\(\bar{x}\)</span> den währenen Populationsmittelwert <span class="math inline">\(\mu\)</span> versuchen zu schätzen. D.h. wir haben eine Populationsregressionsgerade, die wir mit Hilfe der Daten versuchen zu schätzen. Die wahre Regressionsgerade werden wird aber niemals mit 100%-iger Sicherheit bestimmen, eben genausowenig wie wir den Populationsmittelwert <span class="math inline">\(\mu\)</span> nicht mittels <span class="math inline">\(\bar{x}\)</span> bestimmen können.</p>
-</section>
-<section id="weiteres-material" class="level2" data-number="12.5">
-<h2 data-number="12.5" class="anchored" data-anchor-id="weiteres-material"><span class="header-section-number">12.5</span> Weiteres Material</h2>
-<p>Eine schnelle Zusammenfassung findet ihr in <span class="citation" data-cites="pos_simple_regression">Altman und Krzywinski (<a href="references.html#ref-pos_simple_regression" role="doc-biblioref">2015</a>)</span>, während <span class="citation" data-cites="kutner2005">Kutner u.&nbsp;a. (<a href="references.html#ref-kutner2005" role="doc-biblioref">2005</a>)</span> das die Lineare Regression detailliert herleiten. Für die eben besprochenen Themen ist vor allem Abschnitt (S.40-48) von Interesse.</p>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">

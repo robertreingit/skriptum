@@ -89,7 +89,7 @@ ggplot(tibble(x = seq(-3,3,length.out=100), y = dnorm(x)), aes(x,ymin=0,ymax=y))
   scale_y_continuous('Dichte', breaks = NULL)
 ```
 
-Daraus folgt jetzt aber zusätzlich, dass für jedes gegebenes $X$ die $Y$-Werte einer Normalverteilung folgen. Lediglich die Verschiebung des Mittelwert der jeweiligen $Y$-Normalverteilung hängt von $X$ über die Formel $\beta_0 + \beta_1 \cdot X$ zusammen. Formal:
+Daraus folgt zusätzlich, dass für jedes gegebenes $X$ die $Y$-Werte einer Normalverteilung folgen. Lediglich die Verschiebung des Mittelwert der jeweiligen $Y$-Normalverteilung hängt von $X$ über die Formel $\beta_0 + \beta_1 \cdot X$ zusammen. Formal:
 
 $$
 Y|X \sim N(\beta_0+ \beta_1 X,\sigma^2)
@@ -106,17 +106,18 @@ Wenn wir die Verteilungen von $Y$ graphisch führ beispielweise drei verschieden
 include_graphics('pics/Stats_Figures.png')
 ```
 
-In @fig-slm-inf-epsilon-2 ist klar zu sehen, wie für jeden der drei Punkte von $X$ die beobachteten $Y$-Werte einer Normalverteilung folgen. Die Streuung der Verteilung ist an jedem der $X$-Punkte gleich, nämlich $=\sigma^2$. Dagegen ist der Mittelwert der Verteilung der $Y_i$-Wert der Gleichung $\beta_0 + \beta_1 X$ folgend entlang der Regressionsgerade verschoben.
+In @fig-slm-inf-epsilon-2 ist klar zu sehen, wie für jeden der drei Punkte von $X$ die beobachteten $Y$-Werte einer Normalverteilung folgen. Die Streuung der Verteilung ist an jedem der $X$-Punkte gleich, nämlich $=\sigma^2$. Dagegen ist der Mittelwert der Verteilung der $Y_i$-Wert der Gleichung $\beta_0 + \beta_1 X$ folgend entlang der Regressionsgerade verschoben. Dies erklärt warum die Verteilung von $Y$ vom $X$-Wert abhängt. Die Verteilung von $Y$ ist im Gauss-Markov-Modell immer normalverteilt mit einer konstanten Varianz $\sigma^2$, der Mittelwert $\mu$ der Verteilung hängt aber vom $X$-Wert ab und verändert sich nach $\beta_0 + \beta_1 X$.
 
 Wenn wir uns zurück an die Ausführungen zur statistischen Signifikanz erinnern, dann haben wir in dem Zusammenhang vom einem datengenerierenden Prozess gesprochen (@def-dgp) (DGP). In unserem jetzigen Modell können wir dementsprechend zwei Komponenten als Teile des DGP identizifieren. Entsprechend Formel\eqref{eq-slm-inf-simple-reg} besteht der DGP aus dem deterministischen Teil $\beta_0 + \beta_1 X$ und dem stochastischen Teil $\epsilon_i \sim \mathcal{N}(0,\sigma^2)$. Diese Einsicht können wir verwenden um die Eigenschaften dieses Modells zu möglichen Aussagen hinsichtlich statistisches Signifikanz zu untersuchen.
 
-Wir fokussieren uns jetzt auf ein vereinfachtes Modell bei dem wir zusätzlich noch $\beta_0 = 0$ setzen, und wir uns erst mal nur für die Eigenschaften von $\beta_1$ interessieren. Gehen wir nun davon aus, dass zwischen $X$ und $Y$ der Zusammenhang $\beta_1 = 1$ besteht. D.h. wenn $X$ um eine Einheit vergrößert wird, dann wird $Y$ ebenfalls um eine Einheit größer.
+Wir fokussieren uns jetzt auf ein vereinfachtes Modell bei dem wir $\beta_0 = 0$ setzen. D.h. der $y$-Achsenabschnitt der Regressionsgeraden ist $=0$ und wir betrachten erst mal nur die Eigenschaften von $\beta_1$. Gehen wir nun davon aus, dass zwischen $X$ und $Y$ der Zusammenhang $\beta_1 = 1$ besteht. D.h. der Steigungskoeffzient hat den Wert $=1$, was dazu führt, dass wenn $X$ um eine Einheit vergrößert wird, dann vergrößert sich $Y$ ebenfalls um eine Einheit. Die Gerade würde somit genau die 1. Winkelhalbierende beschreiben. Formal erhalten wir:
 
-$$
+\begin{equation}
 Y = 0 + 1 \cdot X + \epsilon, \quad \epsilon\sim\mathcal{N}(0,\sigma^2)
-$$ {#eq-slm-inf-sim-mod-1}
+\label{eq-slm-inf-sim-mod-1}
+\end{equation}
 
-Jetzt müssen wir noch einen Wert für $\sigma^2$ festlegen. Sei dieser einfach einmal $\sigma = \frac{1}{2}$. Jetzt können wir `R` benutzen um *Experimente*, also Beobachtungen, anhand dieses DGP zu simulieren. Der Einfachheit halber legen wir ein übersichtliches $N = 12$ fest und nehmen uns jeweils drei $X$-Werte z.B.  mit $X \in \{-1, 0, 1\}$, d.h. wir ziehen für jeden $X$-Wert vier $Y$-Werte.
+Jetzt müssen wir allerdings noch einen Wert für $\sigma^2$ bzw. $\sigma$ festlegen. Sei dieser der Einfachheit halber $\sigma = \frac{1}{2}$. Jetzt können wir `R` benutzen um *Experimente*, also Beobachtungen, anhand dieses DGP zu simulieren. Der Überschaubarkeit wegen besteht unser Datensatz nur $N = 12$ Punkten die sich drei $X$-Werte z.B.  mit $X \in \{-1, 0, 1\}$ verteilen. Somit generieren wir für jeden $X$-Wert vier unterschiedliche $Y$-Werte. In `R` code übertragen könnten wir das folgende Programm erstellen.
 
 ```{r}
 #| echo: true
@@ -131,19 +132,19 @@ dat_sim_1 <- tibble(
 )
 ```
 
-Wenn wir uns die generierten Daten anschauen, dann sehen wir wenig überraschend 12 verschiedene Werte für $y_i$ und jeweils $3 \times 4$ verschiedene Werte für $x_i$ (siehe @tbl-slm-inf-sim-1).
+Wenn wir uns die generierten Daten anschauen, dann sehen wir wenig überraschend $12$ verschiedene Werte für $y_i$ und jeweils $3 \times 4$ verschiedene Werte für $x_i$ (siehe @tbl-slm-inf-sim-1).
 
 ```{r}
 #| label: tbl-slm-inf-sim-1
 #| tbl-cap: Eine Simulation des Modells @eq-slm-inf-sim-mod-1
  
-kable(dat_sim_1,
+kable(dat_sim_1 |> mutate(i = row_number(), .before = 1),
       booktabs = TRUE,
       linesep = '',
       digits = 2)
 ```
 
-Wenn wir die Daten graphisch darstellen erhalten wir (@fig-slm-inf-sim-1):
+Graphish dargestellt erhalten wir (@fig-slm-inf-sim-1):
 
 ```{r}
 #| echo: true
@@ -156,7 +157,7 @@ ggplot(dat_sim_1, aes(x_i, y_i)) +
 
 Ebenfalls wenig überraschend, die Punkte sind auf den $x$-Werten $-1, 0$ und $1$ zentriert und liegen nicht alle aufeinander, da sie einer Zufallsstichprobe aus $\mathcal{N}(0, \frac{1}{4})$ entspringen.
 
-Jetzt können für diese Daten unsere Normalengleichungen anwenden und Werte für $\hat{\beta}_0$ und $\hat{\beta}_1$ berechnen. Oder wir lassen das von `R` machen.
+Für die Daten können wir unsere Normalengleichungen anwenden und Werte für $\hat{\beta}_0$ und $\hat{\beta}_1$ berechnen, oder wir lassen das von `R` mittels der Funktion `lm()` machen.
 
 ```{r}
 #| echo: true
@@ -165,7 +166,7 @@ mod_sim_1 <- lm(y_i ~ x_i, dat_sim_1)
 coef(mod_sim_1)
 ```
 
-Wir sehen, dass die berechneten Werte für $\beta_0$ und $\beta_1$ schon in der Nähe der tatsächlichen Werte liegen (siehe @eq-slm-inf-mod-1), aber auf Grund der Stichprobenvariabilität eben nicht genau auf diesen Werten. Was passiert denn jetzt, wenn ich das Ganze noch einmal durchlaufen lassen?
+Wir sehen, dass die berechneten Werte für $\beta_0$ und $\beta_1$ schon in der Nähe der *wahren* Werte liegen (siehe Formel \eqref{eq-slm-inf-sim-mod-1}). Die Werte entsprechen nicht exakt den *wahren* Werten auf Grund der Stichprobenvariabilität die auf Grund der Benutzung von `rnorm()` in unserer Simulation resultiert. Was passiert, wenn ich das Ganze noch einmal durchlaufen lassen?
 
 ```{r}
 #| echo: true
@@ -178,7 +179,9 @@ mod_sim_2 <- lm(y_i ~ x_i, dat_sim_2)
 coef(mod_sim_2)
 ```
 
-Wieder wenig überraschend, da jedes Mal wenn ich `rnom()` eine neue Ziehung aus der Normalverteilung generiert wird, erhalte ich neue Werte für $y_i$ und dementsprechend andere Werte für $\hat{\beta}_0$ und $\hat{\beta}_1$. Nochmal, warum? **Stichprobenvariabilität**! Jetzt sind wir wieder bei dem gleichen Prinzip, das wir im Rahmen der kleinen Welt ausgiebig behandelt haben. Schauen wir uns jetzt doch einfach mal was passiert wenn wir die Simulation nicht $2\times$ sondern z.B. $1000\times$ durchführen.
+wir erhalten einen neuen Satz von $\hat{\beta_0}$ und $\hat{\beta_1}$. Wiederum wenig überraschend, da jedes Mal wenn ich `rnom()` aufrufe, eine neue Ziehung aus der Normalverteilung generiert wird. Somit erhalten wir neue Werte für $y_i$ und dementsprechend andere Werte für $\hat{\beta}_0$ und $\hat{\beta}_1$. Nochmal, warum? **Stichprobenvariabilität**! Jetzt sind wir wieder bei dem gleichen Prinzip, das wir im Rahmen der kleinen Welt ausgiebig behandelt haben.
+
+Schauen wir uns jetzt doch einfach mal an was passiert wenn wir die Simulation nicht $2\times$ sondern z.B. $1000\times$ durchführen.
 
 ```{r}
 set.seed(123)
@@ -198,7 +201,7 @@ for (i in 1:N_sim) {
 }
 ```
 
-Wir erhalten jetzt einen Vektor `beta_1_s` mit $`r N_sim`$ beobachteten $\hat{\beta}_1$. Da das etwas viele Werte sind um die uns einzeln anzuschauen, erstellen ein Histogramm der $\hat{\beta}_1$s. (@fig-slm-inf-hist-sim-1).
+Wir erhalten jetzt einen Vektor `beta_1_s` mit $`r N_sim`$ beobachteten $\hat{\beta}_1$. Da das etwas viele Werte sind um die uns einzeln anzuschauen, erstellen wir ein Histogramm der $\hat{\beta}_1$s. (@fig-slm-inf-hist-sim-1).
 
 ```{r}
 #| echo: true
@@ -210,13 +213,15 @@ hist(beta_1_s, xlab = expression(hat(beta)[1]), main='')
 abline(v = beta_1, col='red', lty=2)
 ```
 
-In @fig-slm-inf-hist-sim-1 begegnet uns zunächst einmal wieder unsere altbekannte Glockenkurve. Schön ist, dass deren Mittelwert im Bereich des wahren Werts von $\beta_1$ liegt und Werte mit größer werdender Abweichung vom wahren Wert in ihrer Häufigkeit abnehmen. Aber die Häufigkeit ist nicht Null, sondern eben nur geringer. Werte in der Nähe von $\beta_1$ weisen dagegen eine größere Häufigkeit aufweisen. Das sollte uns jetzt auch irgendwie zufrieden stimmen, denn dies bedeutet, dass wir in der Lage sind mit unserem Regressionsmodell im Mittel tatsächlich den korrekten Wert abzuschätzen. Allerdings, wie immer, bei einer einzelnen Durchführung des Experiments können wir alles von perfekt spot-on bis komplett danebenliegen und würden es nicht wissen.
+In @fig-slm-inf-hist-sim-1 begegnet uns zunächst einmal wieder unsere altbekannte Glockenkurve. Was uns positiv stimmen sollte ist, dass der Mittelwert der Verteilung im Bereich des wahren Werts von $\beta_1$ (rote Linie) liegt und Werte mit größer werdender Abweichung vom wahren Wert in ihrer Häufigkeit abnehmen. Aber die Häufigkeit ist nicht Null, sondern eben nur geringer. Werte in der Nähe von $\beta_1$ weisen dagegen eine größere Häufigkeit auf. Dies zeigt, dass wir in der Lage sind mit unserem Regressionsmodell im Mittel tatsächlich den *wahren* Wert $\beta_1$ abzuschätzen. Allerdings, wie immer, bei einer einzelnen Durchführung des Experiments können wir alles von perfekt spot-on bis komplett danebenliegen und würden es nicht wissen.
 
-Wir können jetzt aber auch wieder ganz parallel zu unseren Herleitungen in der kleinen Welt einen Entscheidungsprozess spezifizieren. Wenn @fig-slm-inf-hist-sim-1 den DGP beschreibt und das die Verteilung der zu erwartenden $\hat{\beta}_1$ unter dem Modell sind. Bei der Dürchführung eines neuen Experiments, dann würden wir sagen, dass wenn unserer beobachteter Wert in den Rändern der Verteilung von @fig-slm-inf-hist-sim-1 liegt, das wir eher nicht davon ausgehen, dass unserer neues Experiment den gleichen DGP zugrundeliegen hat. D.h wir definieren uns jetzt Grenzen am oberen und am unteren Rand der Verteilung. Wenn jetzt ein neuer beobachteter Wert entweder unterhalb der unteren Grenze oder oberhalb der oberen Grenze liegt, dann sagen wir: *Wir sind jetzt aber sehr überrascht diesen Wert zu sehen, wenn der dem gleichen datengenerierenden Prozess entstammen soll. Daher glauben wir nicht, dass dieses Experiment den gleichen DGP besitzt.*
+Wir können jetzt aber auch wieder ganz parallel zu unseren Herleitungen in der kleinen Welt einen Entscheidungsprozess spezifizieren. Wenn @fig-slm-inf-hist-sim-1 den DGP beschreibt und das die Verteilung der zu erwartenden $\hat{\beta}_1$ unter dem Modell sind. Bei der Durchführung eines neuen Experiments, dann würden wir sagen, dass wenn unserer beobachteter Wert in den Rändern der Verteilung von @fig-slm-inf-hist-sim-1 liegt, das wir eher nicht davon ausgehen, dass unserer neues Experiment den gleichen DGP zugrundeliegen hat. D.h wir definieren uns Grenzen (kritische Werte) am oberen und am unteren Rand der Verteilung. Wenn ein beobachteter Wert entweder unterhalb der unteren Grenze oder oberhalb der oberen Grenze liegt, dann interpretieren wir dies im Sinne: *Wir sind jetzt aber sehr überrascht diesen Wert zu sehen, wenn der dem gleichen datengenerierenden Prozess entstammen soll. Daher glauben wir nicht, dass dieses Experiment den gleichen DGP besitzt.*
 
-Um diese Entscheidung treffen zu können, müssen wir also Grenzen definieren. Dazu können wir zunächst einmal einfach die Quantilen der Verteilung nehmen und schneiden z.B. unten $2.5\%$ und oben $2.5\%$ ab. So kommen wir dann insgesamt auf $5\%$, um auf die übliche Irrtumswahrscheinlichkeit von $\alpha = 0.05$ zu kommen. Dazu benutzen wir `R` und zwar `quantile()`-Funktion^[Im folgenden Snippet werden die Werte auf zwei Kommastellen mit `round()` der besseren Darstellung wegen gerundet).
+Um diese Entscheidung treffen zu können, müssen wir also Grenzen definieren. Dazu können wir zunächst einmal einfach die Quantilen der Verteilung nehmen und schneiden z.B. unten $2.5\%$ und oben $2.5\%$ ab. So kommen wir dann insgesamt auf $5\%$, um auf die übliche Irrtumswahrscheinlichkeit von $\alpha = 0.05$ zu kommen. Dazu benutzen wir in `R` die `quantile()`-Funktion^[Im folgenden Snippet werden die Werte auf zwei Kommastellen mit `round()` der besseren Darstellung wegen gerundet).
 
 ```{r}
+#| echo: true
+
 crit_vals <- round(quantile(beta_1_s, probs = c(0.025, 0.975)), 2)
 crit_vals
 ```
@@ -224,9 +229,9 @@ crit_vals
 Mittels dieser Werte können wir zwei disjunkte Wertmenge definieren, einmal die Werte innerhalb von $\hat{\beta}_1 \in [`r paste(crit_vals,collapse=',')`]$ bei denen wir nicht überrascht sind, und die unter der Annahme $\beta_1 = 1$ erwartbar sind und die Werte $\hat{\beta}_1 \notin [`r paste(crit_vals,collapse=',')`]$ diejenigen Werte die uns überraschen würden unter der Annahme. Ins Histogramm übertragen (siehe @fig-slm-inf-hist-sim-2).
 
 ```{r}
-#| fig.cap: Histogram der auf den simulierten Daten berechneten $\hat{\beta}_1$. Wahrer Wert von $\beta_1$ rot eingezeichnet und kritische Werte grün.
+#| fig-cap: Histogram der auf den simulierten Daten berechneten $\hat{\beta}_1$. Wahrer Wert von $\beta_1$ rot eingezeichnet und kritische Werte grün.
 #| label: fig-slm-inf-hist-sim-2
-#| fig.height: 4
+#| fig-height: 4
 
 hist(beta_1_s, xlab = expression(hat(beta)[1]), main='')
 abline(v = beta_1, col='red', lty=2)
@@ -240,14 +245,13 @@ model_neu <- lm(y_i ~ x_i, daten_neu)
 beta_neu <- round(coef(model_neu)[2] + 0.1, 2)
 ```
 
-Führen wir nun ein Experiment noch einmal durch. Wir beobachten einen Wert für $\hat{\beta}_1$ von 
-$`r beta_neu`$. Dieser Wert liegt außerhalb unseres definierten Intervalls $[`r round(crit_vals[1],2)`, `r round(crit_vals[2], 2)`]$, daher sehen wir diesen Wert als derart unwahrscheinlich unter dem angenommenen DGP, das wir sagen: *Wir glauben nicht, dass diesem Experiment nicht der angenommene DGP zugrunde liegt*. Graphisch wieder dargestellt (siehe @fig-slm-inf-hist-sim-3).
+Führen wir nun ein Experiment einmal durch. Wir beobachten einen Wert für $\hat{\beta}_1$ von $`r beta_neu`$. Dieser Wert liegt außerhalb unseres definierten Intervalls $[`r round(crit_vals[1],2)`, `r round(crit_vals[2], 2)`]$, daher sehen wir diesen Wert als derart unwahrscheinlich unter dem angenommenen DGP, das wir sagen: *Wir glauben nicht, dass diesem Experiment der angenommene DGP zugrunde liegt*. Graphisch führt dies zu @fig-slm-inf-hist-sim-3.
 
 
 ```{r}
-#| fig.cap: Histogram der auf den simulierten Daten berechneten $\hat{\beta}_1$. Wahrer Wert von $\beta_1$ rot eingezeichnet und kritische Werte grün und der beobachtete Wert als roter Punkt.
+#| fig-cap: Histogram der auf den simulierten Daten berechneten $\hat{\beta}_1$. Wahrer Wert von $\beta_1$ rot eingezeichnet und kritische Werte grün und der beobachtete Wert als roter Punkt.
 #| label: fig-slm-inf-hist-sim-3
-#| fig.height: 4
+#| fig-height: 4
 
 hist(beta_1_s, xlab = expression(hat(beta)[1]), main='')
 abline(v = beta_1, col='red', lty=2)
@@ -257,7 +261,9 @@ points(beta_neu, 0, col='red', lwd=4)
 
 Daher würden wir diesen Wert als statisisch signifikant bezeichnen und würden unsere Annahme ablehnen.
 
-Jetzt sind wir aber etwas hin und her zwischen Experiment, Annahmen und Schlussfolgerungen gesprungen. Normalerweise kennen wir die Stichprobenverteilung nicht vor dem Experiment, sondern, wir sind am dem Wert $\beta_1$ interessiert. Wenn wir den Wert schon wissen würden, dann müssten wir ja gar kein Experiment mehr durchführen. D.h. wir haben eigentlich noch keinen klaren Vorkenntnisse. Mit welcher Annahme gehen wir dann in das Experiment rein? Nun, wir schon bei kleinen Welt Beispiel, starten wir mit der Annahme das zwischen den beiden Variablen kein Zusammenhang besteht. Übertragen auf die Modellparameter also, dass kein linearer Zusammenhang zwischen den beiden Variablen besteht.
+## Teststatistik für $\beta_0$
+
+Jetzt sind wir aber etwas hin und her gesprungen zwischen der Simulation, Experiment, Annahmen und Schlussfolgerungen. Normalerweise kennen wir die Stichprobenverteilung vor dem Experiment nicht, sondern, wir sind am dem Wert $\beta_1$ interessiert. Wenn wir den Wert schon wissen würden, dann müssten wir ja gar kein Experiment mehr durchführen. D.h. wir haben eigentlich noch keine klaren Vorkenntnisse. Mit welcher Annahme gehen wir dann in das Experiment rein? Nun, wie schon bei dem kleinen Welt Beispiel, starten wir mit der Annahme das zwischen den beiden Variablen $X$ und $Y$ kein Zusammenhang besteht. Übertragen auf den Modellparameter $\beta_1$ bedeutet dies, dass kein linearer Zusammenhang zwischen den beiden Variablen besteht. D.h. Information über $X$ gibt mir keine Informationen über $Y$. Formal:
 
 \begin{align*}
 H_0: \beta_1 &= 0 \\
@@ -266,31 +272,36 @@ H_1: \beta_1 &\neq 0
 
 Um die Stichprobenverteilung unter der $H_0$ formal Herleitung zu können, ist der Erwartungswert von $\hat{\beta}_1$ und dessen Standardfehler notwendig. Es lässt sich zeigen, dass die folgenden Zusammenhänge unter den gesetzten Annahmen bestehen:
 
-$$
-E[\hat{\beta}_0] = \beta_0
-$$
+\begin{equation}
+E[\hat{\beta}_1] = \beta_1
+\end{equation}
 
-Also der Schätzer von $\beta_1$ ist erwartungstreu (biased) und der Standardfehler des Schätzer lässt sich wie folgt bestimmen.
+Der Schätzer $\hat{\beta_1}$ aus den Normalengleichungen von $\beta_1$ ist erwartungstreu (unbiased). Der Standardfehler des Schätzer lässt sich wie folgt bestimmen.
 
-$$
+\begin{equation}
 \sigma_{\beta_1} = \sqrt{\frac{\sigma^2}{\sum{(X_i - \bar{X})^2}}}
-$$ {#eq-slm-beta1-se}
+\label{eq-slm-beta1-se}
+\end{equation}
 
-Hier taucht jetzt zum ersten Mal der Parameter $\sigma^2$ formal auf. Wo kommt diese Variance her? Sie gehört zu unserer Annahme der Verteilung der $\epsilon_i \sim \mathcal{N}(0,\sigma^2)$. Bisher haben wir aber noch gar keine Möglichkeit kennen gelerntm, diese abzuschätzen. Wieder nach etwas motivierten Starren auf die verschiedenen Formeln, könnte heuristisch plausibel sein, dass die Varianz, also die Streuung der $\epsilon_i$ mit der Streuung unserer Werte um die Regressionsgerade zusammenhängen könnten. Formal hatten wir diese als Residuen bezeichnet und mit $e_i = \hat{y}_i - y_i$ bezeichnet. Vormals hatten wir diese Abweichungen als Fehler bezeichnet, aber unter den jetzt eingeführten Annahmen, handelt es sich nicht wirklich um Fehler, sondern die Abweichungen sind eine Folge davon, dass $Y_i$ für jeden Wert von $X_i$ nicht nur einen einzigen Wert hat, sondern eben einer Verteilung folgt $Y_i|X_i \sim \mathcal{N}(\beta_0 + beta_1, \sigma^2)$ deren Form über die $\epsilon_i$ bestimmt wird.
+Hier taucht jetzt zum ersten Mal der Parameter $\sigma^2$ formal auf. Wo kommt diese Varianz her? Sie gehört zu unserer Annahme der Verteilung der $\epsilon_i \sim \mathcal{N}(0,\sigma^2)$. Bisher haben wir aber noch gar keine Möglichkeit kennen gelerntm, diese abzuschätzen.
 
-Die $e_i$ sind tatsächlich die Schätzer für die *wahren* $\epsilon_i$ also $e_i = \hat{\epsilon_i} = \hat{y}_i - y_i$. Es lässt sich nun wieder zeigen, dass mittels dieser $e_i$ ein erwartungstreuer Schätzer für $\sigma^2$ erzeugen lässt. Nämlich die mittleren quadrierten Abweichungen (MSE).
+Wieder nach etwas motivierten Starren auf die verschiedenen Formeln, könnte heuristisch plausibel sein, dass die Varianz, also die Streuung der $\epsilon_i$ mit der Streuung unserer Werte um die Regressionsgerade zusammenhängen könnten. Formal hatten wir diese als Residuen bezeichnet und mit $e_i = \hat{y}_i - y_i$ bezeichnet. Vormals hatten wir diese Abweichungen als Fehler bezeichnet, aber unter den jetzt eingeführten Annahmen, handelt es sich nicht wirklich um Fehler, sondern die Abweichungen sind eine Folge davon, dass $Y_i$ für jeden Wert von $X_i$ nicht nur einen einzigen Wert hat, sondern eben einer Verteilung folgt $Y_i|X_i \sim \mathcal{N}(\beta_0 + beta_1, \sigma^2)$ deren Form über die $\epsilon_i$ bestimmt wird.
 
-$$
+Die $e_i$ sind tatsächlich die Schätzer für die *wahren* $\epsilon_i$ also $e_i = \hat{\epsilon_i} = \hat{y}_i - y_i$. Es lässt sich nun wieder zeigen, dass mittels dieser $e_i$ ein erwartungstreuer Schätzer für $\sigma^2$ erzeugt werden kann. Nämlich die mittleren quadrierten Abweichungen (MSE = mean squared error).
+
+\begin{equation}
 \hat{\sigma} = \frac{\sqrt{\sum_{i=1}^N e_i^2}}{N-2} = \frac{\text{SSE}}{N-2} = \text{MSE}
-$$ {#eq-slm-sigma}
+\label{eq-slm-sigma}
+\end{equation}
 
-Da das später immer wieder auftauchen wird, hier auch noch mal in die zwei Komponenten zerlegt. Der Zähler wird als Summe der quadrierten Abweichungen (SSE) bezeichnet und durch den Term $N-2$, der als Freiheitsgerade bezeichnet wird, geteilt. Dann mit die Formel und deren Bezeichnung *mittlere* Abweichung zusammenpasst, wäre es schöner wenn die Summe durch die Anzahl $N$ der Terme geteilt wird, allerdings verhält sich das in diesem Fall ähnlich wie bei der Varianz einer Stichprobe wo die Summe auch durch $N-1$ geteilt wird (zur Erinnerung $s = \frac{\sum_{i=1}^N (x_i - \bar{x})^2}{N-1}$). Jetzt wird dementsprechend nicht durch $N-1$ sondern durch $N-2$ geteilt.
+Da das später immer wieder auftauchen wird, hier auch noch mal in die zwei Komponenten zerlegt. Der Zähler wird als Summe der quadrierten Abweichungen (SSE = sum of squared error) bezeichnet und durch den Term $N-2$, der als Freiheitsgerade bezeichnet wird, geteilt. Damit die Formel und deren Bezeichnung *mittlere* Abweichung zusammenpasst, wäre es schöner wenn die Summe durch die Anzahl $N$ der Terme geteilt wird, allerdings verhält sich das in diesem Fall ähnlich wie bei der Varianz einer Stichprobe wo die Summe auch durch $N-1$ geteilt wird (zur Erinnerung $s = \frac{\sum_{i=1}^N (x_i - \bar{x})^2}{N-1}$). Für MSE wird dementsprechend nicht durch $N-1$ sondern durch $N-2$ geteilt.
 
-Für unser Problem der Stichprobenverteilung ist jetzt aber wichtiger, dass wir mittels @eq-slm-sigma den Standardfehler von $\hat{\beta}_1$ bestimmen können, indem wir für $\sigma^2$ das mittels der Daten ermittelte $\hat{\sigma}^2$ einsetzen.
+Für unser Problem der Stichprobenverteilung ist jetzt aber wichtiger, dass wir mittels Formel \eqref{eq-slm-sigma} den Standardfehler von $\hat{\beta}_1$ bestimmen können, indem wir für $\sigma^2$ das mittels der Daten ermittelte $\hat{\sigma}^2$ einsetzen.
 
-$$
+\begin{equation}
 \hat{\sigma}_{\beta_1} = \sqrt{\frac{\hat{\sigma}^2}{\sum{(X_i - \bar{X})^2}}}
-$$ {#eq-slm-hatbeta1-se}
+\label{eq-slm-hatbeta1-se}
+\end{equation}
 
 Dies erlaubt uns jetzt nach unserem bereits bekannten Muster eine Teststatistik für die $H_0$ herzuleiten:
 
@@ -300,15 +311,16 @@ $$
 
 Unter der $H_0$ mit $\beta_1 = 0$ wird daraus
 
-$$
+\begin{equation}
 t = \frac{\hat{\beta}_1}{\hat{\sigma}_{\beta_1}}
-$$ {#eq-slm-beta1-statistic}
+\label{eq-slm-beta1-statistic}
+\end{equation}
 
 Diese Teststatistik folgt einer t-Verteilung mit $N-2$ Freiheitsgeraden. Da diese Formel wieder etwas aus der Luft gegriffen erscheint, hier noch mal eine Simulation zusammen mit der theoretischen Testverteilung.
 
 ```{r}
 #| echo: true
-#| fig.cap: Verteilung von t bei 1000 Simulationen unter der Annahme der $H_0$ und die theoretische Verteilung von t (rot). 
+#| fig-cap: Verteilung von t bei 1000 Simulationen unter der Annahme der $H_0$ und die theoretische Verteilung von t (rot). 
 #| label: fig-slm-inf-beta1-dist
 
 N <- 45
@@ -343,7 +355,7 @@ ggplot(betas, aes(t)) +
 
 In @fig-slm-inf-beta1-dist können wir sehen, dass die theoretische Verteilung in rot die beobachtete Verteilung sehr gut abschätzt. 
 
-In `R` kann der Wert $\hat{\sigma}^2$ über die Funktion `sigma()` aus dem gefitteten `lm()`-Modell extrahiert werden.
+In `R` kann der Wert $\hat{\sigma}$ über die Funktion `sigma()` aus dem gefitteten `lm()`-Modell extrahiert werden.
 
 ```{r defs_reg_02}
 jump <- readr::read_delim('data/running_jump.csv',
@@ -361,7 +373,7 @@ sigma(mod)
 Schauen wir uns die Stichprobenverteilung von $\hat{\sigma}^2$ anhand unserer Simulation an. Es ist wieder zu beobachten, das im Mittel der korrekte, im Modell definierte, Wert von $\sigma = 1$ beobachtet wird (siehe @fig-slm-inf-sigma-dist).
 
 ```{r}
-#| fig.cap: "Verteilung von $\\hat{\\sigma}$ in der Simulation und der wahre Wert in rot eingezeichnet"
+#| fig-cap: "Verteilung von $\\hat{\\sigma}$ in der Simulation und der wahre Wert in rot eingezeichnet"
 #| label: fig-slm-inf-sigma-dist
 
 ggplot(betas, aes(sigma)) +
@@ -383,6 +395,8 @@ summary(mod)
 
 In unserem Fall beobachten wir $`r round(sigma(mod), 2)`m$. Diesen Wert muss jetzt unsere Trainerin im Sinne der Weitsprungleistung der deren Varianz interpretieren und ein Abschätzung treffen zu können.
 
+## Teststatistik für $\beta_0$
+
 Nach der Herleitung der Teststatistik für $\beta_1$, können wir jetzt auch weitere Teil der Ausgabe von `summary()` interpretieren. In der Tabelle stehen entsprechend die Standardfehler für $\hat{\beta}_1$ und $\hat{\beta}_0$. Für $\beta_0$ wird genau die gleiche Vorgehensweise wie auch bei $\beta_1$ angewendet. Die Nullhypothese $H_0$ ist hier ebenfalls das der Parameter standardmäßig als Null angesetzt wird. Der Standardfehler von $\beta_0$ errechnet sich nach:
 
 \begin{equation}
@@ -390,9 +404,9 @@ Nach der Herleitung der Teststatistik für $\beta_1$, können wir jetzt auch wei
 \label{eq-slm-inf-beta0-se}
 \end{equation}
 
-An Formel \eqref{eq-slm-inf-beta-0-se} ist zu erkennen, dass wenn die $X$-Werte den Mittelwert $0$ haben, dass $\sigma^2[\beta_0]$ gleich dem Standardfehler für den Mittelwert SEM wird. Was auch wiederum Sinn macht, da in diesem Fall $\beta_0 = \bar{y}$ gilt.
+An Formel \eqref{eq-slm-inf-beta0-se} ist zu erkennen, dass wenn die $X$-Werte den Mittelwert $0$ haben, dass $\sigma^2[\beta_0]$ gleich dem Standardfehler für den Mittelwert SEM wird. Was auch wiederum Sinn macht, da in diesem Fall $\beta_0 = \bar{y}$ gilt.
 
-Dies führt dies zu den beiden zu überprüfenden Hypothesen für $\beta_0$:
+Dies führt zu den beiden Hypothesen für $\beta_0$:
 
 \begin{align*}
 H_0: \beta_0 &= 0 \\
@@ -401,9 +415,68 @@ H_1: \beta_0 &\neq 0
 
 Dementsprechend überprüft die Hypothesentestung ob der $y$-Achsenabschnitt gleich Null ist. Hier sollte berücksichtigt werden, dass diese Hypothese in den seltensten Fällen tatsächlich auch von Interesse ist und lediglich besagt, dass entweder der $y$-Achsenabschnitt durch den Nullpunkt geht, oder dass wenn tatsächlich $\beta_1 = 0$ gilt, der Mittelwert von $y$ gleich Null ist, was ebenfalls in den seltensten Fällen von Interesse ist.
 
-Die Spalten 3 und 4 in `summary()` unter `Coefficients:` können jetzt interpretiert werden, da es sich hierbei um die $t$-Teststatistik handelt und den entsprechenden p-Wert unter der jeweiligen $H_0$. Die Hypothesen sind ungerichtet.
+Mit den beiden Teststatistiken für $\beta_0$ und $\beta_1$ können wir nun auch die Spalten 3 und 4 in der Ausgabe von `summary()` unter `Coefficients` interpretieren` Es handelt sich hierbei um den jeweiligen $t$-Wert der Koeffizienten $\hat{\beta_0}$ und $\hat{\beta_1}$. Entsprechend ist der p-Wert unter der jeweiligen $H_0$. Standardmäßig sind die Hypothesen ungerichtet.
 
-## Herleitung der Eigenschaften von $\hat{\beta}_1$
+## Konfidenzintervalle für die Koeffizienten
+
+Wie wir im oberen Abschnitt gesehen haben, sind unsere Schätzer für die Koeffizienten $\beta_0$ und $\beta_1$ mit Unsicherheiten behaftet die sich in Form der Standardfehler $\sigma[\beta_0]$ und $\sigma[\beta_1]$ ausdrücken. Die Standardfehler können wie bereits in kleine Welt Abschnitt dazu verwendet werden um Konfidenzintervalle für die beiden Koeffizienten zu bestimmen.
+
+\begin{equation}
+\hat{\beta_j} \pm q_{t_{\alpha/2,df=N-2}} \times \hat{\sigma}_{\beta_j}
+\label{eq-slm-inf-conf-0}
+\end{equation}
+
+Wie in Formel\eqref{eq-slm-inf-conf-0} zu sehen berechnet sich das Konfidenzintervall nach dem üblichen Muster: Schätzer $\pm$ Quantile $\times$ Standardfehler. Im vorliegenden Falle wird die Quantile aus der $t$-Verteilung mit $N-2$ Freiheitsgarden bestimmt. Wie vorher bereits betont, das Konfidenzintervall erlaubt keine Aussage über die Wahrscheinlichkeit mit der der wahre Koeffizient in dem Intervall liegt, sondern gibt an welche $H_0$-Hypothesen mit den Daten kompatibel sind. Daher soll in der Ergebnisdokumentation das Konfidenzintervall angegeben und spätenstens in der Diskussion die obere und die untere Schranke diskutiert werden.
+
+In `R` kann das Konfidenzintervall direkt mit der Funktion `confint()` berechnet und ausgegeben werden.
+
+```{r}
+#| echo: true
+
+confint(mod)
+```
+
+Wie schon vorher im Rahmen der Besprechung der Normalverteilungs ist eine gute Daumenregel $2 \times s_e$ um das Konfidenzintervall schnell abzuschätzen.
+
+Wie die Koeffizienten haben die Konfidenzintervall die gleiche Einheit wie die abhängige Variable und können daher direkt interpretiert werden. Im vorliegenden Fall sollte daher besprochen werden welche Bedeutung ein Koeffizient von $\beta_1 = `r round(confint(mod)[2,1],1)`$  bzw. von $\beta_1 = `r round(confint(mod)[2,2],1)`$ für die Interpretation des Modell hat.
+
+Noch einmal zu erwähnen ist, dass die beiden Parameter $\hat{\beta}_0$ und $\hat{\beta}_1$ welche die Regressionsgerade beschreiben, Schätzer für die Parameter aus einer Population sind der die beiden Parameter $\beta_0$ und $\beta_1$ den zugrundeliegenden Zusammenhang zwischen den beiden Variablen beschreiben. Diese Betrachtung ist parallel zu derjenigen, wenn wir z.B. anhand des Mittelwerts $\bar{x}$ den wahren Populationsmittelwert $\mu$ versuchen zu schätzen. D.h. wir haben eine Populationsregressionsgerade, die wir mit Hilfe der Daten versuchen zu schätzen. Die *wahre* Regressionsgerade werden wir aber niemals mit 100%-iger Sicherheit bestimmen, eben genausowenig wie wir den Populationsmittelwert $\mu$ nicht mittels $\bar{x}$ bestimmen können.
+
+## Weitere Hilfsfunktionen für `lm()` in `R`
+
+Wenn einmal direkt die Standardfehler verwendet werden können, können diese mittels der Funktion `vcov()` bestimmt werden.
+
+```{r}
+#| echo: true
+
+vcov(mod)
+```
+
+`vcov()` gibt die Varianz-Kovarianz Matrize für die Modellparameter aus (Achtung eine andere Matrize als oben im Zusammenhang mit dem Gauss-Markov-Modell!). Die Standardfehler sind dann entsprechend den Parameter die Wurzel der Werte auf der Hauptdiagonalen.
+
+```{r}
+#| echo: true
+
+sqrt(diag(vcov(mod)))
+```
+
+Entsprechend könnten wir die Konfidenzintervalle auch von-Hand ausreichnen. Zum Beispiel das Konfidenzintervall für $\hat{\beta_1}$.
+
+```{r}
+#| echo: true
+
+beta_s <- coef(mod)[2]
+s_e <- sqrt(diag(vcov(mod)))
+q_t <- qt(0.975, 43)
+beta_s + c(-1,1) * q_t * s_e[2]
+```
+
+
+## Weiteres Material 
+
+Eine schnelle Zusammenfassung findet ihr in @pos_simple_regression, während @kutner2005 die Lineare Regression detailliert herleitet. Für die eben besprochenen Themen ist vor allem Abschnitt (S.40-48) von Interesse.
+
+## Herleitung der Eigenschaften von $\hat{\beta}_1$ (advanced)
 
 Um den Schätzer $\hat{\beta}_1$ für $\beta_1$ formal herzuleiten. Beginnen wir zunächst mit der folgenden Formel, wobei wir im folgenden den Schätzer mit $b_1$ bezeichnen.
 
@@ -480,7 +553,7 @@ Wir erhalten die bereits eingeführte Formel. Wiederum eine Einsicht aus der Her
 
 Eine interessante Eigenschaft des Standardfehler von $\hat{\beta}_1$ ist in Formel \eqref{eq-slm-inf-beta1-deriv} zu sehen. Im Nenner stehen die Abweichungen der $X$-Werte vom Mittelwert $\hat{X}$. D.h. wenn die $X$-Werte weiter auseinander sind, dann führt dies dazu, dass der Standardfehler $\sigma^2[b_1]$ kleiner wird. Intuitive macht dies auch Sinn, wenn ich eine Gerade bestimmen will, dann ist es einfacher die Gerade anhand weit auseinander liegenden Stütztwerten zu bestimmen im Vergleich zu wenn ich eng beinander liegende $X$-Werte verwende.
 
-## Maximum-likelihood Methode bei der einfachen linearen Regression(*)
+## Maximum-likelihood Methode bei der einfachen linearen Regression (advanced)
 
 Ein anderer Herleitung für $\beta_0$ und $\beta_1$ kann über die sogenannten Maximum-Likelihood-Methode durchgeführt werden. Dabei gehen die Verteilungsannahmen der Variablen direkt in die Herleitung ein.
 
@@ -624,32 +697,4 @@ Wenn dieser Ausdruck gleich Null gesetzt erhalten wir den gleichen Ausdruck wie 
 \end{alignat}
 
 Die Herleitung für $\beta_1$ ist ebenfalls gleich derjenigen die aus den Normalengleichungen entsteht. Nochmal zum Unterschied, bei den Normalengleichungen sind keine Annahmen über die Verteilung der Werte eingeflossen. Einzig, wir haben eine Methode gesucht, die die quadrierten Residuen minimiert. Dagegen beruht die Herleitung der Gleichungen aus der Maximum-Likelihood Methode direkt auf eine spezifischen Verteilungsannahme. Im Fall der lineare Regression führen beide Methoden zum gleichen Ergebnis. Die Maximum-Likelihood-Methode kann jedoch auch in Fällen angewendet werden bei denen die Methode der quadrierten Abweichungen nicht funktioniert. Wichtig für unsere Anwendung ist das zugrundeliegende Prinzip bzw. den Unterschied zu verstehen.
-
-## Konfidenzintervalle für die Koeffizienten
-
-Wie wir im oberen Abschnitt gesehen haben, sind unsere Schätzer für die Koeffizienten $\beta_0$ und $\beta_1$ mit Unsicherheiten behaftet die sich in Form der Standardfehler ausdrücken. Wir können nun, diese standardfehler wiederum verwenden um Konfidenzintervalle für die Koeffizienten zu bestimmen.
-
-\begin{equation}
-\hat{\beta_j} \pm q_{t_{\alpha/2,df=N-2}} \times \hat{\sigma}_{\beta_j}
-\label{eq-slm-inf-conf-0}
-\end{equation}
-
-Wie in Formel\eqref{eq-slm-inf-conf-0} zu sehen berechnet sich das Konfidenzintervall nach dem üblichen Muster: Schätzer $\pm$ Quantile $\times$ Standardfehler. Im vorliegenden Falle wird die Quantile aus der $t$-Verteilung mit $N-2$ Freiheitsgarden bestimmt. Wie vorher bereits betont, das Konfidenzintervall erlaubt keine Aussage über die Wahrscheinlichkeit mit der der wahre Koeffizient in dem Intervall liegt, sondern gibt an welche $H_0$-Hypothesen mit den Daten kompatibel sind. Daher soll in der Ergebnisdokumentation das Konfidenzintervall angegeben und spätenstens in der Diskussion die obere und die untere Schranke diskutiert werden.
-
-In `R` kann das Konfidenzintervall mit der Funktion `confint()` berechnet und ausgegeben werden.
-
-```{r}
-#| echo: true
-
-confint(mod)
-```
-
-Wie die Koeffizienten haben die Konfidenzintervall die gleiche Einheit wie die abhängige Variable und können daher direkt interpretiert werden. Im vorliegenden Fall sollte daher besprochen werden welche Bedeutung ein Koeffizient von $\beta_1 = `r round(confint(mod)[2,1],1)`$  bzw. von $\beta_1 = `r round(confint(mod)[2,2],1)`$ für die Interpretation des Modell hat.
-
-Noch einmal zu erwähnen ist, dass die beiden Parameter $\hat{\beta}_0$ und $\hat{\beta}_1$ welche die Regressionsgerade beschreiben, Schätzer für die Parameter aus einer Population sind der die beiden Parameter $\beta_0$ und $\beta_1$ den zugrundeliegenden Zusammenhang zwischen den beiden Variablen beschreiben. Diese betrachtung ist parallel zu derjenigen, wenn wir z.B. anhand des Mittelwerts $\bar{x}$ den währenen Populationsmittelwert $\mu$ versuchen zu schätzen. D.h. wir haben eine Populationsregressionsgerade, die wir mit Hilfe der Daten versuchen zu schätzen. Die wahre Regressionsgerade werden wird aber niemals mit 100%-iger Sicherheit bestimmen, eben genausowenig wie wir den Populationsmittelwert $\mu$ nicht mittels $\bar{x}$ bestimmen können.
-
-## Weiteres Material 
-
-Eine schnelle Zusammenfassung findet ihr in @pos_simple_regression, während @kutner2005 das die Lineare Regression detailliert herleiten. Für die eben besprochenen Themen ist vor allem Abschnitt (S.40-48) von Interesse.
-
 
