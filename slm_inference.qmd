@@ -213,7 +213,7 @@ hist(beta_1_s, xlab = expression(hat(beta)[1]), main='')
 abline(v = beta_1, col='red', lty=2)
 ```
 
-In @fig-slm-inf-hist-sim-1 begegnet uns zunächst einmal wieder unsere altbekannte Glockenkurve. Was uns positiv stimmen sollte ist, dass der Mittelwert der Verteilung im Bereich des wahren Werts von $\beta_1$ (rote Linie) liegt und Werte mit größer werdender Abweichung vom wahren Wert in ihrer Häufigkeit abnehmen. Aber die Häufigkeit ist nicht Null, sondern eben nur geringer. Werte in der Nähe von $\beta_1$ weisen dagegen eine größere Häufigkeit auf. Dies zeigt, dass wir in der Lage sind mit unserem Regressionsmodell im Mittel tatsächlich den *wahren* Wert $\beta_1$ abzuschätzen. Allerdings, wie immer, bei einer einzelnen Durchführung des Experiments können wir alles von perfekt spot-on bis komplett danebenliegen und würden es nicht wissen.
+In @fig-slm-inf-hist-sim-1 begegnet uns zunächst einmal wieder unsere altbekannte Glockenkurve. Was uns positiv stimmen sollte ist, dass der Mittelwert der Verteilung im Bereich des wahren Werts von $\beta_1$ (rote Linie) liegt und Werte mit größer werdender Abweichung vom wahren Wert in ihrer Häufigkeit abnehmen. Aber die Häufigkeit ist nicht Null, sondern eben nur geringer. Werte in der Nähe von $\beta_1$ weisen dagegen eine größere Häufigkeit auf. Dies zeigt, dass wir in der Lage sind mit unserem Regressionsmodell im Mittel tatsächlich den *wahren* Wert $\beta_1$ abzuschätzen. Allerdings, wie immer, bei einer einzelnen Durchführung des Experiments können wir alles von perfekt spot-on bis komplett danebenliegen und würden es nicht wissen. Die Standardabweichung der $\hat{\beta}_1$ beschreibt dabei wieder den Standardfehler der Stichprobenverteilung.
 
 Wir können jetzt aber auch wieder ganz parallel zu unseren Herleitungen in der kleinen Welt einen Entscheidungsprozess spezifizieren. Wenn @fig-slm-inf-hist-sim-1 den DGP beschreibt und das die Verteilung der zu erwartenden $\hat{\beta}_1$ unter dem Modell sind. Bei der Durchführung eines neuen Experiments, dann würden wir sagen, dass wenn unserer beobachteter Wert in den Rändern der Verteilung von @fig-slm-inf-hist-sim-1 liegt, das wir eher nicht davon ausgehen, dass unserer neues Experiment den gleichen DGP zugrundeliegen hat. D.h wir definieren uns Grenzen (kritische Werte) am oberen und am unteren Rand der Verteilung. Wenn ein beobachteter Wert entweder unterhalb der unteren Grenze oder oberhalb der oberen Grenze liegt, dann interpretieren wir dies im Sinne: *Wir sind jetzt aber sehr überrascht diesen Wert zu sehen, wenn der dem gleichen datengenerierenden Prozess entstammen soll. Daher glauben wir nicht, dass dieses Experiment den gleichen DGP besitzt.*
 
@@ -452,7 +452,16 @@ Wenn einmal direkt die Standardfehler verwendet werden können, können diese mi
 vcov(mod)
 ```
 
-`vcov()` gibt die Varianz-Kovarianz Matrize für die Modellparameter aus (Achtung eine andere Matrize als oben im Zusammenhang mit dem Gauss-Markov-Modell!). Die Standardfehler sind dann entsprechend den Parameter die Wurzel der Werte auf der Hauptdiagonalen.
+`vcov()` gibt den Schätzer der Varianz-Kovarianz Matrize $\hat{V}(\beta)$ für die Modellparameter aus (Achtung eine andere Matrize als oben im Zusammenhang mit dem Gauss-Markov-Modell!). Die Varianz-Kovarianz Matrize der Parameter hat die folgende Form.
+
+\begin{equation*}
+\hat{V}(\beta) = \begin{pmatrix}
+\sigma^2[\hat{\beta}_0] & cov(\hat{\beta}_0, \hat{\beta}_1) \\
+cov(\hat{\beta}_0, \hat{\beta}_1) & \sigma^2[\hat{\beta}_1]
+\end{pmatrix}
+\end{equation*}
+
+Die Standardfehler sind dann entsprechend den Parameter die Wurzel der Werte auf der Hauptdiagonalen.
 
 ```{r}
 #| echo: true
@@ -460,7 +469,7 @@ vcov(mod)
 sqrt(diag(vcov(mod)))
 ```
 
-Entsprechend könnten wir die Konfidenzintervalle auch von-Hand ausreichnen. Zum Beispiel das Konfidenzintervall für $\hat{\beta_1}$.
+Entsprechend könnten wir die Konfidenzintervalle auch von-Hand ausrechnen. Zum Beispiel das Konfidenzintervall für $\hat{\beta_1}$.
 
 ```{r}
 #| echo: true
@@ -471,6 +480,7 @@ q_t <- qt(0.975, 43)
 beta_s + c(-1,1) * q_t * s_e[2]
 ```
 
+Wir erhalten die gleichen Intervallgrenzen wie vorher mit `confint()`.
 
 ## Weiteres Material 
 

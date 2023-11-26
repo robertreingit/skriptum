@@ -472,15 +472,15 @@ ggplot(adl, aes(y_hat, rstudent)) +
 ### Übersicht über die Residuenarten
 
 
-In @tbl-slm-model-resids sind noch einmal die drei Arten von Residuen aufgelistet.
+In @tbl-slm-model-resids sind noch einmal die drei Arten von Residuen und die dazugehörenden `R` Hilfsfunktionen für `lm()` aufgelistet.
 
-| Typ | Berechnung | Ziel |
-| --- | --- | --- |
-| Einfache Residuen | $e_i = y_i - \hat{y}_i$ | Verteilungsannahme |
-| Standardisierte Residuen |  $e_{Si} = \frac{e_i}{\hat{\sigma}\sqrt{1-h_i}}$ | Verteilungsannahme |
-| Studentized Residuen |  $e_{Ti} = \frac{e_i}{\hat{\sigma}_{(-i)}\sqrt{1-h_i}}$ | Einfluss  auf Modell |
+| Typ | Berechnung | Ziel | `R` Funktion |
+| --- | --- | --- | --- |
+| Einfache Residuen | $e_i = y_i - \hat{y}_i$ | Verteilungsannahme | `resid()` |
+| Standardisierte Residuen |  $e_{Si} = \frac{e_i}{\hat{\sigma}\sqrt{1-h_i}}$ | Verteilungsannahme | `rstandard()` |
+| Studentized Residuen |  $e_{Ti} = \frac{e_i}{\hat{\sigma}_{(-i)}\sqrt{1-h_i}}$ | Einfluss  auf Modell | `rstudent()` |
 
-: Übersicht über verschiedene Arten von Residuen {#tbl-slm-model-resids}
+: Übersicht über verschiedene Arten von Residuen und die dazugehörenden `R` Funktionen {#tbl-slm-model-resids}
 
 ### Ausgabe von `summary()` (continued)
 
@@ -605,14 +605,14 @@ In @fig-slm-model-dfbeta sind die DFBETAS für die beiden Koeffizienten $\hat{be
 
 ### Übersicht über die Einflussmetriken 
 
-In @tbl-slm-model-influence sind noch einmal die verschiedenen Methoden tabellarisch dargestellt.
+In @tbl-slm-model-influence sind noch einmal die verschiedenen Methoden tabellarisch und die dazugehörenden `R` Hilfsfunktionen für `lm()` dargestellt.
 
-| Typ | Veränderung | Daumenregel |
-| --- | ---  | ---  |
-| $(DFFITS)_i$ | Vorhersagewert i | $2\sqrt{k/N}$ |
-| Cook | Durchschnittliche Vorhersagewerte | $>1$ |
-| $(DFBETAS)_{k(i)}$ |  Koeffizient i | $2\sqrt{N}$ |
-| $e_{Ti}$ | Residuum i  | t-Verteilung(n-k-2)|
+| Typ | Veränderung | Daumenregel | `R` Funktion |
+| --- | ---  | ---  | --- |
+| $(DFFITS)_i$ | Vorhersagewert i | $2\sqrt{k/N}$ | `dffits()` |
+| Cook | Durchschnittliche Vorhersagewerte | $>1$ | `cooks.distance()` |
+| $(DFBETAS)_{k(i)}$ |  Koeffizient i | $2\sqrt{N}$ | `dfbetas()` |
+| $e_{Ti}$ | Residuum i  | t-Verteilung(n-k-2)| `rstudent()` |
 
 : Übersicht über die verschiedene Einflussmaße zur Bewertung der Modellgüte {#tbl-slm-model-influence}
 
@@ -620,7 +620,7 @@ Nochmal, die Daumenregeln sind wirklich auch nur Daumenregeln und identifzieren 
 
 ### Zum Nacharbeiten
 
-Noch mal weitere Informationen findet Ihr in @pos_diagnostics, @fox2011 [p.294-302] und @young2019.
+Eine sehr gute Zusammenfassung ist in @pos_diagnostics zu finden, während noch mal weitergehende Information in @fox2011 [p.294-302] und @young2019 nachzulesen sind.
 
 ## Diagnoseplots in `R`
 
@@ -637,7 +637,4 @@ plot(mod)
 par(mfrow=c(1,1), mar=mar)
 ```
 
-Eine weitere Möglichkeit ist das package `performance` das zahlreiche Funktion enthält rund um die Analyse von Modellfits (siehe beispielweise `performance::check_model()`).
-
-
-
+Eine weitere Möglichkeit ist das package `performance` das zahlreiche Funktion enthält rund um die Analyse von Modellfits enthält. Beispielweise erzeugt die Funktion `performance::check_model()` neben den gleichen Analyse wie mit `plot()` noch weitere gute Übersichten zum Modellfit.
