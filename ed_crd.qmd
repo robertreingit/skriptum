@@ -5,6 +5,8 @@
 #| warning: false
 #| message: false
 source('_common.R')
+library(scatterplot3d)
+require(patchwork)
 #source('../resources/nice_format_helper_fcn.R')
 n <- 20
 k <- 3
@@ -29,14 +31,15 @@ Y_{ij} = \mu + \tau_i + \epsilon_{ij}, \qquad \epsilon_{ij}\sim \mathcal{N}(0,\s
 
 i = Gruppenindikator, j = experimental unit-indikator, $\mu$ = Gesamtmittelwert, \mbox{$\tau_i$ = Einfluss der $i$-ten Stufe}
 
-Natürlich brauchen wir Replikationen um den Einfluss $\tau_i$ der Konditionen zu bestimmen. Diese Replikationen, in unsererm Fall die Versuchspersonen, bekommen den Index $j$.
+Natürlich brauchen wir Replikationen um den Einfluss $\tau_i$ der Konditionen zu bestimmen. Diese Replikationen, in unserem Fall die Versuchspersonen, bekommen den Index $j$.
 
 Die Annahmen des Modells sind dabei:
 
 - Unabhängige Experimental Units (EU) 
-- Die EUs sind **zufällig** in die k Gruppen eingeteilt worden
-- Die Varianzen $\sigma_i^2$ in jeder Gruppe $i$ sind gleich 
-- Die Werte in jeder Gruppe sind Normalverteilt $Y_{ij} \sim \mathcal{N}(\mu_i, \sigma)$
+- Die EUs sind **randomisiert** in K Gruppen eingeteilt worden
+- Die Konditionen wurden unabhängig auf die individuellen experimentellen Einheiten angewendet
+- Die Werte in jeder Gruppe sind Normalverteilt $Y_{ij} \sim \mathcal{N}(\mu_i, \sigma_i^2)$
+- Die Varianzen $\sigma_i^2$ in jeder Gruppe $i$ sind gleich, $\sigma_i^2 = \sigma^2, i = 1,2,\ldots,K$.
 
 Die statistische Überprüfung führen wir nun wieder mit dem uns bekannten Modellvergleichen durch. Das Modell \eqref{eq-ed-crd-model} wird als das Full Model angesehen und wir definieren das reduzierte Modell mittels:
 
@@ -59,7 +62,398 @@ H_1:& \exists\tau_i \neq \tau_j\ \textrm{mit}\ i \neq j, i,j \in \{1,2,\ldots,k\
 
 D.h. wir überprüfen ob die Hinzunahme der Information über die Konditionen (Faktoren) zu einer statistisch signifikanten Verminderung der Residualvarianz führt. Wenn dem nicht der Fall, dann verbessert sich der Modellfit durch die Faktorstufen $\tau_i$ nicht. 
 
-### Verbindung Modellhierarchien und BA-ANOVA
+### Schätzung von $\sigma^2$
+
+Zu den Annahmen gehört auch die uns mittlerweile altbekannte Annahme der Varianzgleichheit oder Homeskedastizität für $\sigma^2$. Wir schätzen $\sigma^2$ mittels der $MSE$ ab. Diese werden im Rahmen der ANOVA oftmals als *within error* bezeichnet, also als Fehler innerhalb der jeweiligen Gruppen. Durch die Struktur des CRD mit nur nominalen Faktoren sind die Mittelwerte der jeweiligen Gruppen die geschätzen $Y$-Wert also $\hat{y}_{ij}$. Der sind unsere altbekannten Residuen $\hat{\epsilon}_i$ immer die jeweiligen Abweichungen der beobachteten Wert $y_i$ vom Gruppenmittelwert $\bar{y}_i$. Wir führen in diesem Zuge noch etwas Nomenklatur ein. Der Mittelwert $\bar{y}_i$ für die $i$-te Gruppe wird mit den Zeichen $\bar{y}_{i.}$ bezeichnet. Der Punkt $.$ im Index bedeutet *Summation über diesen Index*. Formaler:
+
+\begin{equation}
+\bar{y}_{i.} = \frac{1}{n_i}\sum_{j=1}^{n_i}y_{ij}
+\end{equation}
+
+$n_i$ ist die Stichprobengröße in Gruppe $i$.
+
+Unser allgemeiner Schätzfehler in dem Model $\hat{\sigma}^2 = MSE$ berechnet sich aus der Summer der quadrierten Abweichungen $y_{ij} - \hat{y}_{ij}$ geteilt durch die Freiheitsgrade also $\hat{\sigma}^2 = \frac{SSE}{N-p}$ ($p=$ Anzahl der Modellparameter). Für $SSE$ gilt im CRD:
+
+\begin{equation}
+\begin{aligned}
+SSE &= \sum_{i}\sum_{j}\hat{\epsilon}_{ij}^2 = \sum_{i}\sum_{j} (y_{ij} - \hat{y}_{ij})^2 = \sum_{i}\sum_{j}(y_{ij} - (\hat{\mu} + \hat{\tau}_i))^2 \\
+&= \sum_{i}\sum_{j}(y_{it} - \bar{y}_{i.})^2
+\end{aligned}
+\end{equation}
+
+Mit etwas Algebra lässt sich zeigen, dass der Erwartungswert von $SSE$ unter dem Modell wie folgt aussieht.
+
+\begin{equation}
+E[SSE] = (N-K)\sigma^2
+\end{equation}
+
+Damit landen wir wenig überraschend wieder bei dem gleichen $\hat{\sigma}^2$ das wir vorher auch schon unter dem allgemeinen linearem Modell hergeleitet haben. 
+
+\begin{equation}
+\hat{\sigma}^2 = \frac{SSE}{N-K} = MSE
+\end{equation}
+
+Hier nur noch mal angezeigt um die Verbindung mit den Gruppenmittelwerten explizit zu machen bzw. wenn ihr Statistikbücher zur ANOVA anschaut, dann wird meist diese Schreibweise verwendet.
+
+Mit etwas mehr Aufwand, lässt sich zeigen, dass $SSE$ einer $\chi^2$-Verteilung mit $N-K$ Freiheitsgraden folgt.
+
+\begin{equation}
+\frac{SSE}{\sigma^2} \sim \chi^2_{N-K}
+\end{equation}
+
+Über diesen Zusammenhang lässt sich eine obere $100(1-\alpha)\%$ Konfidenzgrenze über die folgende Formel herleiten:
+
+\begin{equation}
+\sigma^2 \leq \frac{SSE}{\chi^2_{N-K,\alpha}}
+\label{eq-crd-sigma-chi}
+\end{equation}
+
+Diese Grenze wird später noch einmal interessant wenn wir Stichprobengrößen ermitteln wollen.
+
+## Beispieldaten
+
+Schauen wir uns als nächstes einen Beispieldatensatz an und gehen durch die verschiedenen Schritte der Analyse eines CRD.
+
+In @fig-ed-crd-coffeine-01 ist das Ergebnis einer Untersuchung zum Einfluss von Koffein auf die Laufleistung bei einem 8Km Ausdauerlauf zu abgebildet. Insgesamt sind $N=60$ Probanden randomisiert in drei Gruppen eingeteilt worden: Koffein, Placebo und Control. Die Gruppe Koffein hat vor dem Lauf ein Koffeinpräparat eingenommen, während die Placebogruppe ein Präparat ohne Wirkstoff eingenommen hat. Die Kontrollgruppe hat vor dem Lauf kein Zusatzpräparat eingekommen. Jeder Proband lief einmal die Strecke von $8$ Km so schnell wie möglich. Die abhängige Variable war die Laufzeit.
+
+```{r}
+#| fig-cap: "Einfluss von Koffeine auf die Laufleistung über 8km"
+#| label: fig-ed-crd-coffeine-01
+
+ggplot(kaffee, aes(Gruppe, Zeit)) +
+  geom_boxplot() + 
+  geom_jitter(width = 0.2, color = 'red', size = 2, alpha=.5) +
+  labs(y = 'Zeit [s]',
+       x = 'Gruppe') 
+```
+
+@fig-ed-crd-coffeine-01 deute an, das die Einnahme von Koffein zu einer Leistungsverbesserung führt, während der Einfluss des Placebos scheinbar möglicherweise nur zu einer leichten Verbesserung gegenüber der Kontrollkondition geführt hat.
+
+Schauen wir uns die deskriptive Statistik der Daten an. In @tbl-ed-crd-ex-01 sind die deskriptiven Werte der Daten abgebildet.
+
+```{r}
+#| results: asis
+#| label: tbl-ed-crd-ex-01
+
+kaffee |> group_by(Gruppe) |>  
+  summarytools::descr(stats = c('mean','med','sd','q1','q3'), plain.ascii = F, style='rmarkdown') 
+```
+
+Die Standardabweichungen in den drei Gruppen sind in @tbl-ed-crd-ex-01 relativ ähnlich, so dass hier schon einmal kein größeres Problem zu erwarten ist. Die Mittelwerte und Mediane liegen ebenfalls ziemlich nahe beieinander. Was unseren Eindruck aus @fig-ed-crd-coffeine-01 bestätigt.
+
+Bei der Analyse von CRD Experimenten wird in dem meisten Fällen weniger die einzelnen Koeffzienten gesucht sondern es es wird die Varianz die Aufgrund der Modellparameter aufgeklärt werden kann im Vergleich zu einem reduzierten Modell untersucht. Formal kommt es zu einer Varianzzerlegung, Analyse der Varianz, analysis of variance = ANOVA.
+
+\begin{equation}
+\sigma_{Y}^2 = \sigma_{\text{Modell}}^2 + \sigma_{\epsilon}^2 = \sigma_{\text{between}}^2 + \sigma_{\epsilon}^2
+\end{equation}
+
+Das Ergebnis der Varianzanalyse wird in einer $F$-Tabelle dokumentiert.
+
+|   | $df$ | $SSQ$ | $MSQ$ | $F$ | Expected Mean Square |
+| --- | --- | --- | ------ | :---: | ----- | 
+| Between | $K-1$ | $SS_b$ | $MS_b=\frac{SS_b}{K-1}$ | $\frac{MS_b}{MS_w}$  | $\sigma^2 + Q(\tau_i)$|
+| Residual | $N-K$ | $SS_w$ | $MS_w=\frac{SS_w}{N-K}$ |  | $\sigma^2$ |
+| Total | $N-1$ | $SS_{\text{total}}$ | $MS_{\text{total}}$ | | |
+
+: Bezeichungen F-Tabelle
+
+$df$ sind die Freiheitsgrade, $SSQ$ die Quadratsummen, $MSQ$ die mittleren Quadratsummen, $F$ der resultierende $F$ Wert und Expected Mean Squared der Erwartungswert der jeweiligen Varianzkomponente.
+
+Beim Erwartungswert für $MS_b$ haben wir einen Term $Q(\tau_i)$ der wie folgt definiert ist wenn die Stichprobengröße $n_i$ gleich $K$ gleich groß $n_i = n, \forall i$ ist.
+
+\begin{equation}
+Q(\tau_i) = n\frac{\sum_{i=1}^K(\tau_i - \bar{\tau}_.)^2}{K-1}
+\end{equation}
+
+Dadurch errechnet sich der $F$-Wert als.
+
+\begin{equation}
+F = \frac{MS_b}{MS_w} = \frac{\sigma^2 + Q(\tau_i)}{\sigma^2}
+\end{equation}
+
+Wenn nun die $H_0$ gilt und all $\tau_i = 0$ oder alle $\tau_i$ den gleichen Wert haben, dann wird $Q(\tau_i) = 0$ und es folgt $F = 1$. D.h. unter der $H_0$ erwarten wir, dass der $F$-Wert in der Nähe von $1$ ist. Größere Werte sprechen gegen die $H_0$ das alle $\tau_i = 0$ sind. Letztendlich läuft diese Interpretation aber genauso wieder auf den Vergleich von reduziertem und vollem Modell hinaus.
+
+Für unsere Beispieldaten ergibt sich die folgenden ANOVA-Tabelle (siehe @tbl-ed-crd-ex-tbl-01).
+
+```{r}
+#| tbl-cap: ANOVA-Tabelle der Koffein-Laufdaten
+#| label: tbl-ed-crd-ex-tbl-01
+
+mod_aov <- aov(Zeit ~ Gruppe, kaffee)
+broom::tidy(mod_aov) |> 
+  knitr::kable(booktabs=T, digits=2,
+               col.names = c('', 'DF', 'SSQ', 'MSQ', 'F', 'p'),
+               caption='Summarytabelle von aov()')
+```
+
+Die Ergebnisse in @tbl-ed-crd-ex-tbl-01 deuten auf einen statistisch signifikanter Effekt für die Gruppenvariable. Der $F$-Wert ist deutlich größer als $1$ und hat unter der Annahme der $H_0$ einen p-Wert von deutlich unter $\alpha = 0.05$. D.h. die Kenntnis über die Gruppenzugehörigkeit gibt uns relevante Information über die abhängige Variable $y$ der Laufgeschwindikeit. Bezogen auf den Modellvergleich, die Kenntnis der Gruppenzugehörigkeit erlaubt uns bessere Vorhersagen über die Laufgeschwindigkeit zu machen, als wenn wir diese Informationen nicht hätten. Wie immer ist dies kein Beweis dafür, dass es einen Unterschied zwischen den Gruppen gibt, sondern unter der Annahme das kein Unterschied besteht haben wir einen Wert beobachtete der sehr unwahrscheinlich ist.
+
+Um sicherzustellen, dass unser Modell die Daten auch korrekt abbildet, müssen wir natürlich genauso wie auch bei den vorhergehenden Modellen eine Analyse des Modellfits durchführen. Also zum Beispiel eine Residuenanalyse mittels der einfachen Residuen $e_i$ und der standardisierten Residuen $e_{Si}$.
+
+
+```{r}
+#| layout-ncol: 3
+#| fig-cap: "Residuendiagnostik für einfache $\\hat{\\epsilon}_i$ und standardisierte $\\hat{\\epsilon}_{Si}$ Residuen."
+#| fig-subcap:
+#|   - "Residuenplot für die einfachen Residuen $\\hat{\\epsilon}_i$."
+#|   - "Residuenplot für die standardisierten Residuen $\\hat{\\epsilon}_{Si}$."
+#|   - "qq-Plot der einfachen Residuen."
+#| fig-height: 4
+#| label: fig-ed-crd-ex-01-resid
+
+
+mod_lm <- lm(Zeit ~ Gruppe, data = kaffee)
+kaffee <- broom::augment(mod_lm, kaffee)
+p1 <- ggplot(kaffee, aes(.fitted, .resid)) +
+  geom_hline(yintercept = 0, color = 'red', linetype = 'dashed') +
+  geom_point() +
+  labs(x = expression(hat(y)[i]), y = expression(hat(epsilon)[i])) 
+p2 <- ggplot(kaffee, aes(.fitted, .std.resid)) +
+  geom_hline(yintercept = 0, color = 'red', linetype = 'dashed') +
+  geom_point() +
+  labs(x = expression(hat(y)[i]), y = expression(hat(epsilon)[Si])) 
+p3 <- ggplot(kaffee, aes(sample=.resid)) +
+  geom_qq() +
+  geom_qq_line() +
+  labs(x = 'Theoretisch', y = 'Beobachtet') 
+p1
+p2
+p3
+```
+
+In @fig-ed-crd-ex-01-resid sind die verschiedenen Residuenplots abgetragen und deuten insgesamt auf keine groben Verletzungen der Annahmen (Warum?). Ein weiterführende Analyse würde sich die weiteren Metriken wie Cooks-Distance, DFFits usw. anschauen. Was wir hier aber überspringen.
+
+Im Zusammenhang mit einer ANOVA-Analyse wird oft auch ein formaler Test auf Varianzhomogenität erwähnt. Der Levene-Test wird oft dazu verwendet. Der Levene-Test hat als $H_0$-Hypothese, das die Varianzen in den Gruppen gleich sind.
+
+\begin{align*}
+H_0 &\text{all } \sigma_i^2 \text{ equal}\\
+H_1 &\text{not all } \sigma_i^2 \text{ equal}
+\end{align*}
+
+Da es sich dabei um einen Vorraussetzungtest handelt, wird die Irrtumswahrscheinlichkeit auf $\alpha = 0.1$ angesetzt um die Überprüfung konservativer zu machen (Warum?). Auf die Herleitung des Tests gehen wir nicht näher ein.
+
+```{r}
+mod_lev <- car::leveneTest(mod_aov)
+df_1 <- mod_lev$Df[1]
+df_2 <- mod_lev$Df[2]
+lev_F <- mod_lev[['F value']][1]
+```
+
+Für unsere Beispieldaten ergibt sich ein Testergebnis mit $F(`r df_1`, `r df_2`) = `r lev_F`$ welcher bei einer Irrtumswahrscheinlichkeit von $\alpha = 0.1$ nicht statistisch signifikant ist. D.h. die $H_0$ das die Varianzen in den Gruppen gleich sind, wird nicht verworfen.
+
+:::{#exm-crd-lit-example-01}
+```{r}
+m_s <- c(169.3,171,167,165.2)
+s_s <- c(7.41,5.8,4.32,4.4)
+n_s <- c(7,14,4,18)
+N <- sum(n_s)
+K <- 4
+m_bar <- sum(n_s * m_s)/sum(n_s)
+ssb <- round(sum(n_s*(m_s - m_bar)**2), 2)
+msb <- round(ssb/(K-1), 2)
+sse <- round(sum((n_s - 1)*s_s**2), 2)
+mse <- round(sse/(N-K), 2)
+f <- round(msb/mse, 3)
+p_f <- round(1-pf(f, K-1, N-K), 3)
+```
+In einer Untersuchung von @milanese2011 wurde die Anthropometrie und Körperzusammensetzung bei $43$ weiblichen Handballspielerinnen aus der italienischen Handballliga untersucht. Die Spielerinnen wurden nach ihrer Spielpositionen gruppiert in Torwärtin, Rückraum-, Flügelspielerin oder Kreisläuferin. Für die Körperhöhe konnten die Autoren die folgenden Ergebnisse für vier Gruppen ermitteln.
+
+| Position  | Körperhöhe[cm] | $n_i$ |
+| --- | --- | -- |
+| Torwärtin | $169.3 \pm 7.41$ | $7$ |
+| Rückraumspielerin | $171.0 \pm 5.80$ | $14$ |
+| Kreisspielerin | $167.0 \pm 4.32$ | $4$ |
+| Flügelspielerin | $165.2 \pm 4.4$ | $18$
+
+: Mittelwertsdaten aus Milanese et al. (2011, S.1304)
+
+Ein Analyse der Daten ergab das folgende Ergebnis:
+
+|  | $df$ | $SSQ$ | $MSQ$ | $F$ | $p$ |
+| --- | --- | --- | --- | --- | --- |
+| Zwischen | $`r K-1`$ | $`r ssb`$ | $`r msb`$ | $`r f`$ |  $p = `r p_f`$ |
+| Innerhalb | $`r N-K`$ | $`r sse`$ | $`r mse`$ | |   |
+
+D.h. es wurde ein statistisch signifikanter Unterschied zwischen den vier Gruppen beobachtet. Wenn wir uns die Annahme des Modells noch einmal anschauen, dann bemerken wir ein kleines Problem. Die Voraussetzungen wurden insofern nicht eingehalten, da die Gruppen nicht randomisiert in die vier Positionen eingeteilt wurden was bei dieser Art der Untersuchung auch gar nicht möglich ist. Problematisch ist in diesem Fall zusätzlich, dass die Stichprobe nicht zufällig gezogen wurde, sondern im Rahmen einer Leistungsdiagnostik mit insgesamt vier verschiedenen Teams zustande kam. Daher ist die Verallgemeinerung der Ergebnisse ebenfalls kritisch zu betrachten. 
+:::
+
+
+## Analyse in `R` 
+
+### Analyse mit `lm`
+
+```{r}
+#| echo: true
+#| results: hide
+
+mod_lm <- lm(Zeit ~ Gruppe, data = kaffee)
+summary(mod_lm)
+```
+
+```{r}
+#| echo: true
+anova(mod_lm)
+```
+
+### Modellvergleich mit `lm()`
+
+```{r}
+#| echo: true
+
+mod_r <- lm(Zeit ~ 1, kaffee)
+mod_f <- lm(Zeit ~ Gruppe, kaffee)
+anova(mod_r, mod_f)
+```
+
+
+### Analyse mit `aov()`
+```{r}
+#| echo: true
+#| results: hide
+
+mod_aov <- aov(Zeit ~ Gruppe, data = kaffee)
+anova(mod_aov)
+```
+```{r}
+mod_aov <- aov(Zeit ~ Gruppe, data = kaffee)
+broom::tidy(mod_aov) |> 
+  knitr::kable(booktabs=T, digits=2,
+               col.names = c('', 'DF', 'SSQ', 'MSQ', 'F', 'p'),
+               caption='Summarytabelle von aov()')
+```
+
+
+
+## Effektstärke CRD
+
+
+\begin{equation*}
+f = \frac{\sigma_m}{\sigma_{\epsilon}} = \frac{\sqrt{\frac{\sum\tau_i^2}{k}}}{\sigma_{\epsilon}} 
+\end{equation*}
+
+Problem bei Omnibus-Effektstärke
+
+```{r}
+#| fig-cap: Drei verschiedene Beispiele für die gleiche Effektstärke $f = 0.7$.
+
+sigma <- .5
+s2 <- sqrt(2)
+of <- sqrt(2/5)
+df_f <- tibble(
+  mu_s = c(1,2,2,3,1,1,1+s2,1+s2,1,1+of,1+2*of,1+3*of),
+  fct = rep(paste0('A',1:4),3),
+  type = rep(c('I','II','III'), each=4) 
+)
+ggplot(df_f, aes(fct, mu_s)) +
+  geom_col() +
+  geom_errorbar(aes(ymin=mu_s-sigma, ymax=mu_s+sigma), width=.3) +
+  facet_grid(~type) +
+  labs(x = 'Faktorstufe', y = 'Mittelwerte')
+```
+
+
+\begin{align*}
+\omega^2 &= \frac{f^2}{1 + f^2} \\
+&= \frac{SS_B - (K-1)MS_W}{SS_{\text{Total}}+MS_W} \\
+&= \frac{(K-1)(F-1)}{(K-1)(F-1)+N}\\
+\eta^2 &= \frac{SS_{B}}{SS_{Total}}
+\end{align*}
+
+$f^2=\frac{\omega^2}{1-\omega^2}$
+
+|       | $f$ | $\omega^2$ | $\eta^2$ | 
+| --- | --- | --- | --- |
+| klein | 0.1 | 0.01 | 0.01  |
+| mittel | 0.25 | 0.06 | 0.06 | 
+| groß | 0.40 | 0.14 | 0.14 | 
+
+: Einordnung der Effektstärken
+
+
+
+### Effektstärken in `R`
+
+```{r}
+#| echo: true
+
+effectsize::cohens_f(mod_aov, verbose=F)
+effectsize::omega_squared(mod_aov, verbose=F)
+effectsize::eta_squared(mod_aov, verbose=F)
+```
+
+
+## Stichprobengröße a-prior ermitteln
+
+Drei Möglichkeiten: 
+
+1) Anhand der Literatur wird $f$ bestimmt.
+2) Es wird ein relevantes/plausibels $\Delta$ als der Unterschied zwischen zwei Gruppen angesetzt.^[$\sigma$ muss trotzdem anhand der Literatur abgeschätzt werden.]
+3) Präzision der Konfidenzintervalle
+
+
+### $H_0$, $H_1$ und Power beim $F$-Test
+
+```{r}
+#| fig-cap: "$F$-Verteilung unter der $H_0$ und der $H_1$ und der kritische Wert für $\\alpha = 0.05$."
+#| fig-height: 4
+
+df_1 <- 2; df_2 <- 57
+tibble(
+  x = seq(0, 15, length.out = 100),
+  H_0 = df(x, df_1, df_2),
+  H_1 = df(x, df_1, df_2, 14)
+) |> tidyr::pivot_longer(-x, names_to='dist', values_to='d') |> 
+  ggplot(aes(x,d, fill=dist)) +
+  geom_ribbon(aes(ymin =0, ymax = d), alpha = .5) +
+  geom_line() +
+  geom_vline(xintercept = qf(0.95, df_1, df_2),
+             color = 'red', linetype = 'dashed') +
+  labs(x = 'F-Werte', y = 'Dichte') +
+  scale_fill_discrete("Hypothesen", labels = c(expression(H[0]), expression(H[1])))
+```
+
+Unter der $H_1$ folgt $F$ einer $F(df_1, df_2, \delta^2)$-Verteilung. $\delta^2$ ist der Nichtzentralitätsparameter (oft auch $\lambda$). $\delta^2$ berechnet sich nach 
+
+\begin{equation}
+\delta^2 = (K-1)Q(\tau_i)/\sigma^2
+\end{equation}
+
+Alternativ:
+\begin{equation}
+\lambda = nKf^2
+\end{equation}
+
+### Berechnung anhand von $\Delta$
+
+```{r}
+#| fig-cap: "Mögliche Abschätzung von $\\Delta$"
+#| fig-height: 4
+
+sigma <- 0.5
+df_f |> dplyr::filter(type == 'I') |> 
+  ggplot(aes(fct, mu_s)) +
+  geom_col() +
+  geom_hline(yintercept = c(1,3), col = 'red', linetype = 'dashed') +
+  geom_errorbar(aes(ymin=mu_s-sigma, ymax=mu_s+sigma), width=.3) +
+  annotate('segment', x=4.5, xend=4.5, y=1, yend=3, size=2, color='red',
+           arrow = arrow(ends = 'both', length=unit(.2,"inches"), angle=20, type='closed')) +
+  annotate('text', x = 4.3, y = 2, label = expression(Delta), size=12, color='red') +
+  labs(x = 'Faktorstufen', y = 'Mittelwerte') 
+```
+
+$$
+f = \sqrt{\frac{\Delta^2}{2K\sigma^2}}
+$$
+
+### Stichprobengröße a-prior ermitteln in `R`
+
+```{r}
+#| results: 'asis'
+#| echo: true
+pwr::pwr.anova.test(f = 0.89, k = 3, sig.level = 0.05, power = 0.8)
+```
+
+## Verbindung Modellhierarchien und BA-ANOVA (advanced)
 
 Im Bachelor wurde das completely randomized design aller Wahrscheinlichkeit nach unter der Bezeichnung Einfaktorielle ANOVA eingeführt. Was eigentlich nicht viel Sinn macht, da es sich bei der einfaktoriellen ANOVA um eine Analysemethode und streng genommen nicht um ein experimentelles Design handelt. Wenn wir die folgenden beiden Identitäten berücksichtigen. 
 
@@ -103,244 +497,6 @@ QS_{zwischen} = \sum_{j=1}^K \sum_{i=1}^{N_j} (\bar{x}_{j}-\bar{x})^2
 
 Letztendlich kommen wir daher mit dem Ansatz der Modellvergleiche zum gleichen Ergebnis, aber wieder mit dem Vorteil, das das Verfahren der Modellvergleiche leichter zu verallgemeinern ist.
 
-## Beispieldaten
+## Zum Nach- und Weiterlesen
 
-Schauen wir uns als nächstes einen Beispieldatensatz an und gehen durch die verschiedenen Schritte der Analyse eines CRD.
-
-In @fig-ed-crd-coffeine-01 ist das Ergebnis einer Untersuchung zum Einfluss von Koffein auf die Laufleistung bei einem 8Km Ausdauerlauf zu abgebildet. Insgesamt sind $N=60$ Probanden randomisiert in drei Gruppen eingeteilt worden: Koffein, Placebo und Control. Die Gruppe Koffein hat vor dem Lauf ein Koffeinpräparat eingenommen, während die Placebogruppe ein Präparat ohne Wirkstoff eingenommen hat. Die Kontrollgruppe hat vor dem Lauf kein Zusatzpräparat eingekommen. Jeder Proband lief einmal die Strecke von $8$ Km so schnell wie möglich. Die abhängige Variable war die Laufzeit.
-
-```{r}
-#| fig-cap: "Einfluss von Koffeine auf die Laufleistung über 8km"
-#| label: fig-ed-crd-coffeine-01
-
-ggplot(kaffee, aes(Gruppe, Zeit)) +
-  geom_boxplot() + 
-  geom_jitter(width = 0.2, color = 'red', size = 2, alpha=.5) +
-  labs(y = 'Zeit [s]',
-       x = 'Gruppe') 
-```
-
-@fig-ed-crd-coffeine-01 deute an, das die Einnahme von Koffein zu einer Leistungsverbesserung führt, während der Einfluss des Placebos scheinbar möglicherweise nur zu einer leichten Verbesserung gegenüber der Kontrollkondition geführt hat.
-
-Schauen wir uns die deskriptive Statistik der Daten an. In @tbl-ed-crd-coffeine-01 sind die deskriptiven Werte der Daten abgebildet.
-
-```{r}
-#| results: asis
-#| label: tbl-ed-crd-coffeine-01
-#| tbl-cap: "Deskriptive Statistiken der Koffeinstudie."
-
-kaffee |> group_by(Gruppe) |>  
-  summarytools::descr(stats = c('mean','med','sd','q1','q3'), plain.ascii = F,
-                      style='rmarkdown', headings = FALSE) 
-```
-
-
-
-In `R` können wir uns eine die deskriptive Statistik der Daten mittels Funktionen aus dem Paket `summarytools` erstellen.
-
-```{r, echo=T, eval=F}
-kaffee |> group_by(Gruppe) |> 
-  descr(stats = c('q1','mean','med','q3','sd'))
-```
-
-
-
-
-## Analyse in R mit `lm()`
-\small
-```{r, echo=T, results="hide"}
-mod_lm <- lm(Zeit ~ Gruppe, data = kaffee)
-summary(mod_lm)
-```
-```{r}
-lm_tbl_knitr(mod_lm)
-```
-
-## Analyse in R mit `lm()`
-```{r, echo=T, eval=F}
-anova(mod_lm)
-```
-```{r}
-lm_anova_tbl_knitr(anova(mod_lm))
-```
-
-
-## Analyse in R mit `aov()`
-\small
-```{r, echo=T, results="hide"}
-mod_aov <- aov(Zeit ~ Gruppe, data = kaffee)
-summary(mod_aov)
-```
-```{r}
-broom::tidy(mod_aov) |> 
-  knitr::kable(booktabs=T, digits=2,
-               col.names = c('', 'DF', 'SSQ', 'MSQ', 'F', 'p'),
-               caption='Summarytabelle von aov()')
-```
-
-## F-Tabelle Terminologie 
-
-Table: Bezeichungen F-Tabelle
-
-|   | DF | SSQ | MSQ | F | 
-| --- | --- | --- | --- | :---: | 
-| Between | $df_b$ | $SS_b$ | \mbox{$MS_b=\frac{SS_b}{df_b}$} | $\frac{MS_b}{MS_w}$  | 
-| Residual | $df_w$ | $SS_w$ | \mbox{$MS_w=\frac{SS_w}{df_w}$} |  |
-| Total | $df_{\text{total}}$ | $SS_{\text{total}}$ | $MS_{\text{total}}$ | |
-
-## Plot of dummy variable model $y_{ij} = \mu+ \tau_2^* x_{1j} + \tau_3^* x_{2j} + \epsilon_{ij}$
-
-```{r}
-#| out.width="50%",
-#| fig.asp=1.1,
-#| fig.cap="Fitted planes for the reduced (blue) and the full (red) model"
-
-mod_p <- lm(Zeit ~ Gruppe, kaffee)
-X <- model.matrix(mod_p)
-coefs <- coef(mod_p)
-df <- tibble(
-  x1 = c(0,1,0),
-  x2 = c(0,0,1),
-  y = c(coefs[1], sum(coefs[1:2]), sum(coefs[-2]))
-)
-s3d <- scatterplot3d::scatterplot3d(X[,2],X[,3],kaffee$Zeit, type='h', color='green', pch=16,
-                     xlab=expression(x[1]),
-                     ylab=expression(x[2]),
-                     zlab='Zeit[s]',
-                     x.ticklabs = c(0,1),
-                     y.ticklabs = c(0,1),
-                     lab = c(1,1,1),
-                     scale.y=0.5,
-                     angle=55,
-                     cex.lab=1.4,
-                     cex.axis=1.2,
-                     mar=c(3,3,1,2),
-                     box=F)
-s3d$plane3d(coefs[1], coefs[2], coefs[3], col='blue',
-            draw_polygon=T,
-            polygon_args = list(col = rgb(1,0,0,.2)))
-s3d$plane3d(mean(kaffee$Zeit), 1, 1, col='red',
-            draw_polygon=T,
-            polygon_args = list(col = rgb(0,0,1,.2)))
-s3d$points3d(df, color='black', pch=16, cex=2)
-```
-
-## Voraussetzungen überprüfen bzw. Modelldiagnose
-
-
-```{r}
-#| fig.cap="Residuendiagnostik für einfache $\\hat{\\epsilon}_i$ und standardisierte $\\hat{\\epsilon}_{Si}$ Residuen.",
-#| fig.width=4.5,
-
-require(patchwork)
-kaffee <- broom::augment(mod_lm, kaffee)
-p1 <- ggplot(kaffee, aes(.fitted, .resid)) +
-  geom_hline(yintercept = 0, color = 'red', linetype = 'dashed') +
-  geom_point() +
-  labs(x = expression(hat(y)[i]), y = expression(hat(epsilon)[i])) 
-p2 <- ggplot(kaffee, aes(.fitted, .std.resid)) +
-  geom_hline(yintercept = 0, color = 'red', linetype = 'dashed') +
-  geom_point() +
-  labs(x = expression(hat(y)[i]), y = expression(hat(epsilon)[Si])) 
-p1 + p2
-```
-
-## Einfache Residuen im QQ-Plot
-
-```{r}
-#| fig.cap="qqplot der einfachen Residuen"
-
-ggplot(kaffee, aes(sample=.resid)) +
-  geom_qq() +
-  geom_qq_line() +
-  labs(x = 'Theoretisch', y = 'Beobachtet') 
-```
-
-
-## Varianzhomogenität formal mit Levene-Test
-
-
-```{r, echo=T}
-car::leveneTest(mod_aov)
-```
-
-## Effektstärke $f$
-
-\begin{align*}
-f &= \frac{\sigma_m}{\sigma_{\epsilon}} = \frac{\sqrt{\frac{\sum\tau_i^2}{k}}}{\sigma_{\epsilon}} \\
- &= \sqrt{\frac{(F - 1) \times df_{w}}{N}} \qquad \text{Alternativformel}
-\end{align*}
-
-N = Gesamtstichprobengröße, $F, df_w$ aus F-Tabelle
-
-## Weitere Effektstärken $\omega^2$ und $\eta^2$
-
-:::: columns
-::: column
-### Effektstärken 
-
-\begin{align*}
-\omega^2 &= \frac{f^2}{1 + f^2} \\
-&= \frac{SS_B - (k-1)MS_W}{SS_{\text{Total}}+MS_W} \\
-\eta^2 &= \frac{SS_{B}}{SS_{Total}}
-\end{align*}
-
-:::
-::: column
-\begin{table}[]
-\caption{Einordnung}
-\centering
-\begin{tabular}{llll}
-\toprule
- & $f$ & $\omega^2$ & $\eta^2$ \\
-\midrule
- klein & 0.1 & 0.01 & 0.01 \\
- mittel & 0.25 & 0.06 & 0.06 \\
- groß & 0.40 & 0.14 & 0.14 \\
-\bottomrule
-\end{tabular}
-\end{table}
-:::
-::::
-
-^[$f^2=\frac{\omega^2}{1-\omega^2}$]
-
-## Effektstärke $\eta^2$, $\omega^2$ und $f$ in R
-
-\scriptsize
-```{r, echo=T}
-effectsize::cohens_f(mod_aov, ci=0.95)
-effectsize::omega_squared(mod_aov, partial=F, ci=0.95 )
-```
-
-
-## Effektstärke $\eta^2$, $\omega^2$ und $f$ in R{.t}
-
-\scriptsize
-```{r, echo=T}
-effectsize::eta_squared(mod_aov, partial=F, ci=0.95)
-```
-
-
-## Stichprobengröße a-prior ermitteln
-
-Zwei Möglichkeiten: 
-
-1) Anhand der Literatur wird $f$ bestimmt.
-2) Es wird ein relevantes/plausibels $\Delta$ als der Unterschied zwischen zwei Gruppen angesetzt.^[$\sigma$ muss trotzdem anhand der Literatur abgeschätzt werden.]
-
-$$
-f = \sqrt{\frac{\Delta^2}{2k\sigma^2}}
-$$
-
-## Stichprobengröße a-prior ermitteln in R
-
-\small
-```{r, results='asis', echo=T}
-pwr::pwr.anova.test(f = 0.89, k = 3, sig.level = 0.05, power = 0.8)
-```
-
-## Zum Nacharbeiten
-
-### Design
-@pos_design_comp_exp, @kutner2005[p.677-692]
+In @pos_design_comp_exp sind noch weitere Information zu CRD während in @kutner2005[p.677-692] noch mal die Herleitung detaillierter erklärt ist.

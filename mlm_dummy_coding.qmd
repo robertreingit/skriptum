@@ -339,47 +339,6 @@ height |> dplyr::mutate(y_hat = predict(mod),
 
 Der Plot sieht etwas komisch aus, da die Residuen nur für zwei vorhergesagte Werte $\hat{y}_i$ angezeigt werden. Kurzes überlegen sollte uns aber davon überzeugen, dass dies korrekt ist, da wir nun noch zwei verschiedene $y$-Wert vorhersagen. Nämlich für die Werte $x_i = 0$ und $x_i = 1$, eben die Mittelwerte aus den beiden Gruppen.
 
-## Algebraische Herleitung der Identität von t-Test und dem linearen Modell^*^
-
-Seien beide Gruppen gleich groß ($n$) mit $N = n_m + n_w = 2 \times n$. Der t-Wert für $\beta_1$ berechnet sich aus $t = \frac{b_1}{s_b}$ mit:
-
-$$
-s_b = \sqrt{\frac{\sum_{i=1}^N (y_i - \bar{y})^2}{N-2}\frac{1}{\sum_{i=1}^N(x_i-\bar{x})^2}}
-$$
-Dadurch, das die $x_i$ entweder gleich $0$ oder $1$ sind, ist $\bar{x}=0.5$ und die Abweichungsquadrate im zweiten Term sind alle gleich $\frac{1}{4}$.
-
-$$
-\sum_{i=1}^N(x_i - \bar{x})^2=\sum_{i=1}^N\left(x_i - \frac{1}{2}\right)^2 = \sum_{i=1}^N\frac{1}{4}=\frac{N}{4}=\frac{2n}{4}=\frac{n}{2}
-$$
-
-Der ersten Term kann mit etwas Algebra und der Definition für die Stichprobenvarianz $s^2$ auf die gewünschte Form gebracht werden.
-
-$$
-\frac{\sum_{i=1}^N(y_i-\hat{y})^2}{N-2}=\frac{\sum_{i=1}^n(\overbrace{y_{im} - \bar{y}_m}^{Männer})^2+\sum_{i=1}^n(\overbrace{y_{iw}-\bar{y}_w}^{Frauen})^2}{2(n-1)}=\frac{(n-1)s_m^2+(n-1)s_w^2}{2(n-1)}=\frac{s_m^2+s_w^2}{2}
-$$
-
-Die Herleitung für $\beta_1 = \Delta = \mu_w - \mu_m$ ist ebenfalls relativ geradlinig wenn wir uns an den Zusammenhang zwischen $\beta_1$ und der Kovarianz zwischen $x$ und $y$ erinnern. Mit $s_x^2 = \frac{N\frac{1}{4}}{N-1} = \frac{N}{4(N-1)}$ folgt:
-
-\begin{align*}
-    b_1 &= \frac{cov(x,y)}{s_x^2} \\
-    &= \frac{\sum_{i=1}^N(y_i - \bar{y})(x_i - \bar{x})}{N-1} \frac{4(N-1)}{N} \\
-    &= 4\frac{\sum_{i=1}^n(y_{im}-\bar{y})\frac{-1}{2}+\sum(y_{iw}-\bar{y})\frac{1}{2}}{N} \\
-    &= \frac{4}{2}\frac{\sum_{i=1}^n(y_{iw}-\bar{y}) - \sum_{i=1}^n(y_{im}-\bar{y})}{2n} \\
-    &= \frac{\sum_{i=1}^n y_{iw}}{n} - \frac{n\bar{y}}{n} - \frac{\sum_{i=1}^n y_{im}}{n} + \frac{n\bar{y}}{n} \\
-    &= \bar{y}_w - \bar{y}_m = \Delta
-\end{align*}
-
-Zu guter Letzt noch die Herleitung für $\beta_0 = \mu_m$.
-
-Mit $b_1 = \Delta = \bar{y}_w - \bar{y}_m$:
-\begin{align*}
-b_0 &= \bar{y} - \Delta \times \bar{x} \\
-&= \frac{\sum_{i=1}^N y_i}{N} - \Delta \times \frac{1}{2} \\
-&= \frac{\sum_{i=1}^n y_{im} + \sum_{i=1}^n y_{iw}}{2n} - \frac{1}{2}(\bar{y}_w - \bar{y}_m)  \\
-&= \frac{1}{2}\frac{\sum_{i=1}^ny_{im}}{n} + \frac{1}{2}\frac{\sum_{i=1}^ny_{iw}}{n} - \frac{1}{2}\bar{y}_w + \frac{1}{2}\bar{y}_m \\
-&= \frac{1}{2}\bar{y}_m + \frac{1}{2}\bar{y}_w - \frac{1}{2}\bar{y}_w + \frac{1}{2}\bar{y}_m \\
-&= \bar{y}_m
-\end{align*}
 
 ## Dummyvariablen bei mehr als zwei Faktorstufen
 
@@ -484,6 +443,15 @@ ggplot(aes(y_hat, e_i)) +
 ```
 
 Hier sehen wir wieder, dass nur vier verschiedene $\hat{y}_i$ Werte vorhergesagt werden, nämlich die Mittelwerte $\bar{y}_k$ in den jeweiligen $K$ Gruppen. Die Residuen $e_i$ streuen daher nur um diese vorhergesagten Werte.
+
+Wir können die Dummy-Kodierung explizit von `R` mittels der `dummy.coef()`-Funktion erhalten.
+
+```{r}
+#| echo: true
+
+dummy.coef(mod)
+```
+
 
 ## Kombination von kontinuierlichen und nominalen Prädiktorvariablen
 
@@ -619,7 +587,49 @@ ggplot(lew, aes(ta, perf, color = gender_f)) +
 
 In diesem Kapitel haben wir gesehen, dass wir ohne Probleme auch nominale Prädiktorvariablen in das lineare Modell integrieren können. Dabei können die Variablen rein additiv oder auch als interaktive Effekte eingehen. Damit haben wir eine extrem flexiblen Prozess um Daten zu modellieren und dabei immer in dem bekannten Punkt-Steigungs-Modell bleiben.
 
-## Zum Nacharbeiten
+## Herleitung der Identität von t-Test und linearen Modell (advanced)
 
-@kutner2005 [p.313-319] \newline
+Seien beide Gruppen gleich groß ($n$) mit $N = n_m + n_w = 2 \times n$. Der t-Wert für $\beta_1$ berechnet sich aus $t = \frac{b_1}{s_b}$ mit:
+
+$$
+s_b = \sqrt{\frac{\sum_{i=1}^N (y_i - \bar{y})^2}{N-2}\frac{1}{\sum_{i=1}^N(x_i-\bar{x})^2}}
+$$
+Dadurch, das die $x_i$ entweder gleich $0$ oder $1$ sind, ist $\bar{x}=0.5$ und die Abweichungsquadrate im zweiten Term sind alle gleich $\frac{1}{4}$.
+
+$$
+\sum_{i=1}^N(x_i - \bar{x})^2=\sum_{i=1}^N\left(x_i - \frac{1}{2}\right)^2 = \sum_{i=1}^N\frac{1}{4}=\frac{N}{4}=\frac{2n}{4}=\frac{n}{2}
+$$
+
+Der ersten Term kann mit etwas Algebra und der Definition für die Stichprobenvarianz $s^2$ auf die gewünschte Form gebracht werden.
+
+$$
+\frac{\sum_{i=1}^N(y_i-\hat{y})^2}{N-2}=\frac{\sum_{i=1}^n(\overbrace{y_{im} - \bar{y}_m}^{Männer})^2+\sum_{i=1}^n(\overbrace{y_{iw}-\bar{y}_w}^{Frauen})^2}{2(n-1)}=\frac{(n-1)s_m^2+(n-1)s_w^2}{2(n-1)}=\frac{s_m^2+s_w^2}{2}
+$$
+
+Die Herleitung für $\beta_1 = \Delta = \mu_w - \mu_m$ ist ebenfalls relativ geradlinig wenn wir uns an den Zusammenhang zwischen $\beta_1$ und der Kovarianz zwischen $x$ und $y$ erinnern. Mit $s_x^2 = \frac{N\frac{1}{4}}{N-1} = \frac{N}{4(N-1)}$ folgt:
+
+\begin{align*}
+    b_1 &= \frac{cov(x,y)}{s_x^2} \\
+    &= \frac{\sum_{i=1}^N(y_i - \bar{y})(x_i - \bar{x})}{N-1} \frac{4(N-1)}{N} \\
+    &= 4\frac{\sum_{i=1}^n(y_{im}-\bar{y})\frac{-1}{2}+\sum(y_{iw}-\bar{y})\frac{1}{2}}{N} \\
+    &= \frac{4}{2}\frac{\sum_{i=1}^n(y_{iw}-\bar{y}) - \sum_{i=1}^n(y_{im}-\bar{y})}{2n} \\
+    &= \frac{\sum_{i=1}^n y_{iw}}{n} - \frac{n\bar{y}}{n} - \frac{\sum_{i=1}^n y_{im}}{n} + \frac{n\bar{y}}{n} \\
+    &= \bar{y}_w - \bar{y}_m = \Delta
+\end{align*}
+
+Zu guter Letzt noch die Herleitung für $\beta_0 = \mu_m$.
+
+Mit $b_1 = \Delta = \bar{y}_w - \bar{y}_m$:
+\begin{align*}
+b_0 &= \bar{y} - \Delta \times \bar{x} \\
+&= \frac{\sum_{i=1}^N y_i}{N} - \Delta \times \frac{1}{2} \\
+&= \frac{\sum_{i=1}^n y_{im} + \sum_{i=1}^n y_{iw}}{2n} - \frac{1}{2}(\bar{y}_w - \bar{y}_m)  \\
+&= \frac{1}{2}\frac{\sum_{i=1}^ny_{im}}{n} + \frac{1}{2}\frac{\sum_{i=1}^ny_{iw}}{n} - \frac{1}{2}\bar{y}_w + \frac{1}{2}\bar{y}_m \\
+&= \frac{1}{2}\bar{y}_m + \frac{1}{2}\bar{y}_w - \frac{1}{2}\bar{y}_w + \frac{1}{2}\bar{y}_m \\
+&= \bar{y}_m
+\end{align*}
+
+## Zum Nach- und Weiterlesen
+
+In [@kutner2005, p.313-319] sind die Herleitungen noch mal genauer erkärt.
 

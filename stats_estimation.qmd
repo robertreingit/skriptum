@@ -66,6 +66,11 @@ ggplot(tibble(x = c(3.61, -2.23), y = 1:2, ), aes(x,y)) +
 
 Hätten wir das Ergebnis aus @fig-stats-est-prob-02 beobachtet, dann würde wir wahrscheinlich schon eher von einem widersprüchlichen Ergebnis in der Literatur sprechen. Wenn wir wieder unter Zwang einen Wert angeben müssten, dann wahrscheinlich einen in der Nähe von $D = 0$. In beiden Fällen haben wir aber unter der rein dichotomen Betrachtung das gleiche Ergebnis (1 x statisch signifikant + 1 x statistisch nicht signifikant). Daraus können wir schließen, dass wir bei der Interpretation von Forschungsergebnissen nicht nur die statistische Signifikanz betracheten sollten, sondern die Richtung der Effekte und deren Größe ebenfalls einbezogen werden sollten wenn wir uns ein Bild über die Evidenz machen wollen. Dazu gehört natürlich ebenfalls eine Betrachtung des Forschungsdesigns und insbesondere der Stichprobengröße $N$. 
 
+::: {#exm-ci-01}
+
+In @coleman2023 wurde die Auswirkungen von betreutem gegenüber unbetreutem Krafttraining auf Kraft und Hypertrophie bei trainierten Personen untersucht. $N = 36$ junge Männer und Frauen wurden zufällig einer von zwei experimentellen Gruppen zugewiesen, um ein 8-wöchiges Krafttrainingsprogramm durchzuführen: Eine Gruppe erhielt direkte Aufsicht während der Trainingseinheiten (supervision: SUP) während die Kontrollgruppe dasselbe Programm ohne Betreuung (unsupervised: UNSUP) durchführte. Während die meisten Ergebnisse keine Unterschiede zwischen den Gruppen andeuteten, zeigten die Ergebnisse eine erhöhte Zunahme der Gesamtkörpermuskelmasse um $0.54,\ 90\%CI[0.05, 0.98]$Kg. D.h. wenn wir als Zielgröße die Muskelmasse ansteuern wollen müssen wir uns anhand des Intervallsüberlegen, ob der Aufwand eines vollständig betreuten Trainings hinsichtlich eines möglicherweise minimalen Zuwachs von $\Delta = 0.05$Kg gerechtfertigt ist.
+:::
+
 ## Welche Hypothesen sind kompatibel mit dem beobachteten Effekt? 
 
 Aus den Ausführungen von eben ist hoffentlich klargeworden, dass wir den beobachteten Effekt, also im Beispiel die Größe des Unterschied, ebenfalls dokumentieren müssen, da er für die Interpretation des Ergebnisse wichtig ist. Letztendlich ist die Größe des Effekts auch ausschlaggebend ob ich zum Beispiel eine Trainingsintervention mit meinen Athletinnen durchführe. Mir reicht es nicht zu wissen das ein statistisch signifikanter Effekt in Studien gefunden wurde, sondern ich möchte auch die Größe des Effekts wissen.
@@ -77,13 +82,15 @@ mu <- delta
 d_hat <- 350
 s_hat <- 54 
 #s_e <- round(s_hat/sqrt(9))
-s_e <- round(s_hat*sqrt(2/3))
+s_e <- round(s_hat*sqrt(2)/3)
 c_i <- d_hat + c(-1,1)*qnorm(1-alpha/2)*s_e
 ```
 
-Gehen wir zurück zu unseren Lummerland-Beispiel. Das Ergebnis der Intervention könnte beispielsweise die folgenden Stichprobenkennwerte  bei $N = 9$ haben. Wir beobachten einen Unterschied von $D = \bar{x}_{treat} - \bar{x}_{con} = `r d_hat`$ zwischen den Gruppen. Beide Stichproben zeigen eine Standardabweichung von  $s = `r s_hat`$ was zu einem Standardfehler von $s_e = `r s_e`$ führt (Rechnung unterschlagen). Dies ist unsere **Schätzung der Populationsparameter** anhand der Stichprobe. Der Standardfehler gibt uns eine Schätzung über die Präzision unseres Schätzwertes $D$. Wenn der Standardfehler $s_e$ sehr groß ist, dann bedeutet dies, dass wir den Wert nur sehr unpräzise geschätzt haben. Anderes herum wenn $s_e$ sehr klein ist. Daran schließt sichg natürlich die Frage, was die Präzision für meine Schätzung bedeutet. Welche anderen Unterschiedswerte $D$ sind anhand der beobachteten Daten noch plausibel?
+Gehen wir zurück zu unseren Lummerland-Beispiel. Das Ergebnis der Intervention könnte beispielsweise die folgenden Stichprobenkennwerte  bei $N = 9$ haben. Wir beobachten einen Unterschied von $D = \bar{x}_{treat} - \bar{x}_{con} = `r d_hat`$ zwischen den Gruppen. Beide Stichproben zeigen eine Standardabweichung von  $s = `r s_hat`$ was zu einem Standardfehler von $s_e = `r s_e`$ führt (Rechnung unterschlagen). Dies ist unsere **Schätzung der Populationsparameter** $\mu$ und $\sigma$ anhand der Stichprobe. Der Standardfehler gibt uns eine Schätzung über die Präzision unseres Schätzwertes $D$. Wenn der Standardfehler $s_e$ sehr groß ist, dann bedeutet dies, dass wir den Wert nur sehr unpräzise geschätzt haben. Anderes herum wenn $s_e$ sehr klein ist. Daran schließt sich die Frage an, was die Präzision für meine Schätzung bedeutet. Präzision in diesem Zusammenhang bedeutet welche anderen Werte neben dem beobachteten Wert sind die möglicherweise auch noch plausibel genug um den beobachteten Wert generiert zu haben? In unserem Beispiel, welche anderen Unterschiedswerte $D$ sind anhand der beobachteten Daten ebenfalls plausibel?
 
-Zunächst einmal müssen wir uns überlegen, was genau plausibel in diesem Zusammenhang heißt. In Bezug auf die $H_0$ behalten wir die $H_0$ bei, wenn der beobachtete Wert der Teststatistik nicht in den kritischen Bereichen liegt. Diesen Ansatz können wir verallgemeinern indem wir Werte als plausibel bezeichnen, wenn wir diejenigen Werte nicht ablehnen würden wenn wir sie als $H_0$ angesetzt hätten.
+Der Wert $D = `r d_hat`$ spricht dafür das der wahrscheinlichste Wert für $\Delta$ eben $\Delta = `r d_hat`$ ist. Allerdings, ist es auch nachvollziehbar, dass der Wert $\Delta = 350 - 0.0000001$ ebenfalls nicht direkt unplausibel ist. Letztendlich zeigen wir mit Hilfe des Standardfehler $s_e = `r s_e`$ das unserer Schätzung eben mit einer Unsicherheit behaftet ist. Mit der gleichen Überlegung könnten wir daher den Wert $\Delta = 350 - \frac{`r s_hat`}{2}$ wahrscheinlich auch noch als nicht komplett abwegig begründen. Nach diesen Ausführung müssen wir uns daher zunächst einmal überlegen, was genau plausibel in diesem Zusammenhang heißen könnte.
+
+Steigen wir wieder mit der $H_0$ ein. Wir behalten die $H_0$ bei, wenn der beobachtete Wert der Teststatistik nicht in den kritischen Bereichen unter der Annahme der Korrektheit von $H_0$ liegt. Wenn der beobachtete Wert im kritischen Bereich liegt, dann sehen wir ihn unter der $H_0$ als überraschend oder eben nicht plausibel an. Diesen Ansatz können daher umdrehen und umgekehrt, wenn der Wert nicht im kritischen Bereich liegt, dann ist er unter der $H_0$ plausibel und nicht überraschend. Dementsprechend, können wir ein Kriterium für Plausibilität so definieren, wenn der beobachtete Wert unter der angenommenen Hypothese nicht zur Ablehnung der Hypothese führt.  Gehen wir jetzt von einem beobachteten Wert aus, dann können wir die Frage so stellen: Welche Hypothesen, wenn wir sie vorher als $H_0$ definiert hätten, würden unter dem beobachteten Wert nicht abgelehnt werden. Anders, wir such nun alle diejenigen $H_0$-Hypothesen die, wenn wir so vor dem Experiment angesetzt hätten beibehalten worden wären.
 
 In @fig-stats-est-ci-01 ist eine Verteilung und derjenige Bereich abgetragen den wir bisher als nicht kritisch bezeichnet haben. D.h. alle Werte die im grünen Bereich liegen sind kompatible mit der angesetzten $H_0$.
 
@@ -116,7 +123,9 @@ Fügen wir nun einen beobachteten Wert hinzu (@fig-stats-est-ci-02).
 p_1 + geom_point(data = tibble(x = -1, p = 0), color = 'red', size=4)
 ```
 
-Der Wert liegt im grünen Bereich und ist daher kompatibel mit der angesetzten Hypothese. Halten wir den beobachten Wert nun fixiert und verändern unsere Hypothese $H_0^*$. Dies führt dazu, dass die Verteilung und mit ihr der kompatible Bereich verschoben wird.
+Der Wert liegt im grünen Bereich und ist daher kompatibel mit der angesetzten Hypothese. Kompatibel definiert, als wir würden die Hypothese unter dem beobachteten Wert nicht ablehnen.
+
+Halten wir den beobachten Wert nun fixiert und schauen uns eine anderer Hypothese $H_0^*$ an. Diese neue Hypothese $H_0^*$ ist nach links verschoben. Dies führt dementsprechend dazu, dass der mit der Hypothese kompatible Bereich ebenfalls nach links verschoben ist.
 
 ```{r}
 #| label: fig-stats-est-ci-03
@@ -138,9 +147,9 @@ ggplot(aes(x,p)) +
   scale_y_continuous('Dichte')
 ```
 
-In @fig-stats-est-ci-03 ist nun der Bereich für eine neue Hypothese abgetragen. Wie zu sehen ist, liegt der beobachtete Wert auch für diese Hypothese in dem Bereich den wir unter der neuen Hypothese $H_0^*$ als unkritisch bzw. kompatibel betrachten. Dieser Prozess kann in beide Richtungen weitergeführt worden, d.h. wir schieben systematisch $H_0$-Hypothesen von $-\infty$ bis $\infty$ und schauen ob der beobachtete Wert in den unkritischen Bereichen liegt. Letztendlich führt dies zu einer kleinsten Hypothese $H_{lower}$ und einer größten Hypothese $H_{upper}$ die noch mit dem beobachteten Wert kompatibel sind. 
+In @fig-stats-est-ci-03 ist nun der Bereich für die neue Hypothese $H_0^*$ abgetragen. Wie zu sehen ist, liegt der beobachtete Wert auch für diese Hypothese in dem Bereich den wir unter der neuen Hypothese $H_0^*$ als unkritisch bzw. kompatibel betrachten. Diesen Ablauf können wir nun in beide Richtungen weiterführen. D.h. wir schieben systematisch $H_0$-Hypothesen von $-\infty$ bis $\infty$ und schauen ob der beobachtete Wert in den unkritischen Bereichen für die jeweilige Hypothese liegt. Die kleinsten Hypothese, die am weitesten links liegende Hypothese, bezeichnen wir nun als $H_{lower}$ und entsprechend die größten Hypothese, die am weitesten rechts liegende Hypothese, als $H_{upper}$. Dadurch haben wir jetzt einen Bereich von Hypothesen ausgezeichnet, mit der Eigenschaft, dass alle Hypothesen zwischen $H_{lower}$ und $H_{upper}$ kompatibel mit dem beobachteten Wert sind. Bei all diesen Überlegungen spielt der tatsächlich in der Population liegende Wert $\Delta$ keine Rolle! 
 
-Führen wir eine kleine Vereinfachung der graphischen Darstellung des kompatiblen Bereichs durch.
+Führen wir eine kleine Vereinfachung der graphischen Darstellung des kompatiblen Bereichs für eine gegeben Hypothese durch.
 
 ```{r}
 #| label: fig-stats-est-ci-04
@@ -241,11 +250,10 @@ Das Konfidenzintervall hat aber noch eine weitere Eigenschaft. Die Breite des In
 
 ::: {#def-confidence}
 
-## Konfidenzintervall  \index{Konfidenzintervall}
+### Konfidenzintervall  \index{Konfidenzintervall}
 
-Das Konfidenzintervall wird immer für ein gegebenes $\alpha$-Niveau berechnet. Das Konfidenzterinvall gibt nicht die Wahrscheinlichkeit an mit der ein *wahre* Parameter in dem Intervall liegt. Sondern, das Konfidenzintervall gibt alle mit den Daten kompatiblen Populationsparameter, alle kompatiblen $H_0$-Hypothesen an.
-Das $\alpha$-Niveau des Konfidenzintervalls gibt an bei welchem Anteil von Wiederholungen davon auszugehen ist, das das Konfidenzintervall den wahren Populationsparameter enthält. Die Breite des Konfidenzintervalls kann als eine Metrik der Präzision der Schätzung angesehen werden.
-
+Das Konfidenzintervall wird immer für ein gegebenes $\alpha$-Niveau berechnet. Das Konfidenzterinvall gibt **nicht** die Wahrscheinlichkeit an mit der ein *wahrer* Populationsparameter in dem Intervall liegt. Sondern, das Konfidenzintervall gibt alle mit den Daten kompatiblen Populationsparameter, alle kompatiblen $H_0$-Hypothesen, an.
+Das $1-\alpha$-Niveau des Konfidenzintervalls gibt an bei welchem Anteil von Wiederholungen davon auszugehen ist, das das Konfidenzintervall den wahren Populationsparameter enthält. Die Breite des Konfidenzintervalls kann als eine Metrik für die Präzision der Schätzung angesehen werden.
 :::
 
 Eine schöne Zusammenfassung zum Konfidenzintervall ist aus @spiegelhalter2019 [p.241]
@@ -264,21 +272,85 @@ value. Strictly speaking, a 95\% confidence interval does ***not*** mean there i
 All clear? If it isn’t, then please be reassured that you have joined
 generations of baffled students.
 
-Als kleine Vorschau eine relativ allgemein gültige Formel um Konfidenzintervalle zu berechnen. Tatsächlich ist es nicht notwendig alle möglichen Intervalle aufzuzeichenen und dann zu schauen welche den beobachteten Wert enthalten.
+Als kleine Vorschau eine relativ allgemein gültige Formel um Konfidenzintervalle zu berechnen. Glücklicherweise ist es nämlich nicht notwendig alle möglichen Hypothesen von links nach rechts wandern zu lassen um die untere und die obere Grenze des Intervalls zu bestimmen. Das Konfidenzintervall lässt sich oft mit Hilfe der folgenden Formel bestimmen:
+
+\begin{equation}
+\textrm{CI}_{1-\alpha} = \text{statistik} \pm q_{\alpha/2} \times s_e 
+\label{eqn-stats-estim-ci-calc}
+\end{equation}
+
+Das Intervall ist immer ein Kombination aus einem berechneten Wert, der Statistik, beispielsweise der Mittelwert $\bar{x}$, der zum $\alpha$-Niveau gehörenden Quantile $q_{\alpha/2}$, oftmals die Quantile der Standardnormalverteilung $\Phi(z)$, also $z_{\alpha/2}$, multipliziert mit dem Standardfehler $s_e$ der betrachteten Statistik. Unglücklicherweise, wenn dieses Intervall als Zufallszahl vor dem Experiment bestimmt wird, dann ist es tatsächlich eine Wahrscheinlickeitsaussage. Aber wenn wir eine Realisierung der beteiligten Zufallszahlen, in diesem Fall der Intervallgrenzen, beobachtet haben dann ist keine Aussage über die Wahrscheinlichkeit mehr sinnvoll, wie wir in @fig-stats-est-ci-06 gesehen haben.
+
+:::{#exm-ci-calc}
+Sie zum Beispiel die Statistik der Stichprobenmittelwert der Körpergröße aus einer Stichprobe aus der Normalverbevölkerung $\bar{x}$. Aus der Literatur können wir für die Bevölkerung eine Standardabweichung von $\sigma = 6$ herleiten. Dadurch ergibt sein ein ein Standardfehler von $s_e = \frac{\sigma}{\sqrt{N}} = \frac{6}{\sqrt{9}} = \frac{6}{3} = 2$. Wir beobachten nun in unserer Stichprobe von $N = 9$ einen Mittelwert von $\bar{x} = 170$cm. Für die Quantile bei $\alpha = 0.05$ können wir die Standardnormalverteilung $\Phi(Z)$ heranziehen und erhalten für die Quantile $q_{\alpha/2} = q_{0.025} = -1.96$. Daraus folgt nach Formel\eqref{eqn-stats-estim-ci-calc} für das Konfidenzintervall:
 
 \begin{equation*}
-\textrm{CI}_{1-\alpha} = \bar{x} \pm z_{\alpha/2} \times s_e 
+95\%CI = 170 \pm 1.96 \cdot 2 = [166.08, 173.92]\text{cm}
 \end{equation*}
+:::
 
-Das Intervall ist immer ein Kombination aus einer berechneten Wert, in dem Fall der Mittelwert, der zum $\alpha$-Niveau gehörenden Quartile, hier $z_{\alpha/2}$, multipliziert mit dem Standardfehler $s_e$. Unglücklicherweise, wenn dieses Intervall als Zufallszahl vor dem Experiment bestimmt wird, dann ist es tatsächlich eine Wahrscheinlickeitsaussage. Aber wenn wir eine Realisierung der beteiligten Zufallszahlen, in diesem Fall der Intervallgrenzen, beobachtete haben dann ist keine Aussage über die Wahrscheinlichkeit mehr sinnvoll, wie wir in @fig-stats-est-ci-06 gesehen haben.
+:::{#exm-ci-calc}
+Hätten wir im vorhergehenden Beispiel keine Information über die Standardabweichung $\sigma$ in der Population gehabt, dann müssten wir die Standardabweichung anhand der Stichprobe abschätzen. In diesem Fall müsste diese zusätzliche Unsicherheit berücksichtigt werden indem anstatt der Standardnormalverteilung $\Phi(z)$ die $t$-Verteilung verwendet wird. Hier würde sich dann eine Quantile von $q_{8,0.025} = -2.3$ ergeben. D.h. wir würde ein breiteres Konfidenzintervall erhalten. Sei beispielsweise die Standardabweichung $s$ in der Stichprobe $s = 6.3$. Dann würden wir das folgende Konfidenzintervall erhalten:
 
-Die Abhängigkeit von Standardfehler $s_e$ spielt auch wieder hinsichtlich der Präzision eines Konfidenzintervalls eine Rolle. Wir haben vorher schon erwähnt, dass der Standardfehler in den meisten Fällen eine Abhängigkeit von $\sqrt{N}$ hat. D.h. mit steigender Stichprobenzahl wird der Standardfehler $s_e$ mit $\sqrt{N}$ kleiner. Da der Standardfehler auch bei der Berechnung des Konfidenzintervalls verwendet wird, verkleinert sich das Konfidenzintervall, die Präzision, mit der Größe $N$ der Stichprobe zu. Dies sollte auch heuristisch einleichtend sein. Wenn die Stichprobengröße $N$ zunimmt, nimmt die Stichprobenvariabilität ab. Damit rücken die kritischen Werte enger zusammen und entsprechend werden weniger Hypothesen mit dem beobachteten Wert kompatibel sein.
+\begin{equation*}
+95\%CI = 170 \pm 2.3 \cdot 2.2 = [164.9, 175.1]\text{cm}
+\end{equation*}
+:::
+
+Die Abhängigkeit von Standardfehler $s_e$ spielt auch wieder hinsichtlich der Präzision eines Konfidenzintervalls eine entscheidende Rolle. Wir haben vorher schon erwähnt, dass der Standardfehler abhängig von der Stichprobengröße mit $\sqrt{N}$ entweder größer oder kleiner wird. D.h. mit steigender Stichprobenzahl wird der Standardfehler $s_e$ mit $\sqrt{N}$ kleiner. Da der Standardfehler auch bei der Berechnung des Konfidenzintervalls verwendet wird, verkleinert sich mit zunehmender Stichprobengröße daher auch ebenfalls das Konfidenzintervall. D.h. die Präzision unseres beobachteten Werte nimmt mit der Größe $N$ der Stichprobe zu. Dies sollte auch heuristisch einleichtend sein. Wenn die Stichprobengröße $N$ zunimmt, nimmt die Stichprobenvariabilität ab und wir haben weniger Unsicherheit in unserer Statistik. Die kritischen Werte rücken enger zusammen und entsprechend werden weniger Hypothesen mit dem beobachteten Wert kompatibel sein. Das Konfidenzintervall kann somit, wie der Standardfehler $s_e$, als ein Maß für die Unsicherheit in unserer Beobachtung interpretiert werden. Daher sollten wir bei der Planung unseres Experiments auch immer berücksichtigen welche Präzision wir erreichen wollen, d.h. welche Breite des Konfidenzintervalls für uns noch tolerierbar ist um eine Entscheidung auf der Basis der Daten zu treffen.
+
+::: {.callout-tip}
+Eine Faustregel für die Bestimmung des Konfidenzintervall lautet:
+\begin{equation}
+\textrm{CI}_{95\%} = \text{statistik} \pm 2 \cdot s_e 
+\label{eqn-stats-estimate-ci-thumb}
+\end{equation}
+D.h. wenn wir unseren Schätzwert haben und dessen Standardfehler $s_e$ kennen, dann $2$mal den Standardfehler $\pm$ unseren Schätzwert gibt uns ungefähr das Konfidenzintervall resultierende $95\%$ Konfidenzintervall.
+:::
+
 
 ## Dualität von Signifikanztests und Konfidenzintervall
 
 Als letzten, vorläufigen Punkt zu Konfidenzintervallen noch ein Abschnitt zum Verhältnis von Konfidenzintervallen und Signifikanztests. Wenn das Konfidenzintervall mit Niveau $1-\alpha\%$ die $H_0$ nicht beinhaltet, dann bedeutet dies nach unserer Herleitung, dass diese Hypothese nicht mit den beobachteten Daten kompatibel ist. D.h. bei einem Signifikanztest wird die $H_0$ bei einer Irrtumswahrscheinlichkeit von $\alpha$ abgelehnt. Wenn ich also das Konfidenzintervall und die getestete $H_0$ kenne, dann kann ich eine Aussage darüber machen ob das Ergebnis statistisch signifikant oder nicht ist. Anders herum wenn ich weiß, das das Ergebnis statistisch signifikant war, oder eben nicht, dann weiß ich auch ob die $H_0$ im Konfidenzintervall ist oder nicht. Es besteht eine Dualität zwischen beiden Konzepten, wobei mir das Konfidenzintervall deutlich mehr Information als der reine Signifikanztest gibt.
 
+::: {#exm-ci-02}
+
+In @fig-stats-estimate-ci-dual ist ein Beispiel abgetragen für ein hypothetisches Konfidenzintervall und der Wert der $H_0$-Hypothese.
+
+```{r}
+#| fig-cap: "Der erwartete Wert unter der $H_0$ (rot) und das beobachtete Konfidenzintervall zur beobachteten Statistik $D$."
+#| fig-height: 2
+#| label: fig-stats-estimate-ci-dual
+
+d <- 2.2
+df_1 <- tibble::tibble(
+  x = d, 
+  y = 1,
+  xmin = x-2,
+  xmax = x+2
+)
+
+ggplot2::ggplot(df_1,ggplot2::aes(x, y, xmin=xmin, xmax=xmax)) +
+  ggplot2::geom_point(size=6) +
+  ggplot2::geom_linerange(linewidth=2) +
+  ggplot2::geom_vline(xintercept = 0, linetype='dashed', color='red', linewidth=1.3) +
+  ggplot2::scale_x_continuous('Unterschied', breaks = c(0,d),
+                              labels = c(expression(H[0]), 'D')) +
+  ggplot2::scale_y_continuous('', breaks = NULL, limits = c(0,2)) +
+  ggplot2::theme(text = ggplot2::element_text(size=20))
+
+```
+
+Da die $H_0$-Hypothese nicht im Konfidenzintervall enthalten ist, können wir herleiten, dass ein statistisch signifikantes Ergebnis erzielt wurde.
+:::
+
 ## Things to know
 
 - Konfidenzintervall
 - Dualität von Konfidenzintervall und Signifikanztest
+- Konfidenzintervall - Faustregel
+
+## Zum Nach- und Weiterlesen
+
+@hoekstra2014 und @greenland2016
+
