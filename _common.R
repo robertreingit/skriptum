@@ -55,10 +55,11 @@ dnorm_plot <- function(mu = 0, sigma = 1, length.out = 100) {
   p1
 }
 
-rplot <- function(df) {
+rplot <- function(df, text_size = 11, point_size = 1.5) {
   ggplot(df, aes(y_hat, resid)) +
-    geom_point() +
+    geom_point(size = point_size) +
     geom_hline(yintercept = 0, col = 'red', linetype = 'dashed') +
     scale_x_continuous(expression(hat(y)[i])) +
-    scale_y_continuous(expression(e[i]))
+    scale_y_continuous(expression(e[i])) +
+    theme(text = element_text(size = text_size))
 }

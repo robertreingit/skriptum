@@ -36,7 +36,7 @@ y_i = \beta_0 + \beta_1 \cdot x_i + \epsilon_i, \qquad \epsilon_i \sim \mathcal{
 Das lineare Regressionsmodell geht von einem linearen Zusammenhang in den Koeffizienten zwischen der Variablen $x_i$ und den Variablen $y_i$ aus. Additiv kommt daz ein normalverteilter Fehler $\epsilon_i$. Die Normalverteilung der $\epsilon_i$ habem einen Erwartungswert von $\mu = 0$ und eine Standardabweichung von $\sigma$. Die Standardabweichung $\sigma$ ist zunächst unbekannt und muss über die Daten abgeschätzt werden. Dies führt dazu,  dass $y_i$ für jeden gegebenen Wert von $x_i$ einer Normalverteilung mit $\mathcal{N}(\beta_0 + \beta_1 x_i, \sigma^2)$ folgen und der bereits bekannten graphischen Darstellung (siehe @fig-slm-model-resid-1).
 
 ```{r}
-#| fig.cap: "Beispiel einer Regressionsgeraden und der Verteilung der Residuen um den Vorhersagewert $\\hat{y_i}$"
+#| fig-cap: "Beispiel einer Regressionsgeraden und der Verteilung der Residuen um den Vorhersagewert $\\hat{y_i}$"
 #| label: fig-slm-model-resid-1
 
 set.seed(123)
@@ -74,7 +74,7 @@ Diese Abweichungen $e_i$ können als Schätzer $\hat{\epsilon}_i$ für die wahre
 
 ```{r}
 #| label: fig-slm-model-resid-2
-#| fig.cap: Examplarische Darstellung der Berechnung der Residuen $e_i$ als Abweichung der beobachteten Werte $y_i$ von den vorhergesagten Werten $\hat{y}_i$
+#| fig-cap: Examplarische Darstellung der Berechnung der Residuen $e_i$ als Abweichung der beobachteten Werte $y_i$ von den vorhergesagten Werten $\hat{y}_i$
 
 set.seed(12)
 simple <- tibble::tibble(x = 0:3,
@@ -98,7 +98,9 @@ p_res <- ggplot(simple, aes(x,y,label = epsilon)) +
 print(p_res)
 ```
 
-Da die Normalverteilungen der $\epsilon_i$ für jeden $X$-Wert immer gleich sein sollten bis auf die Verschiebung von $\mu_{Y|X}$, deutet dies ebenfalls eine erste Möglichkeit an, die Modellannahmen graphisch zu überprüfen. Wenn die Residuen $e_i$ geben die vorhergesagten Werte $\hat{y}_i$ abgetragen werden, dann sollte die Verteilung der Residuen $e_i$ überall nahezu gleich sein, da die Streuung $\sigma$ unabhängig von der *Position* auf der Regressionsgerade ist. In `R` können die Residuen mittels der Funktion `residuals()` bzw. der Kurzform `resid()` ermittelt werden. `residuals()` erwartet als Parameter das gefittete `lm()`-Objekt.
+Da die Normalverteilungen der $\epsilon_i$ für jeden $X$-Wert immer gleich sein sollten bis auf die Verschiebung von $\mu_{Y|X}$, deutet dies ebenfalls eine erste Möglichkeit an, die Modellannahmen graphisch zu überprüfen. Wenn die Residuen $e_i$ gegen die vorhergesagten Werte $\hat{y}_i$ abgetragen werden, dann sollte die Verteilung der Residuen $e_i$ überall nahezu gleich sein, da die Streuung $\sigma$ unabhängig von der *Position* auf der Regressionsgerade ist.
+
+In `R` können die Residuen mittels der Funktion `residuals()` bzw. der Kurzform `resid()` ermittelt werden. `residuals()` erwartet als Parameter das gefittete `lm()`-Objekt.
 
 ```{r}
 #| echo: true
@@ -106,7 +108,7 @@ Da die Normalverteilungen der $\epsilon_i$ für jeden $X$-Wert immer gleich sein
 residuals(mod)
 ```
 
-Die anhand des Modells vorhergesagten Werte $\hat{y_i}$ werden der Funktion `predict()` berechnet. Diese Funktion werden wir uns im nächsten Kapitel noch ausführlich betrachten. Als Parameter wird wiederum das gefittete `lm()`-Modell übergeben.
+Die anhand des Modells vorhergesagten Werte $\hat{y_i}$ können mit der Funktion `predict()` berechnet. Diese Funktion werden wir uns im nächsten Kapitel noch ausführlich betrachten. Als Parameter wird wiederum das gefittete `lm()`-Modell übergeben.
 
 ```{r}
 #| echo: true
@@ -117,7 +119,7 @@ predict(mod)
 Beide Funktionen, `resid()` und `predict()` geben die berechneten Werte in der Reihenfolge aus, in der die Originaldaten an `lm()` übergeben wurde. D.h. $e_1$ und $\hat{y}_1$ gehören zum ersten $X$-Wert $x_1$ aus den Originaldaten. Mit Hilfe dieser beiden Variablen kann nun ein Residuenplot erstellt werden (siehe @fig-sim-model-rplot-1).
 
 ```{r}
-#| fig.cap: "Residuenplot der Residuen $e_i$ gegen die vorhergesagten Werte $\\hat{y}_i$"
+#| fig-cap: "Residuenplot der Residuen $e_i$ gegen die vorhergesagten Werte $\\hat{y}_i$"
 #| label: fig-sim-model-rplot-1
 
 ggplot(adl, aes(y_hat, resid)) +
@@ -127,9 +129,9 @@ ggplot(adl, aes(y_hat, resid)) +
   scale_y_continuous(expression(e[i]))
 ```
 
-Der Plot sollte im Optimalfall so aussehen, dass die Residuen $e_i$ gleichmäßig oberhalb und unterhalb um die Nulllinie verteilt sind und keine weiteren Strukturen oder Muster im Zusammenhang mit $\hat{y}_i$ zu erkennen sind. In dem Residuenplot in @fig-sim-model-rplot-1 ist zunächst einmal kein größeres Problem zu erkennen, bis auf den einen Wert links oben.
+Der Plot sollte im Optimalfall so aussehen, dass die Residuen $e_i$ gleichmäßig oberhalb und unterhalb um die Nulllinie verteilt sind und keine weiteren Strukturen oder Muster im Abhängigkeit mit $\hat{y}_i$ zu erkennen sind. In dem Residuenplot in @fig-sim-model-rplot-1 ist zunächst einmal kein größeres Problem zu erkennen, bis auf den einen Wert links oben.
 
-Um besser zu Verstehen wir Problem aussehen könnten, schauen wir uns zwei Residuenplots an, bei denen eine Struktur zu erkennen ist (siehe @fig-sim-model-rplot-2)
+Um besser zu Verstehen wir Problem aussehen könnten, schauen wir uns zwei Residuenplots an, bei denen die Residuen $e_i$ jeweils eine Struktur in Abhängigkeit von $\hat{y}_i$ besitzen. (siehe @fig-sim-model-rplot-2)
 
 ```{r}
 #| layout-ncol: 2
@@ -146,19 +148,19 @@ tibble(
   y = x*cos(seq(0,6*pi,length.out = n)/10) + 3*x + 2 + rnorm(n),
   resid = resid(lm(y~x)),
   y_hat = predict(lm(y~x))
-) |> rplot()
+) |> rplot(24, 3)
 
 n <- 40
 set.seed(125)
 tibble(
   y_hat = runif(n, 0, 1),
   resid = 3 * y_hat * rnorm(n, 0, 2),
-) |> rplot()
+) |> rplot(24, 3)
 ```
 
-In @fig-sim-model-rplot-2-1 ist ein parabelförmiger Zusammenhang zwischen $e_i$ und $\hat{y}_i$ zu erkennen. Für kleine und große $\hat{y}_i$ Werte sind die Residuen $e_i$ negativ während für mittlere Werte von $\hat{y}_i$ die Residuen $e_i$ positiv sind. Diese deutet darauf hin, das zusäztliche Struktur in den Daten nicht im Modell erfasst wird und führt dazu dass die Modellannahmen der Normalverteilung der $\epsilon_i$ nicht erfüllt sind.
+In @fig-sim-model-rplot-2-1 ist ein parabelförmiger Zusammenhang zwischen $e_i$ und $\hat{y}_i$ zu erkennen. Für kleine und große $\hat{y}_i$ Werte sind die Residuen $e_i$ negativ während für mittlere Werte von $\hat{y}_i$ die Residuen $e_i$ positiv sind. Diese deutet darauf hin, das zusäztliche Struktur in den Daten nicht im Modell erfasst wird und führt dazu, dass die Modellannahmen der Normalverteilung der $\epsilon_i$ nicht erfüllt sind.
 
-In @fig-sim-model-rplot-2-2 ist dagegen eine anderes Problem zu beobachten, die Residuen $e_i$ zeigen zwar keine Struktur bezüglich positiv zu negativen Werten, allerdings werden die Abweichung von $0$ mit größer werdenen $\hat{y}_i$ immer stärker. Dies deutet darauf hin, das die Streuung der Daten nicht gleich ist. Dies wird als Heteroskedastizität bezeichnet und deutet wiederum auf eine Verletzung der Annahmen bei der Homoskedastitzität ausgegangen wird. D.h. die Streuung soll über den gesamten Bereich von $\hat{y}_i$ gleich bleiben.
+In @fig-sim-model-rplot-2-2 ist dagegen eine anderes Problem zu beobachten. Die Residuen $e_i$ zeigen zwar keine Struktur bezüglich positiv zu negativen Werten, allerdings werden die Abweichung von $0$ mit größer werdenen $\hat{y}_i$ immer größer. Dies deutet darauf hin, das die Streuung der Daten nicht gleich ist. Dies wird als Heteroskedastizität bezeichnet und deutet wiederum auf eine Verletzung der Annahmen bei der Homoskedastitzität ausgegangen wird. D.h. die Streuung soll über den gesamten Bereich von $\hat{y}_i$ gleich bleiben.
 
 ::: {#def-homoscedasticity}
 
@@ -167,9 +169,58 @@ In @fig-sim-model-rplot-2-2 ist dagegen eine anderes Problem zu beobachten, die 
 Wenn die Größe der Varianz der Residuen $\epsilon_i$ in einem Regressionsmodell unabhängig von der Größe der Vorhersagevariable $X_i$ ist, wird dies als Homoskedastizität bezeichnet. Die Streuung der Residuen ist dann für alle Werte $X_i$ gleich. Wenn dies nicht der Fall ist, wird von Heteroskedastizität\index{Heteroskedastizität} gesprochen.
 :::
 
-Da die Varianz also konstant für alle Werte von $X_i$ ist, trifft dies ebenfalls für die vorhergesagten Werte $\hat{Y}_i$ zu. Daher werden bei vielen der Plots die Residuen $\hat{\epsilon}_i$ gegen die $\hat{Y_i}$ abgetragen. Dies hat den Vorteil, dass später bei der multiplen Regression die gleiche Art von Graphen benutzt werden kann, um Homoskeastizität zu analysieren.
+Da die Varianz also konstant für alle Werte von $X_i$ ist, trifft dies ebenfalls für die vorhergesagten Werte $\hat{Y}_i$ zu. Daher werden bei vielen der Graphen die Residuen $\hat{\epsilon}_i$ gegen die $\hat{Y_i}$ abgetragen. Dies hat den Vorteil, dass später bei der multiplen Regression die gleiche Art von Graphen benutzt werden kann, um Homoskeastizität zu analysieren.
 
 Eine weitere Möglichkeit die Verteilung der Residuen zu überprüfen ist die Anfertigung von sogenannten  qq-Plots. Dies ermöglichen etwas strukturierter die Verteilung der Residuen zu überprüfen.
+
+::: {#exm-resid-kayak}
+In @pickett2021 wurde die Geschwindigkeitsverläufe von $19$ Kajakathleten über $200$ Meter untersucht. Im Rahmen der Analyse wurde ein Ermüdungsindex (FI%) aus der Differenz der Bootsgeschwindigkeit vom schnellsten durchschnittlichen Tempo über einen 10 m Abschnitt bis hin zum langsamsten gemessenen durchschnittlichen Tempo über einen anderen 10 m Abschnitt während eines Rennens berechnet und als Prozentsatz ausgedrückt: FI% = (Spitze – langsamste/Spitze) × 100. Der Zusammenhang zwischen der schnellsten Rennzeit und FI ist in @fig-slm-model-fit-ex-kayak abgetragen.
+
+```{r}
+#| label: fig-slm-model-fit-ex-kayak
+#| fig-cap: "streudiagramm der Rennzeiten gegen den Ermüdungsindex FI. Adaptiert aus Pickett et al. (2021, Abbildung 5, Seite 7)"
+
+kayak <- readr::read_delim('../data/pickett(2020)_kayak.txt', delim = ';')
+ggplot(kayak, aes(fatigue, time)) +
+  geom_point() +
+  labs(x = 'Ermüdungsindex FI[%]',
+       y = 'Rennzeit[s]')
+```
+
+Ein Modellfit mit einem einfachen linearem Modell führt zu folgendem Ergebnis:
+
+```{r}
+#| label: tbl-slm-model-fit-ex-kayak
+#| tbl-cap: "Ergebnis der Regressionsanalyse für die Kayakdaten aus Pickett et al. (2021)"
+
+mod_kayak <- lm(time ~ fatigue, kayak)
+mod_kayak |> broom::tidy() |> knitr::kable(
+  booktabs = TRUE,
+  digits = 2,
+  col.names = c('Koeffizient','Wert','$s_e$', 't-Wert','p-Wert'),
+  escape = FALSE
+)
+```
+
+D.h. die Daten deuten auf keinen linearer Zusammenhang zwischen den Zeiten und dem Ermüdungsindex hin. Schauen wir uns einmal die Residuen $e_i$ gegen die vorhergesagtem Modell $\hat{y}_i$ an.
+
+```{r}
+#| label: fig-slm-model-fit-ex-kayak-resid
+#| tbl-cap: "Residuenplot der einfachen Regressionsanalyse der Kayakdaten aus Pickett et al. (2021)"
+
+kayak <- kayak |>
+  dplyr::mutate(y_hat = predict(mod_kayak),
+                e_i = resid(mod_kayak))
+ggplot(kayak, aes(y_hat, e_i)) + 
+  geom_hline(yintercept = 0, color = 'red',
+             linetype = 'dashed') +
+  geom_point() +
+  labs(x = expression(hat(y)[i]),
+       y = expression(e[i]))
+```
+
+In @fig-slm-model-fit-ex-kayak-resid zeigt sich, dass die Residuen nicht gleichmaßig über die Daten streuen, sondern ähnlich wie in @fig-sim-model-rplot-2 auf einen parabelförmigen Zusammenhang deuten. Daher wurde in @pickett2021 auch ein quadratischer Zusammenhang zwischen den Variablen untersucht. Dieser Ansatz führte zu einer deutlichen Verbesserung des Modellfits und deutete auch auf einen relevanten Zusammenhang zwischen den Daten.
+:::
 
 ### Quantile-Quantile-Plots 
 
@@ -186,7 +237,7 @@ df_qq %>% knitr::kable(booktabs=T)
 Wir wollen jetzt überprüfen ob dieser Datensatz einer Normalverteilung folgt (Wohlwissend das mit fünf Datenpunkten keine Verteilungsannahme überprüft werden kann). Dazu schauen wir uns zunächst noch einmal die bekannte Standardnormalverteilung $\Phi(z) = \mathcal{N}(\mu=0,\sigma^2=1)$ an (siehe @fig-slm-model-toy-1).
 
 ```{r}
-#| fig.cap: "Dichtefunktion der Standardnormalverteilung"
+#| fig-cap: "Dichtefunktion der Standardnormalverteilung"
 #| label: fig-slm-model-toy-1
 
 df_qq_2 <- tibble::tibble(
@@ -199,10 +250,10 @@ ggplot(df_qq_2, aes(x,y)) +
   labs(x = 'Werte', y = 'Dichte') 
 ```
 
-Im ersten Schritt unterteilen wir die Standardnormalverteilung $\Phi(z)$ in $n+1 = 6$ gleich große Flächen. D.h. die durch die Flächen bestimmten Abschnitte haben alle die gleiche Wahrscheinlichkeit (=Fläche unter der Dichtefunktion). Die Flächen werden durch jeweiligen Trennpunkte unterteilt die gleichzeitig die Quantilen sind.
+Im ersten Schritt unterteilen wir die Standardnormalverteilung $\Phi(z)$ in $n+1 = 6$ gleich große Flächen. D.h. die durch die Flächen bestimmten Abschnitte haben alle die gleiche Wahrscheinlichkeit (=Fläche unter der Dichtefunktion). Die Flächen werden durch die jeweiligen Trennpunkte unterteilt. Diese Trennpunkte sind die Quantilen der Verteilung.
 
 ```{r}
-#| fig.cap: "Unterteilung der Standardnormalverteilung in sechs gleich große Flächen"
+#| fig-cap: "Unterteilung der Standardnormalverteilung in sechs gleich große Flächen"
 #| label: fig-slm-model-toy-2
 
 n <- dim(df_qq)[1]
@@ -219,10 +270,9 @@ ggplot(df_qq_2, aes(x,y)) +
   theme(axis.text.x = element_text(angle = 45, vjust=1, hjust=1))
 ```
 
-In unserem Fall haben wir $n=5$ Datenpunkte, unterteilen also unsere Verteilung in $6$ Abschnitte die jeweils eine Fläche von $p = \frac{1}{6} = `r round(1/6,2)`$ haben. D.h. $\frac{1}{6}$ der Werte von $\Phi(x)$ liegen links des ersten Trennpunktes, $\frac{2}{6}$ der Werte von $\Phi(x)$ liegen links des zweiten Trennpunktes, usw. D.h. die Trennpunkte bestimmen die jeweiligen Quantilen, oder genauer die theoretischen Quantilen die unter der Verteilungsannahme erwartet werden.
+In unserem Beispiel haben wir nun $n=5$ Datenpunkte. Daher unterteilen wir die Verteilung in $6$ gleich große, bezogen auf die Fläche, Abschnitte. Die Abschnitte haben somit jeweils eine Fläche von $p = \frac{1}{6} = `r round(1/6,2)`$. D.h. $\frac{1}{6}$ der Werte von $\Phi(x)$ liegen links des ersten Trennpunktes, $\frac{2}{6}$ der Werte von $\Phi(x)$ liegen links des zweiten Trennpunktes, usw.. Dadurch werden durch die Trennpunkte die jeweiligen Quantilen bestimmt. Bezogen auf unserem Ziel zu überprüfen ob unsere beobachteten Daten einer bestimmten theoretischen Verteilung folgen werden die theoretischen Quantilen die unter der Verteilungsannahme erwartet werden bestimmt.
 
-
-Die Idee hinter dem qq-Plot besteht nun darin, die empirischen Quantilen gegen die theoretischen Quantilen abzutragen (siehe @fig-slm-model-qqconcept). Wenn die beobachteten Daten aus der gleichen Verteilung wie die theoretische Verteilung stammen, dann sollten die Punkte einer Geraden folgen. Die Steigung der Geraden ist $1$, wenn es sich um die identischen Verteilungen handelt. Wenn die Steigung $\neq1$ ist, dann kommen die Datenpunkte aus der gleichen Familie sind aber um einen Skalierungsfaktor unterschiedlich bzw. um den Mittelwert verschoben. Die Punkte sollten aber trotzdem auf einer Geraden liegen. 
+Die Idee hinter dem qq-Plot besteht also darin, die empirischen Quantilen gegen die theoretischen Quantilen abzutragen (siehe @fig-slm-model-qqconcept). Wenn die beobachteten Daten aus der gleichen Verteilung wie die theoretische Verteilung stammen, dann sollten die Punkte einer Geraden folgen. Die Steigung der Geraden ist $1$, wenn es sich um die identischen Verteilungen handelt. Wenn die Steigung $\neq1$ ist, dann kommen die Datenpunkte aus der gleichen Verteilungsfamilie sind aber um einen Skalierungsfaktor unterschiedlich bzw. um den Mittelwert verschoben. Die Punkte sollten aber trotzdem auf einer Geraden liegen. Daher ist es nicht notwendig die exakte theoretische Verteilung zu kennen, sondern es reicht zu wissen aus welcher Familie die Verteilung stammt.
 
 ```{r}
 #| label: fig-slm-model-qqconcept
@@ -494,10 +544,6 @@ Nach der Wiedergabe des gefitten Modells erfolgt direkt eine Zusammenfassung der
 
 Im vorliegenden Fall des Modells für die `adl`-Daten ist der Median dementsprechend doch etwas weit von Null entfernt und der geschätzte Residualfehler $\hat{\sigma} = `r round(sigma(mod),2)`$ ebenfalls relativ groß. $\hat{\sigma}$ kann mittels der Funktion `sigma()` erhalten werden.
 
-### Zum Nachlesen
-
-Zum weiteren Vertiefen der Inhalte findet ihr in @kutner2005 [p.100-114], @pos_residuals und 
-@fox2011 [p.285-296] noch einmal gute Zusammenfassungen.
 
 ## Einflussmetriken
 
@@ -618,9 +664,6 @@ In @tbl-slm-model-influence sind noch einmal die verschiedenen Methoden tabellar
 
 Nochmal, die Daumenregeln sind wirklich auch nur Daumenregeln und identifzieren nicht automatisch ein Problem im Datensatz.
 
-### Zum Nacharbeiten
-
-Eine sehr gute Zusammenfassung ist in @pos_diagnostics zu finden, während noch mal weitergehende Information in @fox2011 [p.294-302] und @young2019 nachzulesen sind.
 
 ## Diagnoseplots in `R`
 
@@ -638,3 +681,7 @@ par(mfrow=c(1,1), mar=mar)
 ```
 
 Eine weitere Möglichkeit ist das package `performance` das zahlreiche Funktion enthält rund um die Analyse von Modellfits enthält. Beispielweise erzeugt die Funktion `performance::check_model()` neben den gleichen Analyse wie mit `plot()` noch weitere gute Übersichten zum Modellfit.
+
+## Zum Nach- und Weiterlesen
+
+Zum weiteren Vertiefen bezüglich der Residuen findet ihr in in @kutner2005 [p.100-114], @pos_residuals und @fox2011 [p.285-296] noch einmal gute Zusammenfassungen. Hinsichtlich der Einflussmetriken ist eine sehr gute Zusammenfassung in @pos_diagnostics zu finden, während noch mal weitergehende Information in [@fox2011, p.294-302] und @young2019 nachzulesen sind.
