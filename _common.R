@@ -63,3 +63,5 @@ rplot <- function(df, text_size = 11, point_size = 1.5) {
     scale_y_continuous(expression(e[i])) +
     theme(text = element_text(size = text_size))
 }
+
+ncol_text <- theme(text = element_text(size=20))
