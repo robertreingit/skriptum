@@ -371,7 +371,7 @@ Dies macht daher die Interpretation von $f$ deutlich schwieriger als das im einf
 Leider hören hier nicht die Problem auf, sondern es gibt eine ganze Reihe von weiteren Effektstärken die in der Literatur anzutreffen sind. Dazu gehören vor allem das weit verbreitete $\eta^2$ und das weniger bekannte $\omega^2$.
 
 \begin{align*}
-\eta^2 &= \frac{SS_{B}}{SS_{Total}}
+\eta^2 &= \frac{SS_{B}}{SS_{Total}} \\
 \omega^2 &= \frac{f^2}{1 + f^2} \\
 &= \frac{SS_B - (K-1)MS_W}{SS_{\text{Total}}+MS_W} \\
 &= \frac{(K-1)(F-1)}{(K-1)(F-1)+N}\\
@@ -405,9 +405,9 @@ effectsize::omega_squared(mod_aov, verbose=F)
 
 Die Funktionen aus `effectsize` liefern auch gleich noch Konfidenzintervalle für die Effektstärken mit, da natürlich auch die Schätzung von Effektstärken mit Unsicherheiten behaftet ist.
 
-## Stichprobengröße a-prior ermitteln
+## Replikationsfaktor a-prior ermitteln
 
-Um bei unserem Experiment sicher zu stellen, dass wir auch eine realistische Chance haben einen gewünschten Effekt zu finden, müssen wir vor dem Experiment eine Power-Analyse durchführen um die notwendig Stichprobengröße zu bestimmen.
+Um bei unserem Experiment sicher zu stellen, dass wir auch eine realistische Chance haben einen gewünschten Effekt zu finden, müssen wir vor dem Experiment eine Power-Analyse durchführen um den notwendig Replikationsfaktor für die experimentellen Einheiten EU zu bestimmen. In dem Fall, dass die EUs äquivalent zu den Untersuchungsteilnehmerinnen und Untersuchungsteilnehmer sind führt dies dementsprechend zur Bestimmung der Stichprobengröße.
 
 Dazu stehen uns in den meisten Fällen drei verschiedene Herangehensweisen zur Verfügung 
 
@@ -438,11 +438,66 @@ tibble(
   scale_fill_discrete("Hypothesen", labels = c(expression(H[0]), expression(H[1])))
 ```
 
-Unter der $H_1$ folgt $F$ einer $F(df_1, df_2, \delta^2)$-Verteilung. $\delta^2$ ist der Nichtzentralitätsparameter (oft auch $\lambda$). Diese Verteilung wird daher auch als nichtzentrale $F$-Verteilung bezeichnet. Der Nichtzentralitätsparameter hängt dabei mit unserem Wert $Q(\tau_i)$ zusammen. Umso größer der Unterschied zwischen den verschiedenen Faktorstufen, umso größer auch der Nichtzentralitätsparameter. D.h. wir benötigen Informationen über die Effekte zwischen den Stufen der Konditionen um $\lambda$ zu bestimmen und dann anhand des Nichtzentralitätsparmeter die korrekte Verteilung unter der $H_1$ zu bestimmen.
+Unter der $H_1$ folgt $F$ einer $F(df_1, df_2, \lambda)$-Verteilung. $\lambda$ ist der sogenannten Nichtzentralitätsparameter. Diese Verteilung wird daher auch als nichtzentrale $F$-Verteilung bezeichnet. Der Nichtzentralitätsparameter hängt dabei mit unserem Wert $Q(\tau_i)$ zusammen. Umso größer der Unterschied zwischen den verschiedenen Faktorstufen, umso größer auch der Nichtzentralitätsparameter.
 
-Im Fall 1. gehen versuchen wir die notwendigen Informationen anhand bereits dokumentierter Ergebnisse in der Literatur zu bestimmen. Beispielsweise anhand der Quadratsummen aus den $F$-Tabellen oder im einfachsten Fall direkt mittels der dokumentierten Effektstärke $f$.
+```{r}
+#| fig-cap: "Beispiele für die Veränderung der $F$-Verteilung bzw. der nichtzentralen $F$-Verteilung bei $f = 0.4$ und zunehmender Stichprobengröße. rot sind die $1 - \\alpha = 0.95$-Quartilen unter der $H_0$ während schwarz die $\\beta = 0.2$-Quartilen unter der $H_1$ sind."
+#| label: fig-ed-crd-power-01
 
-Konkret berechnet sich $\delta^2$ nach.
+foo_1 <- function(k = 4, f = 0.4) {
+  f2 <- f**2
+  df_2 <- c(30, 60, 90)
+  lambda <- df_2 * k * f2
+  n <- 200
+  upper <- 20 
+  offset <- seq(1,2.5,length=3) 
+  # \lambda = n * k * f^2
+  df <- tibble(
+    x = seq(0, upper, length = n),
+    y_1 = df(x, k, df_2[1]),
+    y_2 = df(x, k, df_2[2]),
+    y_3 = df(x, k, df_2[3]),
+    
+  ) |> pivot_longer(-x) |>
+    mutate(name = factor(name),
+           y = rep(offset, n))
+  df_non <- tibble(
+    x = seq(0, upper, length = n),
+    y_1 = df(x, k, n, lambda[1]),
+    y_2 = df(x, k, n, lambda[2]),
+    y_3 = df(x, k, n, lambda[3])
+  ) |> pivot_longer(-x) |> 
+    mutate(name = factor(name),
+           y = rep(offset, n))
+  q_alpha <- qf(0.95, k, df_2)
+  df_alpha <- tibble(x = q_alpha, y = offset, d = df(x, k, df_2) + y)
+  q_power <- qf(0.2, k, df_2, lambda)
+  df_power <- tibble(x = q_power, y = offset, d = df(x, k, df_2, lambda) + y)
+  ggplot(df, aes(x)) +
+    geom_ribbon(aes(ymin = y, ymax = y + value, fill = name), outline.type = 'upper', color = 'black', alpha=.7) +
+    geom_ribbon(data = df_non, aes(ymin = y, ymax = y + value, fill = name),
+                outline.type = 'upper', color = 'black', alpha=.5) +
+    geom_segment(data = df_alpha, aes(x,xend=x,y=y, yend=d)) +
+    geom_line(data = df_alpha, aes(x,y), linetype = 'dashed', color='red') +
+    geom_point(data = df_alpha, aes(x,y), size = 2, color = 'red') +
+    geom_segment(data = df_power, aes(x,xend=x,y=y, yend=d)) +
+    geom_line(data = df_power, aes(x,y), linetype = 'dashed') +
+    geom_point(data = df_power, aes(x,y), size = 2) +
+    scale_x_continuous("F-Wert") +
+    scale_y_continuous("Density", breaks = offset, labels = NULL) +
+    scale_fill_manual("N",
+                      values = c("darkorange", "darkgoldenrod", "darkgreen"),
+                      breaks = unique(df$name),
+                      labels = paste('df2 =', df_2))
+}
+foo_1()
+```
+
+In @fig-ed-crd-power-01 ist die Veränderung der $F$-Verteilungen unter der $H_0$ und der entsprechenden $H_1$ bei Veränderung des Replikationsfaktors abgebildet. Wir können erkennen, das die $1-\alpha$-Quantile unter der $H_0$ immer weiter nach rechts wandert, während die $\beta$-Quantile unter der $H_1$ immer weiter nach links wandert. D.h. wir suchen die Zahl bei der die $1-\alpha$-Quantile unter der $H_0$ gleich der $\beta = 0.2$-Quantile unter der $H_1$ ist. Da sich die Quantilen allerdings in Abhängigkeit von der Stichprobengröße ändern, rechnen wir dies am einfachsten durch einen ausprobieren aus. Für einen gegebene Stichprobengröße wird der Nichtzentralitiätsparameter $\lambda$ bestimmt, der dann dazu benutzt wird den Wert unter der $H_1$ zu bestimmen. Bei Kenntnis von $f$ geht dies ziemlich einfach.
+
+Wir extrahieren die notwendigen Informationen bereits dokumentierter Ergebnisse in der Literatur. Beispielsweise anhand der Quadratsummen aus den $F$-Tabellen oder im einfachsten Fall direkt mittels der dokumentierten Effektstärke $f$.
+
+Konkret berechnet sich $\lambda$ nach.
 
 \begin{equation}
 \lambda = (K-1)Q(\tau_i)/\sigma^2
@@ -452,9 +507,35 @@ $K$ ist die Anzahl der Faktorstufen. Eine alternative Berechnung unter der direk
 
 \begin{equation}
 \lambda = nKf^2
+\label{ed-crd-lambda-02}
 \end{equation}
 
-Im Fall 2. gehen wir weniger von dokumentierten Effekten sondern über die Überlegung eines für uns praktisch relevanten Effekts aus. Hergeleitet aus theoretischen Überlegungen setzen wir einen minimalen praktisch relevanten Effekt $\Delta$ fest. Dies kann zum Beispiel anhand von Überlegungen welche Effektgröße bei einer Gesundheitsintervention benötigt wird um einen relevanten Effekt bei der Patientenpopulation auszulösen. Ausgehend von diesem minimalen Effekt $\Delta$ wird dann die Abschätzung der Stichprobengröße durchgeführt.
+In @tbl-ed-crd-power-01 sind die entsprechenden Werten für die Quantilen und der $H_0$ und der $H_1$ unter den entsprechenden Replikationsfaktoren abgebildet.
+
+```{r}
+#| tbl-cap: "Aufstellung der Power bei $f = 0.25$ für verschiedene $n$ Replikationen pro Faktorstufe bei $K = 4$ Faktorstufen."
+#| label: tbl-ed-crd-power-01
+
+power_tbl <- tibble(
+  n = seq(10, 50, 4),
+  df_1 = 4 - 1,
+  df_2 = 4*(n-1),
+  c_h0 = qf(0.95, df_1, df_2),
+  beta = pf(c_h0, df_1, df_2, n * 4 * 0.25**2),
+  power = 1 - beta
+)
+power_tbl |> kable(
+  booktabs = T,
+  linesep = "",
+  digits = 2,
+  col.names = c("n", "$df_1$", "$df_2$", "$q_{H_0}$","$q_{\\beta}$", "power"),
+  escape = F
+)
+```
+
+In @tbl-ed-crd-power-01 sehen wir, dass wir bei einem Effekt von $f = 0.25$ bei vier Faktorstufen bei einer Power von power $=0.8$ mehr als $42$ Replikationen brauchen.
+
+Im Fall 2. gehen wir weniger von dokumentierten Effekten sondern über die Überlegung eines für uns praktisch relevanten Effekts aus. Hergeleitet aus theoretischen Überlegungen setzen wir einen minimalen praktisch relevanten Effekt $\Delta$ fest. Dies kann zum Beispiel anhand von Überlegungen welche Effektgröße bei einer Gesundheitsintervention benötigt wird um einen relevanten Effekt bei der Patientenpopulation auszulösen. Ausgehend von diesem minimalen Effekt $\Delta$ wird dann die Abschätzung der Stichprobengröße durchgeführt. Hier gehen wir im konservativen Fall davon aus, dass der Unterschied zwischen zwei Faktorstufen vorliegt, während die anderen Faktorstufen genau in der Mitte zwischen diesen beiden Faktorstuffen liegen. Dies führt dazu, dass die beiden *extremen* Faktorstufen die Werte $\tau_1 = \Delta/2$ und $tau_2 = -\Delta/2$ während für die verbleibenden Faktorstufen $\Delta_i = 0, i \neq {1,2}$ (siehe @fig-ed-crd-power-delta).
 
 ```{r}
 #| fig-cap: "Mögliche Abschätzung von $\\Delta$"
@@ -479,11 +560,11 @@ f = \sqrt{\frac{\Delta^2}{2K\sigma^2}}
 \label{eq-ed-crd-f-power}
 \end{equation}
 
-Die ermittelte Effektstärke $f$ kann dann verwendet werden um die Stichprobengröße zu ermitteln.
+Die ermittelte Effektstärke $f$ kann dann verwendet werden um mittels Formel \eqref{eq-ed-crd-lambda-02} den Nichtzentralitätsparameter zu bestimmen und dadurch die Stichprobengröße zu bestimmen.
 
-### CRD Stichprobengröße a-priori in `R` ermitteln
+### Repliatkationsfaktor a-priori in `R` ermitteln
 
-In `R` können wir direkt die Effektstärke $f$ verwenden mittels der Funktion `pwr.anova.test()` aus dem package `pwr`. Bei der Funktion muss immer eins von $f$, $k$, $\alpha$, $power$ oder $n$ nicht übergeben werden und die Funktion bestimmt denn fehlenden Wert. Wollen wir z.B. die notwendige Stichprobengröße pro Faktorstufe für $f = 0.39, K = 3, \alpha = 0.05, \text{power} = 0.8$ bestimmen, dann können wir dies wie folgt erreichen.
+In `R` können wir direkt die Effektstärke $f$ verwenden um mittels der Funktion `pwr.anova.test()` aus dem package `pwr` die Anzahl der Replikationen zu berechnen. Bei der Funktion muss immer einer der Parameter $f$, $k$, $\alpha$, $power$ oder $n$ übergeben werden. Die Funktion bestimmt dann entsprechend den fehlenden Wert. Wollen wir z.B. die notwendige Stichprobengröße pro Faktorstufe für $f = 0.39, K = 3, \alpha = 0.05, \text{power} = 0.8$ bestimmen, dann können wir dies wie folgt erreichen.
 
 ```{r}
 #| results: 'asis'
@@ -498,6 +579,8 @@ Da wir immer nur *vollständige* Untersuchungspersonen einsetzen können wird di
 Alternativ, gehen wir zum Beispiel davon aus, dass wir von einem Unterschied von $\Delta = 5s$ ausgehen auf Grund der Koffeingabe. Der Formel \eqref{eq-ed-crd-f-power} folgend würde daraus die folgende Berechnung resultieren bei einer Power von $0.9$.
 
 ```{r}
+#| echo: true
+
 delta <- 5
 K <- 3
 sigma_sqr <- sigma(mod_aov)**2
@@ -506,6 +589,54 @@ pwr::pwr.anova.test(f = f, k = K, sig.level = 0.05, power = 0.9)
 ```
 
 D.h. wir bräuchten in diesem Fall schon $n = 46$ Athletinnen pro Gruppe.
+:::
+
+::: {#exm-ed-crd-power-01}
+Alternative unter der Verteilungsfunktionen `df()` und `qf()` können wir den Wert auch fußläufig ausrechnen wie in @tbl-ed-crd-power-01. 
+
+```{r}
+#| echo: true
+n <- 45
+df_1 <- K - 1
+df_2 <- n*K - K
+q_h0 <- qf(0.95, df1 = df_1, df2 = df_2)
+lambda <- n * K * f**2
+1 - pf(q_h0, df_1, df_2, lambda)
+```
+
+:::
+
+::: {#exm-ed-crd-power-02}
+In @bradley2009 wurden die Unterschiede in hochintensiven Läufe bei Fußballspielern aus der Premiere League zwischen verschiedenen Spielpositionen untersucht. Es wurden die folgenden Daten gefunden.
+
+```{r}
+#| tbl-cap: "Ergebnisse der Untersuchung aus Bradley et al. 2009 bei hochintensiver Distanz (in m) bei Fußballern aus der Premiere League auf den Positionen c = Innenverteidiger, fb = Außenverteidiger, cm = Zentrales Mittelfeld, wm = Äußeres Mittelfeld, at = Angreifer."
+#| label: tbl-ed-crd-exm-02
+
+bradley <- tibble(m = c(1834,2605,2825,3138,2341),
+                  s = c(256,387,473,565,575),
+                  pos = c('cd','fb','cm','wm','at'),
+                  n = c(92, 84, 80, 52, 62))
+
+bradley |> kable(
+  booktabs = TRUE,
+  col.names = c('Mittelwert','STD','Position', 'N'),
+  linesep = ''
+)
+```
+
+Anhand dieser Information können wir mittels Formel \eqref{eq-ed-crd-sse-total} die notwendigen Informationen berechnen. Die Daten aus dem Artikel sind in einem `tibble()` mit dem Namen `bradley` gespeichert. Wir vernachlässigen, dass die Spieler keine EUs darstellen, da sie aus clustern aus Mannschaften stammen und damit nicht unabhängig voneinander sind.
+
+```{r}
+#| echo: true
+
+sigma_bet <- sqrt(sum((bradley$m-mean(bradley$m))**2)/5) 
+sigma_e <- sqrt(sum((bradley$n-1)*bradley$s**2)/(sum(bradley$n)-5))
+f <- sigma_bet/sigma_e
+f
+```
+
+Mit der Effekstärke $f$ kann dann wieder die gewünschte Power berechnet werden.
 :::
 
 ## Verbindung Modellhierarchien und BA-ANOVA (advanced)

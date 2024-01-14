@@ -463,9 +463,9 @@ window.Quarto = {
   <li><a href="#effektstärken-allgemein" id="toc-effektstärken-allgemein" class="nav-link" data-scroll-target="#effektstärken-allgemein"><span class="header-section-number">21.4.1</span> Effektstärken allgemein</a></li>
   <li><a href="#crd-effektstärken-in-r" id="toc-crd-effektstärken-in-r" class="nav-link" data-scroll-target="#crd-effektstärken-in-r"><span class="header-section-number">21.4.2</span> CRD Effektstärken in <code>R</code></a></li>
   </ul></li>
-  <li><a href="#stichprobengröße-a-prior-ermitteln" id="toc-stichprobengröße-a-prior-ermitteln" class="nav-link" data-scroll-target="#stichprobengröße-a-prior-ermitteln"><span class="header-section-number">21.5</span> Stichprobengröße a-prior ermitteln</a>
+  <li><a href="#replikationsfaktor-a-prior-ermitteln" id="toc-replikationsfaktor-a-prior-ermitteln" class="nav-link" data-scroll-target="#replikationsfaktor-a-prior-ermitteln"><span class="header-section-number">21.5</span> Replikationsfaktor a-prior ermitteln</a>
   <ul class="collapse">
-  <li><a href="#crd-stichprobengröße-a-priori-in-r-ermitteln" id="toc-crd-stichprobengröße-a-priori-in-r-ermitteln" class="nav-link" data-scroll-target="#crd-stichprobengröße-a-priori-in-r-ermitteln"><span class="header-section-number">21.5.1</span> CRD Stichprobengröße a-priori in <code>R</code> ermitteln</a></li>
+  <li><a href="#repliatkationsfaktor-a-priori-in-r-ermitteln" id="toc-repliatkationsfaktor-a-priori-in-r-ermitteln" class="nav-link" data-scroll-target="#repliatkationsfaktor-a-priori-in-r-ermitteln"><span class="header-section-number">21.5.1</span> Repliatkationsfaktor a-priori in <code>R</code> ermitteln</a></li>
   </ul></li>
   <li><a href="#verbindung-modellhierarchien-und-ba-anova-advanced" id="toc-verbindung-modellhierarchien-und-ba-anova-advanced" class="nav-link" data-scroll-target="#verbindung-modellhierarchien-und-ba-anova-advanced"><span class="header-section-number">21.6</span> Verbindung Modellhierarchien und BA-ANOVA (advanced)</a></li>
   <li><a href="#zum-nach--und-weiterlesen" id="toc-zum-nach--und-weiterlesen" class="nav-link" data-scroll-target="#zum-nach--und-weiterlesen"><span class="header-section-number">21.7</span> Zum Nach- und Weiterlesen</a></li>
@@ -967,7 +967,7 @@ Abbildung&nbsp;21.3: Drei verschiedene Beispiele für die gleiche Effektstärke 
 <p>Dies macht daher die Interpretation von <span class="math inline">\(f\)</span> deutlich schwieriger als das im einfachen Fall von Cohen’s D für den Vergleich zwischen zwei Mittelwerten der Fall ist.</p>
 <p>Leider hören hier nicht die Problem auf, sondern es gibt eine ganze Reihe von weiteren Effektstärken die in der Literatur anzutreffen sind. Dazu gehören vor allem das weit verbreitete <span class="math inline">\(\eta^2\)</span> und das weniger bekannte <span class="math inline">\(\omega^2\)</span>.</p>
 <p><span class="math display">\[\begin{align*}
-\eta^2 &amp;= \frac{SS_{B}}{SS_{Total}}
+\eta^2 &amp;= \frac{SS_{B}}{SS_{Total}} \\
 \omega^2 &amp;= \frac{f^2}{1 + f^2} \\
 &amp;= \frac{SS_B - (K-1)MS_W}{SS_{\text{Total}}+MS_W} \\
 &amp;= \frac{(K-1)(F-1)}{(K-1)(F-1)+N}\\
@@ -1036,9 +1036,9 @@ Gruppe    |   0.42 | [0.25, 1.00]
 <p>Die Funktionen aus <code>effectsize</code> liefern auch gleich noch Konfidenzintervalle für die Effektstärken mit, da natürlich auch die Schätzung von Effektstärken mit Unsicherheiten behaftet ist.</p>
 </section>
 </section>
-<section id="stichprobengröße-a-prior-ermitteln" class="level2" data-number="21.5">
-<h2 data-number="21.5" class="anchored" data-anchor-id="stichprobengröße-a-prior-ermitteln"><span class="header-section-number">21.5</span> Stichprobengröße a-prior ermitteln</h2>
-<p>Um bei unserem Experiment sicher zu stellen, dass wir auch eine realistische Chance haben einen gewünschten Effekt zu finden, müssen wir vor dem Experiment eine Power-Analyse durchführen um die notwendig Stichprobengröße zu bestimmen.</p>
+<section id="replikationsfaktor-a-prior-ermitteln" class="level2" data-number="21.5">
+<h2 data-number="21.5" class="anchored" data-anchor-id="replikationsfaktor-a-prior-ermitteln"><span class="header-section-number">21.5</span> Replikationsfaktor a-prior ermitteln</h2>
+<p>Um bei unserem Experiment sicher zu stellen, dass wir auch eine realistische Chance haben einen gewünschten Effekt zu finden, müssen wir vor dem Experiment eine Power-Analyse durchführen um den notwendig Replikationsfaktor für die experimentellen Einheiten EU zu bestimmen. In dem Fall, dass die EUs äquivalent zu den Untersuchungsteilnehmerinnen und Untersuchungsteilnehmer sind führt dies dementsprechend zur Bestimmung der Stichprobengröße.</p>
 <p>Dazu stehen uns in den meisten Fällen drei verschiedene Herangehensweisen zur Verfügung</p>
 <ol type="1">
 <li>Anhand der Literatur wird <span class="math inline">\(f\)</span> bestimmt.</li>
@@ -1061,17 +1061,150 @@ Abbildung&nbsp;21.4: <span class="math inline">\(F\)</span>-Verteilung unter der
 </div>
 </div>
 </div>
-<p>Unter der <span class="math inline">\(H_1\)</span> folgt <span class="math inline">\(F\)</span> einer <span class="math inline">\(F(df_1, df_2, \delta^2)\)</span>-Verteilung. <span class="math inline">\(\delta^2\)</span> ist der Nichtzentralitätsparameter (oft auch <span class="math inline">\(\lambda\)</span>). Diese Verteilung wird daher auch als nichtzentrale <span class="math inline">\(F\)</span>-Verteilung bezeichnet. Der Nichtzentralitätsparameter hängt dabei mit unserem Wert <span class="math inline">\(Q(\tau_i)\)</span> zusammen. Umso größer der Unterschied zwischen den verschiedenen Faktorstufen, umso größer auch der Nichtzentralitätsparameter. D.h. wir benötigen Informationen über die Effekte zwischen den Stufen der Konditionen um <span class="math inline">\(\lambda\)</span> zu bestimmen und dann anhand des Nichtzentralitätsparmeter die korrekte Verteilung unter der <span class="math inline">\(H_1\)</span> zu bestimmen.</p>
-<p>Im Fall 1. gehen versuchen wir die notwendigen Informationen anhand bereits dokumentierter Ergebnisse in der Literatur zu bestimmen. Beispielsweise anhand der Quadratsummen aus den <span class="math inline">\(F\)</span>-Tabellen oder im einfachsten Fall direkt mittels der dokumentierten Effektstärke <span class="math inline">\(f\)</span>.</p>
-<p>Konkret berechnet sich <span class="math inline">\(\delta^2\)</span> nach.</p>
+<p>Unter der <span class="math inline">\(H_1\)</span> folgt <span class="math inline">\(F\)</span> einer <span class="math inline">\(F(df_1, df_2, \lambda)\)</span>-Verteilung. <span class="math inline">\(\lambda\)</span> ist der sogenannten Nichtzentralitätsparameter. Diese Verteilung wird daher auch als nichtzentrale <span class="math inline">\(F\)</span>-Verteilung bezeichnet. Der Nichtzentralitätsparameter hängt dabei mit unserem Wert <span class="math inline">\(Q(\tau_i)\)</span> zusammen. Umso größer der Unterschied zwischen den verschiedenen Faktorstufen, umso größer auch der Nichtzentralitätsparameter.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-ed-crd-power-01" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ed-crd-power-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="ed_crd_files/figure-html/fig-ed-crd-power-01-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ed-crd-power-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;21.5: Beispiele für die Veränderung der <span class="math inline">\(F\)</span>-Verteilung bzw. der nichtzentralen <span class="math inline">\(F\)</span>-Verteilung bei <span class="math inline">\(f = 0.4\)</span> und zunehmender Stichprobengröße. rot sind die <span class="math inline">\(1 - \alpha = 0.95\)</span>-Quartilen unter der <span class="math inline">\(H_0\)</span> während schwarz die <span class="math inline">\(\beta = 0.2\)</span>-Quartilen unter der <span class="math inline">\(H_1\)</span> sind.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>In <a href="#fig-ed-crd-power-01" class="quarto-xref">Abbildung&nbsp;<span>21.5</span></a> ist die Veränderung der <span class="math inline">\(F\)</span>-Verteilungen unter der <span class="math inline">\(H_0\)</span> und der entsprechenden <span class="math inline">\(H_1\)</span> bei Veränderung des Replikationsfaktors abgebildet. Wir können erkennen, das die <span class="math inline">\(1-\alpha\)</span>-Quantile unter der <span class="math inline">\(H_0\)</span> immer weiter nach rechts wandert, während die <span class="math inline">\(\beta\)</span>-Quantile unter der <span class="math inline">\(H_1\)</span> immer weiter nach links wandert. D.h. wir suchen die Zahl bei der die <span class="math inline">\(1-\alpha\)</span>-Quantile unter der <span class="math inline">\(H_0\)</span> gleich der <span class="math inline">\(\beta = 0.2\)</span>-Quantile unter der <span class="math inline">\(H_1\)</span> ist. Da sich die Quantilen allerdings in Abhängigkeit von der Stichprobengröße ändern, rechnen wir dies am einfachsten durch einen ausprobieren aus. Für einen gegebene Stichprobengröße wird der Nichtzentralitiätsparameter <span class="math inline">\(\lambda\)</span> bestimmt, der dann dazu benutzt wird den Wert unter der <span class="math inline">\(H_1\)</span> zu bestimmen. Bei Kenntnis von <span class="math inline">\(f\)</span> geht dies ziemlich einfach.</p>
+<p>Wir extrahieren die notwendigen Informationen bereits dokumentierter Ergebnisse in der Literatur. Beispielsweise anhand der Quadratsummen aus den <span class="math inline">\(F\)</span>-Tabellen oder im einfachsten Fall direkt mittels der dokumentierten Effektstärke <span class="math inline">\(f\)</span>.</p>
+<p>Konkret berechnet sich <span class="math inline">\(\lambda\)</span> nach.</p>
 <p><span class="math display">\[\begin{equation}
 \lambda = (K-1)Q(\tau_i)/\sigma^2
 \end{equation}\]</span></p>
 <p><span class="math inline">\(K\)</span> ist die Anzahl der Faktorstufen. Eine alternative Berechnung unter der direkten Verwendung der Effekstärke <span class="math inline">\(f\)</span> lautet.</p>
 <p><span class="math display">\[\begin{equation}
 \lambda = nKf^2
+\label{ed-crd-lambda-02}
 \end{equation}\]</span></p>
-<p>Im Fall 2. gehen wir weniger von dokumentierten Effekten sondern über die Überlegung eines für uns praktisch relevanten Effekts aus. Hergeleitet aus theoretischen Überlegungen setzen wir einen minimalen praktisch relevanten Effekt <span class="math inline">\(\Delta\)</span> fest. Dies kann zum Beispiel anhand von Überlegungen welche Effektgröße bei einer Gesundheitsintervention benötigt wird um einen relevanten Effekt bei der Patientenpopulation auszulösen. Ausgehend von diesem minimalen Effekt <span class="math inline">\(\Delta\)</span> wird dann die Abschätzung der Stichprobengröße durchgeführt.</p>
+<p>In <a href="#tbl-ed-crd-power-01" class="quarto-xref">Tabelle&nbsp;<span>21.4</span></a> sind die entsprechenden Werten für die Quantilen und der <span class="math inline">\(H_0\)</span> und der <span class="math inline">\(H_1\)</span> unter den entsprechenden Replikationsfaktoren abgebildet.</p>
+<div class="cell">
+<div id="tbl-ed-crd-power-01" class="cell quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-ed-crd-power-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabelle&nbsp;21.4: Aufstellung der Power bei <span class="math inline">\(f = 0.25\)</span> für verschiedene <span class="math inline">\(n\)</span> Replikationen pro Faktorstufe bei <span class="math inline">\(K = 4\)</span> Faktorstufen.
+</figcaption>
+<div aria-describedby="tbl-ed-crd-power-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="do-not-create-environment cell table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">n</th>
+<th style="text-align: right;"><span class="math inline">\(df_1\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(df_2\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(q_{H_0}\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(q_{\beta}\)</span></th>
+<th style="text-align: right;">power</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">2.87</td>
+<td style="text-align: right;">0.79</td>
+<td style="text-align: right;">0.21</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">52</td>
+<td style="text-align: right;">2.78</td>
+<td style="text-align: right;">0.70</td>
+<td style="text-align: right;">0.30</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">68</td>
+<td style="text-align: right;">2.74</td>
+<td style="text-align: right;">0.62</td>
+<td style="text-align: right;">0.38</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">84</td>
+<td style="text-align: right;">2.71</td>
+<td style="text-align: right;">0.54</td>
+<td style="text-align: right;">0.46</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">2.70</td>
+<td style="text-align: right;">0.46</td>
+<td style="text-align: right;">0.54</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">116</td>
+<td style="text-align: right;">2.68</td>
+<td style="text-align: right;">0.39</td>
+<td style="text-align: right;">0.61</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">132</td>
+<td style="text-align: right;">2.67</td>
+<td style="text-align: right;">0.33</td>
+<td style="text-align: right;">0.67</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">38</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">148</td>
+<td style="text-align: right;">2.67</td>
+<td style="text-align: right;">0.28</td>
+<td style="text-align: right;">0.72</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">164</td>
+<td style="text-align: right;">2.66</td>
+<td style="text-align: right;">0.23</td>
+<td style="text-align: right;">0.77</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">46</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">180</td>
+<td style="text-align: right;">2.65</td>
+<td style="text-align: right;">0.19</td>
+<td style="text-align: right;">0.81</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">196</td>
+<td style="text-align: right;">2.65</td>
+<td style="text-align: right;">0.15</td>
+<td style="text-align: right;">0.85</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>In <a href="#tbl-ed-crd-power-01" class="quarto-xref">Tabelle&nbsp;<span>21.4</span></a> sehen wir, dass wir bei einem Effekt von <span class="math inline">\(f = 0.25\)</span> bei vier Faktorstufen bei einer Power von power <span class="math inline">\(=0.8\)</span> mehr als <span class="math inline">\(42\)</span> Replikationen brauchen.</p>
+<p>Im Fall 2. gehen wir weniger von dokumentierten Effekten sondern über die Überlegung eines für uns praktisch relevanten Effekts aus. Hergeleitet aus theoretischen Überlegungen setzen wir einen minimalen praktisch relevanten Effekt <span class="math inline">\(\Delta\)</span> fest. Dies kann zum Beispiel anhand von Überlegungen welche Effektgröße bei einer Gesundheitsintervention benötigt wird um einen relevanten Effekt bei der Patientenpopulation auszulösen. Ausgehend von diesem minimalen Effekt <span class="math inline">\(\Delta\)</span> wird dann die Abschätzung der Stichprobengröße durchgeführt. Hier gehen wir im konservativen Fall davon aus, dass der Unterschied zwischen zwei Faktorstufen vorliegt, während die anderen Faktorstufen genau in der Mitte zwischen diesen beiden Faktorstuffen liegen. Dies führt dazu, dass die beiden <em>extremen</em> Faktorstufen die Werte <span class="math inline">\(\tau_1 = \Delta/2\)</span> und <span class="math inline">\(tau_2 = -\Delta/2\)</span> während für die verbleibenden Faktorstufen <span class="math inline">\(\Delta_i = 0, i \neq {1,2}\)</span> (siehe <a href="#fig-ed-crd-power-delta" class="quarto-xref">Abbildung&nbsp;<span>21.6</span></a>).</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-ed-crd-power-delta" class="quarto-figure quarto-figure-center quarto-float anchored">
@@ -1080,21 +1213,21 @@ Abbildung&nbsp;21.4: <span class="math inline">\(F\)</span>-Verteilung unter der
 <img src="ed_crd_files/figure-html/fig-ed-crd-power-delta-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ed-crd-power-delta-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Abbildung&nbsp;21.5: Mögliche Abschätzung von <span class="math inline">\(\Delta\)</span>
+Abbildung&nbsp;21.6: Mögliche Abschätzung von <span class="math inline">\(\Delta\)</span>
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>In <a href="#fig-ed-crd-power-delta" class="quarto-xref">Abbildung&nbsp;<span>21.5</span></a> ist diese Abschätzung graphisch abgebildet. Aus der Literatur benötigen wir allerdings dann immernoch eine Abschätzung über die zu erwartenden Residualvarianz <span class="math inline">\(\sigma^2\)</span>. Wenn diese ermittelt ist, dann kann die Effektstärke <span class="math inline">\(f\)</span> nach der folgenden Formel ermittelt werden.</p>
+<p>In <a href="#fig-ed-crd-power-delta" class="quarto-xref">Abbildung&nbsp;<span>21.6</span></a> ist diese Abschätzung graphisch abgebildet. Aus der Literatur benötigen wir allerdings dann immernoch eine Abschätzung über die zu erwartenden Residualvarianz <span class="math inline">\(\sigma^2\)</span>. Wenn diese ermittelt ist, dann kann die Effektstärke <span class="math inline">\(f\)</span> nach der folgenden Formel ermittelt werden.</p>
 <p><span class="math display">\[\begin{equation}
 f = \sqrt{\frac{\Delta^2}{2K\sigma^2}}
 \label{eq-ed-crd-f-power}
 \end{equation}\]</span></p>
-<p>Die ermittelte Effektstärke <span class="math inline">\(f\)</span> kann dann verwendet werden um die Stichprobengröße zu ermitteln.</p>
-<section id="crd-stichprobengröße-a-priori-in-r-ermitteln" class="level3" data-number="21.5.1">
-<h3 data-number="21.5.1" class="anchored" data-anchor-id="crd-stichprobengröße-a-priori-in-r-ermitteln"><span class="header-section-number">21.5.1</span> CRD Stichprobengröße a-priori in <code>R</code> ermitteln</h3>
-<p>In <code>R</code> können wir direkt die Effektstärke <span class="math inline">\(f\)</span> verwenden mittels der Funktion <code>pwr.anova.test()</code> aus dem package <code>pwr</code>. Bei der Funktion muss immer eins von <span class="math inline">\(f\)</span>, <span class="math inline">\(k\)</span>, <span class="math inline">\(\alpha\)</span>, <span class="math inline">\(power\)</span> oder <span class="math inline">\(n\)</span> nicht übergeben werden und die Funktion bestimmt denn fehlenden Wert. Wollen wir z.B. die notwendige Stichprobengröße pro Faktorstufe für <span class="math inline">\(f = 0.39, K = 3, \alpha = 0.05, \text{power} = 0.8\)</span> bestimmen, dann können wir dies wie folgt erreichen.</p>
+<p>Die ermittelte Effektstärke <span class="math inline">\(f\)</span> kann dann verwendet werden um mittels Formel <span class="math inline">\(\eqref{eq-ed-crd-lambda-02}\)</span> den Nichtzentralitätsparameter zu bestimmen und dadurch die Stichprobengröße zu bestimmen.</p>
+<section id="repliatkationsfaktor-a-priori-in-r-ermitteln" class="level3" data-number="21.5.1">
+<h3 data-number="21.5.1" class="anchored" data-anchor-id="repliatkationsfaktor-a-priori-in-r-ermitteln"><span class="header-section-number">21.5.1</span> Repliatkationsfaktor a-priori in <code>R</code> ermitteln</h3>
+<p>In <code>R</code> können wir direkt die Effektstärke <span class="math inline">\(f\)</span> verwenden um mittels der Funktion <code>pwr.anova.test()</code> aus dem package <code>pwr</code> die Anzahl der Replikationen zu berechnen. Bei der Funktion muss immer einer der Parameter <span class="math inline">\(f\)</span>, <span class="math inline">\(k\)</span>, <span class="math inline">\(\alpha\)</span>, <span class="math inline">\(power\)</span> oder <span class="math inline">\(n\)</span> übergeben werden. Die Funktion bestimmt dann entsprechend den fehlenden Wert. Wollen wir z.B. die notwendige Stichprobengröße pro Faktorstufe für <span class="math inline">\(f = 0.39, K = 3, \alpha = 0.05, \text{power} = 0.8\)</span> bestimmen, dann können wir dies wie folgt erreichen.</p>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>pwr<span class="sc">::</span><span class="fu">pwr.anova.test</span>(<span class="at">f =</span> <span class="fl">0.89</span>, <span class="at">k =</span> <span class="dv">3</span>, <span class="at">sig.level =</span> <span class="fl">0.05</span>, <span class="at">power =</span> <span class="fl">0.8</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <pre><code> Balanced one-way analysis of variance power calculation 
 
@@ -1108,6 +1241,11 @@ f = \sqrt{\frac{\Delta^2}{2K\sigma^2}}
 <div id="exm-ed-crd-power-01" class="theorem example">
 <p><span class="theorem-title"><strong>Beispiel 21.2</strong></span> Alternativ, gehen wir zum Beispiel davon aus, dass wir von einem Unterschied von <span class="math inline">\(\Delta = 5s\)</span> ausgehen auf Grund der Koffeingabe. Der Formel <span class="math inline">\(\eqref{eq-ed-crd-f-power}\)</span> folgend würde daraus die folgende Berechnung resultieren bei einer Power von <span class="math inline">\(0.9\)</span>.</p>
 <div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>delta <span class="ot">&lt;-</span> <span class="dv">5</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>K <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>sigma_sqr <span class="ot">&lt;-</span> <span class="fu">sigma</span>(mod_aov)<span class="sc">**</span><span class="dv">2</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>f <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(delta<span class="sc">**</span><span class="dv">2</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span>K<span class="sc">*</span>sigma_sqr))</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>pwr<span class="sc">::</span><span class="fu">pwr.anova.test</span>(<span class="at">f =</span> f, <span class="at">k =</span> K, <span class="at">sig.level =</span> <span class="fl">0.05</span>, <span class="at">power =</span> <span class="fl">0.9</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
      Balanced one-way analysis of variance power calculation 
@@ -1122,6 +1260,80 @@ NOTE: n is number in each group</code></pre>
 </div>
 </div>
 <p>D.h. wir bräuchten in diesem Fall schon <span class="math inline">\(n = 46\)</span> Athletinnen pro Gruppe.</p>
+</div>
+<div id="exm-ed-crd-power-01" class="theorem example">
+<p><span class="theorem-title"><strong>Beispiel 21.3</strong></span> Alternative unter der Verteilungsfunktionen <code>df()</code> und <code>qf()</code> können wir den Wert auch fußläufig ausrechnen wie in <a href="#tbl-ed-crd-power-01" class="quarto-xref">Tabelle&nbsp;<span>21.4</span></a>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">45</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>df_1 <span class="ot">&lt;-</span> K <span class="sc">-</span> <span class="dv">1</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>df_2 <span class="ot">&lt;-</span> n<span class="sc">*</span>K <span class="sc">-</span> K</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>q_h0 <span class="ot">&lt;-</span> <span class="fu">qf</span>(<span class="fl">0.95</span>, <span class="at">df1 =</span> df_1, <span class="at">df2 =</span> df_2)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>lambda <span class="ot">&lt;-</span> n <span class="sc">*</span> K <span class="sc">*</span> f<span class="sc">**</span><span class="dv">2</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">-</span> <span class="fu">pf</span>(q_h0, df_1, df_2, lambda)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.8984035</code></pre>
+</div>
+</div>
+</div>
+<div id="exm-ed-crd-power-02" class="theorem example">
+<p><span class="theorem-title"><strong>Beispiel 21.4</strong></span> In <span class="citation" data-cites="bradley2009">Bradley u.&nbsp;a. (<a href="references.html#ref-bradley2009" role="doc-biblioref">2009</a>)</span> wurde die Unterschiede in hochintensiven Läufe bei Fußballspielern aus der Premiere League zwischen verschiedenen Spielpositionen untersucht. Es wurden die folgenden Daten gefunden.</p>
+<div class="cell">
+<div id="tbl-ed-crd-exm-02" class="cell quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-ed-crd-exm-02-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabelle&nbsp;21.5: Ergebnisse der Untersuchung aus Bradley et al.&nbsp;2009 bei hochintensiver Distanz (in m) bei Fußballern aus der Premiere League auf den Positionen c = Innenverteidiger, fb = Außenverteidiger, cm = Zentrales Mittelfeld, wm = Äußeres Mittelfeld, at = Angreifer.
+</figcaption>
+<div aria-describedby="tbl-ed-crd-exm-02-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="do-not-create-environment cell table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">Mittelwert</th>
+<th style="text-align: right;">STD</th>
+<th style="text-align: left;">Position</th>
+<th style="text-align: right;">N</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1834</td>
+<td style="text-align: right;">256</td>
+<td style="text-align: left;">cd</td>
+<td style="text-align: right;">92</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2605</td>
+<td style="text-align: right;">387</td>
+<td style="text-align: left;">fb</td>
+<td style="text-align: right;">84</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2825</td>
+<td style="text-align: right;">473</td>
+<td style="text-align: left;">cm</td>
+<td style="text-align: right;">80</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3138</td>
+<td style="text-align: right;">565</td>
+<td style="text-align: left;">wm</td>
+<td style="text-align: right;">52</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2341</td>
+<td style="text-align: right;">575</td>
+<td style="text-align: left;">at</td>
+<td style="text-align: right;">62</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>Anhand dieser Information können wir mittels Formel <span class="math inline">\(\eqref{eq-ed-crd-sse-total}\)</span> die notwendigen Informationen berechnen. Die Daten aus dem Artikel sind in einem <code>tibble()</code> mit dem Namen <code>bradley</code> gespeichert.</p>
+<p>Mit der Effekstärke <span class="math inline">\(f\)</span> kann dann wieder die gewünschte Power berechnet werden.</p>
 </div>
 </section>
 </section>
@@ -1166,6 +1378,9 @@ QS_{zwischen} = \sum_{j=1}^K \sum_{i=1}^{N_j} (\bar{x}_{j}-\bar{x})^2
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-bradley2009" class="csl-entry" role="listitem">
+Bradley, P. S., W. Sheldon, B. Wooster, P. Olsen, P. Boanas, und P. Krustrup. 2009. <span>„High-intensity running in English FA Premier League soccer matches“</span>. <em>Journal of Sports Sciences</em> 27 (2): 159–68. <a href="https://doi.org/10.1080/02640410802512775">https://doi.org/10.1080/02640410802512775</a>.
+</div>
 <div id="ref-cohen1988" class="csl-entry" role="listitem">
 Cohen, Jacob. 1988. <em>Statistical power analysis for the behavioral sciences</em>. 2. Aufl. Routledge.
 </div>
