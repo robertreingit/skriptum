@@ -502,7 +502,7 @@ window.Quarto = {
 Y_{ij} = \mu + \tau_i + \epsilon_{ij}, \qquad \epsilon_{ij}\sim \mathcal{N}(0,\sigma^2)
 \label{eq-ed-crd-model}
 \end{equation}\]</span></p>
-<p>i = Gruppenindikator, j = experimental unit-indikator, <span class="math inline">\(\mu\)</span> = Gesamtmittelwert, </p>
+<p>i = Gruppenindikator, j = experimental unit-indikator, <span class="math inline">\(\mu\)</span> = Gesamtmittelwert, , K = Anzahl der Faktorstufen</p>
 <p>Um den Einfluss <span class="math inline">\(\tau_i\)</span> der verschiedenen Konditionen zu bestimmen können benötigen wir Replikationen der EUs. In unserem Fall erreichen wird die Replikation dadurch, dass mehrere Versuchspersonen, die EUs, unter jeder Kondition <span class="math inline">\(i\)</span> beobachtete werden. Die einzelnen EUs erhalten dabei den Index <span class="math inline">\(j\)</span>.</p>
 <p>Um ein statistisches Modell formulieren zu können benötigen wir wie immer bestimmte Annahmen. Diese sind jedoch immer noch die gleichen Annahmen, die wir schon vorher bei der multiplen Regression angesetzt haben.</p>
 <ul>
@@ -1276,7 +1276,7 @@ NOTE: n is number in each group</code></pre>
 </div>
 </div>
 <div id="exm-ed-crd-power-02" class="theorem example">
-<p><span class="theorem-title"><strong>Beispiel 21.4</strong></span> In <span class="citation" data-cites="bradley2009">Bradley u.&nbsp;a. (<a href="references.html#ref-bradley2009" role="doc-biblioref">2009</a>)</span> wurde die Unterschiede in hochintensiven Läufe bei Fußballspielern aus der Premiere League zwischen verschiedenen Spielpositionen untersucht. Es wurden die folgenden Daten gefunden.</p>
+<p><span class="theorem-title"><strong>Beispiel 21.4</strong></span> In <span class="citation" data-cites="bradley2009">Bradley u.&nbsp;a. (<a href="references.html#ref-bradley2009" role="doc-biblioref">2009</a>)</span> wurden die Unterschiede in hochintensiven Läufe bei Fußballspielern aus der Premiere League zwischen verschiedenen Spielpositionen untersucht. Es wurden die folgenden Daten gefunden.</p>
 <div class="cell">
 <div id="tbl-ed-crd-exm-02" class="cell quarto-float anchored">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -1332,7 +1332,16 @@ Tabelle&nbsp;21.5: Ergebnisse der Untersuchung aus Bradley et al.&nbsp;2009 bei 
 </figure>
 </div>
 </div>
-<p>Anhand dieser Information können wir mittels Formel <span class="math inline">\(\eqref{eq-ed-crd-sse-total}\)</span> die notwendigen Informationen berechnen. Die Daten aus dem Artikel sind in einem <code>tibble()</code> mit dem Namen <code>bradley</code> gespeichert.</p>
+<p>Anhand dieser Information können wir mittels Formel <span class="math inline">\(\eqref{eq-ed-crd-sse-total}\)</span> die notwendigen Informationen berechnen. Die Daten aus dem Artikel sind in einem <code>tibble()</code> mit dem Namen <code>bradley</code> gespeichert. Wir vernachlässigen, dass die Spieler keine EUs darstellen, da sie aus clustern aus Mannschaften stammen und damit nicht unabhängig voneinander sind.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>sigma_bet <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">sum</span>((bradley<span class="sc">$</span>m<span class="sc">-</span><span class="fu">mean</span>(bradley<span class="sc">$</span>m))<span class="sc">**</span><span class="dv">2</span>)<span class="sc">/</span><span class="dv">5</span>) </span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>sigma_e <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">sum</span>((bradley<span class="sc">$</span>n<span class="dv">-1</span>)<span class="sc">*</span>bradley<span class="sc">$</span>s<span class="sc">**</span><span class="dv">2</span>)<span class="sc">/</span>(<span class="fu">sum</span>(bradley<span class="sc">$</span>n)<span class="sc">-</span><span class="dv">5</span>))</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>f <span class="ot">&lt;-</span> sigma_bet<span class="sc">/</span>sigma_e</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>f</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.9936008</code></pre>
+</div>
+</div>
 <p>Mit der Effekstärke <span class="math inline">\(f\)</span> kann dann wieder die gewünschte Power berechnet werden.</p>
 </div>
 </section>
