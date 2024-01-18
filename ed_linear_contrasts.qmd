@@ -29,7 +29,13 @@ ggplot(kaffee, aes(Gruppe, Zeit)) +
        x = 'Gruppe') 
 ```
 
-Wir können Koffein mit Placebo, Koffein mit Control und Placebo mit Control vergleichen. In allen drei Fällen vergleichen wir die Mittelwert der jeweiligen beteiligten Faktorstufen miteinander. Allerdings haben wir hier das Problem, dass jede Faktorstufe in mehreren (im Beispiel zweimal) Vergleichen beteiligt ist. Wenn wir mehr Faktorstufen haben entsprechend noch öfter. Das führt zu dem Problem der Mehrfachvergleiche.
+Wir können Koffein mit Placebo, Koffein mit Control und Placebo mit Control vergleichen. In allen drei Fällen vergleichen wir die Mittelwert der jeweiligen beteiligten Faktorstufen miteinander. Allerdings haben wir hier das Problem, dass jede Faktorstufe in mehreren (im Beispiel zweimal) Vergleichen beteiligt ist. Wenn wir mehr Faktorstufen haben entsprechend noch öfter. Allgemein gilt, wenn wir $K$-Faktorstufen haben dann gibt es insgesamt
+
+\begin{equation}
+\text{Anzahl der Paarvergleiche} = K(K-1)
+\end{equation}
+
+Das führt zu dem Problem der Mehrfachvergleiche.
 
 ## Das multiple-comparison Problem
 
@@ -193,6 +199,9 @@ D.h. der Effekt der Pillengabe unabhängig von Wirkstoff ist $`r round(sum(k_bar
 
 Insgesamt haben wir mittels der Kontraste einen flexiblen Mechanismus um beliebige Vergleiche zwischen Faktorstufen durchzuführen bzw. Modellparameter miteinander zu vergleichen. Die üblichen paarweisen Vergleich bilden hierbei nur einen Spezialfall der einfachen Kontraste. Um nun zu bewerten ob ein beobachter Kontrast auch wirklich bedeutsam ist, benötigen wir nun aber auch Information über seine Varianz.
 
+
+### Varianz von Kontrasten
+
 Um die Varianz von Kontrasten herzuleiten hier noch einmal kurz zur Wiederholung der Standardfehler des Mittelwerts
 
 \begin{equation}
@@ -212,89 +221,77 @@ Var(\psi) = Var\left(\sum c_i \bar{Y}_{i.}\right) = \sum c_i^2 Var(\bar{Y}_{i.})
 \label{eq-ed-lc-var-con-pop}
 \end{equation}
 
-Da wir üblicherweise die Varianz $\sigma^2$ anhand der Stichprobe abschätzen mittels der $MSE$ bzw. in der Terminologie des CRD $MS_{\text{within}}. Daraus folgt für die Varianz des Kontrasts.
+Da wir üblicherweise die Varianz $\sigma^2$ anhand der Stichprobe abschätzen mittels der $MSE$ bzw. in der Terminologie des CRD $MS_{\text{within}}$. Zur Erinnerung der $MSE$ ist die Quadratsumme der Residuen $e_i$ geteilt durch die Stichprobengröße $N$ minus der Anzahl der Parameter $p$. Daraus folgt für die den Schätzer der Varianz des Kontrasts $\widehat{Var}(\psi)$.
 
 \begin{equation}
 \widehat{Var}(\psi) = \widehat{Var}\left(\sum c_i \bar{y}_{i.}\right) = MS_w\sum (c_i^2/n_i)
 \label{eq-ed-lc-var-con}
 \end{equation}
 
-Daraus folgt das der Standardfehler des Kontrasts entsprechend:
+Um von der Varianz auf den Standardfehler des Kontrasts $s_{\psi}$ zu kommen, ziehen wir wie immer die Wurzel aus der Varianz: 
 
 \begin{equation}
 s_{\psi} = \sqrt{MS_w\sum (c_i^2/n_i)}
 \label{eq-ed-lc-se-contrast}
 \end{equation}
 
-Mit $n_i$ = Stichprobengröße in Gruppe i und $\hat{\sigma}^2 = MS_w = MSE$. Angewendet auf den Kontrast bei Paarvergleichen folgt für den Vergleich von Gruppe $i$ und $j$:
+Mit $n_i$ = Stichprobengröße in Gruppe i und $\hat{\sigma}^2 = MS_w = MSE$. Angewendet auf den Kontrast bei Paarvergleichen folgt für den Vergleich der Faktorstufen $i$ und $j$ da $c_i^2 = (1)^2, c_j^2 = (-1)^2$ während alle anderen $c_l = 0$ sind.
 
-$$
-Var\left(\hat{\tau}_i - \hat{\tau}_j\right) = \sigma^2\left(\frac{1}{n_i} + \frac{1}{n_j}\right)
-$$
+\begin{equation}
+Var(\psi) = Var\left(\tau_i - \tau_j\right) = \sigma^2\left(\frac{1}{n_i} + \frac{1}{n_j}\right) = 
+\end{equation}
 
-Standardfehler bei gleicher Stichprobengröße $n_i = n_j = n, 2n = N$
+Wenn wir ein Design haben, bei dem die Stichprobengrößen unter allen Faktorstufen gleich groß sind, also $n_i = n_j = n$, gilt, dann folgt mit der Festsetzung $2n = N$ für den Standardfehler des Kontrasts $\sigma_{\psi}$ in der Population:
 
-$$
-s_{\psi} = s_{\Delta} = \sqrt{\sigma^2\left(\frac{1}{N/2}
+\begin{equation*}
+\sigma_{\psi} = s_{\Delta} = \sqrt{\sigma^2\left(\frac{1}{N/2}
 +\frac{1}{N/2}\right)}=\sqrt{\sigma^2\frac{2}{N/2}} = \sigma\sqrt\frac{4}{N}=\frac{2\sigma}{\sqrt{N}}
-$$
+\end{equation*}
 
-## Reminder - Dualität von Signifikanztests und Konfidenzintervall
+Beziehungsweise in der Stichprobe dann entsprechend.
 
-Wenn das Konfidenzintervall mit Niveau $1-\alpha\%$ die $H_0$ nicht beinhaltet, dann wird auch bei einem Signifikanztest die $H_0$ bei einer Irrtumswahrscheinlichkeit von $\alpha$ abgelehnt.
+\begin{equation}
+s_{\psi} = s_{\Delta} = \sqrt{MSE}\frac{2}{\sqrt{N}}
+\end{equation}
 
-\begin{figure}
-\centering
-\begin{tikzpicture}
-    \draw[dashed,thick] (0,-1) -- (0,1);
-    \node[anchor=north] at (0,-1) {$H_0$};
-    \fill[red] (2,0) circle (4pt);
-    \draw[thick, color=red] (0.08,0) -- (3.92,0);
-    \node[red] at (0.1,0) {(};
-    \node[red] at (3.9,0) {)};
-    \draw [->, thick] (-1,-1) -- (5,-1);
-\end{tikzpicture}
-\caption{Relation von $H_0$ und Konfidenzintervall}
-\end{figure}
+D.h. beim Kontrast zwischen zwei Mittelwerten verdoppelt sich der Standardfehler.
 
-## Konfidenzintervalle von Kontrasten
+### Hypothesentests für Kontraste
 
-### Berechnungsmuster
+Ein Hypothesentest für den Kontrast kann nun wieder nach dem üblichen Muster konstruiert werden indem wir den Kontrast $\hat{\psi}$ durch seinen Standardfehler teilen $s_{\psi}$. Die entsprechenden Hypothesen sind:
+
+\begin{equation}
+\begin{split}
+H_{0,\psi} = \sum_{i=1}^k c_i \tau_i = 0 \\
+H_{1,\psi} = \sum_{i=1}^k c_i \tau_i \neq 0
+\end{split}
+\end{equation}
+
+Die Teststatistik $t$ wird in diesem Fall zu:
+
+\begin{equation}
+\text{Lehne }H_0\text{ ab, wenn} \left|\frac{\sum_{i=1}^K c_k \tau_i}{\sqrt{MSE\sum_{i=1}^K c_i^2/n_i}}\right| > w
+\label{eq-ed-lc-w}
+\end{equation}
+
+Im folgendem werden wir sehen, dass der kritische Wert $w$, also letztendlich die Quantile $q_{\alpha}$, davon abhängt welche der Art der $\alpha$-Kontrolle angewendet.  Es verschiedene Möglichkeiten die $\alpha$-Kontrolle durchzuführen und sollte so gewählt werden, dass eine möglichst große Power erreicht wird.
+
+### Konfidenzintervalle von Kontrasten
+
+Nach dem uns bekannten Muster können wir auch Konfidenzintervalle für einen Kontrast erstellen. Das Berechnungsmuster ist dabei immer der gleiche.
 
 \begin{gather*}
-\psi = \sum_i c_i \hat{\tau}_i \pm w \sqrt{\widehat{Var}\left(\sum c_i \hat{\tau}_i\right)} = w \times s_{\psi}\\
+\text{CI}(\hat{\psi}) = \sum_i c_i \hat{\tau}_i \pm w \sqrt{\widehat{Var}\left(\sum c_i \hat{\tau}_i\right)} = \hat{\psi} + w \times s_{\psi}\\
 \text{estimate } \pm (\text{kritischer Wert}) \times (\text{Standardfehler})
 \end{gather*}
 
-Zwischen verschiedenen Methoden unterscheidet sich der kritische Wert $w$.
-
-## Minimum significant difference ($msd$) 
-
-\begin{figure}
-\centering
-\begin{tikzpicture}
-    \draw[dashed,thick] (0,-1) -- (0,1);
-    \node[anchor=north] at (0,-1) {$H_{0:\psi}$};
-    \fill[red] (2,0) circle (4pt);
-    \draw[thick, color=red] (0.08,0) -- (3.92,0);
-    \node at (2,0.5) {$\hat{\psi}$};
-    \node at (1,-0.5) {$-w\times s_{\psi}$};
-    \node at (3,-0.5) {$+w\times s_{\psi}$};
-    \node[red] at (0.1,0) {(};
-    \node[red] at (3.9,0) {)};
-    \draw [->, thick] (-1,-1) -- (5,-1);
-\end{tikzpicture}
-\caption{Kontrastkonfidenzintervall}
-\end{figure}
-
-$$
-msd = w \sqrt{\widehat{Var}\left(\sum c_i \hat{\tau}_i\right)}=w \times s_{\psi}
-$$
-
+Der Kontrastschätzer $\hat{\psi}$ bleibt dabei gleich und es ändert sich mit der Methode der kritische Wert $w$.
 
 ## Einteilung der Mehrfachvergleiche
 
-Table: Systematik Mehrfachvergleiche
+Mehrfachvergleiche können zunächst in zwei Arten unterschieden werden. Vergleiche die vor dem Experiment geplant wurden und Vergleiche die nach einsehen der Daten auf Basis der Ergebnisse durchgeführt werden. Die vorher geplanten Vergleiche werden als *pre-planned* \index{pre-planned} bezeichnet, während die Vergleiche nach Betrachtung der Daten als *post-hoc* \index{post-hoc} Vergleiche bezeichnet werden. Zwischen diesen beiden Vergleichen wird unterschieden, da bei den *post-hoc* dadurch, das die Daten schon bekannt sind, die Vergleiche durch die Daten beeinflusst werden. Daher muss in diesem Fall die Kontrolle strikter sein, als wenn die Vergleiche im Voraus geplant werden.
+
+Es gibt mittlerweile zahllose Arten die Kontrolle bei Mehrfachvergleiche durchzuführen. Daher besprechen wir hier nur eine kleine Auswahl der üblichsten Methoden. In @tbl-ed-lc-contype sind die Bonferroni, Tukey, Scheffé, Dunnet und die FisherLSD Korrekturmethoden inklusive der Art der Kontraste tabellarisch dargestellt.
 
 | Name | Zeitpunkt | Kontraste | Kontrolliert |
 | --- | --- | --- | --- | 
@@ -304,96 +301,41 @@ Table: Systematik Mehrfachvergleiche
 | Dunnet | pre-planned | paarweise TRT gegen CON | Ja |
 | FisherLSD| post-hoc | einfache und komplexe | Nein^[Außer wenn $K=3$] |
 
-## Mehrfachvergleiche in `R`
+: Systematik Mehrfachvergleiche {#tbl-ed-lc-contype}
 
-### Package `emmeans()`
+Die Bonferroni-Korrektur ist in der Literatur weit verbreitet, da sie relativ einfach durchzuführen ist. Die $\alpha$-Korrektur wird erreicht, indem ein *korrigiertes* Signifikanzlevel $\alpha^*$ nach der folgenden Formel berechnet wird.
 
-Zweistufiger Ablauf:
-
-1) Berechnen der Zellmittelwerte mit der Funktion \
-`emmeans(<MODEL>, ~<FAKTOR>)`
-2) Vergleiche werden entweder mittels `pairs()` (paarweise Vergleiche) oder mit `contrast()` (beliebige Vergleiche) berechnet 
-
-Alternative: `package:multcomp`
-
-## Bonferroni (pre-planned)
-
-Das Signifikanzlevel $\alpha$ wird angepasst indem ein neuer $\alpha$-Level, $\alpha^*$, mittels:
-
-$$
+\begin{equation*}
 \alpha^* = \alpha / m
-$$
+\end{equation*}
 
-berechnet wird. $m$ ist die Anzahl der Kontraste.
+$m$ ist die Anzahl der Kontraste. Die Bonferroni-Korrektur kontrolliert dadurch das Gesamt-$\alpha$ und ist anwendbar bei einfachen und/oder komplexen Kontraste. Allerdings, müssen diese Kontraste **pre-planned** sein, d.h. die Vergleiche müssen vor Einsicht in die Daten bestimmt worden sein. Die Bonferroni-Methode ist üblichweise eher auf der konservativen Seite, vor alle da mit der Anzahl der Tests $\alpha^*$ relativ schnell sehr klein wird und dementsprechend die Power abnimmt. Der kritische Wert in Formel \eqref{eq-ed-lc-w} wird unter der Bonferroni-Korrektur mittels der $t$-Verteilung mit $N-K$ Freiheitsgraden und $1-\alpha/(2m)$-Quantile bestimmt.
 
-Kontrolliert Gesamt-$\alpha$ für einfache und/oder komplexe Kontraste.
+\begin{equation}
+w_{\text{Bonferroni}} = t_{N-K,1-\alpha/(2m)}
+\end{equation}
 
-## Beispiel Bonferroni
+Eine weitere weit verbreitete Methode ist die Tukey-Pairwise difference Methode. Diese Methode ist optimiert darauf alle paarweisen Vergleiche durchzuführen und daher nur für einfache Kontraste anwendbar. Durch die Optimierung sind die Konfidenzintervalle unter der Tukey-Methode überlicherweise schmaler als dies unter der Bonferroni-Methode der Fall wäre. Die Tukey-Methode ist ebenfalls **pre-planned** und im Falle von ungleichen Stichproben in den Faktorstufen ist die Methode nur asymptotisch exact. Unter der Tukey-Methode berechnet sich der kritische Wert $w$ anhand eine speziellen Verteilung, der Studentized range statistics.
 
-Einfacher Vergleich Koffein geben Placebo und komplexer Vergleich des Mittelwerts von Koffein und Placebo gegen Kontrolle.
+\begin{equation}
+w_{\text{Tukey}} = q_{K,N-K,\alpha/\sqrt{2}}
+\label{eq-ed-lc-tukey-w}
+\end{equation}
 
-\scriptsize
-```{r, echo=T}
-library(emmeans)
-mod_em <- emmeans(mod_aov, ~Gruppe)
-contrast(mod_em, adjust='bonferroni', infer=T ,
-         method = list(
-           "Koffein vs. Placebo" = c(1, -1, 0),
-           "Tablette vs. CON" = c(1/2, 1/2, -1)
-         ))
-```
+In `R` kann die Quantile der Studentized range distribution aus Formel \eqref{eq-ed-lc-tukey-w} mittels der Funktion `qtukey()` bestimmen werden.
 
+Die Scheffé-Methode ist ebenfalls sehr oft in der Literatur anzutreffen, da sie *post-hoc*, also nach Einsicht der Daten, angewendet werden kann. Mit der Scheffé-Methode können auch alle Arten von Vergleichen, einfache und komplexe, durchgeführt werden. Der kritische Wert $w$ wird bei Scheffé-Methode mittels der $F$-Verteilung mit $K-1$ und $N-k$ Freiheitsgraden bei $1-\alpha$. Wobei noch eine Korrekturfaktor $K-1$ multipliziert werden muss.
 
-## Tukey (H)onest (S)ignifikant (D)ifference (pre-planned)
+\begin{equation}
+w_{\text{Scheffé}} = \sqrt{(K-1)F_{K-1,N-K,1-\alpha}}
+\end{equation}
 
-Optimiert für alle paarweisen Kontraste.
-
-\scriptsize
-```{r, echo=T}
-pairs(mod_em, adjust="tukey", infer=T)
-```
-^[TukeyHSD ist auch default wenn keine Argument für `adjust` angegeben wird.]
-
-## Scheffé (post-hoc)
-
-Sichert post-hoc $\alpha$-Level für alle möglichen Kontraste (beliebige Anzahl) ab.
-
-Beispielsweise die gleichen Kontraste wie beim Bonferroni-Beispiel.
-\scriptsize
-```{r, echo=T}
-contrast(mod_em, adjust='scheffe', infer=T ,
-         method = list(
-           "Koffein vs. Placebo" = c(1, -1, 0),
-           "Tablette vs. CON" = c(1/2, 1/2, -1)
-         ))
-```
-
-
-## Dunnett (pre-planned)
-
-Optimiert für den Vergleich von Treatmentkonditionen gegen eine Kontrollkondition.
-\vspace{.5cm}
-\scriptsize
-```{r, echo=T}
-contrast(mod_em, method='trt.vs.ctrl', infer=T, ref='Control')
-```
-
-
-## Fisher (L)east (S)ignificant (D)ifference (post-hoc)
-
-Durchführung von post-hoc Tests wenn ein statistisch signifikanter Haupteffekt über die ANOVA abgesichert wurde.
-\vspace{.5cm}
-\scriptsize
-```{r, echo=T}
-pairs(mod_em, adjust='none', infer=T)
-```
-
-\Large
-\alert{Do not like!!!}^[Außer bei einem Faktor mit genau drei Stufen (siehe @levin1994)]
-
-## Vergleich der kritischen Werte $w$
+In @tbl-ed-lc-contrasts-w sind verschiedene kritische Werte $w$ der drei Methoden für verschiedenen Anzahl $K$ der Faktorstufen bzw. der resultierenden paarweisen Vergleichen abgebildet.
 
 ```{r}
+#| tbl-cap: "Vergleich der kritischen Wert $w$ der verschiedenen $\\alpha$-Kontrollmethoden und einen einzelnen Test $\\alpha_{PC}$."
+#| label: tbl-ed-lc-contrasts-w
+
 tibble(
   'no_groups' = 2:7,
   'per_com' = qf(0.95, 1, 12),
@@ -411,21 +353,168 @@ tibble(
   )
 ```
 
-## Optional - Cohen's d für post-hocs
+@tbl-ed-lc-contrasts-w zeigt, dass der Tukey durchgehend bei den drei Methoden die kleinsten kritischen Werte hat, also das schmalste Konfidenzintervall erstellt. Für diesen Fall liegt die Bonferroni-Methode immer zwischen Tukey und Scheffé die immer den größten kritschen $w$ hat.
 
-\scriptsize
-```{r, echo=T}
+Zwei weitere Methoden sind noch die Methode nach Dunnet und Fisher least significant difference (FisherLSD). Die Dunnet Methode ist ebenfalls pre-planned und ist darauf optimiert ein Kontrollkondition mit den anderen Konditionen zu vergleichen. Die FisherLSD-Methode führt keine Anpassung durch sondern ist ein Spezialfall wenn der Faktor $K = 3$ Stufen hat und im ersten Schritt ein statistisch Signifikanter $F$-Wert gefunden wurde. Die drei individuellen Tests werden dann als normale t-Tests durchgeführt mit jeweils mit dem unkorrigierten $\alpha$. In diesem Fall, als Test nach einen signifikanten $F$-Test ist bei $K=3$ eine gesonderte $\alpha$-Kontrolle nicht notwendig.
+
+## Mehrfachvergleiche in `R`
+
+In `R` können Mehrfachvergleiche über verschiedene Pakete durchgeführt werden. Wir beschränken uns hier aber auf das Paket `emmeans`, da es sehr flexibel ist. Die Arbeit mit `emmeans` ist immer zweistufiger. Zunächst müssen die Zellmittelwerte mit der Funktion `emmeans(<MODEL>, ~<FAKTOR>)` berechnet werden. Anschließen erfolgt die Berechnung des Vergleich entweder mittels mittels `pairs()` bei paarweisen Vergleichen oder mit `contrast()` für beliebige Vergleiche. Alternativen zu `emmeans` sind  `multcomp` und `gmodels`.
+
+Wollen wir zum Beispiel mittels Bonferroni ein einfachen Vergleich zwischen Koffein und Placebo sowie einen komplexen Vergleich der Mittelwerte von Koffein und Placebo gegen Kontrolle, können wir dies auf die folgenden Weise erreichen.
+
+```{r}
+#| echo: true
+
+library(emmeans)
+mod_em <- emmeans(mod_aov, ~Gruppe)
+contrast(mod_em, adjust='bonferroni', infer=T ,
+         method = list(
+           "Koffein vs. Placebo" = c(1, -1, 0),
+           "Tablette vs. CON" = c(1/2, 1/2, -1)
+         ))
+```
+
+Um alle paarweisen Vergleiche mittels der Tukey-Methode zu berechnen verwenden wir die `pairs()` Methode auf den Faktormittelwerten in `mod_em`. 
+
+```{r}
+#| echo: true
+
+pairs(mod_em, adjust="tukey", infer=T)
+```
+Die Tukey Methode wird standardmäßig von `pairs()` verwendet, wenn keine Argument für `adjust` angegeben wird. 
+
+Entsprechend können wir über `adjust=scheffe` die Methode für beliebige Kontraste anwenden.
+
+```{r}
+#| echo: true
+
+contrast(mod_em, adjust='scheffe', infer=T ,
+         method = list(
+           "Koffein vs. Placebo" = c(1, -1, 0),
+           "Tablette vs. CON" = c(1/2, 1/2, -1)
+         ))
+```
+
+Um die Methode nach Dunnett zu verwenden übergeben wir der Funktion `contrast()` die Parameter `method='trt.vs.ctrl'` und können über den `ref`-Parameter angeben welches die Kontrollbedingung ist.
+
+```{r}
+#| echo: true
+
+contrast(mod_em, method='trt.vs.ctrl', infer=T, ref='Control')
+```
+
+Wenn wir die FisherLSD-Methode verwenden wollen, dann können wir wieder `pairs()` verwenden mit dem Parameter `adjust='none'`. 
+
+```{r}
+#| echo: true
+
+pairs(mod_em, adjust='none', infer=T)
+```
+
+
+### Cohen's d für Mehrfachvergleiche 
+
+Über das Paket `emmeans` können wir auch eine Cohen's D Typ Effektstärke mittels der Funktion `eff_size()` berechnen. Allerdings müssen wir als Parameter die zu verwendende Standardabweichung sowie die Freiheitsgrade selbst angeben.
+
+```{r}
+#| echo: true
+
 eff_size(mod_em, sigma=sigma(mod_aov),
                  edf=df.residual(mod_aov))
 ```
 
+## Bestimmung des Replikationsfaktors anhand des Konfidenzintervalls 
 
-## Dokumentation
+Im Kapitel zum CRD haben wir den Replikationsfaktor für die experimentellen Einheiten anhand der Effektstärke bestimmt. Ein weitere Möglichkeit den Replikationsfaktor zu bestimmen besteht mittels der Kontraste bzw. deren Konfidenzintervallen. Die angesteuerte Größe ist hierbei die Breite des Konfidenzintervalls. Der direkteste Weg ist hierbei den minimal signifikanten Unterschied (minimal significant difference: msd). Der Ansatz basiert im Grunde genommen auf der Dualität von Hypothesentest und Konfidenzintervall.
 
-\small
+```{r}
+#| fig-cap: "Der erwartete Kontrast und dessen Konfidenzintervall."
+#| fig-height: 1.5
+#| label: fig-ed-lc-msd-01
+
+d <- 2.2
+df_1 <- tibble::tibble(
+  x = d, 
+  y = 1,
+  xmin = x-2,
+  xmax = x+2
+)
+
+ggplot(df_1,ggplot2::aes(x, y, xmin=xmin, xmax=xmax)) +
+  geom_point(size=6) +
+  geom_linerange(linewidth=2) +
+  geom_vline(xintercept = 0, linetype='dashed', color='red', linewidth=1.3) +
+  scale_x_continuous('Kontrast', breaks = c(0,d),
+                              labels = c(expression(H[0]), expression(psi))) +
+  scale_y_continuous('', breaks = NULL, limits = c(0,2)) +
+  theme(text = element_text(size=18))
+```
+
+In @fig-ed-lc-msd-01 ist noch einmal der Zusammenhang zwischen dem Hypothesentest unter der $H_0$ und der Breite des Konfidenzintervalls dargestellt. Wenn das Konfidenzintervall die $H_0$ nicht enthält, dann gehen wir von einem statistisch signifikantem Ergebnis aus. Daher wenn wir von einem gegebenem Effekt, im vorliegenden Fall einem Kontrast $\psi$ ausgehen und die Residualvarianz $\sigma$ kennen, können wir über den Standardfehler $s_{\psi}$ die notwendige Stichprobengröße bestimmen. Der minimale signifikante Unterschied msd kann über die folgende Formel ermittelt werden.
+
+$$
+msd = w \sqrt{\widehat{Var}\left(\sum c_i \hat{\tau}_i\right)}=w \times s_{\psi}
+$$
+Wir wollen zum Beispiel den Effekt eines Nahrungsergänzungsmittels auf die Laufleistung bei einem Mitteldistanzwettkampf ähnlich wie bei unserem Koffeinexperiment durchführen. Wir wollen das gleiche Design mit Interventions-, Placebo- und Kontrollgruppe durchführen ($K = 3$). Wir gehen davon aus, dass ein Unterschied zwischen der Placebogruppe und der Interventionsgruppe von $5$s mindestens gefunden werden sollte um als praktisch relevant zu gelten. Damit gilt
+
+\begin{equation}
+msd = 5 
+\end{equation}
+
+Im Koffeinbeispiel hatten wir für $\sigma^2$ einen Wert von $\hat{\sigma^2} = MSE \approx 30$s bestimmt. Daraus folgt für einen paarweisen Vergleich mit gleicher Stichprobengröße $n$ in beiden Gruppen:
+
+\begin{equation*}
+msd = w \sqrt{30\left(\frac{1}{n} + \frac{1}{n}\right)} = w\sqrt{30\frac{2}{n}} \leq 5 
+\end{equation*}
+
+Wir wissen a-priori das wir nur paarweise Vergleiche durchführen wollen, daher wissen wir, dass wir die Quartile mittels der Tukey-Methode bestimmen werden. D.h. der kritische Wert $w$ berechnet sich nach Formel \eqref{eq-ed-lc-tukey-w} nach.
+
+\begin{equation*}
+w = q_{K,N-K,\alpha}/\sqrt{2}
+\end{equation*}
+
+Damit erhalten wir:
+
+\begin{align*}
+q_{K,N-K,\alpha}/\sqrt{2} \sqrt{30\frac{2}{n}} &= q_{K,N-K,\alpha} \sqrt{\frac{30}{n}} \leq 5 = msd \\
+\Leftrightarrow  q_{K,N-K,\alpha}^2 \frac{30}{n} &\leq 25 \\
+\Leftrightarrow  q_{K,N-K,\alpha}^2 \leq \frac{25}{30}n &= \frac{5}{6}n \\
+\end{align*}
+
+D.h. das Quadrat der studentized range quantile muss kleiner als $\frac{5}{6}n$ sein, damit das Konfidenzintervall schmal genug ist. Da sich der Wert von $q_{K,N-K,\alpha}$ mit der Stichprobengröße ändert führen wir eine try-and-error Methode durch und berechnen die Breite des Konfindenzintervalls für verschiedene Wert von $n$.
+
+```{r}
+#| echo: true
+
+K <- 3
+n <- 10:20
+q_t <- qtukey(0.975,K,K*n-K)**2
+n_w <- 5/6*n
+```
+
+```{r}
+#| tbl-cap: "Stichprobengrößen und Vergleich mit msd"
+#| label: tbl-ed-lc-tukey-rep
+
+tibble(n, q_t, n_w) |>
+  kable(
+    booktabs = TRUE,
+    digits = 2,
+    linesep = '',
+    col.names = c('n', '$q_{n,Kn-K,\\alpha}^2$', '$5/6n$'),
+    escape = FALSE
+  )
+```
+
+In @tbl-ed-lc-tukey-rep sehen wir, dass wir eine Stichprobengröße von $n = 18$ also insgesamt $N = 54$ Athleten brauchen um die gewünschte Präzision für das Konfidenzintervall zu erreichen. 
+
+## Dokumentation eines CRDs
+
+Hier einmal beispielhaft Dokumentation eines CRD. 
+
 Eine einfaktorielle ANOVA mit dem Faktor Gruppe ergabe einen statistisch signifikanten Haupteffekt für Gruppe $F(2, 57) = 22,6, p < 0,001$.  Überprüfung auf Varianzgleichheit zwischen den Gruppen mittels eines Levene-Tests deutete auf keine Verletzung der Voraussetzungen hin, $F(2, 57) = 0,38, p = 0,69$. Daher wird die $H_0$, das kein Unterschied zwischen den Gruppen besteht, abgelehnt. Die beobachtete Effektstärke $\omega^2 = 0,42$,  CI$95\%[0,22, 0,56]$ ist als großer Effekt zu interpretieren. Pre-planned Paarweisetestung mittels Tukey-Korrektur deutete auf statistisch signifikate Unterschiede zwischen den Gruppen Koffein und Placebo $z = -10.4$, CI95\%$[-15,5, -5,5], p < 0,001$, und Koffein und Kontrolle, $z = -13,3$, CI95$\%[-18,4, -8,3], p < 0,001$, hin. Insgesamt deuten die Ergebnisse daher darauf hin, dass die Gabe von Koffein zu einer bedeutsamen Leistungssteigerung $(>5-10s)$ in der beobachteten Untersuchungsgruppe geführt hat.
 
 ## Zum Nacharbeiten
 
-### Multiple-comparisons
-@feise2002, @rothman1990
+Weiter Informationen zu Mehrfachvergleiche und den möglichen Problemen findet ihr in beispielsweise in @feise2002, @rothman1990.
