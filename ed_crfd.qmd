@@ -31,7 +31,7 @@ sway <- tibble(
 
 Nachdem wir uns im vorhergehenden Abschnitt mit dem Completely Randomized Design Untersuchungsdesigns angeschaut haben, bei dem nur eine unabhängige nominale Variable variiert wurde, schauen wir uns jetzt den Fall an, wenn wir den Einfluss zweier nominale unabhängige Variablen auf eine abhängige Variable untersuchen wollen. Wie wir sehen werden führt dies zu einem zusätzlichen Effekt dem Interaktionseffekt. Inhaltlich bedeutet dies nicht allerdings erst mal gar nichts Neues, da wir Interaktionseffekt schon im Zusammenhang mit der multiplen Regression kennengelernt haben und die Interpretation daher auch nichts neues bedeutet. Daher wir ein Hauptaugenmerk in diesem Kapitel darin liegen, wir wir Interaktionseffekte interpretieren können bzw. welchen Einfluss diese auf die Interpretation von Haupteffekten bedeutet und welchen Einfluss Interaktionseffekte auf die Anzahl der notwendigen Replikationen haben um eine gewünschte Power zu gewährleisten. Generell wenn mehr als ein nominaler Faktor an dem Untersuchungsdesign beteiligt ist, dann wir von einem Completely Randomized **Factorial** Design (CRFD) gesprochen.
 
-Die Annahmen beim CRDF sind die gleichen wie auch beim CRD. Sehe ein CRFD mit zwei Faktoren $A$ und $B$ gegeben die jeweils $p$ bzw. $q$ Faktorstufen haben. Dann gelten die folgenden Annahmen.
+Die Annahmen beim CRDF sind die gleichen wie auch beim CRD. Seien ein CRFD mit zwei Faktoren $A$ und $B$ gegeben die jeweils $p$ bzw. $q$ Faktorstufen haben. Dann gelten die folgenden Annahmen.
 
 - Unabhängige EUs 
 - Die EUs sind \emph{zufällig} in die $p\times q$ Gruppen eingeteilt worden
@@ -49,65 +49,82 @@ In der Literatur im Zusammenhang mit einem CRFD oft der Term *Zellen* verwendet.
 
 : Zellanordnung in einem CRFD mit Faktor $A$, $p = 3$ und Faktor $B$, $q = 2$. {#tbl-ed-crfd-cells}
 
-Faktoren werden als gekreuzt bezeichnet, wenn alle Kombinationen beobachtet werden können.
+Faktoren werden als **gekreuzt** bezeichnet, wenn alle Kombinationen der Faktoren beobachtet wurden.
 
 ## Das statistische Modell im CRFD
 
-Das statistische Modell im CRFD bringt zunächst einmal wenig Neues. Die Struktur ist die folgende:
+Das statistische Modell im CRFD besteht in einer natürlichen Erweiterung des Modells für ein CRD. Die Modellstruktur ist die folgende:
 
 \begin{equation}
 Y_{ijk} = \mu + \alpha_i + \beta_j + (\alpha\beta)_{ij} + \epsilon_{ijk}, \qquad \epsilon_{ijk}\sim \mathcal{N}(0,\sigma^2)
 \label{eq-ed-crfd-model}
 \end{equation}
 
-Dabei sind $i$ und $j$ die Indikatoren der jeweiligen Fakorstufen, während $k$ der Indikator der jeweiligen EUs ist. $\mu$ bezeichnet den Gesamtmittelwert und $\alpha_i$ ist der Einfluss der $i$-ten Stufe von Faktor $A$, $\beta_j$ ist der Einfluss der $j$-ten Stufe von Faktor $B$, und $(\alpha\beta)_{ij}$ bezeichent den Einfluss der Kombination der Faktoren $A$ und $B$ also den Interkationsfaktor.
+$i$ und $j$ sind die Indikatoren der jeweiligen Fakorstufen für die Faktoren $A$ und $B$, während $k$ der Indikator der jeweiligen EUs (Replikation) ist. $\mu$ bezeichnet den Gesamtmittelwert und $\alpha_i$ ist der Einfluss der $i$-ten Stufe von Faktor $A$, $\beta_j$ ist der Einfluss der $j$-ten Stufe von Faktor $B$, und $(\alpha\beta)_{ij}$ bezeichent den Einfluss der Kombination der Faktoren $A$ und $B$ also den Interaktionsfaktor. Wenn wir das Modell im Sinne der vorher eingeführten Herleitung aus der multiplen Regression betrachten, dann werden die Effekte im Modell über Indikatorvariablen abgebildet. 
 
-Daraus folgt die folgende Anordnung in der Modellhierarchie
+Die folgenden Herleitung sind für ein balanciertes Modell, bei dem die Zellbesetzungen alle gleich sind, z.B. $r$. In diesem Fall gilt für den Indikator $k, k = 1, \ldots, r$ oder anders ausgedrückt, $r_{ij} = r$ für alle $i,j$.
 
-Das full model ist das eben beschriebene Modell (siehe Formel \eqref{eq-ed-crfd-model} während die reduzierten Modelle die folgende Reihenfolge ermöglichen:
+Um wieder den uns bekannten Ansatz von Modellvergleichen durchzuführen, stellen wir wiederum eine Modellhierarchie auf. Das full model ist das eben beschriebene Modell (siehe Formel \eqref{eq-ed-crfd-model} während die reduzierten Modelle die folgende Reihenfolge ermöglichen:
 
-\begin{align*}
-Y_{ijk} &= \mu + \alpha_i + \beta_j + \epsilon_{ijk} \\
+\begin{align}
+Y_{ijk} &= \mu + \alpha_i + \beta_j + \epsilon_{ijk}  \label{eq-ed-crfd-additiv} \\
 Y_{ijk} &= \mu + \alpha_i + \epsilon_{ijk} \qquad (\textrm{alternativ}: Y_{ijk} = \mu + \beta_j + \epsilon_{ijk})\\ 
 Y_{ijk} &= \mu + \epsilon_{ijk}
-\end{align*}
+\end{align}
 
-Dadurch, dass zwei unabhängige Variablen vorhanden sind, können auch zwei verschiedene Abfolgen durchlaufen werden. Entweder wird erst $\alpha_i$ oder $\beta_j$ ausgelassen. Tatsächlich macht die Reihenfolge keinen Unterschied, **wenn** die Stichprobengröße $n$ in allen Zellen gleich ist. Entsprechend gilt dies nicht mehr, wenn die Stichprobengrößen sich unterscheiden.
+Dadurch, dass zwei unabhängige Variablen vorhanden sind, können auch zwei verschiedene Abfolgen durchlaufen werden. Nach dem Wegfall des Interaktionseffekts $(\alpha\beta)_{ij}$ kann entweder erst $\alpha_i$ oder $\beta_j$ weggelassen werden. Tatsächlich macht die Reihenfolge keinen Unterschied, **wenn** die Stichprobengröße $r_i$ in allen Zellen gleich ist. Entsprechend gilt dies nicht mehr, wenn die Stichprobengrößen sich unterscheiden. 
 
-Die folgenden statistischen Hypothesen sind wenig überraschend die üblichen mit der Annahme von keinen Effekten unter der $H_0$ und entsprechend Effekten unter der $H_1$.
+::: {.callout-note}
+Eine Besonderheit die in der Literatur auftauchen kann ist die Modellformulierung in Formel \eqref{eq-ed-crfd-additiv}. D.h. das Modell ohne den Interaktionsfaktor. Dieses Modell kann in manchen Fälle auch das full model sein, wenn davon ausgegangen werden kann, dass keine Interaktionseffekte zwischen den beiden Variablen vorhanden sein können bzw. vorhanden sind. In der Literatur wird dieses Modell als additives Modell bzw. two-way main effects model bezeichnet. 
+:::
 
-Entsprechend ist die Formulierung der $H_0$-Hypothesen für die Hauptfaktoren $A$ und $B$ bzw. den Interaktionseffekt $A\times B$:
+Die statistischen Hypothesen sind wenig überraschend die üblichen mit der Annahme von keinen Effekten unter der $H_0$ und entsprechend Effekten unter der $H_1$. Entsprechend ist die Formulierung der $H_0$-Hypothesen für die Hauptfaktoren $A$ und $B$ bzw. den Interaktionseffekt $A\times B$:
 
 \begin{align*}
-\alpha_1 &= \alpha_2 = \ldots = \alpha_p = 0 \\
+\alpha_1 &= \alpha_2 = \ldots = \alpha_p = 0\\
 \beta_1 &= \beta_2 = \ldots = \beta_q = 0  \\
 (\alpha\beta)_{11} &= (\alpha\beta)_{12} = \ldots = (\alpha\beta)_{pq} = 0 \\
 \end{align*}
 
-bzw. die entsprechenden Alternativhypothesen $H_1$, dass sich mindestens zwei Faktorstufen $\alpha_i$ bzw. $\beta_j$ oder Interaktionskombinationen $(\alpha\beta)_{ij}$ voneinander unterscheiden.
+bzw. die entsprechenden Alternativhypothesen $H_1$, dass sich mindestens zwei Faktorstufen $\alpha_i$ bzw. $\beta_j$ oder Interaktionskombinationen $(\alpha\beta)_{ij}$ voneinander unterscheiden. Unter dem Ansatz des Modellvergleichs sind die Hypothesen wieder dahingehend zu interpretieren, dass die Hinzunahme bzw. das Weglassen einer Modellkomponente eine statistisch signifikante Verbesserung des Modells nach sich zieht bzw. eben nicht.
 
-Im Sinne der Variananalyse unterteilen wir die Gesamtvarianz wieder in einzelne Komponenten.
+Die alternative aber äquivalente Herleitung der Hypothesen im Sinne einer Variananalyse führt zu einer Unterteilung der Gesamtvarianz in einzelne Komponenten auf der Grundlage der verschiedenen Modellkomponenten.
 
 \begin{equation}
 SS_{\text{total}} = SS_{\text{Faktor }A} + SS_{\text{Faktor }B} + SS_{A\times B} + SS_{\text{error}}
 \label{eq-ed-crfd-sstotal}
 \end{equation}
 
-Es ergibt sich die folgende $F$-Tabelle bei einer Zellbesetzung von $k$ Replikationen.
+Es ergibt sich die folgende $F$-Tabelle bei einer Zellbesetzung mit $r$ Replikationen.
 
 | Term | $df$ | $SSQ$ | $MSQ$ | $F$  |
 | --- | --- | --- | --- | --- |
 | Faktor $A$ | $p-1$ | $ssA$ | $\frac{ssA}{p-1}$ | $\frac{msA}{msE}$ |
 | Faktor $B$ | $q-1$ | $ssB$ | $\frac{ssB}{q-1}$ | $\frac{msB}{msE}$ |
 | $AB$ | $(p-1)(q-1)$ | $ssAB$ | $\frac{ssAB}{(p-1)(q-1)}$ | $\frac{msAB}{msE}$ |
+| Error | $n - pq$ | $ssE$ | $\frac{ssE}{n-pq}$ |  |
 
 : Varianztabelle beim CRFD {#tbl-ed-crf-anova}
 
-| $ssE = \sum_{i}\sum_{j}\sum_{k}y_{ijk}^2 - k\sum_i\sum_j \bar{y}_{ij.}^2$
+| $ssE = \sum_i \sum_j \sum_k (y_{ijk} - \bar{y}_{ij.})^2$
 | $sstot = \sum_{i}\sum_{j}\sum_k y_{ijk}^2 - n\bar{y}_{...}^2$
-| $ssA = qk\sum_i \bar{y}_{i..}^2-n\bar{y}_{...}^2$
-| $ssB = pk\sum_j \bar{y}_{.j.}^2-n\bar{y}_{...}^2$
-| $ssAB = k\sum_i\sum_j \bar{y}_{ij.}^2 - qk\sum_i\bar{y}_{i..}^2 - pk\sum_j\bar{y}_{.j.}^2+n\bar{y}_{...}^2$
+| $ssA = qr\sum_i \bar{y}_{i..}^2-n\bar{y}_{...}^2$
+| $ssB = pr\sum_j \bar{y}_{.j.}^2-n\bar{y}_{...}^2$
+| $ssAB = r\sum_i\sum_j \bar{y}_{ij.}^2 - qr\sum_i\bar{y}_{i..}^2 - pr\sum_j\bar{y}_{.j.}^2+n\bar{y}_{...}^2$
+
+
+Der Schätzer für $\sigma^2$ ist wie gewohnt die mittlere Summe $MSE$ der quadrierten Abweichungen von den jeweiligen Gruppenmittelwerten $\bar{y}_{ij.}$, also die Residuen $\hat{\epsilon}_{ijk} = e_{ijk}$.
+
+\begin{equation}
+\hat{\sigma}^2 = MSE = \frac{\sum_i \sum_j \sum_k (y_{ijk} - \bar{y}_{ij.})^2}{N-(pq)}
+\end{equation}
+
+Eine obere Konfidenzintervallgrenze kann abgeschätzt werden mit:
+
+\begin{equation}
+\sigma^2 \leq \frac{ssE}{\chi^2_{n-pq,\alpha}}
+\end{equation}
+
 
 In @fig-ed-crfd-soccer-ex ist ein Beispiel adaptiert nach @jadczak2019 mit hypothetischen Daten dargestellt.
 
@@ -121,7 +138,7 @@ ggplot(sway, aes(Gruppe, sway, fill = Auge)) + geom_boxplot() +
 
 Es wurde die Gleichgewichtsfähigkeit bei drei verschiedenen Gruppen (Faktor $A, p = 3$) unter zwei Konditionen (Faktor $B, q = 2$) untersucht. Größere Werte deuten auf eine schlechtere Gleichgewichtsfähigkeit hin. Wie zu erwarten nimmt in allen drei Gruppen die Gleichgewichtsfähigkeit bei geschlossen Augen ab. Allerdings scheint der Unterschied über die drei Gruppen unterschiedlich stark ausgeprägt zu sein. D.h. die Daten deuten auf einen Interaktionseffekt. Um Interaktionseffekte noch einmal besser zu verstehen schauen wir uns im Folgenden verschiedene Arten von Interaktionseffekten und deren Beziehung zu Haupteffekten an. 
 
-## Einordnung von Interaktionseffekte 
+## Einordnung von Interaktionseffekten
 
 In @fig-ed-crfd-ordinal sind beispielhaft die Ergebnisse für ein $2\times 2$ CRFD abgetragen.
 
@@ -269,7 +286,7 @@ Allgemein ist dabei zu sagen, dass ein Experiment mit mehreren Faktoren übliche
 
 ## Analse eines CRFD in `R`
 
-Die Analyse von CRFDs in `R` bringt eigentlich wenig Neues mit sich und kann mit dem üblichen Modellbeschreibungen des linearen Modells durchgeführt werden. 
+Die Analyse von CRFDs in `R` bringt eigentlich wenig Neues mit sich und kann mit den üblichen Modellbeschreibungen des linearen Modells durchgeführt werden. 
 
 Ein Paket das die Erstellung von deskriptive Statistiken sehr stark vereinfacht ist `summarytools`, bzw. die Funktion `descr()` aus diesem Paket.
 
@@ -296,26 +313,35 @@ Mittels der `lm()`-Funktion können wir wie immer über den Modellvergleich gehe
 #| echo: true
 
 mod_f <- lm(sway ~ Gruppe * Auge, sway)
-mod_r3 <- lm(sway ~ Gruppe + Auge, sway)
+mod_r1 <- lm(sway ~ Gruppe + Auge, sway)
 mod_r2 <- lm(sway ~ Gruppe, sway)
-mod_r1 <- lm(sway ~ 1, sway)
+mod_r3 <- lm(sway ~ 1, sway)
 anova(mod_r3, mod_r2, mod_r1, mod_f)
 ```
 
-Oder wir können direkt über `aov()` gehen:
+Oder wir verwenden direkt `aov()` um die $F$-Tabelle zu erhalten:
 
 ```{r}
 #| echo: true
+#| lst-label: lst-ed-crfd-ftable-01
+#| lst-cap: "F-Tabelle mit `aov()` erstellen."
 
 mod_aov <- aov(sway ~ Gruppe * Auge, data = sway)
 summary(mod_aov)
 ```
 
+Wie immer wieder betont, bei der Verwendung mit `aov()` geschieht nichts anderes und es wird lediglich `lm()` im Hintergrund aufgerufen. So können wir von `aov()` auch die `coef()`-Funktion anwenden und erhalten genau die gleichen *Steigungskoeffizienten* $\beta_i$ wie bei `lm()`.
 
-Voraussetzungen überprüfen
-Varianzhomogenität
+```{r}
+#| echo: true
 
-Formale Überprüfung mittels des Levene-Tests
+cbind(coef(mod_f), coef(mod_aov))
+```
+
+Da es sich bei der Analyse eines CRFD um nichts anderes als um ein lineares Modell handelt, kann der Modellfit wie immer über die uns schon bekannten Methoden mittels der Residuen untersucht werden.
+
+::: {.callout-tip}
+Den Levene-Test können wir ebenfalls wie beim CRD anwenden.
 
 ```{r}
 #| echo: true
@@ -323,29 +349,60 @@ Formale Überprüfung mittels des Levene-Tests
 car::leveneTest(mod_aov)
 ```
 
-Und/Oder über die Residuenanalyse wie bei der Regression.^[`plot(mod_aov)`]
+Die $H_0$-Hypothese des Levene-Tests ist die Varianzgleichheit, d.h. alle Faktorkombinationen haben die gleiche Varianz. Da der Test als Voraussetzungstest eingesetzt wird, setzen wir die Irrtumswahrscheinlichkeit wieder mit $\alpha = 0.1$ an. Dementsprechend wird im vorliegenen Fall die $H_0$ nicht abgelehnt und die Annahme der Varianzgleichheit beibehalten.
+:::
 
-## Effektstärken im CRDB
+## Effektstärken im CRFD
 
-Effectsizes - partial{.t}
+Natürlich kann für ein CRFD ebenfalls eine Effektstärke wie für ein CRD berechnet werden. Natürlich gilt hier aber genause, dass es keine eins-zu-eins Abbildung einer Effektstärke auf eine spezifische Anordnung der Stufenmittelwerte $y_{ij.}$ gibt. Zusätzlich kommt beim CRFD dazu, dass es unterschiedliche Arten gibt die Residualvarianz zu bestimmen. Wenn wir uns noch einmal die Effektstärke $f$ im CRD anschauen, da haben wir das Modell, dass wir eine Effektvarianz durch eine Fehlervarianz teilen.
 
-$$
-f = \frac{\sigma_m}{\sigma_{\epsilon}} = \frac{\sqrt{\frac{\sum\tau_i^2}{k}}}{\sigma_{\epsilon}} 
-$$
+\begin{equation*}
+f = \frac{\sigma_{\text{Effekt}}}{\sigma_{\epsilon}} 
+\end{equation*}
 
-Was passiert mit Effektstärken wenn unterschiedliche Experiment miteinander verglichen werden?
+Im CRFD haben wir nun die Möglichkeit die Fehlervarianz $\sigma_{\epsilon}$ auf unterschiedliche Arten zu bestimmen. Vergleichen wir dazu noch einmal zwei Modelle. Das volle Model mit beiden Faktoren und ein reduziertes Modell mit nur dem einen Faktor $A$.
+
+\begin{align}
+y_{ijk} &= \mu + \alpha_j + \beta_k + (\alpha\beta)_{jk} + \epsilon_{ijk} \\
+y_{ij} &= \mu + \alpha_j + \epsilon_{ij} \\
+\end{align}
+
+Wir interessieren uns für die Effektstärke von Faktor $A$. Wenn wir die beiden Modell in Bezug auf die Varianzkomponenten aufschreiben, erhalten wie bereits oben beschrieben für das volle Modell:
+
+\begin{equation}
+\sigma_y^2 = \sigma_{\alpha}^2 + \sigma_{\beta}^2 + \sigma_{(\alpha\beta)}^2 + \sigma_{\epsilon(full)}^2
+\end{equation}
+
+Entsprechend für das reduzierte Modell: 
+
+\begin{equation}
+\sigma_y^2 = \sigma_{\alpha}^2 + \sigma_{\epsilon(reduced)}^2
+\end{equation}
+
+Dementsprechend ist der Zähler $\sigma_{\alpha}^2$ in beiden Fällen gleich, aber der Nenner $\sigma_{\epsilon}$ wird sich unterscheiden, da $\sigma_{\epsilon(full)}^2 \neq \sigma_{\epsilon(reduced)}^2$ gilt. Warum ist das so? Im reduzierten Modell, wird die Varianz die auf Grund des Faktors $B$ also $\sigma_{\beta}$ und der Interaktion $A:B$ also $\sigma_{(\alpha\beta)}$ ensteht nicht modelliert und wird daher durch den Fehlerterm $\sigma_{\epsilon(reduced)}^2$ aufgesaugt. Daher gilt:
+
+\begin{equation*}
+\sigma_{\epsilon(full)}^2 \leq \sigma_{\epsilon(reduced)}^2
+\end{equation*}
+
+Beziehungsweise präziser:
+
+\begin{equation*}
+\sigma_{\epsilon(full)}^2 + \sigma_{\alpha}^2 + \sigma_{\beta}^2 + \sigma_{(\alpha\beta)}^2 = \sigma_{\epsilon(reduced)}^2
+\end{equation*}
+
+Dies wiederum führt dazu je nachdem durch welche Residualvarianz wir die Effektvarianz $\sigma_{\text{Effekt}}^2$ teilen, wir bei $\sigma_{\epsilon(full)}^2$ einen größeren Effekt bestimmen als wenn wir $\sigma_{\epsilon(reduced)}^2$ verwenden. Im zweiten Fall wird die Effektstärke als **partial** bezeichnet. D.h. wir können mittels des vollen Modells zwei verschiedene Arten der Effektstärke bestimmen.
 
 \begin{align*}
-y_{ij} &= \mu + \alpha_j + \epsilon_{ij} \\
-y_{ijk} &= \mu + \alpha_j + \beta_k + (\alpha\beta)_{jk} + \epsilon_{ijk}
+f &= \frac{\sigma_{\alpha}^2}{\sigma_{\beta}^2 + \sigma_{(\alpha\beta)}^2 + \sigma_{\epsilon}^2} \\
+f_{\text{partial}} &= \frac{\sigma_{\alpha}^2}{\sigma_{\epsilon}^2} \\
 \end{align*}
 
-## $\omega^2$ and $\omega_{\text{partial}}^2$
-
+Diese Formeln sind dabei nur konzeptionell zu verstehen und wir bestimmen die beiden Formeln wieder mittels einer $\omega^2$-Effektstärke.
 
 \begin{align*}
-\hat{\omega}^2 &= \frac{SS_{\text{effect}}-df_{\text{effect}}MS_W}{SS_T+MS_W} \\
-& = \frac{df_{\text{effect}}(F_{\text{effect}})-1)}{\sum_{\text{all effects}}(df_{\text{effect}}F_{\text{effect}}) + df_W + 1}
+\hat{\omega}^2 &= \frac{ss\text{Eff}-df_{\text{Eff}}\cdot MSE}{ssT+MSE} \\
+ &= \frac{df\text{Eff} \cdot (F_{\text{Effekt}})-1)}{\sum_{\text{alle Effekte}}(df_{\text{Eff}_i} F_{\text{Eff}_i}) + dfE + 1}
 \end{align*}
 
 \begin{align*}
@@ -353,33 +410,56 @@ y_{ijk} &= \mu + \alpha_j + \beta_k + (\alpha\beta)_{jk} + \epsilon_{ijk}
 &=  \frac{df_{\text{effect}}(F_{\text{effect}})-1)}{df_{\text{effect}}(F_{\text{effect}}-1)+N}
 \end{align*}
 
-## Effektstärken $\omega^2$ und $\omega_{\text{partial}}^2$ in R
+D.h. wir können für alle drei Effekt $A$, $B$ und $A:B$ jeweils Effektstärken bestimmen.
+
+Die Einordnung der Effektstärken ist wieder die gleiche wie bereits im Rahmen des CRD eingeführt.
+
+|    | $\omega^2$ | 
+|--- | --- |
+| klein | 0.01 | 
+| mittel |  0.06 | 
+| groß |  0.14 | 
+
+: Einordnung der $\omega^2$ Effektstärken {#tbl-ed-crfd-effsize}
+
+::: {.callout-warning}
+Die Interpretation der Effektstärke nach @tbl-ed-crfd-effsize ist genauso willkürlich wie die Irrtumswahrscheinlichkeit von $\alpha = 0.05$!
+:::
+
+:::{#exm-crfd-effect-01}
+
+In @lst-ed-crfd-ftable-01 haben wir die $F$-Tabelle für die Fußballdaten berechnet und nun möchten wir die Effektstärke $\omega^2$ für den Effekt der Gruppe bestimmen. Dazu extrahieren wir die benötigten Komponenten aus der Tabelle um $\omega^2$ zu bestimmen.
+
+```{r}
+#| echo: true
+
+ssEff <- 4.18
+dfEff <- 2
+ssT <- 4.18 + 40.07 + 2.98 + 32.15 
+MSE <- 0.22
+omega_sqr_gruppe <- (ssEff - dfEff * MSE)/(ssT + MSE)
+omega_sqr_gruppe
+```
+D.h bei dem Einfluss der Gruppe handelt es sich um eine mittlere Effektstärke.
+:::
+
+### Effektstärken $\omega^2$ und $\omega_{\text{partial}}^2$ in R
+
+In `R` können wir nachdem wir das Modell mit `lm()` gefittet haben mittels der Funktion `omega_squared()` aus dem Paket `effectsize` die Effektstärken bestimmen. `omega_squared()` hat einen Parameter `partial` den wir benutzen können um entweder die *normale* Effektstärke oder die partial Effektstärke zu bestimmen. Mit dem Parameter auf `FALSE` gesetzt werden die normalen Effektstärken bestimmt.
+
 ```{r}
 #| echo: true
 
 effectsize::omega_squared(mod_aov, partial=FALSE, ci=0.95)
 ```
 
+Entsprechend mit `partial=TRUE` erhalten wir die partiellen Effektstärken.
+
 ```{r}
 #| echo: true
 
 effectsize::omega_squared(mod_aov, partial=TRUE, ci=0.95)
 ```
-\normalsize
-\begin{table}[]
-\caption{Einordnung}
-\centering
-\begin{tabular}{ll}
-\toprule
- & $\omega^2$ \\
-\midrule
- klein & 0.01 \\
- mittel &  0.06 \\
- groß &  0.14 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
 
 ## Mehrfachvergleiche im CRFD 
 
@@ -468,7 +548,7 @@ eff_size(mod_em_cauge, sigma=sigma(mod_aov),
                  edf=df.residual(mod_aov))
 ```
 
-## Anzahl der Replikationen a-prior ermitteln
+## Anzahl der Replikationen a-priori ermitteln
 
 Zwei Möglichkeiten: 
 
