@@ -448,7 +448,8 @@ window.Quarto = {
   <li><a href="#effektstärken-omega2-und-omega_textpartial2-in-r" id="toc-effektstärken-omega2-und-omega_textpartial2-in-r" class="nav-link" data-scroll-target="#effektstärken-omega2-und-omega_textpartial2-in-r"><span class="header-section-number">23.4.1</span> Effektstärken <span class="math inline">\(\omega^2\)</span> und <span class="math inline">\(\omega_{\text{partial}}^2\)</span> in R</a></li>
   </ul></li>
   <li><a href="#mehrfachvergleiche-im-crfd" id="toc-mehrfachvergleiche-im-crfd" class="nav-link" data-scroll-target="#mehrfachvergleiche-im-crfd"><span class="header-section-number">23.5</span> Mehrfachvergleiche im CRFD</a></li>
-  <li><a href="#anzahl-der-replikationen-a-prior-ermitteln" id="toc-anzahl-der-replikationen-a-prior-ermitteln" class="nav-link" data-scroll-target="#anzahl-der-replikationen-a-prior-ermitteln"><span class="header-section-number">23.6</span> Anzahl der Replikationen a-prior ermitteln</a></li>
+  <li><a href="#mehrfachvergleiche-in-r" id="toc-mehrfachvergleiche-in-r" class="nav-link" data-scroll-target="#mehrfachvergleiche-in-r"><span class="header-section-number">23.6</span> Mehrfachvergleiche in <code>R</code></a></li>
+  <li><a href="#anzahl-der-replikationen-a-priori-ermitteln" id="toc-anzahl-der-replikationen-a-priori-ermitteln" class="nav-link" data-scroll-target="#anzahl-der-replikationen-a-priori-ermitteln"><span class="header-section-number">23.7</span> Anzahl der Replikationen a-priori ermitteln</a></li>
   </ul>
 </nav>
     </div>
@@ -1055,359 +1056,44 @@ Gruppe:Auge |             0.07 | [0.01, 1.00]
 </section>
 <section id="mehrfachvergleiche-im-crfd" class="level2" data-number="23.5">
 <h2 data-number="23.5" class="anchored" data-anchor-id="mehrfachvergleiche-im-crfd"><span class="header-section-number">23.5</span> Mehrfachvergleiche im CRFD</h2>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>mod_em <span class="ot">&lt;-</span> <span class="fu">emmeans</span>(mod_aov, <span class="sc">~</span>Gruppe<span class="sc">*</span>Auge)</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pairs</span>(mod_em, <span class="at">infer=</span>T)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Im CRFD können wir genauso wie auch im CRD Mehrfachvergleiche einsetzen um gezielt Unterschiede zwischen bestimmten Kombination der Faktorstufen zu untersuchen.</p>
+<p>Prinzipiell läufen die Mehrfachvergleiche parallel wie im CRD ab mit unterschiedlichen kritischen Werten <span class="math inline">\(w\)</span>, je nachdem welche Methode verwendet wird. Ein zusätzlicher Punkt ist beim Interaktionsmodell, dass nicht immer alle algebraisch möglichen Vergleiche auch inhaltlich sinnvoll sind.</p>
+<div id="fig-ed-crfd-multcom-01" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ed-crfd-multcom-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-ed-crfd-multcom-01" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-ed-crfd-multcom-01-1" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-ed-crfd-multcom-01-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="ed_crfd_files/figure-html/fig-ed-crfd-multcom-01-1.png" class="img-fluid figure-img" data-ref-parent="fig-ed-crfd-multcom-01" width="672">
 </div>
-<div class="cell">
-<div class="cell-output-display">
-<table class="table table-sm table-striped small">
-<caption>Tukey paarweise Vergleiche</caption>
-<colgroup>
-<col style="width: 36%">
-<col style="width: 9%">
-<col style="width: 6%">
-<col style="width: 15%">
-<col style="width: 15%">
-<col style="width: 8%">
-<col style="width: 8%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">contrast</th>
-<th style="text-align: right;">estimate</th>
-<th style="text-align: right;"><span class="math inline">\(s_e\)</span></th>
-<th style="text-align: right;"><span class="math inline">\(\text{CI}_l\)</span></th>
-<th style="text-align: right;"><span class="math inline">\(\text{CI}_u\)</span></th>
-<th style="text-align: right;">t</th>
-<th style="text-align: left;">p-value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">U19 Offen - U21 Offen</td>
-<td style="text-align: right;">-0.045</td>
-<td style="text-align: right;">0.134</td>
-<td style="text-align: right;">-0.431</td>
-<td style="text-align: right;">0.341</td>
-<td style="text-align: right;">-0.337</td>
-<td style="text-align: left;">0.999</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">U19 Offen - PRO Offen</td>
-<td style="text-align: right;">0.017</td>
-<td style="text-align: right;">0.134</td>
-<td style="text-align: right;">-0.369</td>
-<td style="text-align: right;">0.403</td>
-<td style="text-align: right;">0.128</td>
-<td style="text-align: left;">1</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">U19 Offen - U19 Geschlossen</td>
-<td style="text-align: right;">-1.011</td>
-<td style="text-align: right;">0.134</td>
-<td style="text-align: right;">-1.397</td>
-<td style="text-align: right;">-0.625</td>
-<td style="text-align: right;">-7.564</td>
-<td style="text-align: left;">&lt;0.001</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">U19 Offen - U21 Geschlossen</td>
-<td style="text-align: right;">-1.435</td>
-<td style="text-align: right;">0.134</td>
-<td style="text-align: right;">-1.821</td>
-<td style="text-align: right;">-1.049</td>
-<td style="text-align: right;">-10.740</td>
-<td style="text-align: left;">&lt;0.001</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">U19 Offen - PRO Geschlossen</td>
-<td style="text-align: right;">-0.683</td>
-<td style="text-align: right;">0.134</td>
-<td style="text-align: right;">-1.069</td>
-<td style="text-align: right;">-0.297</td>
-<td style="text-align: right;">-5.112</td>
-<td style="text-align: left;">&lt;0.001</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">U21 Offen - PRO Offen</td>
-<td style="text-align: right;">0.062</td>
-<td style="text-align: right;">0.134</td>
-<td style="text-align: right;">-0.324</td>
-<td style="text-align: right;">0.448</td>
-<td style="text-align: right;">0.465</td>
-<td style="text-align: left;">0.997</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">U21 Offen - U19 Geschlossen</td>
-<td style="text-align: right;">-0.966</td>
-<td style="text-align: right;">0.134</td>
-<td style="text-align: right;">-1.352</td>
-<td style="text-align: right;">-0.580</td>
-<td style="text-align: right;">-7.226</td>
-<td style="text-align: left;">&lt;0.001</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">U21 Offen - U21 Geschlossen</td>
-<td style="text-align: right;">-1.390</td>
-<td style="text-align: right;">0.134</td>
-<td style="text-align: right;">-1.776</td>
-<td style="text-align: right;">-1.004</td>
-<td style="text-align: right;">-10.402</td>
-<td style="text-align: left;">&lt;0.001</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">U21 Offen - PRO Geschlossen</td>
-<td style="text-align: right;">-0.638</td>
-<td style="text-align: right;">0.134</td>
-<td style="text-align: right;">-1.024</td>
-<td style="text-align: right;">-0.252</td>
-<td style="text-align: right;">-4.775</td>
-<td style="text-align: left;">&lt;0.001</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">PRO Offen - U19 Geschlossen</td>
-<td style="text-align: right;">-1.028</td>
-<td style="text-align: right;">0.134</td>
-<td style="text-align: right;">-1.414</td>
-<td style="text-align: right;">-0.642</td>
-<td style="text-align: right;">-7.691</td>
-<td style="text-align: left;">&lt;0.001</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">PRO Offen - U21 Geschlossen</td>
-<td style="text-align: right;">-1.452</td>
-<td style="text-align: right;">0.134</td>
-<td style="text-align: right;">-1.838</td>
-<td style="text-align: right;">-1.066</td>
-<td style="text-align: right;">-10.867</td>
-<td style="text-align: left;">&lt;0.001</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">PRO Offen - PRO Geschlossen</td>
-<td style="text-align: right;">-0.700</td>
-<td style="text-align: right;">0.134</td>
-<td style="text-align: right;">-1.086</td>
-<td style="text-align: right;">-0.314</td>
-<td style="text-align: right;">-5.240</td>
-<td style="text-align: left;">&lt;0.001</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">U19 Geschlossen - U21 Geschlossen</td>
-<td style="text-align: right;">-0.424</td>
-<td style="text-align: right;">0.134</td>
-<td style="text-align: right;">-0.810</td>
-<td style="text-align: right;">-0.038</td>
-<td style="text-align: right;">-3.176</td>
-<td style="text-align: left;">0.022</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">U19 Geschlossen - PRO Geschlossen</td>
-<td style="text-align: right;">0.328</td>
-<td style="text-align: right;">0.134</td>
-<td style="text-align: right;">-0.058</td>
-<td style="text-align: right;">0.714</td>
-<td style="text-align: right;">2.451</td>
-<td style="text-align: left;">0.146</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">U21 Geschlossen - PRO Geschlossen</td>
-<td style="text-align: right;">0.752</td>
-<td style="text-align: right;">0.134</td>
-<td style="text-align: right;">0.366</td>
-<td style="text-align: right;">1.138</td>
-<td style="text-align: right;">5.627</td>
-<td style="text-align: left;">&lt;0.001</td>
-</tr>
-</tbody>
-</table>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-ed-crfd-multcom-01-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(a) Unterschiede innerhalb der Gruppen
+</figcaption>
+</figure>
 </div>
 </div>
-<p>Achtung! Nicht alle Vergleiche immer sinnvoll</p>
-<div class="cell">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="ed_crfd_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption>Unterschiede innerhalb der Gruppen</figcaption>
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-ed-crfd-multcom-01" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-ed-crfd-multcom-01-2" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-ed-crfd-multcom-01-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="ed_crfd_files/figure-html/fig-ed-crfd-multcom-01-2.png" class="img-fluid figure-img" data-ref-parent="fig-ed-crfd-multcom-01" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-ed-crfd-multcom-01-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(b) Unterschiede innerhalb Augenkondition
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<div class="cell">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="ed_crfd_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption>Unterschiede innerhalb Augenkondition</figcaption>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ed-crfd-multcom-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;23.7: Mehrfachvergleiche für das Fußballbeispiel
+</figcaption>
 </figure>
 </div>
-</div>
-</div>
-<p>Mehrfachvergleiche Bonferroni - Gruppenunterschiede (pre-planned)</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>mod_em_cauge <span class="ot">&lt;-</span> <span class="fu">emmeans</span>(mod_aov, <span class="sc">~</span>Gruppe<span class="sc">|</span>Auge)</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pairs</span>(mod_em_cauge, <span class="at">adjust =</span> <span class="st">'bonferroni'</span>, <span class="at">level =</span> <span class="dv">1</span><span class="fl">-0.05</span><span class="sc">/</span><span class="dv">9</span><span class="sc">*</span><span class="dv">6</span>, <span class="at">infer=</span>T)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="cell-output-display">
-<table class="table table-sm table-striped small">
-<caption>Post-hoc tests innerhalb der Gruppen</caption>
-<colgroup>
-<col style="width: 12%">
-<col style="width: 15%">
-<col style="width: 11%">
-<col style="width: 7%">
-<col style="width: 17%">
-<col style="width: 17%">
-<col style="width: 8%">
-<col style="width: 10%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">contrast</th>
-<th style="text-align: left;">factor</th>
-<th style="text-align: right;">estimate</th>
-<th style="text-align: right;"><span class="math inline">\(s_e\)</span></th>
-<th style="text-align: right;"><span class="math inline">\(\text{CI}_l\)</span></th>
-<th style="text-align: right;"><span class="math inline">\(\text{CI}_u\)</span></th>
-<th style="text-align: right;">t</th>
-<th style="text-align: left;">p-value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">U19 - U21</td>
-<td style="text-align: left;">Offen</td>
-<td style="text-align: right;">-0.045</td>
-<td style="text-align: right;">0.134</td>
-<td style="text-align: right;">-0.389</td>
-<td style="text-align: right;">0.299</td>
-<td style="text-align: right;">-0.337</td>
-<td style="text-align: left;">1</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">U19 - PRO</td>
-<td style="text-align: left;">Offen</td>
-<td style="text-align: right;">0.017</td>
-<td style="text-align: right;">0.134</td>
-<td style="text-align: right;">-0.327</td>
-<td style="text-align: right;">0.361</td>
-<td style="text-align: right;">0.128</td>
-<td style="text-align: left;">1</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">U21 - PRO</td>
-<td style="text-align: left;">Offen</td>
-<td style="text-align: right;">0.062</td>
-<td style="text-align: right;">0.134</td>
-<td style="text-align: right;">-0.282</td>
-<td style="text-align: right;">0.406</td>
-<td style="text-align: right;">0.465</td>
-<td style="text-align: left;">1</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">U19 - U21</td>
-<td style="text-align: left;">Geschlossen</td>
-<td style="text-align: right;">-0.424</td>
-<td style="text-align: right;">0.134</td>
-<td style="text-align: right;">-0.768</td>
-<td style="text-align: right;">-0.081</td>
-<td style="text-align: right;">-3.176</td>
-<td style="text-align: left;">0.005</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">U19 - PRO</td>
-<td style="text-align: left;">Geschlossen</td>
-<td style="text-align: right;">0.328</td>
-<td style="text-align: right;">0.134</td>
-<td style="text-align: right;">-0.016</td>
-<td style="text-align: right;">0.671</td>
-<td style="text-align: right;">2.451</td>
-<td style="text-align: left;">0.046</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">U21 - PRO</td>
-<td style="text-align: left;">Geschlossen</td>
-<td style="text-align: right;">0.752</td>
-<td style="text-align: right;">0.134</td>
-<td style="text-align: right;">0.408</td>
-<td style="text-align: right;">1.096</td>
-<td style="text-align: right;">5.627</td>
-<td style="text-align: left;">&lt;0.001</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
-<p>Mehrfachvergleiche Bonferroni - Augenunterschiede (pre-planned)</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>mod_em_cgroup <span class="ot">&lt;-</span> <span class="fu">emmeans</span>(mod_aov, <span class="sc">~</span>Auge<span class="sc">|</span>Gruppe)</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pairs</span>(mod_em_cgroup, <span class="at">adjust =</span> <span class="st">'bonferroni'</span>, <span class="at">level =</span> <span class="dv">1</span><span class="fl">-0.05</span><span class="sc">/</span><span class="dv">9</span><span class="sc">*</span><span class="dv">3</span>, <span class="at">infer=</span>T)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="cell-output-display">
-<table class="table table-sm table-striped small">
-<caption>Post-hoc tests innerhalb der Konditionen</caption>
-<colgroup>
-<col style="width: 23%">
-<col style="width: 8%">
-<col style="width: 10%">
-<col style="width: 6%">
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 9%">
-<col style="width: 9%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">contrast</th>
-<th style="text-align: left;">factor</th>
-<th style="text-align: right;">estimate</th>
-<th style="text-align: right;"><span class="math inline">\(s_e\)</span></th>
-<th style="text-align: right;"><span class="math inline">\(\text{CI}_l\)</span></th>
-<th style="text-align: right;"><span class="math inline">\(\text{CI}_u\)</span></th>
-<th style="text-align: right;">t</th>
-<th style="text-align: left;">p-value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">Offen - Geschlossen</td>
-<td style="text-align: left;">U19</td>
-<td style="text-align: right;">-1.011</td>
-<td style="text-align: right;">0.134</td>
-<td style="text-align: right;">-1.334</td>
-<td style="text-align: right;">-0.687</td>
-<td style="text-align: right;">-7.564</td>
-<td style="text-align: left;">&lt;0.001</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Offen - Geschlossen</td>
-<td style="text-align: left;">U21</td>
-<td style="text-align: right;">-1.390</td>
-<td style="text-align: right;">0.134</td>
-<td style="text-align: right;">-1.714</td>
-<td style="text-align: right;">-1.066</td>
-<td style="text-align: right;">-10.402</td>
-<td style="text-align: left;">&lt;0.001</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Offen - Geschlossen</td>
-<td style="text-align: left;">PRO</td>
-<td style="text-align: right;">-0.700</td>
-<td style="text-align: right;">0.134</td>
-<td style="text-align: right;">-1.024</td>
-<td style="text-align: right;">-0.377</td>
-<td style="text-align: right;">-5.240</td>
-<td style="text-align: left;">&lt;0.001</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+<p>In <a href="#fig-ed-crfd-multcom-01" class="quarto-xref">Abbildung&nbsp;<span>23.7</span></a> sind die <em>wahrscheinlich</em> sinnvollen Vergleiche abgebildet. D.h. auf Grund der Interaktion sollte der Unterschied zwischen den Gruppen getrennt für die beiden Augenkonditionen untersucht werden bzw. der Unterschied zwischen den Augenkonditionen für jede Gruppe getrennt. Algebraisch ist natürlich auch möglich beispielsweise die U19 bei geschlossenen Augen mit den PROs mit offenen Augen zu vergleichen, allerdings ist dieser Vergleich aus wissenschaftlicher Sicht wahrscheinlich wenig sinnvoll.</p>
 <p>Achtung!!! <span class="citation" data-cites="gelman2006">Gelman und Stern (<a href="references.html#ref-gelman2006" role="doc-biblioref">2006</a>)</span></p>
 <div class="cell">
 <div class="cell-output-display">
@@ -1418,10 +1104,126 @@ Gruppe:Auge |             0.07 | [0.01, 1.00]
 </div>
 </div>
 </div>
+<p>Nochmal Kontraste bei Paarvergleichen</p>
+<p>Standardfehler Haupteffekts:</p>
+<p><span class="math display">\[
+s_{\text{Haupteffekt}} = \frac{2\sigma}{\sqrt{N}}
+\]</span></p>
+<p>Standardfehler Interaktionseffekts:</p>
+<p><span class="math display">\[
+H_0: \mu_{12} - \mu_{22} = \mu_{11} - \mu_{21} \Leftrightarrow H_0: \mu_{12}-\mu_{22}-\mu_{11}-\mu_{21}=0
+\]</span></p>
+<p><span class="math display">\[
+s_{\text{Interaktion}} = \sigma\sqrt{\frac{1}{N/4} + \frac{1}{N/4} + \frac{1}{N/4}+\frac{1}{N/4}}=\frac{4\sigma}{\sqrt{N}} = 2s_{\text{Haupteffekt}}
+\]</span></p>
+<p>Power - Interaktionseffekt</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="ed_crfd_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="384"></p>
+<figcaption>Zusammenhang zwischen Power für den Interaktionseffekt in Relation zur Größe des Interaktionseffekts zum Haupteffekt bei Power = <span class="math inline">\(0.8\)</span> für den Haupteffekt</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>see <span class="citation" data-cites="gelman2018">Gelman (<a href="references.html#ref-gelman2018" role="doc-biblioref">2018</a>)</span></p>
+</section>
+<section id="mehrfachvergleiche-in-r" class="level2" data-number="23.6">
+<h2 data-number="23.6" class="anchored" data-anchor-id="mehrfachvergleiche-in-r"><span class="header-section-number">23.6</span> Mehrfachvergleiche in <code>R</code></h2>
+<p>In <code>R</code> läuft der Vergleich wiederum nach dem bekannten Muster ab. Zunächst werden die Modellmittelwerte mittels der <code>emmeans()</code>-Funktion aus dem Paket <code>emmeans</code> anhand des Modells bestimmt. Anschließend kann dann mittels der <code>pairs()</code> bzw. der <code>contrast()</code>-Funktion der gewünschte Vergleich durchgeführt werden.</p>
+<p>Beispielsweise die paarweisen Vergleiche für alle möglichen Kombinationen, auch diejenigen die wenig sinnvoll sind, mittels:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>mod_em <span class="ot">&lt;-</span> <span class="fu">emmeans</span>(mod_aov, <span class="sc">~</span>Gruppe<span class="sc">*</span>Auge)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pairs</span>(mod_em, <span class="at">infer=</span>T)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> contrast                          estimate    SE  df lower.CL upper.CL t.ratio
+ U19 Offen - U21 Offen              -0.0451 0.134 144  -0.4311   0.3409  -0.337
+ U19 Offen - PRO Offen               0.0171 0.134 144  -0.3689   0.4031   0.128
+ U19 Offen - U19 Geschlossen        -1.0108 0.134 144  -1.3968  -0.6248  -7.564
+ U19 Offen - U21 Geschlossen        -1.4352 0.134 144  -1.8212  -1.0492 -10.740
+ U19 Offen - PRO Geschlossen        -0.6832 0.134 144  -1.0692  -0.2972  -5.112
+ U21 Offen - PRO Offen               0.0621 0.134 144  -0.3239   0.4481   0.465
+ U21 Offen - U19 Geschlossen        -0.9657 0.134 144  -1.3517  -0.5797  -7.226
+ U21 Offen - U21 Geschlossen        -1.3901 0.134 144  -1.7761  -1.0041 -10.402
+ U21 Offen - PRO Geschlossen        -0.6381 0.134 144  -1.0241  -0.2521  -4.775
+ PRO Offen - U19 Geschlossen        -1.0278 0.134 144  -1.4138  -0.6418  -7.691
+ PRO Offen - U21 Geschlossen        -1.4523 0.134 144  -1.8383  -1.0663 -10.867
+ PRO Offen - PRO Geschlossen        -0.7003 0.134 144  -1.0863  -0.3143  -5.240
+ U19 Geschlossen - U21 Geschlossen  -0.4244 0.134 144  -0.8104  -0.0384  -3.176
+ U19 Geschlossen - PRO Geschlossen   0.3276 0.134 144  -0.0584   0.7136   2.451
+ U21 Geschlossen - PRO Geschlossen   0.7520 0.134 144   0.3660   1.1380   5.627
+ p.value
+  0.9994
+  1.0000
+  &lt;.0001
+  &lt;.0001
+  &lt;.0001
+  0.9972
+  &lt;.0001
+  &lt;.0001
+  0.0001
+  &lt;.0001
+  &lt;.0001
+  &lt;.0001
+  0.0221
+  0.1460
+  &lt;.0001
+
+Confidence level used: 0.95 
+Conf-level adjustment: tukey method for comparing a family of 6 estimates 
+P value adjustment: tukey method for comparing a family of 6 estimates </code></pre>
+</div>
+</div>
+<p>Hätten wir uns a-priori entschieden schon fest zu setzen nur die Vergleiche innerhalb der Gruppen bzw. der Augenkonditionen zu untersuchen und mittels Bonferroni-Korrektur den <span class="math inline">\(\alpha\)</span>-Level zu kontrollieren. Dann sieht die Syntax in <code>R</code> folgendermaßen aus:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>mod_em_cauge <span class="ot">&lt;-</span> <span class="fu">emmeans</span>(mod_aov, <span class="sc">~</span>Gruppe<span class="sc">|</span>Auge)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pairs</span>(mod_em_cauge, <span class="at">adjust =</span> <span class="st">'bonferroni'</span>, <span class="at">level =</span> <span class="dv">1</span><span class="fl">-0.05</span><span class="sc">/</span><span class="dv">2</span>, <span class="at">infer=</span>T)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Auge = Offen:
+ contrast  estimate    SE  df lower.CL upper.CL t.ratio p.value
+ U19 - U21  -0.0451 0.134 144  -0.4026   0.3124  -0.337  1.0000
+ U19 - PRO   0.0171 0.134 144  -0.3404   0.3746   0.128  1.0000
+ U21 - PRO   0.0621 0.134 144  -0.2954   0.4196   0.465  1.0000
+
+Auge = Geschlossen:
+ contrast  estimate    SE  df lower.CL upper.CL t.ratio p.value
+ U19 - U21  -0.4244 0.134 144  -0.7819  -0.0669  -3.176  0.0055
+ U19 - PRO   0.3276 0.134 144  -0.0299   0.6851   2.451  0.0463
+ U21 - PRO   0.7520 0.134 144   0.3945   1.1095   5.627  &lt;.0001
+
+Confidence level used: 0.975 
+Conf-level adjustment: bonferroni method for 3 estimates 
+P value adjustment: bonferroni method for 3 tests </code></pre>
+</div>
+</div>
+<p>Die Syntax <code>~Gruppe|Auge</code> bedeutet Unterschiede nach <code>Gruppe</code> geblockt nach <code>Auge</code>. Parallel dazu <code>Auge</code>-Unterschiede geblockt für <code>Gruppe</code>: Ein Besonderheit ist hier jetzt allerdings der <span class="math inline">\(\alpha\)</span>-Level für die beiden Tests. Da wir zwei Mehrfachvergleiche durchführen wollen, sollten wir die <span class="math inline">\(\alpha\)</span>-Level für die beiden Gruppen von Mehrfachvergleichen so anpassen, dass wir insgesamt unter den anvisiertem <span class="math inline">\(\alpha\)</span> bleiben. In diesem Fall also <span class="math inline">\(\alpha/2\)</span>.</p>
+<p>Wir sehen, dass zwischen den Gruppen bei offenen Augen keine Unterschiede gefunden wurde, während bei geschlossenen Augen alle Unterschied statistsch signifikant sind.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>mod_em_cgroup <span class="ot">&lt;-</span> <span class="fu">emmeans</span>(mod_aov, <span class="sc">~</span>Auge<span class="sc">|</span>Gruppe)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pairs</span>(mod_em_cgroup, <span class="at">adjust =</span> <span class="st">'bonferroni'</span>, <span class="at">level =</span> <span class="dv">1</span><span class="fl">-0.05</span><span class="sc">/</span><span class="dv">2</span>, <span class="at">infer=</span>T)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Gruppe = U19:
+ contrast            estimate    SE  df lower.CL upper.CL t.ratio p.value
+ Offen - Geschlossen    -1.01 0.134 144    -1.31   -0.708  -7.564  &lt;.0001
+
+Gruppe = U21:
+ contrast            estimate    SE  df lower.CL upper.CL t.ratio p.value
+ Offen - Geschlossen    -1.39 0.134 144    -1.69   -1.087 -10.402  &lt;.0001
+
+Gruppe = PRO:
+ contrast            estimate    SE  df lower.CL upper.CL t.ratio p.value
+ Offen - Geschlossen    -0.70 0.134 144    -1.00   -0.398  -5.240  &lt;.0001
+
+Confidence level used: 0.975 </code></pre>
+</div>
+</div>
+<p>Hier können wir erkennen dass alle Unterschiede zwischen den Augenkonditionen innerhalb der Gruppen statistisch signifikant sind.</p>
+<p>Alternativ hätten wir auch die Befehle <code>pairs(mod_em, simple="Gruppe", adjust="bonferroni", level=0.975, infer=T)</code>, bzw. <code>pairs(mod_em, simple='Auge', adjust="bonferroni", level=0.975, infer=T)</code> verwenden können um die gleichen Mehrfachvergleich durchzuführen. Das package <code>emmeans</code> ist sehr umfangreich und die Dokumentation hat zahlreiche Beispiele für die Syntax um gewünschte Vergleiche durchführen zu können.</p>
 <p>Cohen’s d für Mehrfachvergleiche</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">eff_size</span>(mod_em_cauge, <span class="at">sigma=</span><span class="fu">sigma</span>(mod_aov),</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">edf=</span><span class="fu">df.residual</span>(mod_aov))</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">eff_size</span>(mod_em_cauge, <span class="at">sigma=</span><span class="fu">sigma</span>(mod_aov),</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">edf=</span><span class="fu">df.residual</span>(mod_aov))</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Auge = Offen:
  contrast  effect.size    SE  df lower.CL upper.CL
@@ -1440,19 +1242,19 @@ Confidence level used: 0.95 </code></pre>
 </div>
 </div>
 </section>
-<section id="anzahl-der-replikationen-a-prior-ermitteln" class="level2" data-number="23.6">
-<h2 data-number="23.6" class="anchored" data-anchor-id="anzahl-der-replikationen-a-prior-ermitteln"><span class="header-section-number">23.6</span> Anzahl der Replikationen a-prior ermitteln</h2>
-<p>Zwei Möglichkeiten:</p>
+<section id="anzahl-der-replikationen-a-priori-ermitteln" class="level2" data-number="23.7">
+<h2 data-number="23.7" class="anchored" data-anchor-id="anzahl-der-replikationen-a-priori-ermitteln"><span class="header-section-number">23.7</span> Anzahl der Replikationen a-priori ermitteln</h2>
+<p>Drei Möglichkeiten:</p>
 <ol type="1">
 <li>Anhand der Literatur wird <span class="math inline">\(f\)</span> bestimmt.</li>
-<li>Es wird ein relevantes/plausibels <span class="math inline">\(\Delta\)</span>, als der Unterschied zwischen zwei Gruppen angesetzt.<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></li>
+<li>Es wird ein relevantes/plausibels <span class="math inline">\(\Delta\)</span>, als der Unterschied zwischen zwei Gruppen angesetzt.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></li>
 <li>Konfidenzintervalle</li>
 </ol>
 <p><span class="math display">\[
 f = \sqrt{\frac{\Delta^2}{2(k+1)\sigma^2}}
 \]</span></p>
 <p>Stichprobengröße a-prior ermitteln</p>
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>pwr<span class="sc">::</span><span class="fu">pwr.anova.test</span>(<span class="at">f =</span> <span class="fl">0.27</span>, <span class="at">k =</span> <span class="dv">3</span>, <span class="at">sig.level =</span> <span class="fl">0.05</span>, <span class="at">power =</span> <span class="fl">0.8</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>pwr<span class="sc">::</span><span class="fu">pwr.anova.test</span>(<span class="at">f =</span> <span class="fl">0.27</span>, <span class="at">k =</span> <span class="dv">3</span>, <span class="at">sig.level =</span> <span class="fl">0.05</span>, <span class="at">power =</span> <span class="fl">0.8</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <pre><code> Balanced one-way analysis of variance power calculation 
 
           k = 3
@@ -1474,30 +1276,6 @@ n_c = \frac{(n'-1)(u+1)}{\#n\ \mathrm{Zellen}} + 1
 <p><span class="math display">\[
 n_c = \frac{(46 - 1)(2+1)}{6} + 1 = 23.5
 \]</span></p>
-<p>Nochmal Kontraste bei Paarvergleichen</p>
-<p>Standardfehler Haupteffekts:</p>
-<p><span class="math display">\[
-s_{\text{Haupteffekt}} = \frac{2\sigma}{\sqrt{N}}
-\]</span></p>
-<p>Standardfehler Interaktionseffekts:</p>
-<p><span class="math display">\[
-H_0: \mu_{12} - \mu_{22} = \mu_{11} - \mu_{21} \Leftrightarrow H_0: \mu_{12}-\mu_{22}-\mu_{11}-\mu_{21}=0
-\]</span></p>
-<p><span class="math display">\[
-s_{\text{Interaktion}} = \sigma\sqrt{\frac{1}{N/4} + \frac{1}{N/4} + \frac{1}{N/4}+\frac{1}{N/4}}=\frac{4\sigma}{\sqrt{N}} = 2s_{\text{Haupteffekt}}
-\]</span></p>
-<p>Power - Interaktionseffekt</p>
-<div class="cell">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="ed_crfd_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid figure-img" width="384"></p>
-<figcaption>Zusammenhang zwischen Power für den Interaktionseffekt in Relation zur Größe des Interaktionseffekts zum Haupteffekt bei Power = <span class="math inline">\(0.8\)</span> für den Haupteffekt</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<p>see <span class="citation" data-cites="gelman2018">Gelman (<a href="references.html#ref-gelman2018" role="doc-biblioref">2018</a>)</span></p>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
@@ -1515,9 +1293,7 @@ Jadczak, Lukasz, Monika Grygorowicz, Witold Dzudzinski, und Robert Sliwowski. 20
 <section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
 <hr>
 <ol>
-<li id="fn1"><p>Alternativ: <code>pairs(mod_em, simple="Gruppe", adjust="bonferroni", level=0.975, infer=T)</code><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2"><p>Alternativ: <code>pairs(mod_em, simple='Auge', adjust="bonferroni", level=0.975, infer=T)</code><a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn3"><p><span class="math inline">\(\sigma\)</span> muss trotzdem anhand der Literatur abgeschätzt werden., k = Anzahl der Freiheitsgrade, <span class="math inline">\(f = \sqrt{\omega^2/(1-\omega^2)}\)</span><a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn1"><p><span class="math inline">\(\sigma\)</span> muss trotzdem anhand der Literatur abgeschätzt werden., k = Anzahl der Freiheitsgrade, <span class="math inline">\(f = \sqrt{\omega^2/(1-\omega^2)}\)</span><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
 

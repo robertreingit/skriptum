@@ -463,37 +463,26 @@ effectsize::omega_squared(mod_aov, partial=TRUE, ci=0.95)
 
 ## Mehrfachvergleiche im CRFD 
 
-```{r}
-#| echo: true
-#| results: hide
+Im CRFD können wir genauso wie auch im CRD Mehrfachvergleiche einsetzen um gezielt Unterschiede zwischen bestimmten Kombination der Faktorstufen zu untersuchen. 
 
-mod_em <- emmeans(mod_aov, ~Gruppe*Auge)
-pairs(mod_em, infer=T)
-```
+Prinzipiell läufen die Mehrfachvergleiche parallel wie im CRD ab mit unterschiedlichen kritischen Werten $w$, je nachdem welche Methode verwendet wird. Ein zusätzlicher Punkt ist beim Interaktionsmodell, dass nicht immer alle algebraisch möglichen Vergleiche auch inhaltlich sinnvoll sind.
 
 ```{r}
-pairs(mod_em, infer=T) |> nice_emmeans_simple('Tukey paarweise Vergleiche')
-```
-
-
-Achtung! Nicht alle Vergleiche immer sinnvoll
-
-```{r}
-#| fig-cap: "Unterschiede innerhalb der Gruppen"
-#| fig-height: 4
-
-sway_m_w <- sway_m |> select(-s) |> tidyr::pivot_wider(names_from = Auge, values_from = m)
+#| layout-ncol: 2
+#| fig-cap: "Mehrfachvergleiche für das Fußballbeispiel"
+#| fig-subcap:
+#|   - "Unterschiede innerhalb der Gruppen"
+#|   - "Unterschiede innerhalb Augenkondition"
+#| label: fig-ed-crfd-multcom-01
+ 
+sway_m_w <- sway_m |> select(-s) |>
+  tidyr::pivot_wider(names_from = Auge, values_from = m)
 ggplot(sway_m, aes(Gruppe, m)) + 
   geom_segment(data = sway_m_w,
                aes(x = Gruppe, xend = Gruppe,
                    y = Offen, yend = Geschlossen), size =1.5) +
   geom_point(size = 6, aes(color = Auge)) +
   labs(y = 'Mittlere Schwankung \ndes KSP[°]') 
-```
-
-```{r}
-#| fig-cap: "Unterschiede innerhalb Augenkondition"
-#| fig-height: 4
 
 ggplot(sway_m, aes(Gruppe, m)) + 
   geom_polygon(aes(group = Auge), fill=NA, color = 'black', size = 1.5) + 
@@ -501,36 +490,7 @@ ggplot(sway_m, aes(Gruppe, m)) +
   labs(y = 'Mittlere Schwankung \ndes KSP[°]') 
 ```
 
-Mehrfachvergleiche Bonferroni - Gruppenunterschiede (pre-planned)
-
-```{r} 
-#| echo: true
-#| results: hide
-
-mod_em_cauge <- emmeans(mod_aov, ~Gruppe|Auge)
-pairs(mod_em_cauge, adjust = 'bonferroni', level = 1-0.05/9*6, infer=T)
-```
-
-```{r}
-pairs(mod_em_cauge, adjust = 'bonferroni', level = 1-0.05/9*6, infer=T) |> 
-  nice_emmeans_per_factor(caption = 'Post-hoc tests innerhalb der Gruppen')
-```
-^[Alternativ: `pairs(mod_em, simple="Gruppe", adjust="bonferroni", level=0.975, infer=T)`]
-
-Mehrfachvergleiche Bonferroni - Augenunterschiede (pre-planned)
-
-```{r}
-#| echo: true
-#| results: hide
-
-mod_em_cgroup <- emmeans(mod_aov, ~Auge|Gruppe)
-pairs(mod_em_cgroup, adjust = 'bonferroni', level = 1-0.05/9*3, infer=T)
-```
-```{r}
-pairs(mod_em_cgroup, adjust = 'bonferroni', level = 1-0.05/9*3, infer=T) |> 
-  nice_emmeans_per_factor(caption = 'Post-hoc tests innerhalb der Konditionen')
-```
-^[Alternativ: `pairs(mod_em, simple='Auge', adjust="bonferroni", level=0.975, infer=T)`]
+In @fig-ed-crfd-multcom-01 sind die *wahrscheinlich* sinnvollen Vergleiche abgebildet. D.h. auf Grund der Interaktion sollte der Unterschied zwischen den Gruppen getrennt für die beiden Augenkonditionen untersucht werden bzw. der Unterschied zwischen den Augenkonditionen für jede Gruppe getrennt. Algebraisch ist natürlich auch möglich beispielsweise die U19 bei geschlossenen Augen mit den PROs mit offenen Augen zu vergleichen, allerdings ist dieser Vergleich aus wissenschaftlicher Sicht wahrscheinlich wenig sinnvoll.
 
 Achtung!!! @gelman2006
 
@@ -540,17 +500,101 @@ Achtung!!! @gelman2006
 knitr::include_graphics('../pics/gelman2006.png')
 ```
 
+Nochmal Kontraste bei Paarvergleichen
+
+Standardfehler Haupteffekts:
+
+$$
+s_{\text{Haupteffekt}} = \frac{2\sigma}{\sqrt{N}}
+$$
+
+Standardfehler Interaktionseffekts:
+
+$$
+H_0: \mu_{12} - \mu_{22} = \mu_{11} - \mu_{21} \Leftrightarrow H_0: \mu_{12}-\mu_{22}-\mu_{11}-\mu_{21}=0
+$$
+
+$$
+s_{\text{Interaktion}} = \sigma\sqrt{\frac{1}{N/4} + \frac{1}{N/4} + \frac{1}{N/4}+\frac{1}{N/4}}=\frac{4\sigma}{\sqrt{N}} = 2s_{\text{Haupteffekt}}
+$$
+
+Power - Interaktionseffekt
+
+```{r}
+#| fig-cap: "Zusammenhang zwischen Power für den Interaktionseffekt in Relation zur Größe des Interaktionseffekts zum Haupteffekt bei Power = $0.8$ für den Haupteffekt"
+#| fig-width: 4
+#| fig-height: 1.8
+ 
+ref <- 2.8
+tibble(
+  mult = seq(0.5, 2, 0.1),
+  p = 1 - pnorm(1.96, ref*mult/2, 1)
+) |> 
+  ggplot(aes(mult, p)) +
+  geom_line() +
+  scale_x_continuous("Verhältnis Interaktions- zu Haupteffekt",
+                     breaks = c(0.5, 1, 1.5, 2.0),
+                     labels = c(
+                       expression(frac(1,2)),
+                       1,
+                       expression(frac(3,2)),
+                       2
+                     )) +
+  scale_y_continuous("Power",
+                     breaks = seq(0.1, 1, 0.1)) 
+```
+
+see @gelman2018
+
+## Mehrfachvergleiche in `R`
+
+In `R` läuft der Vergleich wiederum nach dem bekannten Muster ab. Zunächst werden die Modellmittelwerte mittels der `emmeans()`-Funktion aus dem Paket `emmeans` anhand des Modells bestimmt. Anschließend kann dann mittels der `pairs()` bzw. der `contrast()`-Funktion der gewünschte Vergleich durchgeführt werden.
+
+Beispielsweise die paarweisen Vergleiche für alle möglichen Kombinationen, auch diejenigen die wenig sinnvoll sind, mittels:
+
+```{r}
+#| echo: true
+
+mod_em <- emmeans(mod_aov, ~Gruppe*Auge)
+pairs(mod_em, infer=T)
+```
+
+Hätten wir uns a-priori entschieden schon fest zu setzen nur die Vergleiche innerhalb der Gruppen bzw. der Augenkonditionen zu untersuchen und mittels Bonferroni-Korrektur den $\alpha$-Level zu kontrollieren. Dann sieht die Syntax in `R` folgendermaßen aus: 
+
+```{r} 
+#| echo: true
+
+mod_em_cauge <- emmeans(mod_aov, ~Gruppe|Auge)
+pairs(mod_em_cauge, adjust = 'bonferroni', level = 1-0.05/2, infer=T)
+```
+
+Die Syntax `~Gruppe|Auge` bedeutet Unterschiede nach `Gruppe` geblockt nach `Auge`. Parallel dazu `Auge`-Unterschiede geblockt für `Gruppe`: Ein Besonderheit ist hier jetzt allerdings der $\alpha$-Level für die beiden Tests. Da wir zwei Mehrfachvergleiche durchführen wollen, sollten wir die $\alpha$-Level für die beiden Gruppen von Mehrfachvergleichen so anpassen, dass wir insgesamt unter den anvisiertem $\alpha$ bleiben. In diesem Fall also $\alpha/2$.
+
+Wir sehen, dass zwischen den Gruppen bei offenen Augen keine Unterschiede gefunden wurde, während bei geschlossenen Augen alle Unterschied statistsch signifikant sind.
+
+```{r}
+#| echo: true
+
+mod_em_cgroup <- emmeans(mod_aov, ~Auge|Gruppe)
+pairs(mod_em_cgroup, adjust = 'bonferroni', level = 1-0.05/2, infer=T)
+```
+
+Hier können wir erkennen dass alle Unterschiede zwischen den Augenkonditionen innerhalb der Gruppen statistisch signifikant sind.
+
+Alternativ hätten wir auch die Befehle `pairs(mod_em, simple="Gruppe", adjust="bonferroni", level=0.975, infer=T)`, bzw. `pairs(mod_em, simple='Auge', adjust="bonferroni", level=0.975, infer=T)` verwenden können um die gleichen Mehrfachvergleich durchzuführen. Das package `emmeans` ist sehr umfangreich und die Dokumentation hat zahlreiche Beispiele für die Syntax um gewünschte Vergleiche durchführen zu können.
+
 Cohen's d für Mehrfachvergleiche 
 
 ```{r}
 #| echo: true
+
 eff_size(mod_em_cauge, sigma=sigma(mod_aov),
                  edf=df.residual(mod_aov))
 ```
 
 ## Anzahl der Replikationen a-priori ermitteln
 
-Zwei Möglichkeiten: 
+Drei Möglichkeiten: 
 
 1) Anhand der Literatur wird $f$ bestimmt.
 2) Es wird ein relevantes/plausibels $\Delta$, als der Unterschied zwischen zwei Gruppen angesetzt.^[$\sigma$ muss trotzdem anhand der Literatur abgeschätzt werden., k = Anzahl der Freiheitsgrade, $f = \sqrt{\omega^2/(1-\omega^2)}$]
@@ -597,50 +641,3 @@ $$
 n_c = \frac{(`r n_s` - 1)(2+1)}{6} + 1 = `r n_c`
 $$
 
-Nochmal Kontraste bei Paarvergleichen
-
-
-Standardfehler Haupteffekts:
-
-$$
-s_{\text{Haupteffekt}} = \frac{2\sigma}{\sqrt{N}}
-$$
-
-Standardfehler Interaktionseffekts:
-
-
-$$
-H_0: \mu_{12} - \mu_{22} = \mu_{11} - \mu_{21} \Leftrightarrow H_0: \mu_{12}-\mu_{22}-\mu_{11}-\mu_{21}=0
-$$
-
-$$
-s_{\text{Interaktion}} = \sigma\sqrt{\frac{1}{N/4} + \frac{1}{N/4} + \frac{1}{N/4}+\frac{1}{N/4}}=\frac{4\sigma}{\sqrt{N}} = 2s_{\text{Haupteffekt}}
-$$
-
-Power - Interaktionseffekt
-
-```{r}
-#| fig-cap: "Zusammenhang zwischen Power für den Interaktionseffekt in Relation zur Größe des Interaktionseffekts zum Haupteffekt bei Power = $0.8$ für den Haupteffekt"
-#| fig-width: 4
-#| fig-height: 1.8
- 
-ref <- 2.8
-tibble(
-  mult = seq(0.5, 2, 0.1),
-  p = 1 - pnorm(1.96, ref*mult/2, 1)
-) |> 
-  ggplot(aes(mult, p)) +
-  geom_line() +
-  scale_x_continuous("Verhältnis Interaktions- zu Haupteffekt",
-                     breaks = c(0.5, 1, 1.5, 2.0),
-                     labels = c(
-                       expression(frac(1,2)),
-                       1,
-                       expression(frac(3,2)),
-                       2
-                     )) +
-  scale_y_continuous("Power",
-                     breaks = seq(0.1, 1, 0.1)) 
-```
-
-see @gelman2018
