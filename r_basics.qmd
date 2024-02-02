@@ -11,15 +11,17 @@ source('_common.R')
 library(tibble)
 ```
 
-Im Folgenden werden wir verschiedene Funktion zur Bearbeitung und Visualisierung von Daten kennenlernen. Die verwendeten Funktionen sind alle in einer großen Sammlung von Funktionen dem `tidyverse` zugeordnet. Pakete aus dem `tidyverse` verfolgen alle eine einheitliche Syntax und Herangehensweise an die Datenverarbeitung. Daneben verfügen sie über eine ausgezeichnete Dokumentation. Daher werden die jeweiligen Funktionen hier nur kurz angeschnitten. Weitergehende Informationen und vor allem jede Menge Beispielanwendungen findet ihr in der `tidyervers` [Dokumention](https://tidyvers.org).
+Im Folgenden werden wir verschiedene Funktion zur Bearbeitung und Visualisierung von Daten kennenlernen. Die verwendeten Funktionen sind alle in einer großen Sammlung von Funktionen dem Paket `tidyverse` zusammengefasst. Pakete aus dem `tidyverse` folgen alle einer einheitlichen Syntax und Idee der Datenverarbeitung. Daneben verfügen sie über eine ausgezeichnete Dokumentation. Daher werden die jeweiligen Funktionen hier nur kurz angeschnitten. Weitergehende Informationen und vor allem jede Menge Beispielanwendungen findet ihr in der `tidyerverse` [Dokumention](https://tidyvers.org).
 
 ## Daten in `R` einlesen
 
-Daten in `R` werden mittels spezieller Funktionen eingelesen, die jeweils auf bestimmte Datentypen spezialisiert sind. Drei Pakete sind dabei für die allermeisten ausreichend. Die Pakete sind `readr`, `readxl` und `haven`. 
+Um Daten von der Festplatte oder anderen Speichermedien in `R` einzulesen benötigen wir spezielle Funktionen. Die Funktionen sind jeweils auf bestimmte Datentypen spezialisiert, daher müssen wir uns über den Dateityp im Klaren sein, um die Daten erfolgreich in `R` einzulesen. In `R` decken drei Pakete den Großteil der in Frage kommenden Dateitypen ab. Die Pakete sind `readr` für Textdateien, `readxl` für Excel-Dateien und `haven` für SPSS-Dateien. 
 
 ### readr
 
-Im Paket `readr` sind eine Reihe von Funktionen enthalten um rechteckige Textdateien einzulesen. Die allgemeineste Funktion ist `read_delim()` bei der angegeben werden muss, welche Trennzeichen (engl. delimiter) zwischen den einzelnen Spalteneinträgen steht. Seien z.B. die folgenden Daten in einer Datei `example_01.txt` in dem Ordner `data` gespeichert.
+Im Paket `readr` sind eine Reihe von Funktionen enthalten um rechteckige Textdateien einzulesen. Rechteckig bezieht sich in diesem Zusammenhang auf die Anordnung der Daten in der Datei ähnlich einer Tabelle. Um die Daten korrekt einzulesen, ist es notwendig die Trennzeichen (im engl. als delimiter bezeichnet) zwischen Datenwerten zu kennen. Übliche Trennzeichen sind ein Komma `,`, ein Semikolon `;`, Leerzeichen oder das Einrückungszeichen {{< kbd TAB >}}. Durch die Kombination von Daten getrennt durch Trennzeichen über mehrer Zeilen kommt daher die rechteckige Anordnung zustande.
+
+Die flexibelste Funktion ist `read_delim()`.  bei der angegeben werden muss, welche Trennzeichen  zwischen den einzelnen Spalteneinträgen steht. Seien z.B. die folgenden Daten in einer Datei `example_01.txt` in dem Ordner `data` gespeichert.
 
 | id	grp	value
 | p1	CON	1
@@ -27,7 +29,7 @@ Im Paket `readr` sind eine Reihe von Funktionen enthalten um rechteckige Textdat
 | p3	TRT	3
 | p4	TRT	4
 
-Das Trennzeichen zwischen den Eintragen ist ein {{< kbd TAB >}}. Die Datei können wir mittels des folgenden Befehls einlesen.
+Das Trennzeichen zwischen den Eintragen ist ein {{< kbd TAB >}}. Die Datei kann mittels des folgenden Befehls einlesen werden.
 
 ```{r}
 #| echo: true
@@ -38,7 +40,13 @@ df <- readr::read_delim(
 )
 ```
 
-Mit der Parameter `\t` spezifizieren das verwendete Trennzeichen. `read_delim()` verwendet eine Reihe von Heuristiken um den jeweiligen Datentyp der Spalten zu bestimmen. Der Rückgabewert von `read_delim()` ist ein `tibble()` mit den Daten, das wir der Variable `df` in dem Fall zuweisen.
+Der Parameter `delim=\t` spezifiziert das verwendete Trennzeichen während `file` den Pfad und den Namen zur Datei angibt. 
+
+:::{.callout-caution}
+Der Pfad zur Datei ist immer entweder relativ zum akutellen Arbeitsverzeichnis (`getwd()`) oder absolut z.B. `C:/X/Y/Z/example_01.txt` anzugeben.
+:::
+
+`read_delim()` verwendet eine Reihe von Heuristiken um den jeweiligen Datentyp (numerisch, Zeichenkette, etc.) der Spalten zu bestimmen. Der Rückgabewert von `read_delim()` ist ein `tibble()` der Daten. In unserem Beispiel weisen wir dem `tibble()` den Variabllennamen `df` zu und können somit in der weiteren Analyse mit dem Bezeichner `df` auf die Daten zugreifen.
 
 ```{r}
 #| echo: true
@@ -46,9 +54,10 @@ Mit der Parameter `\t` spezifizieren das verwendete Trennzeichen. `read_delim()`
 df
 ```
 
-Im Beispiel sind die ersten beiden Spalten als Zeichenketten (`<char>`) erkannt worden, während die dritte Spalte als Zahl (`<dbl>`) erkannt wurde. Manchmal funktionieren die Regeln nicht korrekt. In dem Falle können mit dem Parameter `col_types` die Spaltentypen direkt angegeben werden. Wenn keine Kopfzeile in den Daten vorhanden ist, kann diese über den Parameter `col_names` spezifiziert werden. Mit `skip` können Zeilen zu Beginn der Datei übersprungen werden.
+Im Beispieldaten sind die ersten beiden Spalten als Zeichenketten (`<char>`) erkannt worden, während die dritte Spalte als Zahl (`<dbl>`) erkannt wurde. Manchmal funktionieren die Regeln nicht korrekt. In dem Falle können mit dem Parameter `col_types` die Spaltentypen direkt angegeben werden. Wenn keine Kopfzeile in den Daten vorhanden ist, kann diese über den Parameter `col_names` spezifiziert werden. Mit `skip` können Zeilen zu Beginn der Datei übersprungen werden.
 
-Zum Beispiel wenn wir die Spaltennamen anders haben wollen, können wir die erste Zeile beim einlesen überspringen und andere Spaltennamen angeben.
+::: {#exm-readr-01}
+Wollen wir zum Beispiel andere Spaltennamen haben, dann können wir die erste Zeile beim einlesen überspringen und andere Spaltennamen angeben.
 
 ```{r}
 #| echo: true
@@ -62,8 +71,10 @@ readr::read_delim(
 )
 ```
 
-Wie immer, wenn ihr das Paket `readr` mit `library()` geladen habt, ist die Qualifizierung `readr::` nicht notwendig um die Funktion zu verwenden. Die weiteren Funktionen in `readr`  wie `read_csv`, `read_tsv` usw. sind in den meisten Fällen Spezialversionen von `read_delim` bei denen der Parameter `delim` schon voreingestellt ist. Schaut euch etwas in der [Dokumentation](https://readr.tidyverse.org/reference/index.html) um einen Überblick über die verschiedenen Varianten zu bekommen.
+Wenn ihr das Paket `readr` vorher mit `library(readr)` geladen habt, ist die Qualifizierung der Funktion mit `readr::` nicht notwendig und könnt direkt nur den Funktionsnamen verwenden. Hier überspringen wir mit `skip=1` die erste Zeile in der Datei und geben mit `col_names=c('ID','Gruppe','Wert')` eigene Spaltennamen an und spezifizieren direkt mit `col_types` die Dateitypen der Spalten mit `c` $=$ `character` und `d` = `double`.
+:::
 
+Die weiteren Funktionen in `readr`  wie `read_csv`, `read_tsv` usw. sind in den meisten Fällen Spezialversionen von `read_delim` bei denen der Parameter `delim` schon voreingestellt ist. Schaut euch etwas in der [Dokumentation](https://readr.tidyverse.org/reference/index.html) um, um einen Überblick über die verschiedenen Varianten und Funktionalitäten zu bekommen.
 
 ### readxl
 
@@ -76,20 +87,28 @@ Die gleichen Daten in einer Excel-Datei können wir mit der Funktion `read_xlsx(
 knitr::include_graphics('pics/excel_example.png')
 ```
 
-Die Daten können mit dem folgenden Befehl dann geladen werden.
+dann können wir die Daten mit dem folgenden Befehl laden:
 
 ```{r}
 #| echo: true
 
-df <- readxl::read_xlsx('data/example_01.xlsx',
-                        sheet = 'data',
-                        range = 'A1:C5')
+df <- readxl::read_xlsx(
+  path = 'data/example_01.xlsx',
+  sheet = 'data',
+  range = 'A1:C5'
+)
 df
 ```
 
+Ähnlich wie bei `read_delim()` geben wir mit `path` den Pfad zur Datei an. Mit `sheet` spezifizieren wir aus welchem Excelblatt wir die Daten einlesen wollen, während wir mit `range` den Bereich auf dem Blatt definieren. Je nachdem wie kompliziert eure Exceldatei aussieht müssen `sheet` und `range` oft gar nicht angegeben werden da `read_xlsx()` auch über heuristische Regeln versucht zu erraten welche Daten ihr einlesen wollt, allerdings ist dies eher eine fragile Annahme und daher im Sinne einer robusten Datenanalyse würde ich empfehlen beide Parameter immer anzugeben.
+
+:::{.callout-note}
+Bei Parameter `range` darauf achten, das dieser bei Veränderung der Excel-Datei, z.B. wenn neue Daten dazukommen entsprechend angepasst wird.
+:::
+
 ### haven
 
-Das gleiche Prinzip nochmal bei SPSS-Dateien (siehe @fig-r-basics-spss).
+Im Paket `haven` haben wir Funktionen um mit SPSS-Dateien (siehe @fig-r-basics-spss) zu arbeiten.
 
 ```{r}
 #| label: fig-r-basics-spss
@@ -98,7 +117,7 @@ Das gleiche Prinzip nochmal bei SPSS-Dateien (siehe @fig-r-basics-spss).
 knitr::include_graphics('pics/spss_example.png')
 ```
 
-Hier kann die Funktion `read_sav()` aus dem Paket `haven`.
+Die Funktionen arbeiten dabei auch, wenn SPSS gar nicth auf dem Rechner installiert ist. Allerdings kann hier nicht nachkontrolliert werden ob das Einlesen korrekt stattgefunden hat, wenn keine Dokumentation zu den Daten vorhanden ist. In SPSS werden Datein üblicherweise in einem `sav`-Dateikontainer gespeichert. Entsprechend können die Daten mittels einer Funktion `read_sav()` aus `haven` eingelesen werden.
 
 ```{r}
 #| echo: true
@@ -107,6 +126,11 @@ df <- haven::read_sav('data/example_01.sav')
 df
 ```
 
+Da SPSS eigene Datentypen, insbesondere im Zusammenhang mit nominalen bzw. ordinalen Variablen hat, sind im Paket `haven` spezielle Datentypen definiert. Im Beispiel hier ersichtlich am Datentyp für `grp` mit `<dbl+lbl>`. Es handelt sich hier um den Datentypen `labelled`. In der Dokumentation von `read_sav()` gibt es hierzu weiter Informationen. 
+
+:::{.callout-tip}
+Mit der Funktion `as_factor()` aus dem Paket `haven` können die `labelled` Daten in Standardfaktoren `factor` umgewandelt werden.
+:::
 
 ## Daten in `R` prozessieren mit `tidyverse()`
 
