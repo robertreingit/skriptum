@@ -6,3 +6,480 @@
 #| message: false
 source('_common.R')
 ```
+```{r defs, echo = FALSE, message = FALSE, warning=FALSE}
+require(emmeans)
+my_tbl <- function(df, header, caption='', ...) {
+  knitr::kable(df,
+               booktabs = TRUE,
+               digits = 2,
+               col.names = header,
+               caption = caption,
+               linesep = '',
+               ...)
+}
+```
+
+In den vorhergehenden Kapiteln zu CRD bzw. CRFD haben wir uns angeschaut, wie wir den Einfluss einer oder mehrer nominaler unabhängiger Variablen auf eine abhängige Variable modellieren können. In diesem Zusammenhang habe wir uns auch mit der Varianzzerlegung auseinandergesetzt und immer wieder gesehen, dass diese Zerlegung auch als der Vergleich von verschiedenen Modellen miteinander betrachtete werden kann.
+
+## Problem
+
+
+## Nuisance factor, concomitant variables, covariate
+
+```{r}
+#| fig-cap: "Zusammenhang einer abhängigen Variable mit einer Kovariate"
+
+dat_0 <- tibble(
+  x = c(-1,1),
+  A = 3*x,
+  B = 3*x + 1
+) |> tidyr::pivot_longer(-x)
+ggplot(dat_0, aes(x, value, color=name)) +
+  geom_line(size=2) +
+  scale_x_continuous("Covariate", labels = NULL) +
+  scale_y_continuous("DV", labels = NULL) +
+  scale_color_discrete("Treatment") 
+```
+
+## Terminologie{.t}
+
+- commensurate covariates
+  - Variablen auf der gleichen Skala wie die DV
+- Unterscheidung zwischen
+  - Kovariate für das Untersuchungsdesign
+  - Kovariate für die Analyse der Daten
+
+\vspace{1cm}
+
+*Wie würden sich die Gruppen unterscheiden, wenn sie die gleichen Werte in der Kovariate hätten?*
+
+## Probleme
+
+```{r}
+#| fig.cap="Probleme durch die Kovariate"
+
+set.seed(1)
+slope <- 0.2
+trt <- 8
+dat_1 <- tibble(
+  x = rep(seq(10, 80, 10), each=2),
+  trt = rep(c(trt,0), each=8),
+  trt_f = factor(trt, labels=c('A','B')),
+  y = slope * x + trt + rnorm(16, 0, sd=1),
+)
+ggplot(dat_1, aes(x, y, color=trt_f)) +
+  geom_point(size=3) +
+  geom_abline(slope = slope, linetype='dashed') +
+  geom_abline(slope = slope, intercept = trt, linetype='dashed') +
+  scale_x_continuous("Covariate", labels = NULL) +
+  scale_y_continuous("DV", labels = NULL) +
+  scale_color_discrete("Treatment") 
+```
+
+
+## Modell
+
+### Parallel line model
+
+$$
+Y_{it} = \mu + \tau_i + \beta x_{it} + \epsilon_{it} \quad \epsilon_{it} \sim \mathcal{N}(0,\sigma^2)
+$$
+
+### Centered model
+
+$$
+Y_{it} = \mu^* + \tau_i + \beta (x_{it} - \bar{x}_{..}) + \epsilon_{it}
+$$
+
+## Voraussetzungen
+
+- Experimental units sind randomisiert in die Gruppen eingeteilt worden
+- Varianz $\sigma^2$ ist konstant über Gruppen und Werte der Kovariate
+- Die Kovariate und das Treatment sind statistisch unabhängig voneinander
+
+## Beispiel^[nach @maxwell2004]
+
+```{r}
+bw <- tibble(
+  id = paste0('S', 1:6),
+  group = rep(c('TRT','CON'), each=3),
+  x = c(1,2,3,3,4,5),
+  y = c(4,9,8,12,11,16)
+)
+bw |> knitr::kable(
+  col.names=c('ID','Gruppe','X','Y'),
+  caption="Beispieldaten",
+  linesep = "",
+  booktabs = TRUE
+)
+```
+
+## Modellvergleich
+
+### Volles Modell
+$$
+y_{ij} = \mu + \tau_{j} + \beta X_{ij} + \epsilon_{ij}
+$$
+
+### Reduziertes Modell
+$$
+y_{ij} = \mu + \beta X_{ij} + \epsilon_{ij}
+$$
+
+
+## Berechnung und statistischer Test
+```{r, eval=F, echo=T}
+mod_0 <- lm(y ~ x, bw)
+mod_1 <- lm(y ~ x + group, bw)
+anova(mod_0, mod_1)
+```
+
+```{r}
+mod_0 <- lm(y ~ x, bw)
+mod_1 <- lm(y ~ x + group, bw)
+broom::tidy(anova(mod_0, mod_1)) |>
+  knitr::kable(booktabs=T,
+               caption="Vergleich full vs. reduced model.",
+               digits=3)
+```
+
+## Oder auch mit `aov()`
+```{r, eval=F, echo=T}
+mod_aov <- aov(y ~ x + group, bw)
+summary(mod_aov)
+```
+
+```{r}
+mod_aov <- aov(y ~ x + group, bw)
+broom::tidy(mod_aov) |>
+  knitr::kable(booktabs=T,
+               caption="ANOVA-Tabelle",
+               digits=3)
+```
+
+## Aber...???
+
+```{r, echo=T, eval=F}
+mod_aov <- aov(y ~ group, bw)
+summary(mod_aov)
+```
+```{r}
+mod_aov <- aov(y ~ group, bw)
+broom::tidy(mod_aov) |> 
+  knitr::kable(booktabs=T,
+               caption="ANOVA-Tabelle",
+               digits=4)
+```
+
+## Grafik
+
+:::: columns
+::: column
+```{r}
+#| fig.cap="ANOVA-Modell",
+#| fig.height=4
+
+ggplot(bw, aes(x, y)) +
+  geom_point(aes(pch=group), size=4) +
+  scale_shape_discrete('Gruppe') 
+```
+
+:::
+::: column
+```{r}
+#| fig.cap="ANCOVA-Modell",
+#| fig.height=4
+
+ggplot(bw, aes(x,y,color=group)) +
+  geom_point(size=4) +
+  geom_smooth(method='lm', se=F) +
+  scale_color_discrete("Gruppe") 
+```
+
+:::
+::::
+
+## Adjusted means $\bar{Y}_l'$
+
+$$
+E[\bar{Y}_{i.}] = \mu + \tau_i + \beta\bar{x}_{..})
+$$
+
+```{r, echo=T}
+x_new <- tibble(x = mean(bw$x), group=c('TRT','CON'))
+y_bar_j <- predict(mod_1, newdata = x_new)
+y_bar_j
+```
+
+## Adjusted means im Beispiel
+
+```{r}
+#| fig.cap="Korrigierte Mittelwerte der Gruppen bei $\\bar{x}$."
+mod_slopes <- tibble(
+  x = rep(coef(mod_1)[2],2),
+  y = c(coef(mod_1)[1] + c(0, coef(mod_1)[3])),
+  group = c('CON','TRT'))
+x_new <- x_new |> dplyr::mutate(y = y_bar_j)
+ggplot(bw, aes(x,y,shape=group)) +
+  geom_point(size=4) +
+  geom_abline(data = mod_slopes, aes(slope=x, intercept=y),
+              linetype='dashed') +
+  geom_point(data = x_new, size=4, col='red') +
+  scale_shape_discrete("Gruppe") 
+```
+
+## ... oder Adjusted means mit `emmeans()`
+
+```{r, echo=T}
+y_bar_j2 <- emmeans::emmeans(mod_1, ~group)
+y_bar_j2
+```
+
+
+## Beispiele für Effektrelationen 
+
+:::: columns
+::: column
+```{r}
+#| fig.height=4,
+#| fig.cap="Effekt verkleinert sich"
+ 
+gg_adjust <- function(y_1=1) {
+df_g <- tibble(
+  x = c(1,2,2,3),
+  y = c(y_1,y_1+1,3,4),
+  g = rep(letters[1:2],each=2),
+  Typ = c('raw','adj','adj','raw'),
+  xend = 1:4,
+  yend = 1:4
+)
+df_g_2 <- tibble(
+  x = 1:3, xend=1:3,
+  y = rep(0,3), yend=c(y_1,max(y_1+1,3),4),
+  g = letters[4:6]
+)
+df_g_3 <- tibble(
+  x = c(0,0),
+  xend = c(1,3),
+  y = c(y_1,4),
+  yend = c(y_1,4),
+  g = letters[7:8]
+)
+ggplot(df_g, aes(x,y,groups=g,xend=xend,yend=yend)) +
+  geom_segment(data = df_g_2, 
+               linetype='dashed') +
+  geom_segment(data = df_g_3) +
+  geom_hline(yintercept=c(y_1+1,3), col='red', linetype='dashed') +
+  geom_line(size=2) +
+  geom_point(mapping=aes(color = Typ), size=4) +
+  scale_x_continuous("", breaks=1:3,
+                     labels=c(expression(bar(X)[1]),
+                              expression(bar(X)),
+                              expression(bar(X)[2]))) +
+  scale_y_continuous("", labels=NULL) 
+}
+gg_adjust()
+```
+
+:::
+::: column
+```{r}
+#| fig.height=4,
+#| fig.cap="Effekt vergrößert sich"
+
+gg_adjust(3.5)
+```
+:::
+::::
+
+
+## Effect size $\omega^2$
+
+### overall
+$$
+\hat{\omega}^2=\frac{df_{\text{effect}}(MS_{\text{effect}}-MS_{\text{error}})}{SS_{\text{total}}+MS_{\text{error}}}
+$$
+
+### Im Beispiel
+$$
+\hat{\omega}^2 = \frac{1(2.4 - 4)}{82 + 4} = `r round(1*(2.4-4)/(82+4),2)`
+$$
+
+^[Bei $\hat{\omega}^2 < 0$ wird auf $0$ gekappt.]
+
+## Effect size $\omega^2$
+
+```{r}
+#| echo: true
+effectsize::omega_squared(mod_1, partial=F)
+```
+
+
+## standardized differences between means
+
+$$
+\hat{d} = \frac{\bar{Y}_l' - \bar{Y}_m'}{\sqrt{MS_W}}
+$$
+
+\scriptsize
+
+```{r}
+#| echo: true
+mod_r <- lm(y ~ group, bw)
+emmeans::eff_size(y_bar_j2, sigma = sigma(mod_r), edf = df.residual(mod_r))
+```
+
+\alert{ATTENTION} $MS_W$ = Error in ANOVA-Model: `y ~ g` \alert{w/o covariate} or $(SS_g + SS_{\text{error}})/(df_g + df_{\text{error}})$ from ANCOVA-Model.
+
+## sample size estimate
+
+\begin{align*}
+\sigma_{\epsilon(\text{ANCOVA})}^2 &= \sigma_{\epsilon(\text{CRD})}^2(1-\rho_{xy}^2) \\
+f_{\text{ANCOVA}} &= \frac{\sigma_{\text{btw}}}{\sigma_{\epsilon(\text{CRD})}}\frac{1}{\sqrt{1-\rho_{xy}^2}} = \frac{f_{\text{CRD}}}{\sqrt{1-\rho_{xy}^2}} 
+\end{align*}
+
+$df_{\text{Residual}} = N - k - 1$ under the ANCOVA model
+
+## sample size Beispiel^[nach @maxwell2004]
+
+In einer CRD-Studie wurde eine Effektstärke für den Unterschied zwischen drei Gruppen ($k = 3$) von $f = 0.41$ gefunden. Wie verändert sich die notwendige Stichprobengröße wenn eine Kovariate mit $\rho = 0.5$ mit der abhängigen Variable hinzugenommen wird?
+
+## sample size example 
+\small
+Bei einer power von $0.8$ wird eine Stichprobengröße von:
+
+```{r, echo=T}
+pwr::pwr.anova.test(k=3, f=0.41, sig.level=0.05, power=0.8)$n
+```
+Wenn die Kovariate modelliert wird, erhöht sich die Effektstärke auf $f = 0.41/\sqrt{1-0.5^2} = 0.47$. Daraus resultiert eine reduzierte Stichprobengröße von:
+
+```{r, echo=T}
+pwr::pwr.anova.test(k=2, f=0.47, sig.level=0.05, power=0.8)$n
+```
+
+## Was passiert wenn die Kovariate interagiert
+
+```{r}
+#| fig.cap="Beispiel für einen Interaktionseffekt zwischen der Treatmentvariablen und der Kovariate"
+ 
+
+n <- 60
+set.seed(1)
+df_i <- tibble(
+  x = runif(n, -3, 3),
+  g = sample(-1:1, n, replace=T),
+  y = 3 + 2*g + 3*x + g*x + rnorm(n),
+  gruppe = LETTERS[1:3][g+2]
+)
+p_1 <- ggplot(df_i, aes(x,y,color=gruppe)) + 
+  geom_point(size=2) +
+  geom_smooth(method='lm', se=F, formula=y~x) +
+  scale_color_manual('Gruppe', values=c('dark red','green','blue')) +
+  labs(x = 'X', y = 'Y') 
+print(p_1)
+```
+
+## Modell
+
+$$
+y_{it} = \beta_0 + \tau_i + \beta \cdot x_{it} + (\tau\beta)_{it}x_{it} + \epsilon_{it}
+$$
+
+## Welcher Unterschied zwischen den Gruppen? 
+
+```{r}
+print(p_1)
+```
+
+## Modellfit - Interaktionsmodell
+
+```{r, echo=T, results='hide'}
+mod <- aov(y ~ x*gruppe, df_i)
+anova(mod)
+```
+\small
+```{r}
+anova(mod) |> broom::tidy() |> 
+  knitr::kable(
+    booktabs=T,
+    digits = 2,
+    col.names = c('Term', 'df', 'SSQ', 'MSQ', 'F', 'p.value'),
+    caption="Anova-Tabelle für Interaktionsmodell")
+```
+
+
+## Mehrfachvergleiche - EMS Mittelwerte
+
+```{r}
+#| echo: true
+ 
+mod_ems <- emmeans(mod, ~gruppe|x, at=list(x=c(-2,0,2)))
+mod_ems
+```
+
+## Mehrfachvergleiche - Paarweise Vergleiche
+
+```{r, echo=T, results='hide'}
+pairs(mod_ems)
+```
+\scriptsize
+```{r}
+pairs(mod_ems) |> broom::tidy() |> 
+  dplyr::select(x, contrast, estimate, std.error, df, statistic, adj.p.value) |> 
+  my_tbl(header=c('x','contrast','estimate','$s_e$', '$df$','t','p'),
+         caption="Paarvergleiche",
+         escape=F)
+```
+
+## Beispiel aus [@maxwell2004, p.429]
+
+```{r}
+#| fig-cap: "Depression Beispiel aus Maxwell et al. (2004, p.429)"
+tbl_97 <- readr::read_delim('data/maxwell_tbl_9_7.csv',
+                     delim = ',', trim_ws = TRUE) |> 
+  mutate(Condition = factor(Condition,
+                            levels = 1:3,
+                            labels = c('SSRI','Placebo','Wait list'))) |> 
+  mutate(id = paste0('P',1:n()), .before = 1) |> 
+  pivot_longer(-c(id, Condition), names_to = 'time', values_to = 'bdi') |> 
+  mutate(time = factor(time, levels = c('Pre','Post')))
+ggplot(tbl_97, aes(Condition, bdi, fill=time)) + 
+  geom_boxplot() +
+  scale_fill_discrete('Zeit') +
+  labs(x = 'Kondition', y = 'BDI depression score')
+```
+
+## Analyse
+
+```{r}
+bdi_w <-tbl_97 |>
+  pivot_wider(id_cols = c(id,Condition), names_from=time, values_from=bdi) 
+```
+```{r}
+#| echo: true
+mod_bdi <- lm(Post ~ Pre + Condition, bdi_w)
+anova(mod_bdi) |> broom::tidy() |> 
+  kable(booktabs = T, digits = 3)
+```
+
+## Gruppenvergleiche
+\scriptsize
+```{r}
+#| echo: true
+
+bdi_em <- emmeans(mod_bdi, ~Condition)
+pairs(bdi_em, infer=T)
+```
+
+
+## Zum Nachlesen
+
+### Allgemein
+[@maxwell2004, p.451-467]
+
+### Pre-post ANCOVA
+@wan2021
+
+### Regression to the mean
+@shephard2003, @barnett2005, @nevill2004
+
