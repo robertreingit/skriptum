@@ -14,20 +14,23 @@ Im Folgenden beschäftigen wir uns mit experimentellen Design. D.h. wir untersuc
 
 ## Zuteilung der Stichprobengrößen in zwei Gruppen
 
-Die folgenden Beispiel sind alle aus @goos2011 entnommen. Wir möchten den Unterschied bezüglich des Mittelwerts zwischen zwei Gruppen $1$ und $2$ untersuchen. In Gruppe $1$ haben wir eine Stichprobengröße von $n_1$ und entsprechend eine Stichprobegröße $n_2$ in Gruppe $2$. Den Unterschied zwischen den beiden Mittelwerten aus den Gruppen berechnen wir wie bekannt nach.
+Die folgenden Beispiele sind alle aus @goos2011 entnommen. Wir möchten Mittelwertsunterschied zwischen zwei Gruppen, Gruppe $1$ und Gruppe $2$, untersuchen. In Gruppe $1$ haben wir eine Stichprobengröße von $n_1$ und entsprechend eine Stichprobegröße $n_2$ in Gruppe $2$.
+
+Um den Unterschied zwischen den beiden Gruppenmittelwerten zu berechnen, verwenden wir den unspektakulär:
 
 \begin{equation}
 D = \bar{X}_1 - \bar{X}_2
 \end{equation}
 
-Um die Wahrscheinlichkeit zu erhöhen einen relevanten Unterschied $D$ zwischen den Gruppen zu finden sollten wir das Design des Experiments so wählen, dass die Varianz $\sigma^2(D)$ bzw. der Standardfehler $\sigma_e(D)$ von $D$ möglichst klein wird. Umso kleiner der Standardfehler umso geringer sind die Streuungen in den Stichprobenverteilung und umso geringer ist die Unsicherheit. Die Varianz $\sigma^2(D)$ berechnet sich nach:
+Der Unterschied $D$ für sich ist noch relativ wenig informativ, da er mit den Einheiten und vor allem vor dem Hintergrund der Streuung der Werte zu betrachten ist. D.h. wir benötigen auch ein Maß um die Unsicherheit $\widehat{=}$ Streuung um einen gegebenen Unterschied zu bewerten. Den Standardfehler können wir mit den uns bekannten Rechenregeln für die Varianz relativ einfach herleiten und erhalten:
 
 \begin{equation}
-\sigma^2(D) = \frac{\sigma_1^2}{n_1} + \frac{\sigma_2^2}{n_2}
+\sigma^2(D) = \frac{\sigma_1^2}{n_1} + \frac{\sigma_2^2}{n_2} 
 \end{equation}
 
-Der Standardfehler von $D$ ist dementsprechend die Wurzel der Varianz. Schauen wir uns an, was dies in einem konkreten Fall bedeutet. Wir gehen von einer Gesamtstichprobengröße von $N = 12$ und der Einfachheit halber von einer Standardabweichungen in beiden Population von $\sigma^2_1 = \sigma^2_2 = \sigma^2 = 1$ aus.
+Um die Wahrscheinlichkeit zu erhöhen einen relevanten Unterschied $D$ zwischen den Gruppen zu finden wählen wir nun ein Design des Experiments, dass die Varianz $\sigma^2(D)$ bzw. den Standardfehler $\sigma_e(D)$ von $D$ möglichst klein werden lässt. Denn, umso kleiner der Standardfehler umso geringer sind die Streuungen der Stichprobenverteilung und umso geringer unsere Unsicherheit. 
 
+Schauen wir uns an, was dies in einem konkreten Fall bedeutet. Gehen wir, der Übersichtlichkeit halber, von einer Gesamtstichprobengröße $N = 12$ aus mit Standardabweichungen in beiden Population von $\sigma^2_1 = \sigma^2_2 = \sigma^2 = 1$. D.h. wir nehmen an, dass in beiden Stichproben die gleiche Streuung vorliegt.
 
 ```{r}
 #| tbl-cap: "Abhängigkeit der Varianz und des Standardfehler von $D$ mit der Stichprobenverteilung bei gleicher Varianz"
@@ -167,7 +170,7 @@ Führen wir zum Beispiel ein fünf-tägiges Experiment mit $10$ Teilneherinnen d
 ### Replikation
 
 Eine Replikation ist die Wiederholung der Versuchssituation durch
-Replikation der Versuchseinheit. Replikationsläufe sind zwei oder mehr Versuche, die mit denselben Bedingungen der experimentellen Kondition bzw. unabhängigen Variablen mit **unterschiedlichen** experimentellen Einheiten durchgeführt werden. Der Wert der gemessene abhängigen Variable kann sich zwischen den Replikationsläufen aufgrund von Änderungen Störvariablen und inhärenten Unterschieden in den Versuchseinheiten unterscheiden.
+Replikation der Versuchseinheit. Replikationsläufe sind zwei oder mehr Versuche, die mit denselben Bedingungen der experimentellen Kondition bzw. unabhängigen Variablen mit **unterschiedlichen** experimentellen Einheiten durchgeführt werden. Der Wert der gemessene abhängigen Variable kann sich zwischen den Replikationsläufen aufgrund von Änderungen, Störvariablen und inhärenten Unterschieden in den Versuchseinheiten unterscheiden.
 :::
 
 ::: {#def-repetition}
@@ -266,10 +269,43 @@ Im nächsten Design wird es nun etwas komplizierter. Wir untersuchen drei versch
 
 In diesem Fall erfolgt die Zuweisung der Treatments also nicht auf dem Level der Teilnehmer, sondern auf dem Level der drei Vereine. Dies führt nun dazu, da die experimentellen Einheiten laut der Definition die Treatment randomisiert zugewiesen bekommen müssen, dazu, dass die Vereine zu den experimentellen Einheiten werden, nicht die einzelnen Teilnehmer. Folgerichtig ist $N$ is diesem Fall $N = 3$ und nicht $N = 9$ wie in den beiden vorhergehenden Fällen. Dies führt weiterhin dazu, dass wir keine Replikation der experimentellen Einheiten vorliegen haben, da jede Kondition nur einmal unter eine experimentellen Einheit beobachtet wurde. Darauf folgt sofort, dass es nicht möglich ist die Ergebnisse über die Studiegruppe hinaus zu generalisieren, da keine ausreichend große Stichprobe gezogen haben. Wir haben nur eine einzelne experimentelle Einheit beobachtet und können keine Aussagen über die Varianz zwischen experimentellen Einheiten aussagen. Die drei Teilnehmer innerhalb der jeweiligen Vereine werden als Pseudoreplikationen mit einem Faktor von $3$ interpretiert. Da wir insgesamt neun Messungen beobachten erhalten wir neun Beobachtungseinheiten.
 
-Um aus den Teilneherm tatsächlich auch neun experimentelle Einheiten zu machen, müssen wir die Treatments unabhängig von den Vereinen randomisieren. Zusätzlich müssen wir auch noch sicherstellen, das das Treatment in isolation durchgeführt wird, da, wieder der Definition folgend, das Treatment unabhängig von den anderen experimentellen Einheiten durchgeführt werden muss. D.h. wir können auch keine Gruppen bilden die beispielsweise gemeinsam trainieren, da es dadurch auch wieder zu ungewollten Interaktioneffekten zwischen den experimentellen Einheiten kommen kann, welche die Unabhängigkeit der experimentellen Einheiten beeinflusst. Dadurch würde dann wieder jede Gruppe zu einer experimentellen Einheit zusammengeführt. Die Nichtbeachtung von Abhängigkeiten zwischen experimentellen Einheiten führt in der Analyse zu fehlerhaften Ergebnisse die insbesondere zu einer Vergrößerung des Type-I Fehler führen. D.h. Ergebnisse werden zu oft als statistisch signifikant deklariert (@hurlbert1984, @lazic2018, @silverman2004).
+Um aus den Teilnehmern tatsächlich auch neun experimentelle Einheiten zu machen, müssen wir die Treatments unabhängig von den Vereinen randomisieren. Zusätzlich müssen wir auch noch sicherstellen, das das Treatment in isolation durchgeführt wird, da, wieder der Definition folgend, das Treatment unabhängig von den anderen experimentellen Einheiten durchgeführt werden muss. D.h. wir können auch keine Gruppen bilden die beispielsweise gemeinsam trainieren, da es dadurch auch wieder zu ungewollten Interaktioneffekten zwischen den experimentellen Einheiten kommen kann, welche die Unabhängigkeit der experimentellen Einheiten beeinflusst. Dadurch würde dann wieder jede Gruppe zu einer experimentellen Einheit zusammengeführt. Die Nichtbeachtung von Abhängigkeiten zwischen experimentellen Einheiten führt in der Analyse zu fehlerhaften Ergebnisse die insbesondere zu einer Vergrößerung des Type-I Fehler führen. D.h. Ergebnisse werden zu oft als statistisch signifikant deklariert (@hurlbert1984, @lazic2018, @silverman2004).
+
+Die Anzahl der Replikationen der EU bestimmt die Präzision des experimentellen Fehlers $\sigma^2$ in der jeweiligen Untersuchung. Nehmen wir zum Beispiel zwei EUs welche das gleiche Treatment zugewiesen bekommen haben, z.B. zwei Athletinnen. Wenn wir nun eine Messung durchführen, z.B. die Sprungleistung, dann wird sich die Sprungleistung zwischen den bieden Athletinnen üblicherweise unterschieden einfach schon auf Grund der Inter-individuellen Unterschiede zwischen Personen. Wir vernachlässigen zunächst, das bei biologischen System selbst schon bei Wiederholung der gleichen Messung zum Teil bedeutsame Unterschiede auftreten werden. Die Unterschiede zwischen den Messungen der beiden Athletinnen spiegeln unseren experimentellen Fehler wieder. Im Sinne des generellen linearen Modells ist dies unser altbekannter Residualfehler $\epsilon_i$. Umso mehr Replikationen wir haben, umso präziser werden wir diesen experimentellen Fehler bestimmen. D.h. mit Hilfe der Replikation versuchen wir die Präzision $\widehat{=}$ unsere Unsicherheit über den Residualfehler zu verkleinern.
+
+Die Anzahl der Wiederholungen ziele im Gegensatz zur Repliationen dagegen ab, die Streuung innerhalb der EUs zu minimieren. Zum Beispiel wenn wir unsere Athletinnen nicht nur einmal sondern mit entsprechenden Pausen mehrmals springen lassen. Dadurch wir unsere Abschätzung der Sprungleistung der Athletinnen besser.
+
+Versuchen wir diese beiden Beiträge etwas zu formalisieren. Seien drei verschiedene Varianzkomponenten gegeben. 1) die Varianz zwischen den Athletinnen $\sigma_{\text{Person}}^2$, 2) die Varianz innerhalb der jeweiligen Athleting $\sigma_{\text{innerhalb}}^2$ und dann noch eine Residualstreuung die auf zufällige Einflüsse zurück zu führen ist $\sigma_{\epsilon}^2$. Die Gesamtvarianz $\sigma_{\text{total}}^2$ die wir nun in den Messungen der Sprunghöhen beobachten kann dann als die Summe dieser drei Komponenten beobachtet werden (Wir gehen davon aus, dass sich die Komponenten untereinander nicht beeinflussen also unabhängig voneinander sind).
+
+\begin{equation}
+\sigma_{\text{total}}^2 = \sigma_{\text{Person}}^2 + \sigma_{\text{innerhalb}}^2 + \sigma_{\epsilon}^2
+\end{equation}
+
+Diese Gleichung beschreibt die Varianzkomponenten innerhalb einer Treatmentstufe. Wenn wir nun EUs aus unterschiedlichen Treatmentstufen $\tau_i$ zusammenstecken, dann wird die Gleichung entsprechend um diese zusätzliche Varianzkomponente $\sigma_{\tau}^2$ erweitert. 
+
+\begin{equation}
+\sigma_{\text{total}}^2 = \sigma_{\tau}^2 + \sigma_{\text{Person}}^2 + \sigma_{\text{innerhalb}}^2 + \sigma_{\epsilon}^2
+\end{equation}
+
+Die Idee des experimentellen Designs ist es nun, ein Design zu finden, das es ermöglicht diese Komponenten durch eine intelligente Verteilung der Faktorstufen, Replikationen und Wiederholungen möglichst präzise zu bestimmen.
+
+Möchte ich zum Beispiel den Einfluss des Treatment $\tau_i$ bestimmen, dann Vergleiche ich die durch das Treatment entstehende Varianz $\sigma_{\tau}^2$ mit dem experimentellen Fehler $\sigma_{\epsilon}^2$ um zu entscheiden ob die Unterschiede zwischen den Faktorstufen auch wirklich bedeutsam sind. In Pseudoschreibweise:
+
+\begin{equation*}
+\frac{\sigma_{\tau}^2}{\sigma_{\epsilon}^2}
+\end{equation*}
+
+Wähle ich nun aber ein Design bei dem ich die Varianz innerhalb der Athletinnen $\sigma_{\text{innerhalb}}^2$ nicht isoliert bestimmen kann, dann geht $\sigma_{\text{innerhalb}}^2$ in $\sigma_{\epsilon}^2$ auf. Im englischen heißt, dass confounded. Ich kann die beiden Varianzkomponenten nicht voneinander trennen. Dadurch wird dann der Vergleich von $\sigma_{\tau}^2$ mit $\sigma_{\epsilon}^2$ entsprechend schlechter ausfallen.
+
+\begin{equation*}
+\frac{\sigma_{\tau}^2}{\sigma_{\epsilon^*}^2} = \frac{\sigma_{\tau}^2}{\sigma_{\epsilon}^2 + \sigma_{\text{innerhalb}}^2}
+\end{equation*}
+
+Im folgenden sehen wir eine Übersicht über verschiedene Standarddesigns.
 
 ## Übersicht über verschiedene Designs
 
+Das einfachste Design ist ein *completely randomized design* oder kurz *CRD*. Wir haben eine unabhängige, nominale Variable $A$ die verschiedene Faktorstufen (auch Levels) hat. Die EUs werden randomisiert auf die Faktorstufen verteilt und es wird nur eine Messung und somit eine Beobachtungseinheit bestimmt. In diesem Fall können wir auch nur eine Varianzkomponente $\sigma_{\tau}^2$ bestimmen. In @tbl-ed-basic-crd ist  ein Beispiel mit drei Faktorstufen für $A$ und zwei Replikationen abgebildet.
 
 +-----+----+----+----+
 |     |  Factor A    |
@@ -289,8 +325,9 @@ Um aus den Teilneherm tatsächlich auch neun experimentelle Einheiten zu machen,
 | 6   |    |    | X  |
 +-----+----+----+----+
 
-: Example for a Completely Randomized Design
+: Beispiel für ein Completely Randomized Design (X zeigt die Beobachtungseinheiten an). {#tbl-ed-basic-crd}
 
+Wenn wir nicht mehr nur eine unabhängige Variablen mit verschiedenen Faktorstufen haben, sondern mehrere dann sprechen wir von einen *completely randomized factorial design (CRFD)*. In diesem Fall kommen noch weitere Varianzkomponenten für die jeweiligen unabhängigen Variablen hinzu, sowie mögliche Interaktioneffekte wie wir sie schon abhand der Interaktionen in der multiplen Regression kennengelernt haben. In @tbl-ed-basic-crfd ist eine einfacher Fall mit zwei unabhängigen Variablen $A$ und $B$ mit jeweils zwei Stufen dargestellt. Damit die Tabelle nicht zu groß wird, ist nur eine Replikation dargestellt.
 
 +-----+---------+---------+
 |     | A1      | A2      |
@@ -306,7 +343,7 @@ Um aus den Teilneherm tatsächlich auch neun experimentelle Einheiten zu machen,
 | 4   |    |    |    |  X |
 +-----+----+----+----+----+
 
-: Example for a Completely Randomized Factorial Design with two factors
+: Beispiel für ein Completely Randomized Factorial Design mit zwei Faktoren {#tbl-ed-basic-crfd} 
 
 
 +-----+----+----+----+
