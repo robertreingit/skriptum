@@ -1,0 +1,1026 @@
+# `R` Kickoff 
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+source('_common.R')
+knitr::opts_chunk$set(
+  prompt = TRUE,
+  echo = TRUE
+)
+```
+
+Wie bereits angedeutet, der Umgang mit `R` besteht vor allem in der Benutzung von bestimmten Befehlen. Die Befehle, auch Anweisungen genannt, werden `R` auf der Kommandozeile übergeben, `R` liest die Anweisungen ein und führt entsprechende Operationen durch. Im einfachsten Fall, kann `R` beispielsweise als ein überproportionierter Taschenrechner verwendet werden. In R-Studio ist die Kommandozeile üblicherweise unten-links zu sehen und signalisiert durch das Prompt `>` die Bereitschaft an Befehle anzunehmen. Beispielsweise führt auf der `R` Kommandozeile der folgende Befehl `2 + 2` gefolgt von einem {{< kbd ENTER >}} zu folgender Ausgabe:
+
+```{r}
+#| echo: true
+
+2 + 2
+```
+
+Das `[1]` kennzeichnet die erste Zeile des von `R` generierten Outputs.
+
+Die Kommandozeile in `R` funktioniert nach dem Prinzip einer sogenannten *REPL*. *REPL* ist eine Abkürzung für die englischen Begriffe read-eval-print loop. Die Eingabe wird durch `R` eingelesen (R), im Rahmen der Programmiersprache evaluiert (E), das Ergebnis wird ausgegeben (P) und anschließend geht die Kommandozeile zurück zum Ausgangszustand (L). `R` liest die Eingabe `2 + 2`, evaluiert diese Eingabe, dies führt zu dem Ergebnis `4`, das Ergebnis wird auf der Kommandozeile ausgegeben, und `R` wartet nun wieder auf die nächste Eingabe `>`. Wenig überraschend, führt die Eingabe `3 * 3` zu folgenden Ablauf.
+
+```{r}
+#| echo: true
+
+3 * 3
+```
+
+In R-Studio gibt es einen short-cut um in die Kommandozeile zu springen {{< kbd STRG+2 >}}.
+
+In der Kommandozeile in `R` ist es nach der Ausführung eines Befehlt nicht möglich mit dem Cursor wieder nach oben zu gehen und bei einer fehlerhaften Eingabe diese zu berichten. Sondern der komplette Befehl muss noch einmal eingegeben werden. Allerdings merkt sich R-Studio die Befehlt und mit den Pfeiltasten {{< kbd UP >}} und {{< kbd DOWN >}} können diese wieder aufgerufen werden und entsprechend angepasst werden.
+
+Die Anweisungen `2 + 2` oder `3 * 3` werden allgemein als **Ausdrücke** bezeichnet. Wir könnten die Beispiele jetzt mit den üblichen Grundrechenarten `+-/*` weiterführen, aber es würde nichts Neues dazukommen. Daher schauen wir uns jetzt an, wie wir komplexere, mehrstufige Berechnungen durchführen können. Dazu schauen wir uns ein zentrales Konzept von Programmiersprachen an: Variablen.
+
+## Variablen in `R`
+
+Nehmen wir, wir wollen das Ergebnis der letzten komplexen Berechnung, in irgendeiner Form weiter verwenden. Die im Beispiel berechnete `9` steht jetzt allerdings für die weitere Bearbeitung nicht mehr zur Verfügung. `R` hat die REPL ausgeführt, die Berechnung der `9`, und da jetzt mit dieser Ausgabe nichts weiteres durchgeführt wurde, ist die Ausgabe auch nirgends gespeichert worden. Die Ausgabe bzw. das Ergebnis eines Befehlt wird als Rückgabewert\index{Rückgabewert} bezeichnet. Um den Rückgabewert eines Ausdrucks weiter zu bearbeiten, muss dieser Wert in irgendeiner Form `R` zugänglich gemacht werden, d.h. der Rückgabewert muss irgendwie gespeichert werden. Um Werte weiter verwenden zu kommen, wird den Werten daher ein Bezeichner, ein Name, zugewiesen. Es wird eine Variable eingeführt. Erfahrungsgemäß stellt dieses Konzept eine erste Größe Hürde im Umgang mit `R`da, das diese Konzept beispielweise in Tabellenkalkulationsprogrammen, bei denen die Berechnungen scheinbar direkt auf den zu sehenden Daten stattfindet, nicht vorhanden ist. Letztendlich ist eine Variable aber nichts als ein Wert in `R` dem ein Name zugewiesen wurde.
+
+Um in `R` einem Ausdruck bzw. dessen Rückgabewert einen Namen zuzuweisen wird ein spezieller in `R` definierter Befehl verwendet, der Zuweisungsoperator `<-`. Möchte ich beispielsweise das Ergebnis der „komplexen“ Berechnung `3 * 3` später weiter verwenden, dann verwende ich den Zuweisungsoperator `<-` um dem Rückgabewert einen Namen zu geben. 
+```{r}
+#| echo: true
+
+wert_1 <- 3 * 3
+```
+
+`R` jetzte keinen Ausdruck mehr zurück, da das Ergebnis des Zuweisungsoperator die Zuweisung eines Namens ist, was keinen Wert zurückgibt mehr ergibt. Intern hat `R` die Berechnung durchgeführt und dem Rückgabewert den Namen `wert_1` zugewiesen. Der Name ist dabei, im Rahmen bestimmter Konventionen vollkommen willkührlich und `R` hätte mich nicht daran gehindert `wert_2`, `wert_123`, `thomas`, `steffie` oder einen anderen Namen zu verwenden. 
+
+Dies Frage stellt sich jetzt natürlich, wie komme ich meinen berechneten Wert wieder heran. Einfach indem ich den Bezeichner, den Namen, `wert_1` an `R` übergebe.
+
+```{r}
+#| echo: true
+
+wert_1
+```
+
+In R-Studio, gibt es oben-rechts einen Reiter mit der Aufschrift **Environment**, hier sollte jetzt auch ein Eintrag zu finden sein mit dem Bezeichner `wert_1` und dem angehängten Wert $9$.
+
+Dieser Prozess funktionert genau gleich mit einem komplexeren Ausdruck wie `2 + 2 * 4`.
+
+```{r}
+#| echo: true 
+
+x <- 2 + 2 * 4
+```
+
+Aufruf des Bezeichners `x` von auf der Kommandozeile führt dann entsprechend wieder zu der Ausgabe des Wertes.
+
+```{r}
+#| echo: true
+x
+```
+
+Konzeptionell stellt sich der Vorgang der Zuweisung in etwa so dar. Im internen Speicher von `R` wird der Wert $10$ an einer passen Stelle abgespeichert und in einer Tabelle wird ein Eintrag mit dem Bezeichner `x` zusammen mit der Adresse des Wertes $10$ abgelegt. Wenn `R` dann auf den Bezeichner `x` trifft, dann schaut es in der Tabelle nach, an welcher Stellt sich der Wert befindet und gibt diesen aus. Dies hat zur Folge, dass Bezeichner genauso wieder in Ausdrücken verwendet werden können wie Werte. `R` ersetzt den jeweiligen Bezeichner mit dem hinterlegten Wert und führt den Ausdruck aus.
+
+```{r}
+#| echo: true
+
+x + wert_1
+```
+
+`R` ersetzt den Bezeichner `x` mit dem Wert $10$ und den Bezeichner `wert_1` mit dem Wert $9$ und addiert die beiden Werte zusammen.
+
+In dieser Vorgehensweise besteht ein grundlegender Unterschied zur der Arbeitsweise mit Tabellenprogrammen bei denen immer direkt auf den jeweiligen Zellen gearbeitet wird. In `R` werden Berechnungen, die Rückgabewerte von Ausdrücken, Bezeichner zugewiesen und können dann in späteren Ausdrücken (Befehlen) wieder aufgerufen werden. Anders herum, wenn Zwischenergebnisse keinen Bezeichner haben, können sie auch nicht wiederverwendet werden.
+
+Zwei weitere Erläuterungen zu den bisherigen Beispielen sind notwendig. In den bisherigen Ausdrücken sind Leerzeichen zwischen die einzelnen Teile der Ausdrücke gesetzt worden. Diese Leerzeichen dienen lediglich der Leserlichkeit und haben keinen Einfluss auf die Evaluierung des Ausdrucks durch `R`. Daher sind die Ausdrücke `2 + 2 * 4` und `2+2*4` äquivalent und führen zum gleichen Ergebnis. Bei der Ausgabe des Wertes ist wahrscheinlich auch aufgefallen, das `R` nicht den Wert $16$ berechnet hat, der korrekt wäre, wenn die Evaluierung des Ausdrucks streng von links nach rechts durchgeführt wird `2 + 2 * 4 = 4 * 4 = 16`. `R` hat jedoch die korrekte mathematischen Regel Punkt-vor-Strich angewendet und ist daher zum korrekten Ergebnis `10` gekommen.
+
+::: {.callout-important}
+In `R` wird bei Bezeichnern zwischen Groß- und Kleinschreibung unterscheidet. Daher führt der Aufruf des Bezeichners `X` zu einem Fehler.
+
+```{r}
+#| echo: true
+#| error: true
+
+X
+```
+
+Die Fehlermeldung von `R` gibt auch direkt an, was das Problem ist, das nämlich kein Objekt mit der Bezeichnung `X` gefunden werden kann.
+
+:::
+
+::: {.callout-tip}
+Das Auftreten von Fehler führt bei R Neueinsteigerinnen oft zu großer Verwirrung ist aber im Programmieralltag ein vollkommen normales Ereignis und sollte daher niemanden aus der Ruhe bringen. Im vorliegenden Fall bemängelt R lediglich das es den Bezeichner X nicht finden kann und dementsprechend nicht weiß wie es weiter verfahren soll.
+:::
+
+Damit haben wir jetzt das erste große Konzept in `R`, bzw. in allen Programmiersprachen, das der **Variable** kennengelernt. Als nächstes wenden wir uns dem Konzept der Funktionen in `R` zu.
+
+
+## Funktionen in `R`
+
+Ein gutes Template für Funktionen in Programmiersprachen sind Funktionen aus der Mathematik.
+
+\begin{equation*}
+y = f(x)
+\end{equation*}
+
+Wir haben eine Funktion $f()$, dieser Funktion übergeben wir ein Argument (auch Parameter) $x$. Die Funktion $f()$ macht dann etwas mit diesem Parameter und gibt einen Rückgabewert $y$ zurück. Sei zum Beispiel die folgenden Funktion definiert.
+
+\begin{equation*}
+f(x) = x^2
+\end{equation*}
+
+D.h. der Funktion $f()$ wird der Parameter $x$ übergeben. Dieser Wert wird anschließend quadriert und das Ergebnis der Berechnung wird zurück gegeben.
+
+In `R` werden Funktionen nach dem Muster <NAME>(<PAR1>,<PAR2>,...,<PARk>) aufgerufen (die Zeichen <> stehen für einen beliebigen Bezeichner). D.h. sobald ein rundes Klammerpaar auf einen Bezeichner folgt, geht `R` davon aus, dass die Anwenderin eine Funktion aufrufen möchte. Über <PAR1>,<PAR2>,...,<PARk> können der Funktion durch Komma getrennte Parameter übergeben werden. Die Anzahl der Parameter hängt dabei von der Definition der Funktion ab. In der Mathematik wäre ein Beispiel eine Funktion mit zwei Argumenten.
+
+\begin{equation*}
+f(x,y) = x^2 + y^2
+\end{equation*}
+
+### Funktionen anwenden
+
+Ein einfaches Beispiel ist die Anwendung der Wurzelfunktion auf einen numerischen Wert. In `R` gibt es schon eine vordefinierte Funktion mit dem Bezeichner `sqrt()`, welche die Wurzel des übergebenen Parameters berechnet.
+
+```{r}
+#| echo: true
+
+y <- 9
+sqrt(y)
+```
+
+Im Beispiel wird zunächst dem Wert $9$ der Bezeichner `y` zugewiesen. Dieser wird dann an die Wurzelfunktion `sqrt()` übergeben.
+
+Ein etwas näher an der Anwendung liegendes Beispiel wäre beispielsweise die Berechnung des Mittelwerts oder die Summe der Datenreihe $(3, 5, 7)$ sein. In `R` wird eine solche geordnete Reihe von Zahlen als Vektor repräsentiert. Um einen solchen Vektor zu erstellen wird wiederum eine Funktion `c()` (für concatenation) verwendet.
+
+```{r}
+#| echo: true
+ 
+z <- c(3, 5, 7)
+```
+
+Mit dieser Anweisung hat `R` einen Vektor mit den drei Einträgen erstellt. Wir können jetzt den Mittelwert $\bar{z} = \frac{1}{3}\sum_{i=1}^3z_i$ mittels der Funktion `mean()` berechnen.
+
+```{r}
+#| echo: true
+
+mean(z)
+```
+
+Vielleicht interessiert uns jetzt nicht der Mittelwert sondern die Summe $\bar{z} = \sum_{i=1}^3z_i$. Dafür können wir die `sum()` Funktion verwenden.
+
+```{r}
+#| echo: true
+
+sum(z)
+```
+
+Dies sind jetzt nur einige wenige Beispiele und einer der Skills im Umgang mit `R` besteht darin die Namen der Funktion sich zu merken. Dies kann am schnellesten durch den täglichen Umgang mit `R` erlernt werden. Am Besten ab heute.
+
+### Funktionen in `R`-Paketen
+
+Sollte sich der Fall ergeben, dass keine geeignete Funktion mit `R` mitgeliefert wird, dann können Zusatzfunktionen mittels sogenannter Pakete installiert werden. Ein Paket kann dabei als eine Sammlung von Funktionen und Anweisungen angesehen werden mit deren Hilfe die Funktionalität von `R` erweitert werden kann. Daher wird zunächst Information darüber benötigt, in welchem Paket die gewünschte Funktionalität vorhanden ist. Hierfür reicht meistens eine kurze Suche mittels Google aus.
+
+Ist das Paket nun bekannt, dann sind zwei Schritte zunächst durchzuführen. Wobei der 1. Schritt nur beim ersten Mal durchgeführt werden muss. Zunächst muss das benötigte Paket in der lokalen, d.h. derjenigen auf dem Rechner laufenden, `R`-Umgebung installiert werden, wenn es noch nicht bereits vorher installiert wurde (in R-Studio: Reiter unten-links **Packages**).
+
+Ein Paket kann mittels des Befehlt `install.packages()` installiert werden. Der Name des Paket muss in Gänsefüßchen an die Funktion übergeben werden. Wollen wir beispielsweise das Paket `performance` installieren, führen wir den folgenden Befehl aus.
+
+```{r}
+#| echo: true
+#| eval: false
+
+install.packages("performance")
+```
+
+`R` kontaktiert im Hintergrund den CRAN-Server und lädt das Paket sowie benötigte Abhängigkeiten automatisch herunter. Wenn alles gut läuft, dann ist das Paket nun in der lokalen Umgebung *installiert*. Die Funktionalität des Paket steht jedoch noch nicht direkt zur Verfügung! Sondern, das Paket muss mit einem weiteren Befehl in die derzeit aktive Arbeitsumgebung geladen werden.
+
+Um das Paket in die aktive Arbeitsumgebung zu laden wird gibt es zwei Befehle in `R`, `library()` und `require()`. Bei `require()` überprüft `R` zunächst ob das Paket schon geladen wurde, während bei `library()` das Paket einfach geladen wird. Um die Funktionalität von `performance` jetzt in der aktiven Session zu nutzen, kann dementsprechend `library()` benutzt werden.
+
+```{r}
+#| echo: true
+#| eval: false
+
+library(performance)
+```
+
+Dieser zweite Schritt des Paket laden, muss jedes mal nach einen Neustart von `R` wieder durchgeführt werden. Zusatzpakete werden durch `R` beim Start nicht automatisch geladen.
+
+::: {.callout-tip}
+Neue Pakete müssen nur beim ersten Mal neu installiert werden. Danach immer nur noch entweder mit `library()` oder `require()` geladen werden.
+:::
+
+Der große Vorteil von `R`, beziehungsweise von jeder vollwertigen Programmiersprache, besteht nun darin, dass problemlos eigene Funktion definiert werden können sollten sich keine bereits fertigen Funktionen finden lassen. Dies führt dazu, dass ständig neue Funktionalität zu `R` hinzugefügt werden kann und mittlerweile kaum eine Disziplin nicht mit eigenen, spezialisierten Paketen aufwarten kann.
+
+### Eigene Funktionen schreiben
+
+Im folgenden wird nur kurz examplarisch das Schreiben eigener Funktionen gezeigt, da damit deutlich tiefer in die Programmierung mit `R` eingestiegen werden muss, als dass zum jetzigen Zeitpunkt notwendig ist.
+
+Wollen wir zum Beispiel eine Funktion schreiben die den gewichteten Mittelwert aus zwei Werten berechnet mit den Gewichten $(\frac{1}{3},\frac{2}{3})$:
+
+\begin{equation*}
+f(x,y) = \frac{1}{3}x + \frac{2}{3}y
+\end{equation*}
+
+Dann könnten wir das in `R` wie folgt ausdrücken.
+
+```{r}
+#| echo: true
+
+mein_gewichteter_mittelwert <- function(x,y) { 
+  x/3 + 2*y/3 
+}
+```
+
+Um eine eigene Funktion zu defineren, muss das *Schlüsselworts* `function()` verwendet werden. Wenn `R` den Ausdruck `function` sieht, dann interpretiert es den Ausdruck als Definition einer neuen Funktion. Auf das Schlüsselwort folgen runde Klammern `()` die die benötigten Parameter der Funktion umschließen. Im Beispiel werden zwei Parameter definiert $x$ und $y$. Die Namen der Parameter sind dabei vollkommen willkürlich und müssen lediglich zu späteren Ausdruck in der Funktion passen. Es folgen dann zwei geschweifte Klammern `{}` die den sogenannten Funktionskörper definieren. Im Funktionskörper ist die Funktionalität der Funktion hinterlegt. Konkret stehen hier die Ausdrücke mit derer die Funktion ihren Ergebniswert berechnen kann. Um die Funktion aufrufbar zu machen, braucht sie wieder einen Bezeichner. Dieser wird mittels des Zuweisungsoperators  `<-` definiert. In R-Studio sollte in der **Environment** nach dem Ausführen der Anweisung nun ein Eintrag mit dem Namen `mein_gewichteter_mittelwert` stehen. Der Name ist wiederum vollkommen willkürlich und es `R` kontrolliert nicht ob mein Bezeichner semantisch dem entspricht was die Funktion berechnet.
+
+Nachdem ich die Funktion definiert habe, kann ich sie wie jeder andere Funktion aufrufen. Bei Aufrufen der Funktion werden die Parameter entsprechend der übergegebenen Werte in den Klammern im Funktionskörper ersetzt. Und `R` führt die Anweisungen im Funktionskörper aus. Der Rückgabewert der Funktion ist die letzte Anweisung des Funktionskörpers. Im vorliegenden Beispiel, da es nur eine Anweisung gibt, wird dieser Wert zurück gegeben.
+
+```{r}
+#| echo: true
+
+mein_gewichteter_mittelwert(3,6)
+```
+
+::: {.callout-note}
+Was die letzte Anweisung für den Rückgabewert bedeutet ist etwas einfacher zu sehen, wenn wir die Funktion etwas kompliziert schreiben.
+
+```{r}
+#| echo: true
+
+mein_gewichteter_mittelwert_2 <- function(x,y) { 
+  a <- x/3
+  b <- 2*y/3
+  a + b
+}
+mein_gewichteter_mittelwert_2(3,6)
+```
+
+Hier haben wir mit `a` und `b` zunächst zwei Zwischenberechnung durchgeführt und dann in der letzten Anweisung das Ergebnis für den Rückgabewert berechnet.
+
+:::
+
+Wer tiefer in die Programmierung von Funktion in `R` einsteigen möchte, sollte sich [R4DS](https://r4ds.hadley.nz/functions.html) und [Advanced R](https://adv-r.hadley.nz/functions.html) anschauen.
+
+## Datentypen
+
+Um mit `R` effektiv zu arbeiten ist ein zumindest oberflächliches Verständnis von sogenannten Datentypen notwendig. Konzeptionell sind Datentypen Eigenschaften von Werten die bestimmen welche Operationen mit diesem Wert möglich sind. Der einfachste Datentyp numerisch erlaubt zum Beispiel die üblichen mathematischen Operationen `+-/*` die wir bereits kennengelernt haben. Eine Zeichenkette `"Haus"` lässt sich dagegen nicht dividieren. Die Werte können auch als Objekte bezeichnet werden, was konzeptionell einfacher nachzuvollziehen. Den Datentypen eines Objektes kann mittels der Funktion `typeof()` bestimmt werden. Ein Objekt hat einen Typ und einen Wert. Wir beginnen mit den grundlegendsten, den atomaren (atomic), Datentypen: Numerisch, Zeichenketten und logische Werte.
+
+### Numerisch
+
+Wie bereits beschreiben, ist einer der einfachsten Datentypen ein numerischer Wert wie `1`, `123345` `12.3456`. Es gibt noch eine Unterscheidung in `R` zwischen ganzzahligen Werten (integer) und Dezimalzahlen (double), wobei für die meisten Anwendungsfälle die Unterscheidung nicht von großer Bedeutung ist. Das Dezimaltrennzeichen in `R` ist ein Punkt `.`.
+
+```{r}
+#| echo: true
+
+dezimal_zahl <- 12.345
+dezimal_zahl
+typeof(dezimal_zahl)
+typeof(12.345)
+```
+
+Integer Werte werden in `R` mit einem angehängtem `L` spezifiziert. Wir kein `L` angehängt geht `R` per default bei Zahlen immer von einer Dezimalzahl aus.
+
+```{r}
+#| echo: true
+
+ganz_zahl <- 12345L
+ganz_zahl
+typeof(ganz_zahl)
+typeof(12345)
+typeof(12345L)
+```
+
+Die numerischen Werte erlauben die üblichen mathematischen Operationen.
+
+### Zeichenketten (Strings)
+
+Der nächste Datentyp sind Zeichenketten (character in den meisten anderen Programmiersprachen strings). Zeichenketten repräsentieren Textdaten und werden oft für die Manipulation von Texten und die Verarbeitung von Zeichen verwendet. Zeichenketten können mit einfachen Anführungszeichen (`'`) oder doppelten Anführungszeichen (`"`) erstellt werden.
+
+```{r}
+#| echo: true
+
+s_1 <- "Haus"
+s_1
+typeof(s_1)
+```
+
+In `R` wird der Typ von Zeichenketten als `character` bezeichnet.
+
+Bezüglich der Anführungszeiche, besteht semantisch kein Unterschied zwischen den einfachen und den doppelten Anführungszeichen und es ist mehr ein Zeichen persönlicher Präferenz welche Art benutzt wird. Ein Anwendungsfall wo die Art von Bedeutung ist, erfolgt wenn innerhalb der Zeichenketten Anführungszeichen benötigt werden. Dann müssen die äußeren Zeichenketten der jeweils andere Typ sein, da ansonsten `R` die Zeichenkette nicht als solche erkennt. Also zum Beispiel wenn ich als Zeichenkette den Wert: `Er sagte: "Nein"!`, benötige, verwende ich die einfachen Anführungszeichen um `R` zu signalisieren das ich eine Zeichenkette benötige.
+
+```{r}
+#| echo: true
+
+s_2 <- 'Er sagte: "Nein"!'
+s_2
+```
+
+Um Operationen auf Zeichenketten anzuwenden gibt es in `R` eine ganze Reihe von spezialisierten Funktionen. Möchte ich zum Beispiel einen Teil der Zeichen aus einer Zeichenkette extrahieren, kann ich die `substring()`-Funktion verwenden.
+
+```{r}
+#| echo: true
+
+s_3 <- "DasisteinelangeZeichenkette"
+substring(s_3, 4, 6)
+```
+
+Der erste Parameter übergibt die Zeichenkette an `substring()` während der zweiter Parameter den Startposition und der dritte Parameter die Endposition des zu extrahierenden Strings angibt.
+
+Die Länge einer Zeichenkette kann mit der Funktion `nchar()` bestimmt werden.
+
+```{r}
+nchar(s_3)
+```
+
+Eine Funktion die oft mit Zeichenketten eine Anwendung findet ist die `paste()` bzw. die Spezialform `paste0()`. Mit `paste()` können Zeichenkette zusammengesetzt werden.
+
+```{r}
+paste('Ich', 'bin', 'ein', 'Berliner')
+```
+
+Per default fügt `paste()` ein Leerzeichen zwischen die Zeichenketten ein. Dies kann entsprechend angepasst werden.
+
+```{r}
+paste('Ich', 'bin', 'ein', 'Kölner', sep = '--')
+```
+
+Die Argumente an `paste()` müssen nicht alle Zeichenketten sein, werden aber dann in Zeichenketten konvertiert.
+
+```{r}
+paste(3, 2, '-mal', sep='')
+```
+
+`paste0()` ist eine Spezielform von `paste()` bei der das Argument `sep` auf `""` gesetzt ist. Das heißt, die Zeichenketten werden direkt aneinander gehängt.
+
+```{r}
+paste0('kein','zwischen','raum')
+```
+
+::: {.callout-tip}
+Das Paket `stringr` bietet eine große Sammlung von Funktion die den Umgang und die Manipulation von Zeichenketten stark vereinfachen.
+:::
+
+### Logische (Boolean) Werte
+
+Der nächste Datentyp sind sogenannte logische Werte oder Wahrheitswerte. Logische Werte können nur einen von zwei Werten annehmen, entweder WAHR oder FALSCH. Logische Ausdrücke kennt ihr wahrscheinlich aus der Schule in Form von Wahrheitstabellen bei denen boolesche Werte entweder mit **und** $\cap$ oder **oder** $\cup$ verknüpft werden (siehe @tbl-r-kickoff-bool).
+
+::: {#tbl-r-kickoff-bool layout-ncol=2}
+| $\cap$ | TRUE | FALSE |
+| --- | --- | --- |
+| TRUE | TRUE | FALSE |
+|  FALSE | FALSE | FALSE |
+
+: Verknüpfung mit $\cap$
+
+| $\cup$ | TRUE | FALSE |
+| --- | --- | --- |
+| TRUE | TRUE | TRUE |
+| FALSE | TRUE | FALSE |
+
+: Verknüpfung mit $\cup$
+
+Verknüpfung von Wahrheitswerten mit und ($\cap$) bzw. oder ($\cup$). 
+:::
+
+In `R` werden die beiden Werte mit `TRUE` und `FALSE` oder in der abgekürzten Form `T` und `F` dargestellt.
+
+```{r}
+#| echo: true
+
+wahr <- TRUE
+wahr
+falsch <- FALSE
+falsch
+```
+
+Die beiden Verknüpfungen werden mit `&` für $\cap$ und `|` für $\cup$.
+
+```{r}
+#| echo: true
+
+wahr & wahr
+wahr & falsch
+falsch & falsch
+wahr | wahr
+wahr | falsch
+falsch | falsch
+```
+
+Logische Werte sind vor allem bei der Ablaufkontrolle und beim Indexieren wichtig.
+
+Logische Werte können in numerische Werte konvertiert (coercion) werden, dabei wird `FALSE` zu $0$ und `TRUE` zu $1$. Mit der Funktion `as.numeric()` können wir zum Beispiel Objekte von einem Typ in einen numerischen Typ konvergieren.
+
+```{r}
+#| echo: true
+
+as.numeric(wahr)
+as.numeric(falsch)
+```
+
+Die umgekehrte Richtung, von numerisch zum logischen Wert, kann mittels der Funktion `as.logical()` durchgeführt werden. Dabei werden alle Werte $\neq0$ zu WAHR und $0$ zu FALSCH. 
+
+```{r}
+#| echo: true
+
+as.logical(123)
+as.logical(1.23)
+as.logical(0)
+```
+
+Die Konvertierung von einem Datentyp in einen anderen Datentyp passiert zum Teil auch automatisch. Gebe ich zum Beispiel den foglenden Ausdruck ein:
+
+```{r}
+#| echo: true
+
+1 & TRUE
+```
+
+Erhalten wir als Ergebnis des Ausdrucks den Wert `TRUE`. Der Operator `&` kann nur mit logischen Werten arbeiten. Wir haben aber einen numerischen und einen logischen Wert übergeben. `R` versucht daher zunächst den nicht-logischen Wert in einen logischen Wert zu konvertieren. In dem Falle geht das problemlos da numerische Werte, wie oben gesprochen, nach der folgenden Regel konvertiert werden.
+
+\begin{equation*}
+\text{logical}(x) = \begin{cases}
+\text{F}, \text{if } x = 0 \\
+\text{T}, \text{if } x \neq 0
+\end{cases}
+\end{equation*}
+
+Nach dieser Regel wird die `1` in `TRUE` konvertiert und dann der neue Ausdruck `TRUE & TRUE` ausgewertet, der dann entsprechend zu `TRUE` führt.
+
+Eine praktische Funktion im Zusammenhang ist logischen Werte, insbesonderen logischen Vektoren, ist `which()`. `which()` gibt bei einen logischen Vektor die Position der Wert mit dem Wert `TRUE`.
+
+```{r}
+#| echo: true
+
+which(c(TRUE, FALSE, TRUE, FALSE, TRUE, TRUE))
+```
+
+
+### Vektoren
+
+Vektoren sind ein grundlegender Datentypein `R` und können sowohl numerische als auch nicht-numerische Werte speichern. Allerdings kann immer nur eine Datentyp in einem Vektor gespeichert werden. Da Vektoren sehr oft bei Datenanalysen verwendet werden und oft zur Datenrepräsentation verwendet werden, werden sie entsprechend direkt in `R` unterstützt. Etwas allgemeiner betrachtet können Vektoren als eine geordnete Sammlung von Elementen betrachtet werden. Geordnet bedeutet dabei, dass sie ein feststehende Abfolge haben.
+
+Die direkteste Art einen Vektoren in `R` zu erstellen, ist mittels der `c()` Funktion \index{c()} (`c` von combine). Wollen wir zum Beispiel einen numerischen Vektor mit den folgenden Einträgen erstellen. 
+
+\begin{equation}
+v_1 = \begin{pmatrix}3\\7\\8\end{pmatrix}
+\end{equation}
+
+Dann sieht dies in `R` folgendermaßen aus.
+
+```{r}
+v_1 <- c(3,7,8)
+v_1
+```
+
+Das gleiche Prinzip funktioniert auch mit anderen Typen. Beispielweise mit einem Zeichenkettenvektor.
+
+```{r}
+v_2 <- c('mama','papa','tochter')
+v_2
+```
+
+Oder einem logischen Vektor.
+```{r}
+v_bool <- c(TRUE, TRUE, FALSE, TRUE)
+```
+
+Auf einzelne Elemente oder Teile eines Vektor kann mittels des sogenannten subsettings zugegriffen werden. Jeder Vektor hat eine definierte Länge die wir mit `length()` bestimmen können.
+
+```{r}
+length(v_2)
+```
+
+Mit eckigen Klammern `[]` können wir Teilelemente des Vektors extrahieren. Die Indizierung geht dabei von $1$ bis $n = $ `length(Vektor)`. Wollen wir zum Beispiel das zweite Element aus $v_1$ extrahieren, dann verwenden wir.
+
+```{r}
+v_1[2]
+```
+
+Wenn der Index außerhalb des erlaubten Bereichs ist, dann wird ein `NA` für `(N)ot (A)vailable` von `R` zurückgegeben.
+
+```{r}
+#| error: true
+v_1[10]
+```
+
+`R` erlaubt die Verwendung von Vektoren zum subsetten. Wenn ich das 1. und 3. Element aus $v_2$ extrahieren möchte, kann ich einen Vektor mit den beiden Elementen $1$ und $3$, $v_{\text{index}} = (1,3)$ an `[]` übergeben.
+
+```{r}
+v_i <- c(1,3)
+v_2[v_i]
+```
+
+Das funktioniert ebenfalls ohne den Zwischenvektor.
+
+```{r}
+v_2[c(1,3)]
+```
+
+Der zurückgegebene Wert ist dann auch wieder ein Vektor. Wir können dadurch zum Beispiel einen Vektor erstellen, der länger als der Ursprungsvektor ist.
+
+```{r}
+v_1[c(1,1,2,2,3,3)]
+```
+
+Zum subsetten können auch logische Vektoren verwendet werden. Der resultierende Vektor ist ein Vektor mit denjenigen Elementen, für die der logische Vektor den Wert `TRUE` hat.
+
+```{r}
+v_bool <- c(TRUE, FALSE, TRUE)
+v_1[v_bool]
+```
+
+Wird ein negativer Wert an `[]` übergeben, dann wird dieser bzw. diese Wert(e) von `R` ausgeschlossen.
+
+```{r}
+v_1[-2]
+```
+
+Das funktioniert auch wieder mit Vektoren.
+
+```{r}
+v_lang <- c(1,2,3,4,5,6,7)
+v_lang[-c(2,3,6)]
+```
+
+Bei all diesen Anwendungen ist immer darauf zu achten, dass solange keine Zuweisung mittels `<-` ausgeführt, der jeweilige Vektor nicht verändert wird. 
+
+Auf numerische Vektoren können die gängigen mathematischen Operatoren (`+-*/`) angewendet werden. Die Operationen werden elementweise ausgeführt.
+
+\begin{equation*}
+\begin{pmatrix}v_1\\v_2\\\vdots\\v_n\end{pmatrix} \times
+\begin{pmatrix}a\\b\\\vdots\\c\end{pmatrix} = 
+\begin{pmatrix}av_1\\bv_2\\\vdots\\cv_n\end{pmatrix} \cdot
+\end{equation*}
+
+Dementsprechend können Vektoren auch addiert werden, wenn die Längen gleich sind. Die Addition erfolgt dann ebenfalls elementweise.
+
+```{r}
+v_3 <- c(1,2,3)
+v_4 <- c(4,5,6)
+v_3 + v_4
+```
+
+Multiplikation mit einem Skalar folgt der üblichen Skalarmultiplikation von Vektoren aus der Mathematik.
+
+\begin{equation}
+\begin{pmatrix}3\\7\\8\end{pmatrix} \cdot 3 = \begin{pmatrix}9\\21\\24\end{pmatrix}
+\end{equation}
+
+```{r}
+v_1 * 3
+```
+
+Eine etwas unglückliche gewählte Operation von `R` ist, dass auch Vektoren mit unterschiedlichen Längen addiert (subtrahiert, multipliziert, dividiert) werden können. Allerdings nur wenn die Länge des längeren Vektors ein Vielfaches des kürzeren Vektors ist. `R` wiederholt dann die Abfolge  der Elemente des kürzeren Vektors so oft bis die Länge des längeren Vektors erreicht wird.
+
+```{r}
+v_5 <- c(1,2)
+v_6 <- c(1,2,3,4,5,6)
+v_5 + v_6
+```
+
+Dieses Verhalten ist wie gesagt etwas unglücklich gewählt, da sich sehr schnell subtile Fehler in den Code einschleichen können. Diese sind erfahrungsgemäß nur sehr schwer wieder ausfindig zu machen. Daher sollte auf diese Feature möglichst verzichtet werden.
+
+Das subsetting wird auch benutzt, wenn ich einem bestehenden Vektor Werte zuweisen will. Möchte ich zum Beispiel bei $v_1$ den zweiten Wert von einer $2$ in eine $20$ ändern. Dann verwende ich wiederum `[]` mit dem Indexwert `2` weise den entsprechend wert `20` zu.
+
+```{r}
+v_1[2] <- 20
+v_1
+```
+
+Dies funktioniert auch für mehrere Werte
+
+```{r}
+v_1[1:2] <- c(10, 100)
+v_1
+```
+
+Ich kann auch nur einen einzelnen Wert zuweisen, der dann an mehrere Stellen geschrieben wird.
+
+```{r}
+v_1[2:3] <- 1000
+v_1
+```
+
+Das funktioniert auch mit logischen Indexvektoren.
+
+```{r}
+v_1[c(TRUE,FALSE,TRUE)] <- -13
+v_1
+```
+
+
+Per default werden Vektoren in `R` nicht als Spaltenvektoren wie in der Mathematik angesehen. Das kann manchmal ebenfalls zu Problemen in Rechnungen führen, wenn Formeln eins-zu-eins in `R` übertragen werden und die Formel von der üblichen Algebra bei Vektoren und Matrizen ausgeht. Dies sollte daher im Hinterkopf behalten werden.
+
+Wenn das Skalarprodukt $v_x  v_y = \sum_{i=1}^nv_{xi}v_{yi}$ zweier Vektoren berechnet werden soll, dann muss ein spezieller Matrizenmultiplikator benutzt werden `%*%`. In unserem Beispiel mit $v_3$ und $v_4$
+
+\begin{equation*}
+v_3 \cdot v_4 = 1\cdot4 + 2\cdot5 + 3\cdot6 = 32
+\end{equation*}
+
+```{r}
+v_3 %*% v_4
+```
+
+In `R` gibt es verschiedene Funktion um schnell Vektoren mit bestimmten Strukturen zu erstellen. Wird ein Vektor mit aufeinanderfolgenden Ganzzahlen benötigt kann der `:` Operator verwendet werden. Es wird ein Vektor nach dem Muster `a:b` = $(a,a+1,\ldots,b-1,b)$ erstellt.
+
+```{r}
+1:3
+10:15
+```
+
+Soll die Zahlenfolgen nicht ganzzahlig sein sondern ein anderes Interval haben, dann kann die `seq()` Funktion verwendet werden.
+
+```{r}
+seq(from = 1, to = 10, by = 2) # <1>
+seq(0, 2, 0.25)  # <2>
+seq(0, 2*pi, length.out = 10) # <3>
+```
+
+1. Erstelle eine Sequenz von 1 bis 10 in Intervallen der Größe 2
+2. Erstelle eines Sequenz von 0 bis 0 in Intervallen der Größe $0.25$
+3. Erstelle eiene Sequenz von 0 bis $2\pi$ die die Länge 10 hat.
+
+Eine weitere Funktion die oft einen Einsatz findet ist die `rep()` Funktion mit der Vektoren mit bestimmten Wiederholungsmustern erstellt werden können.
+
+```{r}
+rep(3, 5) # <1>
+rep(c(1,2), 3)  # <2>
+rep(c(1,2), each=3) # <3>
+```
+
+1. Wiederhole die Zahl 3 fünfmal.
+2. Wiederhole den Vektor $(1,2)$ dreimal.
+3. Wiederhole jedes Element des Vektor $(1,2)$ dreimal.
+
+Wie in den Beispielen gezeigt, können relativ unkompliziert Vektoren mit beliebigen Wiederholungen erzeugt werden.
+
+Eine weitere praktische Funktion in diesem Zusammenhang ist die Funktion `paste()` die wir schon bei den Zeichenketten kennengelernt haben. Werden Vektoren an `paste()` übergeben, werden die kürzeren Werte so oft wiederholt bis die Länge des längsten Vektors erreicht wird. Dann erfolgt erst die Zusammensetzung der Vektoren wiederum elementweise. Als Rückgabewert wird daher wiederum ein Vektor gegeben.
+
+```{r}
+paste('Participant', 1:3, sep = '_')
+paste(c('A','B'), 1:4, sep = 'x')
+```
+
+Zuletzt, benötige ich einen Vektor einer bestimmen Länge bei dem alle Elemente gleich sind kann ich die Funktionen `numeric()`, `character()` und `logical()` verwenden. Zum Beispiel wenn ich einen numerischen Vektor der Länge $11$ mit nur $13$ als Einträg gebrauche.
+
+```{r}
+numeric(11) + 13
+```
+
+Da Vektoren ein zentraler Datentyp in `R` sind, ist es wichtig sich möglichst eingehend mit den Eigenschaften von Vektoren zu beschäftigen. Es ist praktisch unmöglich in `R` produktiv zu werden ohne zumindest die Grundeigenschaften von Vektoren verstanden zu haben.
+
+### Matrizen
+
+Matrizen sind rechteckige und damit zweidimensionale Datenstrukturen, die aus Zeilen und Spalten bestehen und als Verallgemeinerung von Vektoren zu verstehen sind. Matrizen liegen zahllosen Berechnungen in der Statistik zugrunde, auch wenn diese vorwiegend im Hintergrund stattfinden. In `R` können Matrizen genauso wie Vektoren auch Werte wie Zeichenketten oder logischen Werten haben. Wir werden uns allerdings auf numerische Matrizen beschränken, da diese am ehesten benötigt werden.
+
+Eine Matrize der Dimension $m \times n$ wird in der Mathematik wie folgt definiert.
+
+\begin{equation}
+A = (a_{ij}) = \begin{pmatrix}a_{11} & \ldots & a_{1n} \\
+\vdots & & \vdots \\
+a_{m1} & \ldots & a_{mn}
+\end{pmatrix}
+\end{equation}
+
+In `R` werden Matrizen mit der `matrix()`-Funktion erzeugt. In den meisten Fällen sind zwei von drei Parametern notwenig. Der erste Parameter gibt die einzelnen Werte an gefolgt von der Anzahl der Zeilen (`nrow`) und der Anzahl der Spalten (`ncol`). Meist sind nur zwei Parameter notwendig, da wenn z.B. $m\times n$ Werte an `matrix()` übergeben werden, dann kann nach Angabe der Anzahl der Zeilen, die Anzahl der Spalten hergeleitet werden bzw. genauso andersherum.
+
+```{r}
+matrix(1:6, nrow = 3, ncol = 2)
+matrix(1:6, nrow = 3)
+matrix(1:6, ncol = 2)
+```
+
+Wie immer, wenn die Matrize weiter benötigt wird, dann muss der Rückgabewert von `matrix()` einer Variable zugewiesen werden.
+
+```{r}
+mat_1 <- matrix(1:4, nrow=2, ncol = 2)
+mat_1
+```
+
+Um Elemente in der Matrize zu manipulieren oder zu extrahieren verwendet wir wieder den subsetting Operator `[]`. Im Unterschied zum Vektor, der nur eine Dimension hat, müssen bei einer Matrize dzwei Indezis angegeben werden. Die Spezifikation erfolgt nach dem Muster `mat[zeile,spalte]`. Wie beim Vektor sind bei der Indizierung Vektoren, logische Werte und negative Werte erlaubt. Wenn ihr eine Dimension weglasst, werden entsprechend alle Zeilen bzw. Spalten angesteuert.
+
+```{r}
+mat_1[1,1] # Element a_11
+mat_1[2,2] # Element a_22
+mat_1[,1]  # Elemente a_i1
+mat_1[2,]  # Elemente a_2j
+mat_1[-2,1] # alle Elemente der ersten Spalte ohne Zeile 2
+```
+
+Über das subsetting können den indizierten Werte in der Matrize neue Werte zugewiesen werden.
+
+```{r}
+mat_0 <- matrix(0, nr=6, nc = 3)
+mat_0
+mat_0[2:3,2] <- 1:2
+mat_0[5,2:3] <- -13
+mat_0
+```
+
+Matrizen können wie Vektoren auf zwei Arten multipliziert werden. Entweder die Elementweise mittels `*` oder Matrizenmultiplikation über `%*%` nach dem Muster.
+
+\begin{gather*}
+\begin{bmatrix}
+    a_{11} & a_{12} & \dots  & a_{1n} \\
+    a_{21} & a_{22} & \dots  & a_{2n} \\
+    \vdots & \vdots & \ddots & \vdots \\
+    a_{m1} & a_{m2} & \dots  & a_{mn}
+\end{bmatrix}
+\times
+\begin{bmatrix}
+    b_{11} & b_{12} & \dots  & b_{1p} \\
+    b_{21} & b_{22} & \dots  & b_{2p} \\
+    \vdots & \vdots & \ddots & \vdots \\
+    b_{n1} & b_{n2} & \dots  & b_{np}
+\end{bmatrix}
+=
+\begin{bmatrix}
+    c_{11} & c_{12} & \dots  & c_{1p} \\
+    c_{21} & c_{22} & \dots  & c_{2p} \\
+    \vdots & \vdots & \ddots & \vdots \\
+    c_{m1} & c_{m2} & \dots  & c_{mp}
+\end{bmatrix} \\
+\text{mit } c_{ij} = a_{i1}b_{1j} + a_{i2}b_{2j} + \dots + a_{in}b_{nj} \text{ für } 1 \leq i \leq m \text{ und } 1 \leq j \leq p.
+\end{gather*}
+
+Etwas übersichtlicher mit einem einfachen Beispiel.
+
+$$
+\begin{matrix}
+& \begin{pmatrix}
+b_1 & b_2 \\
+b_3 & b_4
+\end{pmatrix} \\
+\begin{pmatrix}
+a_1 & a_2 \\
+a_3 & a_4 \\
+\end{pmatrix} &
+\begin{pmatrix}
+a_1 \cdot b_1 + a_2 \cdot b_3 & a_1\cdot b_2 + a_2\cdot b_4 \\
+a_3 \cdot b_1 + a_4 \cdot b_3 & a_3\cdot b_2 + a_4\cdot b_4 \\
+\end{pmatrix}
+\end{matrix}
+$$
+
+D.h. die Zeilen von $A$ werden mit den Spalten von $B$ per Skalaprodukt multipliziert. Für die Matrizenmultiplikation müssen die Matrizen $A$ und $B$ konform sein. Die Anzahl der Spalten von $A$ muss gleich der Anzahl der Zeilen von $B$ sein.
+
+```{r}
+A <- matrix(1:6, nr=2)
+B <- matrix(1:6, nr=3)
+A
+B
+A %*% B
+```
+
+Um die Dimension einer Matrize, d.h. die Anzahl der Zeilen und Spalten, zu bestimmen gibt es in `R` die Funktion `dim()`.
+
+```{r}
+dim(A)
+```
+Der erste Wert gibt entsprechend die Anzahl der Zeilen an während der zweite Wert die Anzahl der Spalten anzeigt. Wenn nur einer der Werte benötigt wird, gibt es auch die beiden Kurzfunktionen:
+
+```{r}
+nrow(A)
+ncol(A)
+```
+
+Ansonsten funktionieren die mathematischen Operator wie in der Matrizenalgebra zu erwarten ist. Wenn z.B. zwei Matrizen addiert werden sollen, dann müssen die Dimensionen übereinstimmen.
+
+```{r}
+#| error: true
+
+A + B
+```
+
+```{r}
+D <- matrix(11:16, nr=2)
+dim(D)
+A + D
+```
+
+Mit der Funktion `diag()` kann eine quadratische Diagonalmatrize \index{Diagonalmatrize} erzeugt werden. Eine Diagonalmatrize hat nur auf der sogenannten Hauptdiagonalen Einträge, während alle anderen Werte $=0$ sind (siehe Formel \eqref{eq-r-kickoff-diag}).
+
+\begin{equation}
+\begin{pmatrix}
+d_{11}& 0      & 0 & \cdots & 0 \\
+0     & d_{22} & 0 &        &\vdots \\
+0     & 0      & \ddots &   &  \\
+\vdots&        &   &        &  \\
+0     &  \cdots &  &        & d_{nn}
+\end{pmatrix}
+\label{eq-r-kickoff-diag}
+\end{equation}
+
+Eine in der Statistik und generell in der linearen Algebra wichtige Matrize ist die Einheitsmatrize $\mathbf{I}_n$. Die Einheitsmatrize \index{Einheitsmatrize} ist eine Diagonalmatrize bei der alle Einträge auf der Hauptdiagonalen $=1$ sind.
+
+\begin{equation}
+\mathbf{I}_n = \begin{pmatrix}
+1 & 0 & \cdots & 0 \\
+0 & 1 & & \vdots \\
+\vdots &  & \ddots &  \\
+0 & \cdots & & 1 
+\end{pmatrix}
+\label{eq-unity-matrix}
+\end{equation}
+
+Der Parameter $n$ gibt die Dimension an. Da es sich um eine quadratische Matrize handelt ist die Anzahl der Zeilen gleich der Anzahl der Spalten. Die Einheitsmatrize hat in der linearen Algebra die Funktion des Einselement. Wenn eine Matrize $M$ mit der Einheitsmatrize $\mathbf{I}$ multipliziert, dann ist das Ergebnis wieder die Matrize $M$, wie auch $m \cdot 1 = m$.
+
+Mit `diag(n)` kann eine Einheitsmatrize in `R` generiert werden.
+
+```{r}
+I_3 <- diag(3)
+I_3
+M <- matrix(1:9, nr=3)
+I_3 %*% M
+M %*% I_3
+```
+
+Möchte ich eine Diagonalmatrize erstellen die bestimmte Wert auf der Hauptdiagonalen hat, dann kann ich `diag()` auch einen Vektor mit den Werten übergeben.
+
+```{r}
+diag(1:4) 
+```
+
+Wenn `diag()` eine Matrize übergeben wird, dann werden die Elemente auf der Hauptdiagonalen extrahiert.
+
+```{r}
+E <- diag(1:4)
+diag(E)
+```
+
+Eine Matrize kann mit Hilfe der `t()` Funktion transponiert werden.
+
+\begin{align*}
+A^T = a_{ji} = \begin{pmatrix}a_{11} & \ldots & a_{m1} \\
+\vdots & & \vdots \\
+a_{n1} & \ldots & a_{mn}
+\end{pmatrix}
+\end{align*}
+
+Ein anschauliches Beispiel:
+
+\begin{align*}
+(a_{ij}) &= \begin{pmatrix} 1 & 3 & 5 \\ 2 & 4 & 6\end{pmatrix} \\
+(a_{ij})^T = (a_{ji}) &= \begin{pmatrix} 1 & 2 \\ 3 & 4 \\ 5 & 6 \end{pmatrix} 
+\end{align*}
+
+```{r}
+t(A)
+```
+
+D.h. beim transponieren, werden die Zeilen und Spalten der Matrize vertauscht. 
+
+Mit den Funktionen `cbind()` und `rbind()` können zusätzliche Spalten bzw. Zeilen an eine Matrize angehängt werden. Dabei werden die Argumente so wiederholt, dass die Anzahl der Elemente übereinstimmt, bzw. ein Fehler geworfen wenn die Anzahl kein Vielfaches voneinander ist.
+
+```{r}
+cbind(1:2, E)
+rbind(E,1:2)
+```
+
+Um die Inverse eine quadratischen Matrize zu berechnen bzw. um lineare Gleichungsysteme zu lösen kann die `solve()` Funktion verwendet werden.
+
+```{r}
+E_inv <- solve(E)
+E_inv %*% E
+```
+
+Um das Gleichungssystem
+
+\begin{align*}
+2x + 3y &= 7 \\
+-4x + y &= 2 \\
+\end{align*}
+
+zu lösen, kann zum Beispiel der folgende Code verwendet.
+
+```{r}
+A <- matrix(c(2,-4,3,1), nr=2)
+y <- c(7,2)
+x <- solve(A,y)
+x
+A %*% x
+```
+
+Weitere Funktionen wie beispielweise die QR-Zerlegung findet ihr in der Dokumentation.
+
+Eine weitere hilfreiche Funktion im Zusammenhang mit der Programmierung mit Matrizen ist die `apply()` Funktion. Mit `apply()` kann eine Funktion auf die einzelnen Spalten oder Zeilen einer Matrize angewendet werden.
+
+```{r}
+F <- matrix(1, nr = 4, nc = 3) # <1>
+F
+apply(F, 1, sum) # <2>
+apply(F, 2, sum) # <3>
+```
+1. Eine Matrize $F$ mit vier Zeilen und drei Spalten die nur Einsen als Einträge hat wird erstellt.
+2. Die Summenfunktion wird entlang der ersten Dimension (Zeilen) auf $F$ angewendet.
+3. Die Summenfunktion wird entlang der zweiten Dimension (Spalten) auf $F$ angewendet. 
+
+### `data.frame()` oder `tibble()`
+
+Dataframes sind eine zentrale Datenstruktur in `R` da praktisch alle Arten von Daten mittels Dataframes organisiert werden. Konzeptionell sind Dataframes ähnlich zu Matrizen, sie ermöglichen allerdings die Speicherung verschiedener Datentypen (z. B. numerisch, Zeichenfolgen, Faktoren) in verschiedenen Spalten ähnlich wie die Daten in einem Tabellenprogramm organisiert sind. Jede Spalte hat dabei die gleiche Anzahl an Elementen und muss einen eineindeutigen Namen haben.
+
+Klassischerweise werden Dataframes mittels der Funktion `data.frame()` erstellt. Eine modernere Version sind die sogenannten `tibbles()` aus dem Package `tibble`. Dieses werden hier im Weiteren verwenden, d.h. `tibbles()` aus Anwendersicht verschiedene Verbesserungen mitbringen. Wir verwenden jedoch weiter den Term Dataframe um den Datentyp zu becshreiben. Daher, wenn wir ein Dataframe mittels `tibble()` erstellen wollen, müssen wir zunächst das Package `tibble()` laden.
+
+```{r}
+library(tibble)
+```
+
+Dann können wir einen Dataframe erstellen.
+
+```{r}
+df_1 <- tibble(a = 1:3, b = c('eins','zwei','drei'))
+df_1
+```
+
+Wenn ich mir den Inhalt eines Dataframes ausgeben lasse, dann werden mir die Namen der Spalten angezeigt, in vorliegenden Fall `a` und `b`. Gefolgt vom Datentyp hier `<int>` den wir strenggenommen noch nicht kennengelernt haben aber auch ein numerischer Typ ist, und `<chr>` was die Kurzform für `character` und entsprechend Zeichenketten bezeichnet. Danach folgen die Einträge in den beiden Spalten. Standardmäßig werden nur die ersten zehn Zeilen gezeigt, was in diesem Fall nicht weiter auffällt.
+
+Wir können auf die einzelnen Spalten über zwei verschiedene Operatoren zugreifen. Einmal mittels des `$` Operator oder über `[[]]` Im ersten Fall können wir den Namen direkt verwenden.
+
+```{r}
+df_1$a
+```
+
+Bei der doppelten, eckigen Klammer `[[]]` müssen wir den Namen als eine Zeichenkette, also entweder in `'` oder `"` einschließen.
+
+```{r}
+df_1[['a']]
+```
+
+Wenn ich eine neue Spalte hinzufügen will, kann ich einfache das Dataframe nehmen und über die Syntax von eben eine neue Spalte definieren.
+
+```{r}
+df_1$neu <- 11:13
+df_1
+```
+
+Entsprechend kann ich über eine Kombination von Spaltennamen und subsetting einzelne Elemente verändern.
+
+```{r}
+df_1$b[2] <- "AA"
+df_1
+```
+
+Da Daten praktisch immer in Form von Dataframes bearbeitet werden, gibt es eine ganze Reihe von Hilfsfunktionen um mit Dataframes zu arbeiten. Erstellen wir uns zunächst ein etwas größeres Beispiel.
+
+```{r}
+df_2 <- tibble(
+  id = paste0('P', 1:10),
+  gruppe = rep(c('CON','TRT'), each=5),
+  wert = 21:30
+)
+df_2
+```
+
+Mit der Funktion `summary()` erstellt `R` eine kurze Zusammenfassung mit deskriptiven Statistiken zum Dataframe.
+
+```{r}
+summary(df_2)
+```
+
+Eine ähnliche Funktion erfüllt die Funktion `glimpse()` aus dem Package `tibble()`.
+
+```{r}
+glimpse(df_2)
+```
+
+Die ersten `n` Elemente (default `n = 6`) mit `head()`.
+
+```{r}
+head(df_2, n = 4)
+```
+
+Die letzten `n` elemente (default `n = 6`) mit tail().
+
+```{r}
+tail(df_2, n = 3)
+```
+
+Die Spaltennamen werden mittels `names()` ausgegeben.
+
+```{r}
+names(df_2)
+```
+
+Die `names()` Funktion kann auch verwendet werden um die Spaltennamen zu verändern. Dazu kann entweder subsetting angewendet werden um bestimmte Namen zu verändern oder auch alle auf einmal.
+
+```{r}
+names(df_2)[3] <- 'value'
+df_2
+```
+
+```{r}
+names(df_2) <- c('pid', 'group', 'measurement')
+df_2
+```
+
+Datenframes sind wie Vektoren zentral in der Arbeit mit `R` und es ist deshalb wiederum wichtig sich schnell in diesen Datentyp einzuarbeiten. Tatsächlich werden ihr feststellen, dass ihr sehr selten Dataframes von Hand erstellt, sondern meistens liegen die Daten schon in digitaler Form auf eurem Rechner vor und ihr ladet mittels Funktionen, die wir später kennenlernen, die Daten in `R` wo sie dann als Dataframe repräsentiert werden.
+
+### Zusammenfassung
+
+Damit haben wir auch schon die wichtigsten Datentypen in `R` kennengelernt. In @fig-r-kickoff-dependencies sind die verschiedenen Datentypen und deren Abhängigkeiten noch einmal abgebildet.
+
+```{mermaid}
+%%| label: fig-r-kickoff-dependencies
+%%| fig-cap: "Hierarchie der Datentypen."
+
+flowchart TD
+    A[Dataframe] --> B[Vektor]
+    F[Matrize] --> B
+    B --> C(Numerisch)
+    B --> D(Zeichenkette)
+    B --> E(Logisch)
+```
+
+Dies war natürlich nur eine Übersicht, aber sollte euch schon relativ weit in der Arbeit mit `R` bringen.

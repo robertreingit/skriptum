@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Skriptum - Fortgeschrittene Statistik - 15&nbsp; Einführung</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./mlm_interactions.html" rel="next">
+<link href="./mlm_title.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "Keine Treffer",
+    "search-matching-documents-text": "Treffer",
+    "search-copy-link-title": "Link in die Suche kopieren",
+    "search-hide-matches-text": "Zusätzliche Treffer verbergen",
+    "search-more-match-text": "weitere Treffer in diesem Dokument",
+    "search-more-matches-text": "weitere Treffer in diesem Dokument",
+    "search-clear-button-title": "Zurücksetzen",
+    "search-detached-cancel-button-title": "Abbrechen",
+    "search-submit-button-title": "Abschicken",
+    "search-label": "Suchen"
+  }
+}</script>
+<script>
+  MathJax = {
+    tex: {
+      tags: 'ams'  // should be 'ams', 'none', or 'all'
+    }
+  };
+</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./mlm_title.html">Multiple Regression</a></li><li class="breadcrumb-item"><a href="./mlm_basics.html"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Einführung</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Skriptum - Fortgeschrittene Statistik</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Suchen"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Vorwort</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./r_startup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Eine Schnelleinführung in R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Abschnitt umschalten">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./r_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Eine Übersicht über <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./r_kickoff.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title"><code>R</code> Kickoff</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./r_flowcontrol.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Ablaufkontrolle</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./r_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Einfache Datenbearbeitung und Visualisierung in <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./r_literate_programming.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Literate programming in <code>R</code></span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./stats_title.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Statistik</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Abschnitt umschalten">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./stats_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Eine kleine Welt der Unsicherheit</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./stats_significance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Statistische Signifikanz, p-Wert und Power</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./stats_estimation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Parameterschätzung</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./stats_distributions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Theoretische Verteilungen</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./stats_hypotheses.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Hypothesen testen</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./slm_title.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Das einfache Regressionmodell</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Abschnitt umschalten">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./slm_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Einführung</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./slm_inference.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Inferenz</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./slm_model_fit.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Modellfit</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./slm_prediction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Vorhersage</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./mlm_title.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Multiple Regression</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="Abschnitt umschalten">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mlm_basics.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Einführung</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mlm_interactions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Interaktionseffekte</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mlm_dummy_coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Integration von nominalen Variablen</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mlm_hierarchies.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Modellhierarchien</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./lm_title.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Das allgemeine lineare Modell</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Abschnitt umschalten">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lm_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Synthese</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./ed_title.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Experimentelles Design</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Abschnitt umschalten">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ed_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Einführung</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ed_crd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Completely Randomized Design</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ed_linear_contrasts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Lineare Kontraste</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ed_crfd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Completely Randomized Factorial Design</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ed_ancova.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">ANCOVA</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ed_crbd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Completely Randomized Block Design</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ed_irbd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Incomplete Randomized Block Design</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ed_split_plot.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Split-plot Design</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ed_cross_over.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Cross-over Design</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Literatur</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Inhaltsverzeichnis</h2>
+   
+  <ul>
+  <li><a href="#bedeutung-der-koeffizienten-bei-der-multiplen-regression" id="toc-bedeutung-der-koeffizienten-bei-der-multiplen-regression" class="nav-link active" data-scroll-target="#bedeutung-der-koeffizienten-bei-der-multiplen-regression"><span class="header-section-number">15.1</span> Bedeutung der Koeffizienten bei der multiplen Regression</a></li>
+  <li><a href="#added-variable-plots" id="toc-added-variable-plots" class="nav-link" data-scroll-target="#added-variable-plots"><span class="header-section-number">15.2</span> Added-variable plots</a></li>
+  <li><a href="#was-passiert-wenn-eine-prädiktorvariable-weggelassen-wird" id="toc-was-passiert-wenn-eine-prädiktorvariable-weggelassen-wird" class="nav-link" data-scroll-target="#was-passiert-wenn-eine-prädiktorvariable-weggelassen-wird"><span class="header-section-number">15.3</span> Was passiert wenn eine Prädiktorvariable weggelassen wird?</a></li>
+  <li><a href="#was-passiert-wenn-prädiktoren-stark-miteinander-korrelieren" id="toc-was-passiert-wenn-prädiktoren-stark-miteinander-korrelieren" class="nav-link" data-scroll-target="#was-passiert-wenn-prädiktoren-stark-miteinander-korrelieren"><span class="header-section-number">15.4</span> Was passiert wenn Prädiktoren stark miteinander korrelieren?</a></li>
+  <li><a href="#multikollinearität" id="toc-multikollinearität" class="nav-link" data-scroll-target="#multikollinearität"><span class="header-section-number">15.5</span> Multikollinearität</a>
+  <ul class="collapse">
+  <li><a href="#variance-inflation-factor-vif-in-r" id="toc-variance-inflation-factor-vif-in-r" class="nav-link" data-scroll-target="#variance-inflation-factor-vif-in-r"><span class="header-section-number">15.5.1</span> Variance Inflation Factor (VIF) in <code>R</code></a></li>
+  </ul></li>
+  <li><a href="#verhältnis-der-prädiktorvariblen-x_j-untereinander" id="toc-verhältnis-der-prädiktorvariblen-x_j-untereinander" class="nav-link" data-scroll-target="#verhältnis-der-prädiktorvariblen-x_j-untereinander"><span class="header-section-number">15.6</span> Verhältnis der Prädiktorvariblen <span class="math inline">\(x_j\)</span> untereinander</a></li>
+  <li><a href="#zum-nacharbeiten" id="toc-zum-nacharbeiten" class="nav-link" data-scroll-target="#zum-nacharbeiten"><span class="header-section-number">15.7</span> Zum Nacharbeiten</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Einführung</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p>In vielen Fällen in der Praxis liegt selten der einfache Fall vor, dass eine abhängige Variable mittels nur einer einzigen Prädiktorvariablen erklärt bzw. vorhergesagt werden soll. Sondern meisten sind mehrere Prädiktorvariablen an dem Prozess beteiligt der modelliert werden soll. Ein Beispiel aus der Literatur ist eine Untersuchung von <span class="citation" data-cites="debanne2011">Debanne und Laffaye (<a href="references.html#ref-debanne2011" role="doc-biblioref">2011</a>)</span> über den Zusammenhang zwischen der Wurfgeschwindigkeit in Abhängigkeit vom Körpergewicht und der Armspannweite im Handball. In <a href="#tbl-debanne-2011">Tabelle&nbsp;<span>15.1</span></a> ist ein Ausschnitt aus dem Datensatz abgebildet.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="tbl-debanne-2011" class="anchored">
+<table class="table table-sm table-striped small">
+<caption>Tabelle&nbsp;15.1: Datenausschnitt: Wurfgeschwindigkeit, Körpermasse und Armspannweite bei professionellen Handballern (angelehnt an Debanne &amp; Laffaye, 2011).</caption>
+<thead>
+<tr class="header">
+<th style="text-align: right;">Velocity[m/s]</th>
+<th style="text-align: right;">body mass[kg]</th>
+<th style="text-align: right;">arm span[cm]</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">15.8</td>
+<td style="text-align: right;">70.7</td>
+<td style="text-align: right;">189.2</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">17.2</td>
+<td style="text-align: right;">63.7</td>
+<td style="text-align: right;">182.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">18.3</td>
+<td style="text-align: right;">76.2</td>
+<td style="text-align: right;">192.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">18.4</td>
+<td style="text-align: right;">64.9</td>
+<td style="text-align: right;">171.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">18.4</td>
+<td style="text-align: right;">63.0</td>
+<td style="text-align: right;">181.1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>Im Prinzip könnte der isolierte Einfluss der beiden Prädiktorvariablen Körpermasse und Armspannweite auf die abhängige Variable die Wurfgeschwindigkeit einzeln untersucht werden. Allerdings ist oft von größerem Interesse zu untersuchen, wie sich die beiden Variablen zusammen verhalten und ob durch die Kombination der beiden Variablen ein besseres Modell erstellt werden kann. Aus dieser Problemstellung heraus ergibt sich die Notwendigkeit von der einfachen linearen Regression auf eine multiple multiple lineare Regression überzugehen. Formal geschieht dies einfach dadurch, dass die Formel der einfachen Regression mit dem Prädiktor <span class="math inline">\(X\)</span> um eine zweite oder mehr Variablen erweitert wird. Dementsprechend wird aus:</p>
+<p><span class="math display">\[\begin{equation}
+y_i = \beta_0 + \beta_1 x_i + \epsilon_i
+\end{equation}\]</span></p>
+<p>die Formel für die multiple Regression mit:</p>
+<p><span class="math display">\[\begin{equation}
+y_i = \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \dots + \beta_K x_{Ki} + \epsilon_i
+\end{equation}\]</span></p>
+<p>Da bei der einfachen Regression nur eine einzige <span class="math inline">\(X\)</span>-Variable in der Formel vorhanden war, ist kein Index notwendig gewesen. Bei der multiplen Regression mit mehreren Prädiktorvariablen <span class="math inline">\(X\)</span> wird jeder <span class="math inline">\(X\)</span> Variable ein zusätzlicher Index <span class="math inline">\(j\)</span> angehängt um die Variablen eindeutig identifizieren zu können. Per Konvention, wobei diese leider nicht global eingehalten wird, wird die Anzahl der Prädiktorvaiablen mit <span class="math inline">\(K\)</span> bezeichnet (oft auch <span class="math inline">\(p\)</span>). Der y-Achsenabschnitt erhält wieder den Index <span class="math inline">\(j=0\)</span> und die weiteren Steigungskoeffzienten <span class="math inline">\(\beta_1\)</span> bis <span class="math inline">\(\beta_K\)</span> erhalten den Prädiktorvariablen <span class="math inline">\(X_j\)</span> folgend den entsprechenden Index.</p>
+<p>In welcher Reihenfolge die Prädiktorvariablen mit <span class="math inline">\(j=1, j=2, \ldots, j=K\)</span> verteilt werden hat zunächst keine Auswirkung auf das Modell und regelt lediglich die Bezeichnung. In unserem konkreten Fall der Handballwurfdaten wäre zum Beispiel eine mögliche Zuordnung, das <span class="math inline">\(X_1\)</span> die Körpermasse und <span class="math inline">\(X_2\)</span> die Armspannweite kodiert.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;"><span class="math inline">\(i\)</span></th>
+<th style="text-align: right;">Velocity[m/s]</th>
+<th style="text-align: right;">body mass[kg] <span class="math inline">\(j=1\)</span></th>
+<th style="text-align: right;">arm span[cm] <span class="math inline">\(j=2\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">15.8</td>
+<td style="text-align: right;">70.7</td>
+<td style="text-align: right;">189.2</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">17.2</td>
+<td style="text-align: right;">63.7</td>
+<td style="text-align: right;">182.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">18.3</td>
+<td style="text-align: right;">76.2</td>
+<td style="text-align: right;">192.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">18.4</td>
+<td style="text-align: right;">64.9</td>
+<td style="text-align: right;">171.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">18.4</td>
+<td style="text-align: right;">63.0</td>
+<td style="text-align: right;">181.1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Rein formal haben wir jetzt schon den Übergang zur multiple Regression vollzogen. Die Frage die sich natürlich direkt anschließt bezieht sich nun auf die Bedeutung der Koeffizienten <span class="math inline">\(\beta_1, \ldots, \beta_k\)</span> und wie sich die weiteren Konzepte die wir vorher bei der einfachen Regression kennengelernt haben auf die multiple Regression übertragen.</p>
+<div id="exm-rowing-example-01" class="theorem example">
+<p><span class="theorem-title"><strong>Beispiel 15.1 </strong></span>In <span class="citation" data-cites="riechman2002">Riechman u.&nbsp;a. (<a href="references.html#ref-riechman2002" role="doc-biblioref">2002</a>)</span> wurde ein Modell erstellt um die Leistung beim 2000m Indoor-Rudern von 12 Wettkampfruderinnen anhand eines 30-Sekunden-Ruder-Sprints, der maximalen Sauerstoffaufnahme und der Ermüdung vorherzusagen. Die Autoren bestimmten das folgende Modell: <span class="math display">\[\begin{equation*}
+Zeit_{\text{2000m}} = 567.29-0.163\cdot\text{Power }-14.213\cdot \dot{V}0_{2\text{max}} + 0.738\cdot\text{Fatigue}
+\end{equation*}\]</span> Mit einem Standardfehler von <span class="math inline">\(\hat{\sigma} = 0.96\)</span>.</p>
+</div>
+<section id="bedeutung-der-koeffizienten-bei-der-multiplen-regression" class="level2" data-number="15.1">
+<h2 data-number="15.1" class="anchored" data-anchor-id="bedeutung-der-koeffizienten-bei-der-multiplen-regression"><span class="header-section-number">15.1</span> Bedeutung der Koeffizienten bei der multiplen Regression</h2>
+<p>Um die Bedeutung der Regressionskoeffzienten bei der multiple Regression besser zu verstehen ist es von Vorteil sich noch einmal die Bedeutung der Koeffizienten im einfachen Regressionsmodell zu vergegenwärtigen (siehe <a href="#fig-mlm-basics-simple">Abbildung&nbsp;<span>15.1</span></a>).</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-mlm-basics-simple" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="mlm_basics_files/figure-html/fig-mlm-basics-simple-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption class="figure-caption">Abbildung&nbsp;15.1: Beispiel für eine einfache Regression und der resultierenden Regressiongeraden</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Bei der einfachen Regression haben wir mittels der Methode der kleinsten Quadrate eine Regressiongerade durch die Punktwolke der Daten gelegt. Dabei haben wir die Regressionsgerade so gewählt, dass die senkrechten Abstände der beobachteten Punkte von der Regressionsgerade minimiert werden bzw. die Abstände zwischen denen auf der Gerade liegenden, vorhergesagten Werte <span class="math inline">\(\hat{y}_i\)</span> und den beobachteten Wert <span class="math inline">\(Y_i\)</span> (Residuen). Wenn wir nun den Übergang von einer Prädiktorvariablen zum nächstkomplizierteren Fall nehmen mit zwei Prädiktorvariablen <span class="math inline">\(X_1\)</span> und <span class="math inline">\(X_2\)</span>, dann wäre eine mögliche Darstellungsform der Daten eine Punktwolke im dreidimensionalen Raum (siehe <a href="#fig-mlm-basics-scatter-1">Abbildung&nbsp;<span>15.2 (a)</span></a>).</p>
+<div id="fig-mlm-basics-scatter" class="cell quarto-layout-panel">
+<figure class="figure">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-mlm-basics-scatter-1" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="mlm_basics_files/figure-html/fig-mlm-basics-scatter-1.png" class="img-fluid figure-img" data-ref-parent="fig-mlm-basics-scatter" width="672"></p>
+<figcaption class="figure-caption">(a) 3D Punktwolke</figcaption>
+</figure>
+</div>
+</div>
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-mlm-basics-scatter-2" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="mlm_basics_files/figure-html/fig-mlm-basics-scatter-2.png" class="img-fluid figure-img" data-ref-parent="fig-mlm-basics-scatter" width="672"></p>
+<figcaption class="figure-caption">(b) 3D Punktwolke mit gefitteter Ebene</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p></p><figcaption class="figure-caption">Abbildung&nbsp;15.2: Punktwolken bei der multiple Regression</figcaption><p></p>
+</figure>
+</div>
+<p>Da jetzt eine einzelne Gerade nicht mehr in der Lage ist die Daten zu fitten, ist die nächste Möglichkeit eine Ebene in die Punktwolke zu legen (siehe <a href="#fig-mlm-basics-scatter-2">Abbildung&nbsp;<span>15.2 (b)</span></a>). Dies ermöglicht dann genau die gleiche Herangehensweise wie bei der einfachen linearen Regression anzuwenden. Als Zielgröße wird aus den möglichen Ebenen diejenigen gesucht deren vorhergesagten, auf der Ebene liegenden, Punkte <span class="math inline">\(\hat{y}_i\)</span> die geringsten, senkrechten Abstand zu den beobachteten Punkten <span class="math inline">\(y_i\)</span> haben (wieder Residuen). Anders, wir suchen diejenigen Ebene durch die Punktwolke deren Summe der quadrierten Residuen <span class="math inline">\(e_i = y_i - \hat{y}_i\)</span> minimal ist.</p>
+<p>Diese Herangehensweise hat den Vorteil, dass sie zum einem die einfache lineare Regression als Spezialfall mit <span class="math inline">\(K=1\)</span> beinhaltet und sich beliebig erweitern lässt mit der Einschränkung, dass bei <span class="math inline">\(K&gt;2\)</span> die dreidimensionale Darstellung mittels einer Grafik nicht mehr möglich ist da nicht ausreichend Dimensionen dargestellt werden können. Das Prinzip der Minimierung der Abweichungen von <span class="math inline">\(\hat{y}_i\)</span> zu <span class="math inline">\(y\)</span> von einer Ebene bleibt aber weiter erhalten. D.h. alle Einsichten die wir im Rahmen der einfachen linearen Regression gelernt haben, lassen sich direkt übertragen.</p>
+<p>Zusammenfassend:</p>
+<ul>
+<li>Die Berechnungen beim Übergang von der einfachen zur multiplen Regression bleiben alle gleich</li>
+<li>Abweichungen <span class="math inline">\(\hat{\epsilon_i}\)</span> sind jetzt nicht mehr Abweichungen von einer Gerade sondern von einer <span class="math inline">\(K\)</span>-dimensionalen Hyperebene. Die Eigenschaften der Residuen bleiben aber alle erhalten.</li>
+<li>Die Modellannahmen bleiben gleich: Unabhängige <span class="math inline">\(y_i\)</span> und <span class="math inline">\(\epsilon_i \sim \mathcal{N}(0,\sigma^2)\)</span> iid</li>
+<li>Inferenz für die Koeffizienten mittels <span class="math inline">\(t_k = \frac{\hat{\beta}_k}{s_k} \sim t(N-K-1)\)</span> bleiben erhalten und übertragen sich auf die Konfidenzintervall</li>
+<li>Konzepte für die Vorhersage bleiben erhalten</li>
+<li>Modelldiagnosetools bleiben ebenfalls alle erhalten</li>
+</ul>
+<p>Als nächster Schritt versuchen wir nun die Interpretation der Koeffizienten im multiplen Regressionsmodell besser zu verstehen.</p>
+<p>Fangen wir mit einem einfachen Beispiel an. Wir gehen von einem DGP mit den folgenden Modellwerten aus.</p>
+<p><span class="math display">\[\begin{align*}
+y_i &amp;= \beta_0 + \beta_1 \cdot x_{1i} + \beta_2 \cdot x_{2i} + \epsilon_i \\
+\beta_0 &amp;= 1 ,\beta_1 = 3, \beta_2 = 0.7 \\
+\epsilon_i &amp;\sim N(0,\sigma = 0.5)
+\end{align*}\]</span></p>
+<p>Übersetzt in <code>R</code> code bedeutet dies, wenn wir <span class="math inline">\(x_1\)</span> und <span class="math inline">\(x_2\)</span> als Gleichverteilt aus <span class="math inline">\(U(-2,2)\)</span> ansehen.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">50</span> <span class="co"># Anzahl Datenpunkte</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>beta_0 <span class="ot">&lt;-</span> <span class="dv">1</span>   <span class="co"># y-Achsenabschnitt</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>beta_1 <span class="ot">&lt;-</span> <span class="dv">3</span>   <span class="co"># 1. Steigungskoeffizient</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>beta_2 <span class="ot">&lt;-</span> <span class="fl">0.7</span> <span class="co"># 2. Steigungskoeffizient</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>sigma <span class="ot">&lt;-</span> <span class="fl">0.5</span>  <span class="co"># Standardabweichung der Residuen</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">x1 =</span> <span class="fu">runif</span>(N, <span class="sc">-</span><span class="dv">2</span>, <span class="dv">2</span>),</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">x2 =</span> <span class="fu">runif</span>(N, <span class="sc">-</span><span class="dv">2</span>, <span class="dv">2</span>),</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> beta_0 <span class="sc">+</span> beta_1<span class="sc">*</span>x1 <span class="sc">+</span> beta_2<span class="sc">*</span>x2 <span class="sc">+</span> <span class="fu">rnorm</span>(N, <span class="dv">0</span>, sigma)) <span class="co"># DGP</span></span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Wenn wir die Prädiktorvariblen <span class="math inline">\(x_1\)</span> und <span class="math inline">\(x_2\)</span> gegen <span class="math inline">\(y\)</span> jeweils in einem Streudiagramm abtragen erhalten wir die folgenden Abbildungen (siehe <a href="#fig-mlm-basics-example-01">Abbildung&nbsp;<span>15.3</span></a>).</p>
+<div id="fig-mlm-basics-example-01" class="cell quarto-layout-panel">
+<figure class="figure">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-mlm-basics-example-01-1" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="mlm_basics_files/figure-html/fig-mlm-basics-example-01-1.png" class="img-fluid figure-img" data-ref-parent="fig-mlm-basics-example-01" width="672"></p>
+<figcaption class="figure-caption">(a) Streudiagramm <span class="math inline">\(y\)</span> gegen <span class="math inline">\(x_1\)</span></figcaption>
+</figure>
+</div>
+</div>
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-mlm-basics-example-01-2" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="mlm_basics_files/figure-html/fig-mlm-basics-example-01-2.png" class="img-fluid figure-img" data-ref-parent="fig-mlm-basics-example-01" width="672"></p>
+<figcaption class="figure-caption">(b) Streudiagramm <span class="math inline">\(y\)</span> gegen <span class="math inline">\(x_2\)</span></figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p></p><figcaption class="figure-caption">Abbildung&nbsp;15.3: Streudiagramme der einfachen Zusammenhänge für das Beispiel.</figcaption><p></p>
+</figure>
+</div>
+<p>Der Zusammenhang zwischen <span class="math inline">\(x_1\)</span> und <span class="math inline">\(y\)</span> ist ziemlich klar (siehe <a href="#fig-mlm-basics-example-01-1">Abbildung&nbsp;<span>15.3 (a)</span></a>), während das Streudiagramm für <span class="math inline">\(x_2\)</span> gegen <span class="math inline">\(y\)</span> nicht ganz so eindeutig ist (siehe <a href="#fig-mlm-basics-example-01-2">Abbildung&nbsp;<span>15.3 (b)</span></a>). Fitten wir das Modell mittels <code>lm()</code> in <code>R</code>. Die beiden Variablen gehen dem DGP folgend additiv in das Modell ein. Daher benutzen wir in der Modellformulierung für <code>lm()</code> <code>y ~ x1 + x2</code> (Tip: Im Kapitel zur einfachen Regression ist ein kurzer Primer zur Modellformulierung).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x1 <span class="sc">+</span> x2, df)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Wenn wir uns das gefittete Modell in <code>summary()</code> anschauen erhalten die folgenden Modellkoeffizienten <span class="math inline">\(\beta_0, \beta_1\)</span> und <span class="math inline">\(\beta_2\)</span>.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="tbl-mlm-basics-example-01" class="anchored">
+<table class="table table-sm table-striped small">
+<caption>Tabelle&nbsp;15.2: Modellkoeffizienten für das Beispiel.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;"><span class="math inline">\(\hat{\beta}\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(s_e\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">1.077</td>
+<td style="text-align: right;">0.066</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">x1</td>
+<td style="text-align: right;">2.965</td>
+<td style="text-align: right;">0.056</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">x2</td>
+<td style="text-align: right;">0.708</td>
+<td style="text-align: right;">0.060</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(\hat{\sigma}\)</span></td>
+<td style="text-align: right;">0.460</td>
+<td style="text-align: right;"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>In <a href="#tbl-mlm-basics-example-01">Tabelle&nbsp;<span>15.2</span></a> sehen wir, dass wir die Koeffizienten des DGP wieder sehr gut wiederherstellen können. Das sollte uns erst mal etwas beruhigen, da es zeigt, dass wir mit unserer multiplen Regression eigentlich ganz gut arbeiten können und das Modell in der Lage ist die <em>wahren</em> Modellparameter im Rahmen der Stichprobenunsicherheit abschätzen zu können.</p>
+<p>Die Interpretation von <span class="math inline">\(\beta_1\)</span> ist gleich derjenigen bei der einfachen linearen Regression allerdings mit einer kleinen Erweiterung. Zwei Objekte die sich in <span class="math inline">\(x_1\)</span> um eine Einheit voneinander unterscheiden und den gleichen Wert in <span class="math inline">\(x_2\)</span> haben, unterscheiden sich in der abhängigen Variablen <span class="math inline">\(y\)</span> um den Steigungskoeffizienten <span class="math inline">\(\beta_1\)</span>. Die gleiche Interpretation mit den Rollen vertauscht trifft ebenfalls auf <span class="math inline">\(\beta_2\)</span> zu. Zwei Objekte die sich in <span class="math inline">\(x_2\)</span> um eine Einheit unterscheiden und den gleichen Wert für <span class="math inline">\(x_1\)</span> haben unterscheiden sich in <span class="math inline">\(y\)</span> um <span class="math inline">\(\beta_2\)</span>.</p>
+<p>Schauen wir uns nun an, wie die Koeffizienten zustanderkommen. Dazu machen wir erst einmal einen kleinen Umweg. Wir erstellen uns eine neue Prädiktorvariable <span class="math inline">\(x_1^*\)</span>. Wir erhalten <span class="math inline">\(x_1^*\)</span> indem wir eine Regression von <span class="math inline">\(x_1\)</span> auf <span class="math inline">\(x_2\)</span> berechnen. Also das Modell:</p>
+<p><span class="math display">\[\begin{equation*}
+x_{1i} = \beta_0 + \beta_1 x_{2i} + \epsilon_i
+\end{equation*}\]</span></p>
+<p>D.h. wir versuchen <span class="math inline">\(x_1\)</span> mittels <span class="math inline">\(x_2\)</span> vorherzusagen. Wir stellen uns die Frage wenn wir <span class="math inline">\(x_2\)</span> kennen, wie viel Information gibt uns dies über <span class="math inline">\(x_2\)</span>. Wenn ein perfekter linearer Zusammenhang zwischen <span class="math inline">\(x_1\)</span> und <span class="math inline">\(x_2\)</span> besteht dann wäre die Information von <span class="math inline">\(x_2\)</span> über <span class="math inline">\(x_1\)</span> ebenfalls perfekt. Wenn ich weiß welchen Wert <span class="math inline">\(x_2\)</span> hat, dann weiß ich auch welchen Wert <span class="math inline">\(x_1\)</span> hat. Entsprechend umso schwächer der lineare Zusammenhang zwischen <span class="math inline">\(x_1\)</span> und <span class="math inline">\(x_2\)</span> ist, umso weniger Information besitzt <span class="math inline">\(x_1\)</span> über <span class="math inline">\(x_2\)</span>.</p>
+<p>Gehen wir jetzt noch einen Schritt weiter uns nehmen aus dem Regressionmodell von <span class="math inline">\(x_1\)</span> gegen <span class="math inline">\(x_2\)</span> die Residuen <span class="math inline">\(e_i\)</span>. Können wir diese auch im Rahmen der Information von <span class="math inline">\(x_2\)</span> über <span class="math inline">\(x_1\)</span> interpretieren. Nun, die Residuen <span class="math inline">\(e_i\)</span> beziffern genau denjenigen Teil der Varianz von <span class="math inline">\(x_1\)</span> den wir nicht mit Hilfe des Regressionsmodells von <span class="math inline">\(x_1\)</span> gegen <span class="math inline">\(x_2\)</span> aufklären können. D.h. die Residuen <span class="math inline">\(e_i\)</span> in diesem Modell sind die Varianz von <span class="math inline">\(x_1\)</span> um den Anteil von <span class="math inline">\(x_2\)</span> bereinigt.</p>
+<p><span class="math display">\[\begin{equation}
+e_i = x_{1i} - \beta_0 - \beta_1 x_{2i}
+\label{eq-mlm-basics-coef-01}
+\end{equation}\]</span></p>
+<p>Nochmal, die Residuen <span class="math inline">\(e_i\)</span> stellen denjenigen Teil der Varianz von <span class="math inline">\(x_1\)</span> dar, der sich nicht durch <span class="math inline">\(x_2\)</span> vorhersagen lässt. Eben derjenige Teil der Varianz von <span class="math inline">\(x_1\)</span> der um den Teil von <span class="math inline">\(x_2\)</span> <em>bereinigt</em> wurde. Die Residuen <span class="math inline">\(e_i\)</span> aus Formel <span class="math inline">\(\eqref{eq-mlm-basics-coef-01}\)</span> verwenden wir nun als neue Prädiktorvariablen <span class="math inline">\(x_1^*\)</span>.</p>
+<p>Im nächsten Schritt verwenden wir <span class="math inline">\(x_1^*\)</span> um eine einfache lineare Regression von <span class="math inline">\(y\)</span> gegen <span class="math inline">\(x_1^*\)</span> durchzuführen.</p>
+<p><span class="math display">\[\begin{equation*}
+y_i = \beta_0 + \beta_1 x_{1i}^*
+\end{equation*}\]</span></p>
+<p>In <code>R</code> entsprechend:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>mod_x1_star<span class="ot">&lt;-</span> <span class="fu">lm</span>(x1 <span class="sc">~</span> x2, df)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>x1_star <span class="ot">&lt;-</span> <span class="fu">resid</span>(mod_x1_star)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>mod_y_x1_star <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x1_star, df)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Schauen wir uns nun die Koeffizienten an (siehe <a href="#tbl-mlm-basics-example-02">Tabelle&nbsp;<span>15.3</span></a>)</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="tbl-mlm-basics-example-02" class="anchored">
+<table class="table table-sm table-striped small">
+<caption>Tabelle&nbsp;15.3: Modellkoefizienten von <span class="math inline">\(y\)</span> gegen <span class="math inline">\(x_1^*\)</span>.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;"><span class="math inline">\(\hat{\beta}\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(s_e\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">1.250</td>
+<td style="text-align: right;">0.164</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">x1_star</td>
+<td style="text-align: right;">2.965</td>
+<td style="text-align: right;">0.141</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>Der Steigungskoeffizient <span class="math inline">\(\beta_1\)</span> ist genau derjenige aus dem Modell mit beiden Variablen (siehe <a href="#tbl-mlm-basics-example-01">Tabelle&nbsp;<span>15.2</span></a>).</p>
+<p>Wenig überraschend, wenn wir das gleiche Verfahren auf <span class="math inline">\(x_2\)</span> anwenden.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>mod_x2_star <span class="ot">&lt;-</span> <span class="fu">lm</span>(x2 <span class="sc">~</span> x1, df)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>x2_star <span class="ot">&lt;-</span> <span class="fu">resid</span>(mod_x2_star)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>mod_y_x2_star <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x2_star, df)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(mod_y_x2_star)[<span class="dv">2</span>]</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  x2_star 
+0.7081505 </code></pre>
+</div>
+</div>
+<p>Erhalten wir den Steigungskoeffizienten für <span class="math inline">\(\beta_2\)</span> aus dem Modell mit beiden Variablen. Das gleiche Prinzip generalisiert auch für mehr als zwei Variablen, nur das wir hier dann nicht mehr die Regression der Variable <span class="math inline">\(x_i\)</span> gegen eine andere <span class="math inline">\(x_j\)</span> Variable berechnen sondern <span class="math inline">\(x_i\)</span> gegen alle anderen Prädiktorvariablen <span class="math inline">\(x_j, j = 1, i-1,i+1,K\)</span>.</p>
+<p>Dadurch ergibt sich die folgende Interpretation der Steigungskoeffizienten <span class="math inline">\(\beta_i\)</span> im multiplen Regressionsmodell. Der Steigungskoeffizient <span class="math inline">\(\beta_i\)</span> drückt die Information der Variable <span class="math inline">\(x_i\)</span> aus, wenn der gemeinsame Anteil von <span class="math inline">\(x_i\)</span> mit allen anderen Prädiktorvariablen <span class="math inline">\(x_j, j \new i\)</span> rausgerechnet, <em>bereinigt</em> wurde. Anders interpretiert, welche zusätzliche Information erhalten wir, wenn wir die Variable <span class="math inline">\(x_i\)</span> in das Modell integrieren, wenn wir schon alle anderen Variablen <span class="math inline">\(x_j, j \neq i\)</span> im Modell haben. D.h. das multiple Regressionsmodell kontrolliert automatisch immer den Einfluss der anderen <span class="math inline">\(K-1\)</span> Variablen bei der Betrachtung der Variablen <span class="math inline">\(x_i\)</span>. Nochmal als Liste:</p>
+<ul>
+<li><span class="math inline">\(\hat{\beta}_1\)</span>: Wenn ich <span class="math inline">\(x_2\)</span> weiß, welche zusätzlichen Informationen bekomme ich durch <span class="math inline">\(x_1\)</span></li>
+<li><span class="math inline">\(\hat{\beta}_2\)</span>: Wenn ich <span class="math inline">\(x_1\)</span> weiß, welche zusätzlichen Informationen bekomme ich durch <span class="math inline">\(x_2\)</span></li>
+</ul>
+<p>Bezogen auf die Werte der Steigungskoeffzienten <span class="math inline">\(\beta_i\)</span> ist die Bedeutung immer noch wie oben, wenn sich zwei Objekte auf der Variablen <span class="math inline">\(x_i\)</span> um eine Einheit voneinander unterscheiden und alle anderen Variablen den gleichen Wert haben, dann unterscheiden sich die erwarteten (vorhergesagten) Werte <span class="math inline">\(\hat{y}_i\)</span> laut des Modells um <span class="math inline">\(\beta_i\)</span>.</p>
+<p>Die Eigenschaft, dass die anderen Variablen <span class="math inline">\(x_j\)</span> konstant gehalten werden ist dabei auch das Problem wenn wir ein einfaches Streudiagramm <span class="math inline">\(y_i\)</span> gegen <span class="math inline">\(x_i\)</span> bei einer multiplen linearen Regression wie in <a href="#fig-mlm-basics-example-01">Abbildung&nbsp;<span>15.3</span></a> erstellen. In <a href="#fig-mlm-basics-example-01-1">Abbildung&nbsp;<span>15.3 (a)</span></a> können wir den Einfluss von <span class="math inline">\(x_1\)</span> sehr gut identifizieren, da der Steigungskoeffizient <span class="math inline">\(\beta_1\)</span> im Verhältnis zu <span class="math inline">\(\sigma\)</span> recht groß ist. Im Falle von <a href="#fig-mlm-basics-example-01-2">Abbildung&nbsp;<span>15.3 (b)</span></a> ist dies nicht der Fall. Ein Möglichkeit trotzdem mit Hilfe von einfachen Streudiagrammen den isolierten Zusammenhang der Prädiktorvariablen <span class="math inline">\(x_i\)</span> auf die abhängige <span class="math inline">\(y_i\)</span> zu untersuchen bieten added-variable plots.</p>
+</section>
+<section id="added-variable-plots" class="level2" data-number="15.2">
+<h2 data-number="15.2" class="anchored" data-anchor-id="added-variable-plots"><span class="header-section-number">15.2</span> Added-variable plots</h2>
+<p>Die Idee hinter added-variable plots basiert auf unserem Trick von eben mit den Residuen <span class="math inline">\(e_i\)</span>. Neben der Bereinigung von <span class="math inline">\(x_2\)</span> aus <span class="math inline">\(x_1\)</span>, die wir eben schon kennengelernt haben, rechnen wir zusätzlich auch noch den Einfluss von <span class="math inline">\(x_2\)</span> aus <span class="math inline">\(y\)</span> raus. Die beiden resultierenden Variablen stellen wir dann in einem Streudiagramm dar. In <code>R</code> können wir einen solchen Plot mittels des folgenden Ansatzes erstellen (siehe <a href="#fig-mlm-basics-avplot-01">Abbildung&nbsp;<span>15.4</span></a>).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>y_star <span class="ot">&lt;-</span> <span class="fu">resid</span>(<span class="fu">lm</span>(y <span class="sc">~</span> x1, df))   <span class="co"># Bereinigugn von y um x1</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>x2_star <span class="ot">&lt;-</span> <span class="fu">resid</span>(<span class="fu">lm</span>(x2 <span class="sc">~</span> x1, df)) <span class="co"># Bereinigung von x2 um x1</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">tibble</span>(x2_star, y_star),</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(x2_star,y_star)) <span class="sc">+</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">'x2 | x1'</span>, <span class="at">y =</span> <span class="st">'y | x1'</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-mlm-basics-avplot-01" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="mlm_basics_files/figure-html/fig-mlm-basics-avplot-01-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption class="figure-caption">Abbildung&nbsp;15.4: Zusammenhang zwischen <span class="math inline">\(y\)</span> und <span class="math inline">\(x_2\)</span> bereinigt um den Einfluß von <span class="math inline">\(x_1\)</span>.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Wir sehen jetzt viel deutlicher den Zusammenhang zwischen <span class="math inline">\(x_2\)</span> und <span class="math inline">\(y\)</span> als dies in <a href="#fig-mlm-basics-example-01-2">Abbildung&nbsp;<span>15.3 (b)</span></a> der Fall war. Im Paket <code>car</code> gibt es eine Funktion <code>avPlots()</code> mit der wir die added-variable plots auch direkt erstellen können.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">avPlots</span>(mod)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="mlm_basics_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Wenn eine multiple Regression mit mehr als zwei Prädiktorvariablen gerechnet wird, dann werden im added-variable plot jeweils alle <span class="math inline">\(K-1\)</span> Variablen aus <span class="math inline">\(x_i\)</span> und <span class="math inline">\(y\)</span> rausgerechnet. D.h. <span class="math inline">\(Y\)</span> und <span class="math inline">\(X_i\)</span> werden um den Einfluss aller, verbleibenden <span class="math inline">\(X_j, j \neq i\)</span> bereinigt.</p>
+<p>Da ein Steigungskoeffizientt <span class="math inline">\(\beta_i\)</span> immer den Beitrag der Information von <span class="math inline">\(X_i\)</span> über denjenigen der anderen Prädiktorvariablen bestimmt, stellt sich die Frage was passiert wenn im Modell eine oder mehrere Prädiktorvariablen weggelassen werden.</p>
+</section>
+<section id="was-passiert-wenn-eine-prädiktorvariable-weggelassen-wird" class="level2" data-number="15.3">
+<h2 data-number="15.3" class="anchored" data-anchor-id="was-passiert-wenn-eine-prädiktorvariable-weggelassen-wird"><span class="header-section-number">15.3</span> Was passiert wenn eine Prädiktorvariable weggelassen wird?</h2>
+<p>In <a href="#tbl-mlm-basics-modelfit-01">Tabelle&nbsp;<span>15.4</span></a> sind noch mal die Koeffizienten aus dem Beispiel abgebildet.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="tbl-mlm-basics-modelfit-01" class="anchored">
+<table class="table table-sm table-striped small">
+<caption>Tabelle&nbsp;15.4: Koeffizienten im Beispielmodell.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;"><span class="math inline">\(\hat{\beta}\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(s_e\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">1.077</td>
+<td style="text-align: right;">0.066</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">x1</td>
+<td style="text-align: right;">2.965</td>
+<td style="text-align: right;">0.056</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">x2</td>
+<td style="text-align: right;">0.708</td>
+<td style="text-align: right;">0.060</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>Was passiert nun, wenn wir zwei Einzelmodelle als einfache lineare Regression fitten, jeweils mit nur einer Variablen? Wir schauen uns nur die Koeffizienten an. Einmal das Modell mit nur <span class="math inline">\(X_1\)</span>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(<span class="fu">lm</span>(y <span class="sc">~</span> x1, df))</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(Intercept)          x1 
+   1.007466    3.017589 </code></pre>
+</div>
+</div>
+<p>Wir sehen, dass sich der Koeffizient verändert aber noch in einem ähnlichen Bereich ist. Das Gleiche nun für <span class="math inline">\(X_2\)</span>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(<span class="fu">lm</span>(y <span class="sc">~</span> x2, df))</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(Intercept)          x2 
+  1.3377771   0.9555316 </code></pre>
+</div>
+</div>
+<p>Der Steigungskoeffizient ändert sich hier auch wieder, bleibt aber ebenfalls in einem ähnlichen Bereich.</p>
+<p>Jetzt können wir aber einwenden, dass in unserem Beispiel das sehr speziell ist, da nach Konstruktion des DGP <span class="math inline">\(X_1\)</span> und <span class="math inline">\(X_2\)</span> unabhängig voneinander sind. Als wir die Daten generiert haben, haben wir jeweils zwei unabhängige Zufallszahlenmengen erstellt. Wenn wir uns die Korrelation der Variablen ansehen, dann ist das gut nachvollziehbar.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">cor</span>(df),<span class="dv">3</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      x1    x2     y
+x1 1.000 0.078 0.969
+x2 0.078 1.000 0.289
+y  0.969 0.289 1.000</code></pre>
+</div>
+</div>
+<p>D.h. <span class="math inline">\(X_1\)</span> und <span class="math inline">\(X_2\)</span> korrelieren praktisch überhaupt nicht miteinander (Warum ist die Korrelation <span class="math inline">\(r_{x_1x_2}\)</span> nicht exakt <span class="math inline">\(=0\)</span>). D.h. <span class="math inline">\(X_1\)</span> enthält keine Informationen über <span class="math inline">\(X_2\)</span> und dementsprechend sollte die beiden Beiträge zum Modell unabhängig voneinander sein.</p>
+</section>
+<section id="was-passiert-wenn-prädiktoren-stark-miteinander-korrelieren" class="level2" data-number="15.4">
+<h2 data-number="15.4" class="anchored" data-anchor-id="was-passiert-wenn-prädiktoren-stark-miteinander-korrelieren"><span class="header-section-number">15.4</span> Was passiert wenn Prädiktoren stark miteinander korrelieren?</h2>
+<p>Schauen wir uns nun einen neuen Datensatz an <span class="citation" data-cites="kutner2005">(Beispiel aus <a href="references.html#ref-kutner2005" role="doc-biblioref">Kutner u.&nbsp;a. 2005</a>)</span>. Im Rahmen einer Untersuchung sind Körperfettmessungen durchgeführt an <span class="math inline">\(20\)</span> Personen durchgeführt worden. Neben einer Gesamtkörpermessung wurde auch der Körperfettanteil am Oberarm, Unterarm und am Oberschenkel bestimmt. In <a href="#tbl-mlm-basics-bodyfat-01">Tabelle&nbsp;<span>15.5</span></a> ist ein Ausschnitt der Daten angebildet.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="tbl-mlm-basics-bodyfat-01" class="anchored">
+<table class="table table-sm table-striped small">
+<caption>Tabelle&nbsp;15.5: Ausschnitt der Körperfettdaten [%]</caption>
+<thead>
+<tr class="header">
+<th style="text-align: right;">Oberarm</th>
+<th style="text-align: right;">Unterarm</th>
+<th style="text-align: right;">Oberschenkel</th>
+<th style="text-align: right;">Gesamt</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">19.5</td>
+<td style="text-align: right;">43.1</td>
+<td style="text-align: right;">29.1</td>
+<td style="text-align: right;">11.9</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">24.7</td>
+<td style="text-align: right;">49.8</td>
+<td style="text-align: right;">28.2</td>
+<td style="text-align: right;">22.8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">30.7</td>
+<td style="text-align: right;">51.9</td>
+<td style="text-align: right;">37.0</td>
+<td style="text-align: right;">18.7</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">29.8</td>
+<td style="text-align: right;">54.3</td>
+<td style="text-align: right;">31.1</td>
+<td style="text-align: right;">20.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">19.1</td>
+<td style="text-align: right;">42.2</td>
+<td style="text-align: right;">30.9</td>
+<td style="text-align: right;">12.9</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">25.6</td>
+<td style="text-align: right;">53.9</td>
+<td style="text-align: right;">23.7</td>
+<td style="text-align: right;">21.7</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>Als Modell sollen der Gesamtkörperfettanteil mit Hilfe der drei Messungen bestimmt werden.</p>
+<p><span class="math display">\[\begin{equation}
+Y_{\text{Körperfettanteil}} = \beta_0 + \beta_1 \cdot X_{\text{Oberarm}} + \beta_2 \cdot X_{\text{Unterarm}} + \beta_3 \cdot X_{\text{Oberschenkel}} + \epsilon
+\end{equation}\]</span></p>
+<p>Schauen wir uns zunächst einmal an, wie stark die Werte miteinander korrelieren. Wir verwenden die Funktion <code>ggpairs()</code> aus dem <code>GGally</code> Paket. So erhalten wir mit wenig Aufwand eine übersichtliche Darstellung (siehe <a href="#fig-mlm-basics-bodyfat-01">Abbildung&nbsp;<span>15.5</span></a>).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>GGally<span class="sc">::</span><span class="fu">ggpairs</span>(bodyfat) </span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-mlm-basics-bodyfat-01" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="mlm_basics_files/figure-html/fig-mlm-basics-bodyfat-01-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption class="figure-caption">Abbildung&nbsp;15.5: Korrelationsmatrize der Körperfettdaten</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Wie nicht anders zu erwarten, korrelieren die Prädiktorvariablen relativ stark miteinander. Die Korrelation zwischen den Oberschenkeldaten und den Oberarmdaten in dieser Stichprobe ist sogar <span class="math inline">\(&gt;0.9\)</span>. Schauen wir uns nun an, wie sich das auf die Modellfits auswirkt, wenn wir nur Teilmengen der Prädiktorvariablen zum fitten verwenden. Insgesamt fitten wir vier verschiedene Modelle. Ein Modell mit allen Prädiktorvariablen und drei weitere bei denen wir jeweils eine der Prädiktorvariablen weglassen. In <code>R</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Alle drei Prädiktoren</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>mod_full <span class="ot">&lt;-</span> <span class="fu">lm</span>(body_fat <span class="sc">~</span> triceps <span class="sc">+</span> thigh <span class="sc">+</span> midarm, bodyfat)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ohne Arm</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>mod_wo_midarm <span class="ot">&lt;-</span> <span class="fu">lm</span>(body_fat <span class="sc">~</span> triceps <span class="sc">+</span> thigh, bodyfat)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Ohne Oberschenkel</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>mod_wo_thigh <span class="ot">&lt;-</span> <span class="fu">lm</span>(body_fat <span class="sc">~</span> triceps <span class="sc">+</span> midarm, bodyfat)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Ohne Triceps</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>mod_wo_triceps <span class="ot">&lt;-</span> <span class="fu">lm</span>(body_fat <span class="sc">~</span> thigh <span class="sc">+</span> midarm, bodyfat)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>In <a href="#tbl-mlm-basics-bodyfat-02">Tabelle&nbsp;<span>15.6</span></a> sind nur die Steigungskoeffizienten für die vier verschiedenen Modell abgebildet.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="tbl-mlm-basics-bodyfat-02" class="anchored">
+<table class="table table-sm table-striped small">
+<caption>Tabelle&nbsp;15.6: Koeffizienten der vier verschiedenen Modellen zu den Körperfettdaten.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">Oberarm</th>
+<th style="text-align: right;">Oberschenkel</th>
+<th style="text-align: right;">Unterarm</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Alle</td>
+<td style="text-align: right;">4.33</td>
+<td style="text-align: right;">-2.86</td>
+<td style="text-align: right;">-2.19</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ohne Unterarm</td>
+<td style="text-align: right;">0.22</td>
+<td style="text-align: right;">0.66</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ohne Oberschenkel</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">-0.43</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ohne Oberarm</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;">0.85</td>
+<td style="text-align: right;">0.10</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>Wir sehen, dass hier die Koeffizienten sich sehr stark ändern in Abhängigkeit von welche anderen Variablen in dem Modell enthalten sind. Beispielsweise änder der Koeffizient für den Oberschenkel nicht nur seine Größe und auch sein Vorzeichen, je nachdem ob der Ober- oder der Unterarm oder beide im Modell enthalten sind. Wenn mehrer Variablen in einem Modell miteinander korrelieren, dann wird dies als Multikollinearität bezeichnet.</p>
+</section>
+<section id="multikollinearität" class="level2" data-number="15.5">
+<h2 data-number="15.5" class="anchored" data-anchor-id="multikollinearität"><span class="header-section-number">15.5</span> Multikollinearität</h2>
+<div id="def-multicollinearity" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 15.1 (Multikollinearität) </strong></span>Wenn in einem Modell Prädiktorvariablen miteinander korrelieren, dann wird dies als Multikollinearität bezeichnet.</p>
+</div>
+<p>Multikollinearität hat verschiedene Einflüsse auf das Modell die sich vor allem hinsichtlich der Stabilität der Koeffizienten auswirken, wenn Prädiktorvariablen aus dem Modell herausgenommen werden bzw. dazugenommen werden. Dazu beeinflusst Multikollinearität auch die Größe der Standardfehler der geschätzten Koeffizienten <span class="math inline">\(\hat{\beta}_j\)</span>.</p>
+<p>Multikollinearität hat unter anderem die folgenden Effekte:</p>
+<ul>
+<li>Große Änderungen in den Koeffizienten wenn Prädiktoren ausgelassen/eingefügt werden</li>
+<li>Koeffizienten haben eine andere Richtung als erwartet</li>
+<li>Hohe (einfache) Korrelationen zwischen Prädiktoren</li>
+<li>Breite Konfidenzintervalle für “wichtige” Prädiktoren <span class="math inline">\(b_j\)</span></li>
+</ul>
+<p>Es lässt sich zeigen, dass die Varianz der geschätzen Modellkoefizienten <span class="math inline">\(b_j\)</span> die folgende Form hat (siehe Formel <span class="math inline">\(\eqref{eq-mlm-basics-varb_j}\)</span>:</p>
+<p><span class="math display">\[\begin{equation}
+\widehat{\text{Var}}(b_j) = \frac{\hat{\sigma}^2}{(n-1)s_j^2}\frac{1}{1-R_j^2}
+\label{eq-mlm-basics-varb_j}
+\end{equation}\]</span></p>
+<p>Der Term <span class="math inline">\(R_j^2\)</span> wird als multipler Korrelationskoeffizient bezeichnet und berechnet sich als der Determinationskoeffizienten der Prädiktorvariablen <span class="math inline">\(x_i, i\neq j\)</span> auf die Prädiktorvariable <span class="math inline">\(x_j\)</span>. D.h. es wird ein Regressionsmodell gerechnet bei dem die Prädiktorvariable <span class="math inline">\(x_j\)</span> als abhängige Variable verwendet wird und mittels der anderen <span class="math inline">\(p-1\)</span> Präditkorvariablen modelliert wird.</p>
+<p>Der zweiter Term in Formel <span class="math inline">\(\eqref{eq-mlm-basics-varb_j}\)</span> <span class="math inline">\(\frac{1}{1-R_j^2}\)</span> wird als Variance Inflation Factor (VIF) bezeichnet. Anhand des VIF kann ein Modell relativ einfach, zumindest heuristisch, auf Multikollinearitäten überprüft werden. Dabei wird für jede Prädiktorvariable die VIF bestimmt. Manchmal wird in der Literatur auch die sogenannte Tolerance = <span class="math inline">\(\frac{1}{VIF}\)</span> betrachtet.</p>
+<p><span class="math display">\[\begin{equation*}
+\text{VIF}_j = \frac{1}{1-R_j^2}
+\end{equation*}\]</span></p>
+<p>Üblicherweise wird der größte VIF Wert betrachtet um die Multikollinearität eines Modells zu bewerten.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tipp
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Wenn VIF &gt; 10 ist, dann deutet dies auf hohe Multikollinearität hin.</p>
+</div>
+</div>
+<p>Hinsichtlich des Einflusses bzw. des Umgangs bei Multikollinearität muss unterschieden werden, welches Ziel die Modellierung verfolgt. Das Problem das durch die Multikollinearität entsteht ist, basiert darauf das das Modell nicht eindeutig zuordnen kann, welche der korrelierten Varible zuständig ist für die beobachteten Veränderungen in der abhängigen Variablen. Multikollinearität vermindert dabei nicht unsere Fähigkeit Mittelwerte <span class="math inline">\(E[y|x]\)</span> vorherzusagen oder einen guten Modellfit zu erhalten. Allerdings verkompliziert sich die Interpretation der Modellkoeffizienten <span class="math inline">\(b_j\)</span>. Dadurch das die Prädiktorvariablen miteinander korrelieren, kann es beispielsweise gar nicht praktisch möglich sein die Variablen einzeln zu variieren, wodurch die Interpretation des Koeffizienten <span class="math inline">\(b_j\)</span> als die Veränderung von <span class="math inline">\(y\)</span> bei Veränderung von <span class="math inline">\(x_j\)</span> um eine Einheit problematisch wird. Weiterhin, dadurch das durch die Multikollinearität die Varianzen der Modelkoeffizienten vergrößert werden, kann es zu dem Fall kommen, dass ein Modellkoeffizienten <span class="math inline">\(b_j\)</span> statistisch nicht signifikant ist, obwohl eindeutig ein Zusammenhang zwischen <span class="math inline">\(x_j\)</span> und <span class="math inline">\(y\)</span> besteht. Zusätzlich, dadurch das die Modellkoeffizienten sich stark verändern können bei Veränderung des Modells ist deren Interpretation grundsätzlich problematisch.</p>
+<section id="variance-inflation-factor-vif-in-r" class="level3" data-number="15.5.1">
+<h3 data-number="15.5.1" class="anchored" data-anchor-id="variance-inflation-factor-vif-in-r"><span class="header-section-number">15.5.1</span> Variance Inflation Factor (VIF) in <code>R</code></h3>
+<p>In <code>R</code> können wir den VIF am einfachsten über zwei Funktionen berechnen. Einmal über die <code>vif()</code>-Funktion aus dem Paket <code>car</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">vif</span>(mod_full) </span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> triceps    thigh   midarm 
+708.8429 564.3434 104.6060 </code></pre>
+</div>
+</div>
+<p>Eine weitere Möglichkeit besteht mittels der Funktion <code>check_collinearity()</code> aus dem <code>performance</code> Paket.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>performance<span class="sc">::</span><span class="fu">check_collinearity</span>(mod_full)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="tbl-mlm-basics-collin" class="anchored">
+<table class="table table-sm table-striped small">
+<caption>Tabelle&nbsp;15.7: Ausgabe von <code>check_collinearity()</code></caption>
+<colgroup>
+<col style="width: 8%">
+<col style="width: 9%">
+<col style="width: 11%">
+<col style="width: 12%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 17%">
+<col style="width: 18%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Term</th>
+<th style="text-align: right;">VIF</th>
+<th style="text-align: right;">VIF_CI_low</th>
+<th style="text-align: right;">VIF_CI_high</th>
+<th style="text-align: right;">SE_factor</th>
+<th style="text-align: right;">Tolerance</th>
+<th style="text-align: right;">Tolerance_CI_low</th>
+<th style="text-align: right;">Tolerance_CI_high</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">triceps</td>
+<td style="text-align: right;">708.8429</td>
+<td style="text-align: right;">383.98652</td>
+<td style="text-align: right;">1309.2486</td>
+<td style="text-align: right;">26.62410</td>
+<td style="text-align: right;">0.0014107</td>
+<td style="text-align: right;">0.0007638</td>
+<td style="text-align: right;">0.0026043</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">thigh</td>
+<td style="text-align: right;">564.3434</td>
+<td style="text-align: right;">305.76950</td>
+<td style="text-align: right;">1042.2977</td>
+<td style="text-align: right;">23.75591</td>
+<td style="text-align: right;">0.0017720</td>
+<td style="text-align: right;">0.0009594</td>
+<td style="text-align: right;">0.0032704</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">midarm</td>
+<td style="text-align: right;">104.6060</td>
+<td style="text-align: right;">56.91565</td>
+<td style="text-align: right;">192.9714</td>
+<td style="text-align: right;">10.22771</td>
+<td style="text-align: right;">0.0095597</td>
+<td style="text-align: right;">0.0051821</td>
+<td style="text-align: right;">0.0175699</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>In <a href="#tbl-mlm-basics-collin">Tabelle&nbsp;<span>15.7</span></a> sehen wir, dass <code>check_collinearity()</code> auch noch Konfidenzintervalle und besagte Tolerance ausgibt. In jedem Fall, sehen wir, dass wenn wir die Daumenregel <span class="math inline">\(VIF &gt; 10\)</span> anwenden, wir hohe Multikollinearität in unserem Modell aufweisen, was auch die großen Veränderung in den Koeffizienten bei Hinzu- bzw. Entnahme der Prädiktorvariblen erkärt.</p>
+</section>
+</section>
+<section id="verhältnis-der-prädiktorvariblen-x_j-untereinander" class="level2" data-number="15.6">
+<h2 data-number="15.6" class="anchored" data-anchor-id="verhältnis-der-prädiktorvariblen-x_j-untereinander"><span class="header-section-number">15.6</span> Verhältnis der Prädiktorvariblen <span class="math inline">\(x_j\)</span> untereinander</h2>
+<p>Insgesamt sind aus der operativen Seite durch den Übergang von der einfachen zur multiplen Regression keine großen Neuerungen hinzugekommen. Allerdings müssen jetzt, wir schon bezüglich der Multikollinearität gesehen haben, das Verhältnis der Prädiktorvariablen <span class="math inline">\(X_j\)</span> untereinander näher betrachtet werden. Das folgenden Beispiel ist <span class="citation" data-cites="mcelreath2016">McElreath (<a href="references.html#ref-mcelreath2016" role="doc-biblioref">2016</a>)</span> entnommen und zeigt, dass sich Variablen auch gegenseitig maskieren können und wiederum große Veränderungen in den Modellkoeffizienten auftreten können, wenn Variablen hinzugenommen bzw. weggelassen werden.</p>
+<p>Um den Effekt der Maskierung leichter nachvollziehen zu können erstellen wir uns wieder einen einfachen Datensatz mit zwei Prädiktorvariablen <span class="math inline">\(X_{pos}\)</span> und <span class="math inline">\(X_{neg}\)</span>. <span class="math inline">\(X_{pos}\)</span> ist positiv mit <span class="math inline">\(Y\)</span> korreliert, während <span class="math inline">\(X_{neg}\)</span> negativ mit <span class="math inline">\(Y\)</span> korreliert. Allerdings zeigen die beiden Variablen untereinander ebenfalls eine positive Korrelation. In <a href="#fig-mlm-basics-mask-01">Abbildung&nbsp;<span>15.6</span></a> ist die Korrelationsmatrize der drei Variablen abgebildet.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-mlm-basics-mask-01" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="mlm_basics_files/figure-html/fig-mlm-basics-mask-01-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption class="figure-caption">Abbildung&nbsp;15.6: x_pos maskiert den Einfluss von x_neg</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>In <a href="#tbl-mlm-basics-mask-02">Tabelle&nbsp;<span>15.8</span></a> sind die verschiedenen Modellkoeffizienten für wenn jeweils nur eine der Variablen in das Modell eingeht bzw. wenn beide Variablen im Modell enthalten sind.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="tbl-mlm-basics-mask-02" class="anchored">
+<table class="table table-sm table-striped small">
+<caption>Tabelle&nbsp;15.8: Koeffizienten und Standardfehler der unterschiedlichen Modelle.</caption>
+<colgroup>
+<col style="width: 13%">
+<col style="width: 25%">
+<col style="width: 30%">
+<col style="width: 30%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;"><span class="math inline">\(\beta_0 \pm s_e\)</span></th>
+<th style="text-align: left;"><span class="math inline">\(\beta_{pos} \pm s_e\)</span></th>
+<th style="text-align: left;"><span class="math inline">\(\beta_{neg} \pm s_e\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">pos</td>
+<td style="text-align: left;"><span class="math inline">\(0.24\pm 0.13\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(0.22\pm 0.15\)</span></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">neg</td>
+<td style="text-align: left;"><span class="math inline">\(0.23\pm 0.12\)</span></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><span class="math inline">\(-0.62\pm 0.1\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">pos + neg</td>
+<td style="text-align: left;"><span class="math inline">\(0.14\pm 0.1\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(0.85\pm 0.12\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(-0.98\pm 0.1\)</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>Wir können erkennen, dass die Größe der Koeffizienten wiederum stark davon abhängt welches Modell gefittet wird. Für das Modell mit nur dem positiven Prädiktor ist der Modellkoeffizient <span class="math inline">\(b_{pos}\)</span> auch nicht statistisch signifikant. Sondern erst wenn beide Variablen in dem Modell inkludiert sind ist der Koeffizient ebenfalls statistisch signifikant. Zusammenfassend ist es entsprechend wichtig dass bei der Modellierung theoretische Vorüberlegungen die relevanten Variablen identifizieren und nicht einfach nur hin und her probiert wird. Zumindest wenn es darum geht der größer der Koeffizienten auch inhaltliche Bedeutung zuzuweisen.</p>
+</section>
+<section id="zum-nacharbeiten" class="level2" data-number="15.7">
+<h2 data-number="15.7" class="anchored" data-anchor-id="zum-nacharbeiten"><span class="header-section-number">15.7</span> Zum Nacharbeiten</h2>
+<p>Die folgenden Texte eignen sich gut um die Inhalte noch einmal zu vertiefen. <span class="citation" data-cites="pos_multiple_regression">Altman und Krzywinski (<a href="references.html#ref-pos_multiple_regression" role="doc-biblioref">2015</a>)</span> diskutiert noch mal eingehend was passiert wenn Variablen miteinander korrelieren und wie sich das auf die Schätzer für die Koeffizienten auswirkt. <span class="citation" data-cites="kutner2005">(<a href="references.html#ref-kutner2005" role="doc-biblioref">Kutner u.&nbsp;a. 2005, p.278–288</a>)</span> und <span class="citation" data-cites="fox2011">(<a href="references.html#ref-fox2011" role="doc-biblioref">Fox 2011, p.325–327</a>)</span> sind nochmal als Zusammenfassungen zu lesen.</p>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-pos_multiple_regression" class="csl-entry" role="listitem">
+Altman, Naomi, und Martin Krzywinski. 2015. <span>„Points of significance: Multiple linear regression“</span>. <em>Nature Methods</em> 12 (12): 1103–4.
+</div>
+<div id="ref-debanne2011" class="csl-entry" role="listitem">
+Debanne, Thierry, und Guillaume Laffaye. 2011. <span>„Predicting the throwing velocity of the ball in handball with anthropometric variables and isotonic tests“</span>. <em>Journal of Sports Sciences</em> 29 (7): 705–13.
+</div>
+<div id="ref-fox2011" class="csl-entry" role="listitem">
+Fox, John. 2011. <em>An R companion to applied regression</em>. 2. Aufl. SAGE Publication Inc., Thousand Oaks.
+</div>
+<div id="ref-kutner2005" class="csl-entry" role="listitem">
+Kutner, Michael H, Christopher J Nachtsheim, John Neter, und William Li. 2005. <em>Applied Linear Statistical Models</em>. 5. Aufl. McGraw-Hill Irwin New York.
+</div>
+<div id="ref-mcelreath2016" class="csl-entry" role="listitem">
+McElreath, Richard. 2016. <em>Statistical rethinking, A Bayesian Course with Examples in R and Stan</em>. 1. Aufl. Boca Raton: CRC Press.
+</div>
+<div id="ref-riechman2002" class="csl-entry" role="listitem">
+Riechman, Steven E, Robert F Zoeller, G Balasekaran, Fredric L Goss, und Robert J Robertson. 2002. <span>„Prediction of 2000 m indoor rowing performance using a 30 s sprint and maximal oxygen uptake“</span>. <em>Journal of Sports Sciences</em> 20 (9): 681–87.
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Kopiert");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Kopiert");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./mlm_title.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Multiple Regression</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./mlm_interactions.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Interaktionseffekte</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

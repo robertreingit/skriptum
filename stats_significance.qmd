@@ -1,0 +1,764 @@
+# Statistische Signifikanz, p-Wert und Power 
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+source('_common.R')
+```
+
+```{r stats_significance_defs}
+n <- 20
+set.seed(123)
+world <- tibble(ID = paste0('P',stringr::str_pad(1:n, width=2, pad="0")),
+                Kraft = sample(2000:2500, n))
+world$Kraft[13] <- 1800
+world$Kraft[17] <- 3200
+d_gr <- 100
+d_x <- 2 
+mu_lummer <- 0
+sd_lummer <- 230
+```
+
+
+Im vorherigen Kapitel haben wir gesehen, wie Unsicherheit ein zentrales Problem bei der Interpretation von Ergebnissen von Experimenten oder Daten allgemein ist. Im nun folgenden Abschnitt wollen wir eine Prozess aufbauen, der es uns vor dem Hintergrund dieser Unsicherheit eine Entscheidung zu treffen.
+
+## Wie treffe ich eine Entscheidung? 
+
+In unserem kleine Welt Bespiel waren wir in der komfortablen Position, das wir genau wussten was passiert bzw. welcher Prozess unseren beobachteten Datenpunkt erzeugt hat. D.h wir kannten den datengenerieren Prozesses.
+
+::: {#def-dgp}
+## Datengenerierender Prozess (DGP)
+
+Der Prozess in der realen Welt der die beobachteten Daten und damit die daraus folgende Statistik erzeugt wird als datengenerierender Prozess\index{Datengenerierender Prozess} bezeichnet.
+:::
+
+Letztendlich zielt unsere Untersuchung, unser Experiment, darauf ab, Informationen über den DGP zu erhalten, weil diese Information uns erlaubt Aussagen über die reale Welt zu treffen. Dabei muss allerdings beachtet werden, dass dieser Prozess in den allermeisten Fällen ein starke Vereinfachung des tatsächlichen Prozesses in der Realität darstellt. Meistens sind die Abläufe in der Realität zu komplex um sie ins Gänze abzubilden. Somit wird fast immer nur ein Modell verwendet. 
+
+Zurück zu unseren Problem, wenn wir ein Experiment durchführen, dann haben wir normalerweise nur eine einzige beobachtete Statistik. In unseren bisherigen Beispiel also den berechneten Unterschied $D$ in der Kraftfähigkeit nach der Intervention zwischen der Kontroll- und der Interventionsgruppe.
+
+```{r}
+#| fig.cap: "Beobachteter Unterschied nach der Durchführung unseres Experiments"
+#| label: fig-sts-sig-result-1 
+#| fig.height: 1.5
+
+D_obs <- tibble(Kraft = 50)
+ggplot(D_obs,
+       aes(Kraft, 1)) +
+  geom_point(size=3, color = 'red') +
+  scale_x_continuous('D[N]', limits = c(-500, 700), breaks = seq(-500, 700, 200)) +
+  scale_y_continuous('', breaks = NULL)
+```
+
+In @fig-sts-sig-result-1 ist der beobachtete Wert, $D = `r D_obs$Kraft[1]`$ abgetragen. Wir wissen von vorne herein, dass dieser Wert beeinflusst ist durch die zufällige Wahl der Stichprobe und die daran geknüpfte Streuung der Werte in der Population. Wie können wir den nun überhaupt eine Aussage treffen darüber, ob das Krafttraining was bringt oder vielleicht nur einen sehr kleinen Effekt zeigt oder möglicherweise sogar schädlich ist also zu einer Abnahme der Kraft führt?
+
+Überlegen wir uns zunächst, welche Prozesse unseren beobachteten Wert zustande gebracht haben könnten. Wir haben schon zwei Prozesse kennengelernt, einmal den Prozess mit $\Delta = 100$ wie auch den Prozess mit $\Delta = 0$
+
+```{r}
+#| fig.cap: "Mögliche datengenerierende Prozesse für den beobachteten Unterschied $D$ (rot)"
+#| label: fig-sts-sig-dgp-1
+#| fig.height: 2
+
+x <- seq(-1000, 1000, length.out = 100)
+tibble(x = x,
+       d_0 = dnorm(x, 0, sd_lummer),
+       d_100 = dnorm(x, 100, sd_lummer)) |> 
+  pivot_longer(-x, names_to = 'Verteilung', values_to = 'd') |> 
+  ggplot(aes(x, d, ymin=0, ymax=d, group=Verteilung)) +
+  geom_ribbon(aes(fill = Verteilung), alpha=.5) +
+  geom_line() +
+  annotate('point', x = D_obs$Kraft, y = 0, color = 'red', size = 3) +
+  labs(x = 'D[N]', y = 'Dichte')
+
+```
+
+In @fig-sts-sig-dgp-1 ist wieder unser beobachteter Wert $D = `r D_obs$Kraft[1]`$ und die beiden Verteilungen abgetragen. Leider können wir nicht eineindeutig sagen, welche der beiden Verteilungen, bzw. deren zugrundeliegende Prozesse, unseren beobachteten Wert erzeugt haben könnte. Da unser beobachteter Wert $D$ genau zwischen den beiden Maxima der Verteilungen liegt. Etwas motiviertes Starren auf die Abbildung wird uns allerdings auf die Idee bringen, dass der beobachtete Wert nicht nur von diesen beiden Verteilungen erzeugt worden sein muss, sondern durchaus noch mehr Verteilungen in Frage kommen.
+
+```{r}
+#| fig.cap: "Beispiele für weitere mögliche Verteilungen als DGP."
+#| label: fig-sts-sig-dgp-2
+#| fig.height: 2
+
+p_which_dist <- tibble(x = x,
+       d_0 = dnorm(x, 0, sd_lummer),
+       d_100 = dnorm(x, 100, sd_lummer),
+       d_350 = dnorm(x, 350, sd_lummer),
+       d_n250 = dnorm(x, -250, sd_lummer)) |> 
+  pivot_longer(-x, names_to = 'Verteilung', values_to = 'd') |> 
+  ggplot(aes(x, d, ymin=0, ymax=d, group=Verteilung)) +
+  geom_ribbon(aes(fill = Verteilung), alpha=.5) +
+  geom_line() +
+  annotate('point', x = D_obs$Kraft, y = 0, color = 'red', size = 3) +
+  labs(x = 'D[N]', y = 'Dichte')
+p_which_dist
+```
+
+@fig-sts-sig-dgp-2 zeigt, dass selbst die Verteilung mit $\Delta = -250N$ und $\Delta = 350N$ nicht unplausibel sind den beobachteten Wert erzeugt zu haben. Warum aber bei diesen fünf Verteilungen aufhören, warum sollte $\Delta$ nicht $-50$ oder $127$ sein. Und überhaupt, keiner kann behaupten die Natur kennt nur ganzzahlige Werte (siehe $\pi$). Warum sollte $D$ also nicht auch $123.4567N$ sein?
+
+Wenn diese Überlegung weitergeführt wird, dann wird schnell klar, dass letztendlich eine unendliche Anzahl von Verteilung in der Lage ist unseren beobachteten Wert plausibel zu generieren. D.h. wir haben ein Experiment durchgeführt und den ganzen Aufwand betrieben und haben wochenlang mit unseren ProbandInnen Krafttraining durchgeführt und sind hinterher eigentlich keinen Schritt weiter da wir immer noch nicht wissen was der datengenerierende Prozess ist. Also können wir selbst nach dem Experiment nicht sagen ob unser Krafttraining tatsächlich wirksam ist.
+
+Zum Glück werden wir später sehen, das unser Unterfangen nicht ganz so aussichtslos ist. Schauen wir uns zum Beispiel die Verteilung für $\Delta = -350N$ an (@fig-sts-sig-dgp-3).
+
+```{r}
+#| fig.cap: "Verteilung für $\\Delta = -350N$ und der beobachtete Wert $D$"
+#| label: fig-sts-sig-dgp-3
+#| fig.height: 2
+
+tibble(x = x,
+       d = dnorm(x, -350, sd_lummer)) |>  
+  ggplot(aes(x, d, ymin=0, ymax=d)) +
+  geom_ribbon(alpha=.5) +
+  geom_line() +
+  annotate('point', x = D_obs$Kraft, y = 0, color = 'red', size = 3) +
+  labs(x = 'D[N]', y = 'Dichte')
+```
+
+Unser beobachteter Wert unter der Annahme das $\Delta = -350N$ ist nicht vollkommen unmöglich, aber so richtig *wahrscheinlich* erscheint er auch nicht. Der Wert liegt relativ weit am Rand der Verteilung. Die Kurve ist dort schon ziemlich nahe bei Null. D.h. der beobachtete Wert ist zwar durchaus möglich, aber es wäre schon überraschend wenn wir bei einer Durchführung des Experiments ausgerechnet so einen Wert beobachten würden wenn unsere angenommenes $\Delta$ korrekt ist.
+
+Wenn wir jetzt dagegen von der Annahme ausgehen, dass dem DGP der Wert $\Delta = 50N$ zugrundeliegen würde, hätten wir die Verteilung in @fig-sts-sig-dgp-4. Zunächst ist dieser Wert möglich unter der Annahme. Zusätzlich liegt der beobachtete Wert mitten drin in dem Teil der Verteilung der auch zu erwarten wäre. D.h. der beobachtete Wert ist durchaus plausibel unter der Annahme und bei der einmaligen Durchführung des Experiments würde uns der beobachtete Wert nicht unbedingt überraschen.
+
+```{r}
+#| fig.cap: "Verteilung für $\\Delta = 50N$ und der beobachtete Wert $D$"
+#| label: fig-sts-sig-dgp-4
+#| fig.height: 2
+
+tibble(x = x,
+       d = dnorm(x, 50, sd_lummer)) |>  
+  ggplot(aes(x, d, ymin=0, ymax=d)) +
+  geom_ribbon(alpha=.5) +
+  geom_line() +
+  annotate('point', x = D_obs$Kraft, y = 0, color = 'red', size = 3) +
+  labs(x = 'D[N]', y = 'Dichte')
+```
+
+Diesen Ansatz können wir verwenden um mit Hilfe unseres Experiments doch etwas über den DGP auszusagen. Allerdings müssen wir uns noch einmal etwas eingehender mit Verteilungen auseinandersetzen um z.B. genauer zu bestimmen welche Ergebnisse uns überraschen würden. D.h. wir müssen uns erst ein mal ein paar neue Konzepte erarbeiten.
+
+## Lage- und Skalenparameter
+
+In @fig-sts-sig-dgp-2 hatten wir mehrere Verteilungen abgebildet. Die Verteilung haben die gleiche Form sind aber gegeneinander verschoben. D.h. sie unterscheiden sich bezüglich ihrer Position bzw. Lage. Der Parameter der bei einer Verteilungen die Lage steuert ist der sogenannte Erwartungwerts $\mu$ der auch als Mittelwert bezeichnet wird. Dieser Mittelwert $\mu$ unterscheidet sich allerdings von dem uns bereits bekannten Mittelwert $\bar{x}$ in der Stichprobe. In einem späteren Abschnitt werden wir uns genauer anschauen wie der Mittelwert $\mu$ berechnet wird.
+
+### Mittelwert $\mu$ der Population
+
+Da der Mittelwert $\mu$ die Position der Verteilung bestimmt, ist $\mu$ ein Parameter der Verteilung. Die Beschreibung als Parameter der Verteilung bedeutet somit, dass die Verteilung von $\mu$ abhängt, oder formaler das die Verteilung eine Funktion von $\mu$ ist. Wenn wir uns an Funktionen aus der Schule zurück erinnen wo wir Funktionen $f$ von $x$ kennengelernt haben und als $f(x)$ dargestellt haben. Übertragen auf die Verteilung könnte dies mittels $f(\mu)$ dargestellt werden.
+
+```{r}
+d_x <- 0.025
+x <- seq(-3, 3, d_x)
+dat_0 <- tibble(
+  x = x,
+  v = dnorm(x, 0, 1) 
+)
+low <- tibble(
+  x = seq(-3,-2,d_x),
+  v = dnorm(x, 0, 1)
+)
+up <- tibble(
+  x = seq(2, 3, d_x),
+  v = dnorm(x, 0, 1)
+)
+```
+
+Betrachten wir zwei Verteilungen die sich bezüglich ihrer Mittelwerte $\mu$ unterscheiden. Zum Beispiel sei $\mu_1 = 0$ und $\mu_2 = 3$. Wie in @fig-sts-sig-dist-mu zu sehen ist, führt dies dazu, das die beiden Verteilungen gegeneinander verschoben sind.
+
+```{r}
+#| fig.cap: "Verteilungen mit zwei unterschiedlichen Mittelwerten"
+#| label: fig-sts-sig-dist-mu
+
+xx <- seq(-3,6,d_x)
+n_pts <- length(xx)
+dat_1 <- tibble(
+  x = rep(xx,2),
+  v = c(dnorm(xx, 0, 1),
+        dnorm(xx, 3, 1)),
+  pos = rep(c('x0','x3'), c(n_pts,n_pts))
+)
+ggplot(dat_1, aes(x,v,ymin=0, ymax=v, fill=pos)) +
+  geom_ribbon(alpha=.5) +
+  geom_line() +
+  labs(x = 'Werte', y = 'Dichte') +
+  scale_fill_discrete("Lageparameter",
+                      labels = c(expression(mu == 0), expression(mu == 3))) 
+```
+
+Wie bereits erwähnt, wird der Mittelwert $\mu$ der Verteilung auch als Erwartungswert bezeichnet. Dies kann dahingehend interpretiert werden, das wenn Stichproben aus dieser Verteilungen gezogen werden, im Mittel der Wert $\mu$ erwartet werden kann. Soweit ist dies eigentlich noch nichts wirklich Neues, sondern hatten dies schon vorher gesehen, als wir alle möglichen Unterschiede zwischen der Kontrollgruppe und der Interventionsgruppe ermittelt haben. Hier war der Mittelwert der Verteilung genau derjenige Wert von $\Delta$.
+
+An dieser Stelle nochmal der Unterschied zwischen $\mu$ und $\bar{x}$. Der Mittelwert $\mu$ ist eine Eigenschaft der Population, also letztendlich ein Wert den wir niemals kennen werden ohne die gesamte Population zu untersuchen. Der Mittelwert $\bar{x}$ ist eine Eigenschaft der Stichprobe aus der Population. Also der konkrete Wert den wir anhand der Stichprobe berechnen. In vielen Fällen versuchen wir über $\bar{x}$ einen Rückschluss auf $\mu$ zu ziehen.
+
+### Standardabweichung $\sigma$ der Population
+
+Als zweite Eigenschaft von Verteilungen schauen wir uns jetzt die Streuung in der Population an. Die Streuung in der Population wird als Varianz bezeichnet und wird mit dem Symbol $\sigma^2$ bezeichnet. Schauen wir uns zunächst an, welchen Einfluss $\sigma^2$ auf die Form der Verteilung hat. In @fig-sts-sig-dist-sigma sind wieder zwei Verteilungen abgetragen. Dieses Mal ist $\mu$ in beiden Fällen gleich, aber die Varianzen $\sigma^2$ sind mit $\sigma_1^2 = 2$ und $\sigma_2^2=1$ unterschiedlich.
+
+```{r}
+#| fig.cap: "Verteilungen mit unterschiedlichen Varianzen"
+#| label: fig-sts-sig-dist-sigma
+
+xx <- seq(-5,5,d_x)
+n_pts <- length(xx)
+dat_2 <- tibble(
+  x = rep(xx,2),
+  v = c(dnorm(xx, 0, 1),
+        dnorm(xx, 0, sqrt(2))),
+  type = rep(c('s1','s0.5'), c(n_pts,n_pts))
+)
+ggplot(dat_2, aes(x,v,ymin=0, ymax=v,fill=type)) +
+  geom_ribbon(alpha=.5) +
+  geom_line() +
+  labs(x = 'Werte', y = 'Dichte') +
+  scale_fill_discrete("Varianz",labels = c(
+    expression(sigma^2 == 2),
+    expression(sigma^2 == 1)
+  )) 
+```
+
+In @fig-sts-sig-dist-sigma ist zu sehen, dass beide Verteilungen ihren Mittelpunkt an der gleichen Stelle haben, aber die rote Verteilung mit $\sigma_1^2=2$ breiter ist als die andere Verteilung. Dies bedeutet das die Werte in der Verteilung stärker um den Mittelwert herum streuen. Wenn wir Werte aus der türkisen Verteilung ziehen, dann sollten diese näher um den Mittelwert $\mu = 0$ liegen, als dies bei der roten Verteilung der Fall ist. 
+
+Die Varianz $\sigma^2$ ist ebenfalls wie der Mittelwert ein Parameter der Verteilung. Sie bestimmt die die Form der Verteilung. D.h. wenn wir wieder unsere Schreibweise von eben verwenden und die Funktion $f$ die Verteilung beschreibt, dann gilt $f(\sigma^2)$ oder eben zusammen mit dem Mittelwert $\mu$, $f(\mu, \sigma^2)$.
+
+Wenn aus der Varianz $\sigma^2$ die Wurzel gezogen wird, dann wird der resultierende Wert $\sigma$ als Standardabweichung bezeichnet. Da die Varianz $\sigma^2$ nur positive Werte annehmen kann, ist die Wurzelfunktion bzw. deren Umkehrung die Quadierung eineindeutig. Wenn wir die Standardabweichung kennen, dann kennen wir auch die Varianz und umgekehrt.
+
+In der Stichprobe wird die Standardabweichung meistens mit dem Zeichen $s$ bezeichnet und mittels der folgenden Formel berechnet:
+
+\begin{equation}
+s = \sqrt{\frac{\sum_{i=1}^n (x_i - \bar{x})^2}{n-1}}
+\label{eq-std}
+\end{equation}
+
+D.h. die Standardabweichung ist die mittlere quadrierte Abweichung vom Mittelwert (siehe Formel \eqref{eq-std}). Die Standardabweichung wird verwendet um die Streuung der Daten zu beschreiben. Die Standardabweichung hat den Vorteil, dass sie die gleiche Einheit hat wie der Mittelwert. Da die Abweichungen quadriert werden, also die quadrierten Einheiten haben, hat die Standardabweichung $s$ die gleiche Einheit wie der Mittelwert $\bar{x}$. Da die Varianz die quadrierte Standardabweichung ist, hat die Varianz der Stichprobe $s^2$ daher die quadrierten Einheiten.
+
+```{r}
+id <- c(3, 8, 9)
+x_bar <- round(mean(world$Kraft[id]))
+sd_str <- paste("(",world$Kraft[id],"-",x_bar,")^2",sep='',collapse='+')
+x_sd <- round(sd(world$Kraft[id]))
+```
+
+Wenn wir uns an unsere erstes Beispiel aus der kleinen Welt erinnern, dort hatten wir in der Kontrollgruppe die Personen $i = \{`r paste(id, collapse=',') `\}$ gezogen, berechnen wir für diese Stichprobe die Standardabweichung erhalten mit dem Mittelwert $\bar{x} = `r x_bar`$:
+
+$$
+s = \sqrt{\frac{`r sd_str`}{2}} = `r x_sd`
+$$
+
+Wir erhalten einen Wert von $s = `r x_sd`N$. Wenn dieser Wert größer wird, dann streuen die Wert entsprechend weiter um den Mittelwert herum und entsprechend verringert sich die Streuung wenn die Standardabweichung $s$ abnimmt. 
+
+### Mittelwert und Standardabweichung in `R`
+
+Um den Mittelwert und die Standardabweichung bzw. die Varianz zu berechnen gibt in `R` entsprechende Funktionen die auf die Namen `mean()`, `sd()` und `var()`.
+
+```{r}
+#| echo: true
+x <- c(1,2,3,4,5)
+mean(x)
+sd(x)
+var(x)
+```
+
+
+## Entscheidungen und $\mu$ und $\sigma$
+
+Zeichnen wir in eine Verteilung die Standardabweichung ein, ergibt sich folgendes Bild (siehe @fig-stats-sig-norm-sigmas).
+
+```{r}
+#| fig.cap: "Verteilung mit verschiedenen mehrfachen der Standardabweichung $\\sigma$$"
+#| label: fig-stats-sig-norm-sigmas
+
+p <- dnorm_plot()
+p + 
+  geom_vline(xintercept = (-3:3)[-4], linetype='dashed') +
+  scale_x_continuous("Werte", breaks=-3:3,
+                     labels = c(
+                       expression(-3~sigma),expression(-2~sigma),expression(-1~sigma),
+                       expression(mu),
+                       expression(1~sigma),expression(2~sigma),expression(3~sigma)))
+                     
+```
+
+Ein Großteil der Werte liegt in dem Bereich $\mu \pm 1\times\sigma$. Der Bereich $\mu \pm 2\times\sigma$ beinhaltet schon fast alle Werte, während der Bereich $\mu \pm 3\times\sigma$ fast alle Werte. Wenn wir die Verteilung noch etwas weiter nach links und rechts abtragen würden, würden wir sehen, dass auch noch Werte jenseits von $\mu \pm 3\times\sigma$ liegen, aber nur noch sehr wenige. Diese Einsicht können wir dazu benutzen umgekehrt zu denken, wenn wir annehmen, das unsere Statistik dieser Verteilung folgt, welche Werte würde uns den *überraschen*. Welche Werte würden wir als Evidenz sehen um zu folgern: *Ich glaube nicht, dass die beobachtete Statistik aus der angenommen Verteilung stammt*!?
+
+Nun, zum Beispiel wenn der Wert mehr als $3\times\sigma$ vom Mittelwert $\mu$ entfernt ist, dann wäre das zwar nicht unmöglich, aber es wäre schon ziemlich unwahrscheinlich so einen Wert zu beobachten. Vielleicht ist uns das aber ein zu schwer zu erreichender Wert, ein Kompromiss könnte ein Wert jenseits von $2\times\sigma$ von $\mu$ entfernt, könnte auch schon als überraschen bezeichnet werden. Tatsächlich ist, die Wahrscheinlichkeit einen Wert jenseits von $2\times\sigma$ zu beobachten etwa 5%. D.h. wir könnten einen Entscheidungsprozess erstellen bei dem wir sagen, wenn wir eine bestimmte Stichprobenverteilung für unsere Statistik annehmen. Wenn wir bei unserer Ausführung einen Wert beobachten der weiter als $2\times\sigma$ von $\mu$ entfernt sind. Dann sind wir überrascht und sehen das als Evidenz gegen die Verteilungsannahme an. 
+
+Oder als Liste:
+
+1) Setze eine Verteilung der Statistik mit definierten $\mu$ und $\sigma$ als Annahme an.
+2) Ziehe eine Zufallsstichprobe.
+3) Berechne die Statistik auf der Stichprobe.
+4) Überprüfe wie viele Standardabweichungen $\sigma$ die Statistik von $\mu$ entfernt liegt.
+
+\begin{table}[]
+    \caption{Parameter einer Verteilung und deren Sch\"atzer}
+    \centering
+    \begin{tabular}{llr}
+     \toprule
+     Population & Stichprobe & \\
+     \midrule
+     Mittelwert $\mu$ & $\bar{x} = \frac{1}{n}\sum_{i=1}^n x_i$  \\
+     Varianz $\sigma^2$ & $s^2 = \frac{1}{n-1}\sum_{i=1}^n (x_i - \bar{x})^2$ \\
+     Standardabweichung $\sigma$ & $s = \sqrt{s^2}$ \\
+     \bottomrule
+    \end{tabular}
+\end{table}
+
+### Detour - Schätzer
+
+Schauen wir uns noch einmal den Mittelwert $\mu$ der Population und den Mittelwert $\bar{x}$ der Stichprobe und deren Zusammenhang an. Der Mittelwert $\bar{x}$ der Stichprobe wird als sogenannter Schätzer verwendet. Diesen Begriff werden wir später noch genauer untersuchen. Im Moment reicht es sich zu merken, dass ein Schätzer eine Statistik ist, mit der wir einen Parameter der Population, z.B. $\mu$, abschätzen wollen. Wie schon mehrmals erwähnt, den wahren Wert $\mu$ aus der Population werden wir mittels unserer Stichprobe niemals 100% korrekt bestimmen wir können aber mittels geschickt gewählter Statistiken Schätzer konstruieren die bestimmte Eigenschaften haben.
+
+Nehmen wir zum Beispiel den Mittelwert $\bar{x}$. In unserer kleinen Welt kennen wir den Mittelwert $\mu$ unserer Population. Der Wert beträgt $\mu = `r mean(world[["Kraft"]])`$. Schauen wir uns einmal an, was passiert, wenn wir alle möglichen Stichproben der Größe $N = 10$ unserer kleinen Welt bestimmen und die Verteilung der Mittelwert abtragen (siehe @fig-stats-sig-mean-n3).
+
+```{r}
+#| fig.cap: "Verteilung der Mittelwerte von Stichproben der Größe $n=10$, Kleine Welt Population $\\mu$ (rot)"
+#| label: fig-stats-sig-mean-n3
+
+bar <- function(world, k=3) {
+  n <- dim(world)[1]
+  x <- 1:n
+  N <- choose(n,k)
+  x_bars <- numeric(N)
+  # get all permutations
+  id_1 <- t(combn(x,k))
+  for (i in 1:nrow(id_1)) {
+    x_bars[i] <- mean(world$Kraft[id_1[i,]])
+  }
+  x_bars
+}
+x_bars <- bar(world, 10)
+mu <- mean(world$Kraft)
+ggplot(tibble(x=x_bars),aes(x)) +
+  geom_histogram(aes(y = stat(density)), bins = 30) +
+  geom_vline(xintercept = mu,
+             color = 'red', linetype = 'dashed') +
+  labs(x = 'Mittelwerte[N]', y = 'Häufigkeit') 
+```
+
+In @fig-stats-sig-mean-n3 sehen wir, dass im Mittel der Stichprobenmittelwert $\bar{x}$ tatsächlich um den wahren Populationsmittelwert $\mu$ herum zentriert ist. Einzelne Ausgänge des *Experiments* können zwar daneben liegen, der Großteil der Experiment gruppiert sich jedoch um $\mu$ herum. Der Stichprobenmittelwert $\bar{x}$ ist daher eine *gute* Statistik um den tatsächlichen Populationsmittelwert $\mu$ abzuschätzen.
+
+## Welche Verteilung setzen wir an?
+
+Kommen wir aber wieder zurück zu unserem Ausgangsproblem, dass wir anhand unserer beobachteten Stichprobe etwas über die Effektivität der Kraftintervention aussagen wollen. Wie hilft uns jetzt die Kenntnis von Mittelwert $\mu$ oder $\bar{x}$ und der Standardabweichung $\sigma$ bzw. $s$ weiter? Wenn die Verteilung unserer Statistik der Form folgt wie sie bisher jetzt mehrmals beobachtet haben, dann können wir davon ausgehen, dass wenn wir eher Wert in der Nähe des Mittelpunkts erwarten würden. Wie werden selten genau den Mittelpunkt beobachten aber wir würde schon sehr überrascht sein, wenn wir Werte weit ab des Mittelwerts beobachten würden. Ab welcher Weite diese Werte als überraschen eingestuft werden hängt dabei von der Streuung der Verteilung an. Wenn $\sigma$ groß ist, überraschen uns weit entfernte Werte weniger als wenn $\sigma$ klein ist.
+
+```{r}
+#| fig.cap: "Welche Verteilung nehmen wir?"
+#| label: fig-stats-sig-which-dist
+
+p_which_dist
+```
+
+Spielen wir verschiedene Möglichkeiten einmal durch. Wir vernachlässigen zunächst einmal $\sigma$ und konzentrieren uns auf $\mu$. Wir benötigen eine einzelne Referenzverteilung um unseren beobachteten Wert $\Delta$, den Unterschied zwischen den beiden Gruppen, mit der Verteilung in Beziehung zu setzen. Wir könnten zum Beispiel sagen, dass wir davon ausgehen, dass der Unterschied zwischen den beiden Gruppen $\Delta_{\text{wahr}} = 75N$ ist. D.h. dies wäre der *wahre* Unterschied zwischen den beiden Gruppen. Wir treffen ihn nicht genau, da wir eine Zufallsstichprobe gezogen haben und die Stichprobenvariabilität dazu führt, dass wir nicht genau den Unterschied treffen. Allerdings, wird wieder einmal etwas starren auf den Wert $75N$ zu der Einsicht führen, dass $75$ vollkommen willkürlich ist. Warum nicht $85N$ oder $25$ oder warum überhaupt ganzzahlig, $\pi$ ist schließlich auch keine ganzzahlige Zahl, also könnten wir genauso gut $74.1234N$ nehmen. Schnell wird daher klar, dass keine Zahl so richtig gut begründet werden kann. Wir brauchen aber eine Zahl um unseren Apparatus mit Verteilungen ansetzen zu können. Tatsächlich gibt es eine Zahl die zwar auch willkürlich ist, aber doch etwas besser begründet werden kann, nämlich die Zahl $\Delta_{\text{wahr}} = 0$. Warum ist der Wert $0$ in diesem Fall speziell. Nun, er bedeutet, dass wir davon ausgehen, dass zwischen den beiden Gruppen kein Unterschied besteht, also die Intervention überhaupt nichts gebracht hat. Dies ist zwar keine wirklich interessante Annahme, aber sie hat trotz ihr Willkürlichkeit doch etwas mehr Gewicht als eine beliebige andere Zahl. Wir bezeichnen diese Annahme jetzt auch noch als die $H_0$-Hypothese. Die $0$ bei $H$ bedeutet dabei nicht unbedingt, dass die $H_0$ davon ausgeht, dass nicht passiert, sondern nur, das das unsere Ausgangsannahme ist. In vielen Fällen hat die $H_0$ tatsächlich auch die Annahem das nichts passiert, dies muss aber nicht immer der Fall sein. Daher ist unsere Referenzverteilung für die Stichproben in unseren Fall die Hypothese (siehe Formel \eqref{eq-stats-sig-H0}):
+
+\begin{equation}
+H_0: \Delta = 0
+\label{eq-stats-sig-H0}
+\end{equation}
+
+oder graphisch (siehe @fig-stats-sig-H0-delta0)
+
+```{r}
+#| fig.cap: "Verteilung wenn nichts passiert mit den beiden Bereichen jenseits von zwei Standardfehlern ausgezeichnet."
+#| label: fig-stats-sig-H0-delta0
+
+d_x <- 0.025
+x <- seq(-3, 3, d_x)
+dat_0 <- tibble(
+  x = x,
+  v = dnorm(x, 0, 1) 
+)
+low <- tibble(x = seq(-3, -2, length.out=50), v = dnorm(x))
+up <- tibble(x = seq(2, 3, length.out=50), v = dnorm(x))
+ggplot(dat_0, aes(x,v,ymin=0, ymax=v)) +
+  geom_area(data = low, fill='red', alpha=.5) +
+  geom_area(data = up, fill='red', alpha=.5) +
+  geom_line() +
+  scale_x_continuous('Wert', breaks = c(-2,0,2),
+                     labels = c(expression(-2~sigma),
+                                expression(mu),
+                                expression(+2~sigma))) +
+  scale_y_continuous('Dichte')
+```
+
+Diese Referenzverteilung können wir nun verwenden um eine Entscheidung bezüglich unseres beobachteten Werts zu treffen. Die Streuung in der Referenz- bzw. Stichprobenverteilung wird als Standardfehler bezeichnet im Gegensatz zur Streuung in der Population $\sigma$ und in der Stichprobe $s$. Letztendlich ist der Standardfehler $s_e$ nichts anderes als die Standardabweichung der Statistik.
+
+::: {#def-standarderror}
+## Standardfehler \index{Standardfehler}
+
+Die theoretische Streuung einer berechneten Statistik wird als Standardfehler bezeichnet und mit dem Symbol $\sigma_e$ gekennzeichnet. Wird dieser Wert anhand der Stichprobe abgeschätzt, dann hat der Standardfehler das Symbol $s_e$.
+:::
+
+## Statistisch *signifikanter* Wert
+
+Kommen wir nun zu dem wichtigen Konzept des statistisch signifikanten Werts. Im vorhergehend Abschnitt haben wir eine Stichprobenverteilung für unsere Statistik, den Unterschied zwischen den Mittelwerten der beiden Gruppen, hergeleitet. Wir gehen von der Verteilung aus, bei der es keinen Unterschied $H_0: \Delta = 0$ zwischen den beiden Gruppen gibt. $\Delta=0$ hat somit die Bedeutung, das das Krafttraining nicht effektiv war. Dazu haben wir als Kriterium hergeleitet, dass wir Werte die mehr als $2$ Standardabweichungen von Mittelwert entfernt sind, als unwahrscheinlich ansehen, da diese Werte etwa eine Wahrscheinlichkeit von $5\%$ haben. Präziser, Werte die mehr als zwei Standardfehler vom Mittelwertsunterschied $\Delta = 0$ entfernt sind. Da, unserer angenommener Mittelwertsunterschied, die gemessene Statistik, mit $\Delta = 0$ zu $\mu = 0$ wird, bedeutet dies, das wir Werte die entweder kleiner als $-2\times$ Standardfehler oder größer als $2\times$ Standardfehler sind, als unwahrscheinlich unter der Annahme von $H_0: \mu = 0$ betrachten. Als Entscheidungsregel folgt somit:
+
+$$
+|\text{beobachteter Wert }| > 2\times \sigma_e \Rightarrow \text{ Evidenz gegen } H_0
+$$
+
+```{mermaid}
+%%| fig-cap: "Entscheidungsregel zur $H_0$"
+%%| label: fig-stats-sig-decision-graph
+
+flowchart TD
+    A[Statistik T] --> B{Entscheidung: T > 2xs_e}
+    B --> D(Nein)
+    D --> E[H0 beibehalten]
+    B --> F(Ja)
+    F --> G[H0 ablehnen]
+```
+
+In @fig-stats-sig-decision-regions ist die Entscheidungsregel noch einmal graphisch dargestellt. Wir bestimmen eine Stichprobenverteilung unter der $H_0$, beispielsweise $H_0: \mu = \Delta = 0$ und schneiden nun rechts und links jeweils einen Bereich der Verteilung ab, den wir als *unwahrscheinlich* unter dieser speziellen $H_0$ ansehen. Diesen Bereich bezeichnen wir als kritischen Bereich. Wenn unser beobachteter Wert im kritischen Bereich liegt, dann sehen wir diese Beobachtung als Evidenz gegen die Korrektheit der Annahme , dass die $H_0$ gilt, an.
+
+```{r}
+#| fig.cap: "Die $H_0$ Verteilung wenn nichts passiert unterteilt in Regionen die zur Entscheidung für die $H_0$ (grün) und gegen die $H_0$ (rot, kritische Regionen) führen."
+#| label: fig-stats-sig-decision-regions
+
+ggplot(dat_0, aes(x,v,ymin=0, ymax=v)) +
+  geom_area(fill='green', alpha=.5) +
+  geom_area(data = low, fill='red', alpha=.8) +
+  geom_area(data = up, fill = 'red', alpha=.8) +
+  geom_vline(xintercept = c(-2,2), color='red', linetype='dashed') +
+  geom_label(data = tibble(x = c(-2,2), v = 0.3,
+                           labels=c(expression(k[lower]),
+                                    expression(k[upper]))),
+             aes(x,v,label=labels), parse=T) +
+  geom_line() +
+  scale_x_continuous('Wert', breaks = c(-2,0,2),
+                     labels = c(expression(-2~sigma[e]),
+                                expression(H[0]:mu==0),
+                                expression(+2~sigma[e]))) +
+  scale_y_continuous('Dichte')
+```
+
+Wenn der Stichprobenwert der Statistik in der *kritischen* Region auftritt, dann wird von einem **statistisch** signifikanten Effekt gesprochen. *Unter der $H_0$ bin ich überrascht diesen Wert zu sehen!* Allerdings, dieser Wert ist **nicht unmöglich**, sondern lediglich unwahrscheinlich wenn die Annahme $H_0$ korrekt ist. Unwahrscheinlich ist dabei kein absolutes Maß, sondern nur eine **willkürliche** Festsetzung die wir selbst getroffen haben.
+
+Wir hatten vorhin vorhin gesagt, dass Werte jenseits von $2\times \sigma_e$ etwa eine Wahrscheinlichkeit von $5\%$ unter der $H_0$ haben. Dies Bedeutet, dass die Wahrscheinlichkeit Werte im kritischen Bereich zu beobachten bei etwas $5%$ liegt, wenn die $H_0$ zutrifft. Oder anders, wenn die $H_0$ in der Realität zutrifft, also den DGP korrekt beschreibt, und ich das Experiment $100\times$ wiederhole, dann würde ich etwa $5$ Experimente erwarten bei denen der beobachtete Wert im kritischen Bereich liegt. Anhand unserer Entscheidungsregel entscheide ich mich in diesen $5$ Fällen nun gegen die $H_0$, obwohl diese zutrifft. D.h. in diesen $5$ Fällen würde mich irren. Daher wird die Wahrscheinlichkeit die ich benutze um einen kritschen Bereich ausweisen als Irrtumswahrscheinlichkeit bezeichnet. Da die Irrtumswahrscheinlichkeit ein zentrales Konzept in der Statistik ist, erhält sie ein eigenes Symbol $\alpha$.
+
+::: {#def-alpha-err}
+## Irrtumswahrscheinlichkeit $\alpha$ \index{Irrtumswahrscheinlichkeit}
+
+Die Wahrscheinlichkeit mit der fälschlicherweise eine korrekte $H_0$-Hypothese abgelehnt wird, wird als Irrtumswahrscheinlichkeit bezeichnet. Die Irrtumswahrscheinlichkeit wird mit Symbol $\alpha$ bezeichnet und auch als Fehler I. Art bezeichnet.
+:::
+
+Eines der grundlegenden Probleme, das oftmals nicht beachtet wird bei der Interpretation von **statistisch** signifikanten Ergebnis bezieht sich darauf, dass ich nicht weiß, welches der $100$ Experimente ich gerade durchgeführt habe. Es ist durchaus möglich, dass ich *Pech* gehabt habe und ausgerechnet mein Experiment eines der fünf Experimente ist.
+
+Eine weitere Missinterpretation ist der Irrtumswahrscheinlichkeit ist, dass Sie eine Ausage über die Wahrscheinlichkeit des Zutreffens der $H_0$ erlaubt. Die Irrtumswahrscheinlichkeit ermöglichst dies allerdings nicht. Ob die $H_0$ zutrifft hat die Wahrscheinlichkeit entweder $P(H_0) = 1$ oder $P(H_0) = 0$. Entweder sie trifft zu oder eben nicht. Darüber wird hier keine Aussage gemacht, sondern nur ob unter der Annahme das $H_0$ zutrifft, der beobachtete Wert in einem *wahrscheinlichen* oder einem *unwahrscheinlichen* Bereich liegt. Nochmal, was *wahrscheinlich* ist wurde durch eine willkürliche Festlegung bestimmt. Die gewählte Grenze ist keine physikalische Realität!
+
+Kommen wir nun zum nächsten oft missverstandenen Term, dem p-Wert.
+
+## Der p-Wert
+
+Fangen wir dieses Mal mit der Definition an. Da wir mittlerweile hoffentlich schon einiges an Intuition aufgebaut haben, sollte die Definition einigermaßen verständlich sein. 
+
+::: {#def-p-value}
+## p-Wert \index{p-Wert}
+
+Der p-Wert gibt die Wahrscheinlichkeit für den beobachteten oder einen noch extremeren Wert unter der $H_0$ an.
+:::
+
+In @fig-stats-sig-p-value-01 ist eine Verteilung unter der $H_0$ eingzeichnet, zusammen mit den kritischen Bereichen für gegebenes $\alpha$ und der beobachtete Wert.
+
+```{r}
+#| fig.cap: "Der beobachtete Wert der Statistik (schwarzer Punkt) zusammen mit der Verteilung unter der $H_0$. Die gelben Flächen zeigen den p-Wert für den Wert der beobachteten Statistik an."
+#| label: fig-stats-sig-p-value-01
+
+p_val <- 2.5
+p_dat_up <- tibble(
+  x = seq(p_val, 3, length.out=40),
+  v = dnorm(x)
+)
+p_dat_low <- tibble(
+  x = seq(-3, -p_val, length.out=40),
+  v = dnorm(x)
+)
+ggplot(dat_0, aes(x,v,ymin=0, ymax=v)) +
+  geom_area(data = low, fill='red', alpha=.8) +
+  geom_area(data = up, fill='red', alpha=.8) +
+  geom_area(data = p_dat_low, fill='yellow', alpha=0.9) +
+  geom_area(data = p_dat_up, fill='yellow', alpha=0.9) +
+  geom_vline(xintercept = c(-2,2), color='red', linetype='dashed') +
+  geom_label(data = tibble(x = c(-2,2), v = 0.3,
+                           labels=c(expression(k[lower]),
+                                    expression(k[upper]))),
+             aes(x,v,label=labels), parse=T) +
+  geom_line() +
+  geom_point(data = tibble(x = p_val, v = 0), size=2) +
+  labs(x = 'Werte', y = 'Dichte') 
+```
+
+Der p-Wert ist die Wahrscheinlichkeit (gelbe Fläche), unter der $H_0$, für den beobachteten oder einen extremeren Wert. Ein extremere Wert bedeutet in diesem Fall einen größeren Wert, also alle Werte rechts vom beobachteten Wert. Jetzt irritiert allerdings, dass wir auf der linken Seite ebenfalls eine gelbe Fläche haben. Was hier passiert ist, ist dass der beobachtete Wert an $\mu$ in den anderen kritischen Bereich *gespiegelt* (salopp) wurde. Jetzt wird wieder das gleiche Prinzip mit dem extremeren Wert angewendet. Hier bedeutet allerdings extremer links vom beobachteten Wert. Wir erhalten dann wieder eine Fläche und somit eine Wahrscheinlichkeit. Die beiden gelben Flächen zusammen ergeben dann den p-Wert. Das die Wahrscheinlichkeit für eine Seite dazugenommen wird bei der wir gar keinen Wert beobachtet haben wird später verständlich wenn wir den unterschied zwischen gerichteten und ungerichteten Hypothesen uns anschauen. Zur Begrifflichkeit extrem nochmal können wir aber schon mal zusammenfassen, dass extrem immer in Bezug auf das $\mu$ der Stichprobenverteilung zu verstehen ist.
+
+In @fig-stats-sig-p-value-02 sind verschiedene Beispiele für beobachtete Werte und den dazugehörenden p-Werten und deren Flächen abgebildet.
+
+```{r}
+#| fig-cap: "Verschiedene P-Werte und die dazugehörenden Flächen."
+#| label: fig-stats-sig-p-value-02
+
+foo <- function(p, lo=-3, up=3, d_x=0.025) {
+  len <- 40
+  x <- c(seq(lo, -abs(p), length.out=len))
+  tibble(x, v= dnorm(x), type=p)
+}
+foo2 <- function(p, lo=-3, up=3, d_x=0.025) {
+  len <- 40
+  x <- c(seq(abs(p), up, length.out=len))
+  tibble(x, v= dnorm(x), type=p)
+}
+p_s <- c(-2.7, -1.13, 0.7, 2.1) 
+p_vals <- round(2*(1 - pnorm(abs(p_s))),2)
+dat_3 <- purrr::map_dfr(p_s, foo)
+dat_3_up <- purrr::map_dfr(p_s, foo2)
+ggplot(dat_3, aes(x,v,ymin=0, ymax=v)) +
+  geom_ribbon(alpha=0.5) +
+  geom_ribbon(data=dat_3_up, alpha=0.5) +
+  geom_line(data=dat_0) +
+  geom_point(data = tibble(x=p_s, v=0,type=p_s), color='red') +
+  facet_grid(~type, labeller=as_labeller(function(p){
+    paste("Statistik = ", p, "\np-Wert = ", p_vals[which(p_s == p)])
+  })) +
+  labs(x = 'Werte', y = 'Dichte') + 
+  scale_x_continuous(breaks=c(-3,0,3)) +
+  theme(strip.text = element_text(size=8))
+```
+
+Können wir eigentlich den p-Wert und die Irrtumswahrscheinlichkeit in irgendeiner Form zusammenbringen? Ja, wenn wir wissen, dass die beobachtete Statistik einen p-Wert von kleiner $\alpha$ hat, dann haben wir automatisch ein statistisch signifikantes Ergebnis. Wenn euch das nicht auf Anhieb einleuchtet, dann schaut euch noch mal @fig-stats-sig-p-value-01 an. Welche Wahrscheinlichkeit hat $\alpha$ (Tip: Welche Flächen sind das?) und welche Wahrscheinlichkeit hat der p-Wert (Tip: Gelb?).
+
+Da der p-Wert eines der am meisten missverstandenen Konzepte ist, hier noch mal ein paar Statements und Erklärungen rund um den p-Wert von verschiedenen Autoren und Institutionen.
+
+*"[A] p-value is the probability under a specified statistical model that a statistical summary of the data (e.g., the sample mean difference between two compared groups) would be equal to or more extreme than its observed value."* [@wasserstein2016, p.131]
+
+*"[T]he P value is the probability of seeing data that are as weird or more weird than those that were
+actually observed."* [@christensen2018, p.38]
+
+### Signifikanter Wert - Das Kleingedruckte
+
+- **Vor** dem Experiment wird für ein $H_0$ ein $\alpha$-Level angesetzt (per Konvention $\alpha=0,05 = 5\%$)
+- Anhand des $\alpha$-Levels können **kritische Werte** ($k_{lower}, k_{upper}$) bestimmt werden. Diese bestimmen die Grenzen der **kritischen Regionen**.
+- Wenn der gemessene Wert w der Statistik in die kritische Region fällt, also $w \leq k_{lower}$ oder $w \geq k_{upper}$ gilt, dann wird von einem **statistisch** signifikanten Wert gesprochen und die dazugehörige Hypothese wird **abgelehnt**. Äquivalent: Der p-Wert ist kleiner als $\alpha$.
+- Da in $\alpha$-Fällen ein Wert in der kritischen Region auftritt, auch wenn die $H_0$ zutrifft, wird in $\alpha$-Fällen ein $\alpha$-Fehler gemacht.
+- Wenn der Wert w der Statistik nicht in den kritischen Regionen liegt, oder gleichwertig der p-Wert größer als $\alpha$ ist, wird die $H_0$ **beibehalten**. D.h. nicht, dass **kein Effekt** vorliegt, sondern lediglich, dass anhand der Daten keine Evidenz diesbezüglich gefunden werden konnte!
+- Die **statistische** Signifikanz sagt nichts über die Wahrscheinlichkeit der Theorie aus!
+- Ein p-Wert von $p = 0.0001$ heißt nicht, dass mit 99,99\% Wahrscheinlichkeit ein Effekt vorliegt!
+- *Statistisch* signifikant heißt nicht automatisch *praktisch* relevant!
+
+Und noch ein paar weitere Erklärung für den p-Wert nach @wasserstein2016
+
+1. P-values can indicate how incompatible the data are with a specified statistical model.
+2. P-values do not measure the probability that the studied hypothesis is true, or the probability that the data were produced by random chance alone.
+3. Scientific conclusions and business or policy decisions should not be based only on whether a p-value passes a specific threshold.
+4. Proper inference requires full reporting and transparency
+5. A p-value, or statistical significance, does not measure the size of an effect or the importance of a result.
+6. By itself, a p-value does not provide a good measure of evidence regarding a model or hypothesis.
+
+In @fig-stats-sig-altman ist ein kurzer Abschnitt aus @altman1995 abgebildet, der noch mal auf eine weitere Missinterpretation eines statisisch signifikanten Ergebnisses eingeht, also wenn p-Wert $<\alpha$ gilt.
+
+```{r}
+#| out-width: 80%
+#| fig-cap: "Ausschnitt aus Altman et al. (1995)"
+#| label: fig-stats-sig-altman
+
+knitr::include_graphics("pics/altman_1995.png")
+```
+
+Kurz gesagt, wenn wir kein statistisches Ergebnisse gefunden haben, bedeutet dies nicht, das es keinen Unterschied gibt. Tatsächlich wird der beobachtete Wert  der Statistik praktisch nie exakt $=0$ sein und wir werden daher praktisch immer einen Unterschied finden. Allerdings ist der beobachtete Unterschied nicht *überraschend* unter der $H_0$ auf Grund der Stichprobenvariabilität. Allerdings gilt trotzdem, die Abwesenheit von Evidenz ist nicht gleichzusetzen mit der Evidenz für Abwesenheit. 
+
+Das gibt uns auch einen schönen Aufschlag für die nächste Etappe. Was passiert eigentlich, wenn die *andere* Hypothese, also nicht die $H_0$ zutrifft.
+
+## Was passiert wenn eine "andere" Hypothese zutrifft? 
+
+In @fig-stats-sig-power-01 ist neben der uns schon bekannten Stichprobenverteilung unter der $H_0$ für unsere kleine Welt eine weitere Verteilung unter einer Alternativhypothese die wir mit $H_1$ bezeichnen. Unter der $H_1$ ist der wahre Unterschied zwischen den beiden Verteilungen $\Delta = 500N$.
+
+```{r}
+#| fig-cap: "Differenzen mit kritischen Regionen (rot) mit einer Wahrscheinlichkeit von $\\alpha$ wenn $H_0$ zutrifft und unter einer Alternativhypothese $H_1: \\Delta = 500N$."
+#| label: fig-stats-sig-power-01
+
+differences <- readr::read_csv('data/combinations_differences.csv')
+n_sim <- dim(differences)[1]
+sigma <- sd(differences$d)
+xx <- -750:1250
+n_pts <- length(xx)
+q_crit <- qnorm(0.975, 0, sd = sigma)
+dat_power <- tibble(
+  x = rep(xx,2),
+  y = c(dnorm(xx,0,sigma), dnorm(xx,500,sigma)),
+  hypo = rep(c("H0","H500"), c(n_pts, n_pts))
+)
+low <- tibble(x = seq(-750,-q_crit), y = dnorm(x, 0, sigma), hypo='H50')
+up <- tibble(x = seq(q_crit, 750), y = dnorm(x, 0, sigma), hypo='H50')
+ggplot(dat_power, aes(x,y,fill=hypo,ymin=0,ymax=y)) +
+  geom_ribbon(alpha=.5) +
+  geom_area(data = up, fill='red', alpha=0.8) +
+  geom_area(data = low, fill='red', alpha=.8) +
+  geom_line() +
+  scale_fill_discrete('Hypothese') +
+  labs(x = 'Differenzen[N]', y = 'relative Häufigkeit') 
+```
+
+In @fig-stats-sig-power-01 ist zu sehen, dass sich die beiden Verteilungen überschneiden. Der krititische Bereich unter der $H_0$ fängt etwa bei $500N$ an, so dass der Bereich zwischen etwa $100-400N$ unter beiden Verteilungen wohl relativ *wahrscheinlich* ist. D.h. wenn wir einen Wert in diesem Bereich beobachten würden, dann könnten wir nicht wirklich trennscharf argumentieren aus welcher Stichprobenverteilung der Wert tatsächlich stammt. In @fig-stats-sig-power-02 haben wir den Bereich unter der $H_1$ der links des krititschen Bereichs von $H_1$ liegt grün eingefärbt. Da es sich hier wieder um eine Fläche handelt, bestimmt diese Fläche eine Wahrscheinlichkeit. Wie könnte diese Wahrscheinlichkeit verbal beschrieben werden?
+
+```{r}
+#| fig-cap: "Differenzen mit kritischen Regionen (rot) mit einer Wahrscheinlichkeit von $\\alpha$ wenn $H_0$ zutrifft und $\\beta$ (grün) wenn $H_1$ zutrifft."
+#| label: fig-stats-sig-power-02
+
+beta <- tibble(
+  x = -300:q_crit,
+  y = dnorm(x, 500, sigma)
+)
+ggplot(dat_power, aes(x,y,fill=hypo,ymin=0,ymax=y)) +
+  geom_ribbon(alpha=.5) +
+  geom_area(data = up, fill='red', alpha=0.8) +
+  geom_area(data = low, fill='red', alpha=.8) +
+  geom_area(data = beta, fill='green', alpha=0.5) +
+  geom_line() +
+  scale_fill_discrete('Hypothese') +
+  labs(x = 'Differenzen[N]', y = 'relative Häufigkeit') 
+```
+
+Die Werte zwischen den beiden krititschen Bereichen beschreiben diejenigen Werte bei denen wir die $H_0$ beibehalten würden, da wir diese Werte nichts als *überraschend* unter der $H_0$ einschätzen. Dementsprechend, wenn in der Realität allerdings die $H_1$ Hypothese zutreffen würde, würden wir uns irren. Daher beschreibt die grüne Fläche in @fig-stats-sig-power-02 ebenfalls Wahrscheinlichkeit sich zu irren. Aber dieses Mal wenn die Alternativhypothese $H_1$ zutrifft. Diese Irrtumswahrscheinlichkeit bezeichent man als $\beta$-Wahrscheinlichkeit.
+
+::: {#def-beta-error}
+## $\beta$-Wahrscheinlichkeit
+
+Die $\beta$-Wahrscheinlichkeit \index{$\beta$-Wahrscheinlichkeit} beschreibt die Wahrscheinlichkeit sich gegen die Alternativhypothese $H_1$ zu entscheiden wenn diese zutrifft. Die $\beta$-Wahrscheinlichkeit wird auch als Fehler II. Art bezeichnet.
+:::
+
+Wenn wir jetzt das Komplement der grüne Flächen nehmen, dann erhalten wir wiederum eine Wahrscheinlichkeit. @fig-stats-sig-power-03 ist diese Fläche blau eingezeichnet.
+
+```{r}
+#| fig.cap: "$1-\\beta$ = Power des Tests (blaue Fläche)."
+#| label: fig-stats-sig-power-03
+
+beta <- tibble(
+  x = -300:q_crit,
+  y = dnorm(x, 500, sigma)
+)
+power <- tibble(
+  x = q_crit:max(dat_power$x),
+  y = dnorm(x, 500, sigma)
+)
+ggplot(dat_power, aes(x,y,fill=hypo,ymin=0,ymax=y)) +
+  geom_ribbon(alpha=.5) +
+  geom_area(data = up, fill='red', alpha=0.8) +
+  geom_area(data = low, fill='red', alpha=.8) +
+  geom_area(data = beta, fill='green', alpha=0.5) +
+  geom_area(data = power, fill='blue', alpha=0.5) +
+  geom_line() +
+  scale_fill_discrete('Hypothese') +
+  labs(x = 'Differenzen[N]', y = 'relative Häufigkeit') 
+```
+
+Diese Fläche beschreibt die Wahrscheinlichkeit sich für die Alternativhypothese $H_1$ zu entscheiden, wenn diese auch tatsächlich zutrifft und wird als die Power bezeichnet.
+
+::: {#def-power}
+## Power \index{Power}
+
+Die Power bezeichnet die Wahrscheinlichkeit sich für die Alternativhypothese $H_1$ zu entscheiden, wenn die in der Realität zutrifft.
+:::
+
+Nochmal zu @fig-stats-sig-power-03, die Werte unter der blauen Fläche werden mit einer Wahrscheinlichkeit beobachtet die derjenigen der blauen Fläche entspricht. Jedes Mal wenn so ein Wert eintritt, dann liegt dieser im kritischen Bereich unter der $H_0$ (rote Fläche) und wir entscheiden uns gegen die $H_0$.
+
+Zusammengefasst haben wir die folgende Liste bezüglich der Terme, $\alpha$, $\beta$ und Power:
+- $\alpha$: Die Wahrscheinlichkeit sich gegen die $H_0$ zu entscheiden, wenn die $H_0$ zutrifft. $\alpha$-Level wird vor dem Experiment festgelegt um zu kontrollieren welche Fehlerrate toleriert wird.
+- $\beta$: Die Wahrscheinlichkeit sich gegen die $H_1$ zu entscheiden, wenn die $H_1$ zutrifft.
+- Power := $1 - \beta$: Die Wahrscheinlichkeit sich für die $H_1$ zu entscheiden, wenn die $H_1$ zutrifft. Sollte ebenfalls **vor** dem Experiment festgelegt werden.
+
+Die verschiedenen Entscheidungsmöglichkeiten haben wir schon einmal zusammengefasst (siehe @tbl-stats-sig-power).
+
+| Entscheidung\\Realität | $H_0$ | $H_1$ |
+| --- | --- | --- |
+| $H_0$ | korrekt | $\beta$ |
+| $H_1$ | $\alpha$ | korrekt |
+
+: Entscheidungsmöglichen und Fehlerarten  {#tbl-stats-sig-power}
+
+## Wie können wir die Power erhöhen? 
+
+Die Frage die sich nun stellt, ist wie können wir die Power erhöhen? In @fig-stats-sig-power-04 haben wir nochmal die beiden Verteilungen abgetragen bei $\Delta = 500$ und $\Delta = 0$.
+
+```{r}
+#| fig-cap: "Verteilungen wenn $\\Delta$=500 und $\\Delta$=0 in unserem kleine Welt Beispiel mit n = 3."
+#| label: fig-stats-sig-power-04
+
+dat <- tibble(
+  di = c(differences$d + 500, differences$d),
+  hypo = rep(c('H500','H0'), c(n_sim,n_sim))
+)
+p_h500 <- ggplot(dat, aes(di, fill=hypo)) +
+  geom_density(alpha=0.5) +
+  labs(x = 'Differenzen[N]', y = 'relative Häufigkeit') +
+  scale_fill_discrete("Hypothese", labels=c(
+    expression(H[0]  ), expression(H[500])
+  ))
+print(p_h500)
+```
+
+Unsere Entscheidung ist speziell problematisch im Bereich zwischen $0$ und $500$. Hier überlappen die beiden Verteilungen und wir haben dementsprechend Schwierigkeiten einen beobachteten Wert in diesem Bereich eindeutig einer der beiden Hypothesen zuzuordnen. Wir können die Power daher erhöhen, wenn wir die Überschlappung der beiden Verteilungen verkleinern. Dazu haben wir zwei Möglichkeiten, entweder wir Vergrößern den Unterschied zwischen den beiden $\Delta$s. D.h. das Krafttraining müsste effizienter werden oder wir versuchen die beiden Verteilungen schmaler zu machen indem wir die Streuung der Wert verkleinern.
+
+In @fig-stats-sig-power-05 haben wir alle Parameter gleich gelassen zu @fig-stats-sig-power-04 aber haben die Stichprobengröße von $n = 3$ auf $n = 9$ erhöht.
+
+```{r}
+#| fig-cap: "Stichprobenverteilungen der Differenz unter $H_0$ und $H_1:\\delta=500$N bei einer Stichprobengröße von n = 9"
+#| label: fig-stats-sig-power-05
+
+sample_k9 <- readr::read_csv('data/sample_k9.csv')
+sigma <- sample_k9$sd[1]
+d <- sample_k9$m[2]
+xx = seq(-4*sigma,d+4*sigma)
+n_pts = length(xx)
+dat_k9 <- tibble(
+  x = rep(xx,2),
+  y = c(dnorm(xx, 0, sigma), dnorm(xx, d, sigma)),
+  hypo = rep(c('H0','H500'), c(n_pts, n_pts))
+)
+ggplot(dat_k9, aes(x,y,fill=hypo, ymin=0, ymax=y)) +
+  geom_ribbon(alpha=0.5) +
+  geom_line() +
+  scale_fill_discrete("Hypothese", labels=c(
+    expression(H[0]  ), expression(H[500])
+  )) +  
+  lims(x = c(-750, 1250)) +
+  labs(x = 'Differenzen[N]', y = 'relative Häufigkeiten') 
+```
+
+Hier sehen wir, dass die Position der Verteilungen gleich geblieben ist. Dies sollte nicht weiter verwundern, da immer noch die beiden Hypothesen $H_0: \Delta = 0$N und $H_1: \Delta = 500$N miteinander vergleichen werden. Aber durch die Erhöhung der Stichprobengröße ist die Streuung der $D$s unter beiden Hypothesen kleiner geworden. Dies führt dazu, dass die Verteilungen steiler sind und sich dementsprechend weniger stark überlappen. Die Streuung der Statistik wird als Standardfehler bezeichnet.
+
+::: {#def-standard-error}
+## Standardfehler 
+
+Die Standardabweichung der Stichprobenverteilung der beobachteten Statistik wird als Standardfehler $s_e$ bezeichnet
+:::
+
+Der Standardfehler ist nicht gleich der Standardabweichung in der Population bzw. der Stichprobe. Es gilt beispielsweise für den Standardfehler des Mittelwerts.
+
+| Population | Stichprobe |
+| --- | --- | 
+| $\sigma_{\bar{X}}=\sqrt{\frac{\sigma^2}{n}} = \frac{\sigma}{\sqrt{n}}$ | $s_e=\sqrt{\frac{s^2}{n}}=\frac{s}{\sqrt{n}}$ | 
+
+: Standardfehler des Mittelwerts, n = Stichprobengröße {#tbl-stats-sig-standard-error}
+
+In @tbl-stats-sig-standard-error ist zu sehen, dass ein wurzelförmiger Zusammenhang zwischen dem Standardfehler $s_e$ und der Stichprobengröße besteht. Dieser Zusammenhang wird uns in verschiedenen Berechnung zum Standardfehler verschiedener Statistiken immer wieder begegenen.
+
+```{r}
+#| label: fig-stats-sig-sqrtfcn
+#| fig-cap: "Funktionaler Zusammenhang zwischen $x$ und $\\sqrt{x}$."
+
+tibble(x = seq(0, 100), y = sqrt(x)) |> 
+  ggplot(aes(x,y)) +
+  geom_line() +
+  labs(x = 'x', y = expression(y==sqrt(x)))
+```
+
+In @fig-stats-sig-sqrtfcn ist zu Erinnerung aus der Schule die Funktion $y = \sqrt{x}$ abgetragen. Daran sehen wir, dass die Funktionswerte für kleine Werte von $x$ steil ansteigen und später dann anfangen immer langsamer größer zu werden. Angewendet auf unsere Powerfrage, wenn der Standardfehler mit der Wurzel der Stichprobengröße $n$ kleiner wird, dann ist dies besonders bei kleinen Stichprobengrößen von Bedeutung, also zum Beispiel der Unterschied zwischen $n = 10$ und $n = 20$. Der gleiche Stichprobenunterschied dagegen zwischen $n = 110$ und $n = 120$ fällt nicht mehr ganz so groß in Gewicht. D.h. bei kleinen Stichproben sollte um jede zusätzliche Teilnehmerin bzw. Teilnehmer gekämpft werden. Allgemein gilt, umso größer die Stichprobengröße umso größer die Power. 
+
+## Things to know
+
+- Datengenerierender Prozess
+- Lage- und Skalenparameter
+- Mittelwert, Varianz und Standardabweichung
+- Statistische Signifikanz
+- Schätzer
+- p-Wert
+- Referenzverteilung
+- $H_0$ und $H_1$
+- $\alpha$-Fehler
+- $\beta$-Fehler
+- Power
+- Standardfehler
+
+## Weitere Literatur
+
+Ein interessanter Artikel welche Auswirkungen es hat, wenn Studien zu wenig Power haben @button2013. In @djulbegovic2007 ist eine interessante Diskussion darüber unter welchen Bedingungen statistisch signifikante Ergebnis als wahr angesehen werden sollten.

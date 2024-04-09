@@ -1,0 +1,966 @@
+# Theoretische Verteilungen 
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+source('_common.R')
+
+n_fig_pts <- 100
+```
+
+Wie wir in den vorhergehenden Abschnitten gesehen haben, brauchen wir immer die Stichprobenverteilung um etwas über die beobachteten Daten ausssagen zu können. Im Lummerland-Beispiel haben wir die Stichprobenverteilung einfach direkt hergeleitet, da wir komplettes Wissen über die Population hatten. Dies hat uns ermöglicht alle möglichen zu beobachtenden Werte zu berechnen. Dieser Fall ist leider bei einem realen Experiment nicht gegeben, dann wenn wir die Population und den Effekt kennen, dann brauchen wir das Experiment gar nicht erst durchzuführen. Sondern wir wollen anhand unserer Stichprobe etwas über die Population aussagen. Wir benötigen aber nichts desto trotz die Stichprobenverteilung. Diese können wir herleiten, wenn wir in der Lage sind unserer Stichprobe mit einer uns bereits bekannten Verteilung zu verknüpfen. Die Verteilung ist dabei eine theoretische Verteilung und unsere Aufgabe ist zu zeigen, dass unsere Stichprobe die Voraussetzungen und Annahmen der theoretischen Verteilung erfüllt. Dazu setzen wir uns in diesem Abschnitt etwas eingehender mit dem Konzept der Verteilung auseinander und werden in diesem Zusammenhang verschiedene für uns relevanten theoretische Verteilungen kennenlernen.
+
+Gehen wir noch einmal zurück und fangen mit dem Graphen einer Verteilung an. Auf der x-Achse sind die verschiedenen, möglichen Werte der jeweiligen Statistik abgetragen. In unserem bisherigen Beispiel war das der Unterschiede $D$ zwischen der Kontroll- und der Treatmentgruppe. Auf der y-Achse ist die relative Häufigkeit abgetragen. In dem speziellen Fall war das auch sinnvoll, da wir nur eine endliche Anzahl von möglichen Unterschieden $D$ (ihr erinnert auch an die Zahl) vorliegen hatten. Was passiert aber wenn wir tatsächlich eine kontiuierliche Statistik haben, also eine Statistik die alle Werte innerhalb eines Intervalls einnehmen kann. Um den Fall zu verstehen fangen wir aber erst mal wieder mit einem einfachen Modell an.
+
+## Der Münzwurf und die Bionomialverteilung
+
+Beginnen wir mit dem einfachsten Experiment an: dem Münzwurf. Beim Münzwurf haben wir zwei mögliche Ausgänge unseres Experiments: Kopf oder Zahl. Wir gehen von einer perfekten Münze aus, d.h. die Münze ist vollkommen symmetrisch und keine der Seiten ist in irgendeiner Form schwerer und beeinflusst den Ausgang des Experiments.
+
+Wenn wir uns an die Schule zurück erinnern, dann haben wir in Wahrscheinlichkeitstheorie schon mal was gehört, das im Fall gleichwahrscheinlicher Ereignisse die Wahrscheinlichkeit für ein bestimmtes Ereignis, mittels der Anzahl der vorteilhaften Ausgänge geteilt durch die Anzahl der möglichen Ausgänge berechnet wird. Also beim einmaligen Münzwurf haben wir zwei Ausgänge $\{\text{Kopf}, \text{Zahl}\}$ und jeweils nur einen vorteilhaften Ausang also entweder Kopf oder Zahl, daher folgt daraus.
+
+\begin{align}
+P(\text{Kopf}) &= \frac{1}{2} \\
+P(\text{Zahl}) &= \frac{1}{2}
+\end{align}
+
+Tragen wir dies als Graphen in Form einer Wahrscheinlichkeitsverteilung ab, dann sieht das noch wenig interessant aus (siehe @fig-sts-sig-coin-toss-1). Das Muster ist aber trotzdem wichtig, damit wir später wissen worauf wir hier eigentlich schauen. Auf der x-Achse haben wir die möglichen Ausgänge, Kopf oder Zahl, und auf der y-Achse haben wir die Wahrscheinlichkeit abgetragen.
+
+```{r}
+#| fig-cap: "Wahrscheinlichkeitsverteilung des einmaligen Münzwurfes"
+#| label: fig-sts-sig-coin-toss-1
+
+ggplot(tibble(x = 1:2, y = 0.5),
+       aes(x, y=0,xend=x, yend=y)) +
+  geom_segment(size=2) +
+  scale_x_continuous('Ereignis', limits = c(0, 3), breaks=1:2,
+                     labels = c('Kopf','Zahl')) +
+  scale_y_continuous('Wahrscheinlichkeit P', limits = c(0, 1))
+
+```
+
+Da sich mit einem Münzwurf aber nur wenig anfangen lässt, erhöhen wir die Komplexität etwas und schauen uns an, was passiert wenn wir zwei Münzwwürfe durchführen. Rein operational, wir werfen unsere Münze in die Luft, schreiben uns das Ergebnis auf, und wiederholen diesen Vorgang noch einmal. Was auch immer beim ersten Wurf passiert, hat keine Auswirkungen auf das Ergebnis des zweiten Wurfs. Wir könnten aber auch zwei Münzen nehmen und beide gleichzeitig in die Luft werfen. Das wäre das gleiche Experiment.
+
+Welche möglichen Ereignisse Ausgänge haben wir jetzt beim zweimaligen Münzwurf? Zunächst einmal haben wir jetzt nicht mehr nur einen einzelnen Ausgang sondern wir haben ein Ereignisstupel. Ein Tupel ist eine **geordnete** Liste mit Elementen, d.h. $(1,2) \neq (2,1)$. 
+
+::: {#def-tupel}
+## Tupel
+
+Ein Tupel ist eine geordnete Liste von Elemente die nicht notwendigerweise Unterschiedlich sein müssen. Da die Liste geordnet ist, spielt die Reihenfolge der Elemente eine Rolle.
+:::
+
+Etwas motiviertes kritzeln auf einem Schmierblatt wird für den zweimaligen Münzwurf wahrscheinlich relativ schnell zu folgender Tabelle führen (siehe @tbl-sts-sig-coin-toss-2).
+
+| Ausgang 1. Wurf | Ausgang 2. Wurf | Tupel |
+| --- | --- | --- |
+| Kopf | Kopf | (Kopf, Kopf) |
+| Kopf | Zahl | (Kopf, Zahl) |
+| Zahl | Kopf | (Zahl, Kopf) |
+| Zahl | Zahl | (Zahl, Zahl) |
+
+: Mögliche Ausgänge bei einem zweimaligen Münzwurf {#tbl-sts-sig-coin-toss-2}
+
+Jetzt können wir uns wieder fragen, was die Wahrscheinlichkeit $P$ für die jeweiligen Ereignisse, die Ereignistupel, ist. Eine direkte Herleitung ist wieder über die Symmetrie zu argumentieren. Es gibt vier verschiedene Ereignisse von denen keines in irgendeiner Weise bevorzugt ist. Daraus folgt das alle vier Ausgänge die gleiche Wahrscheinlichkeit haben. Damit folgt eine Wahrscheinlichkeit von $P = \frac{1}{4}$ für jedes der Ereignisse.
+
+Eine weitere Möglichkeit wäre mit den Wahrscheinlichkeiten aus dem einfachen Wurf an das Problem heran zu gehen. Wir betrachten die beiden Münzwürfe jetzt wieder sequentiell (siehe @fig-sts-sig-coin-toss-tree). Im ersten Schritt können wir entweder Kopf oder Zahl beobachten. Beide Wahrscheinlichkeiten sind $P = \frac{1}{2}$. Darauf folgend können wir wieder zwei verschiedene Ausgänge beobachten, eben Kopf oder Zahl, wieder mit der Wahrscheinlichkeit $P = \frac{1}{2}$. 
+
+```{mermaid}
+%%| fig-cap: Auswahlmöglichkeiten beim sequentiellen zweimaligen Münzwurf
+%%| label: fig-sts-sig-coin-toss-tree
+
+flowchart TD
+    A[Start] --> B(Kopf)
+    A --> C(Zahl)
+    B --> D(Kopf)
+    B --> E(Zahl)
+    C --> F(Kopf)
+    C --> G(Zahl)
+```
+
+Da die Münzwürfe voneinander unabhängig sind und keinen Einfluss aufeinander ausüben, folgt daraus, dass die Wahrscheinlichkeiten für jede spezielle Folge von Kopf oder Zahl sich berechnet nach:
+
+$$
+P(\text{Ausgang}) = P(\text{1. Wurf}) \times P(\text{2. Wurf})
+$$ {#eq-2coin-toss}
+
+Also in unseren Fall:
+
+$$
+P(\text{Ausgang}) = \frac{1}{2} \times \frac{1}{2} = \frac{1}{4}
+$$ {#eq-2coin-toss-prob}
+
+Das wir die Wahrscheinlichkeiten miteinander multiplizieren können, wenn die Ereignisse unabhängig sind ist tatsächlich die Definition von Unabhängigkeit in der umgekehrter Richtung.
+
+::: {#def-independence}
+## Unabhängigkeit
+
+Seien zwei Ereignisse $E_1$ und $E_2$ gegeben. Wenn die Wahrscheinlichkeit für das kombinierte Ereignis $E_1 \cap E_2$ mittels $P(E_1 \cap E_2) = P(E_1)P(E_2)$ berechnet wird, dann sind die beiden Ereignisse unabhängig voneinander. 
+Umgangssprachlich gibt mir Kenntnis von Ereignis $E_1$ keine Information über das Ereignis $E_2$ bzw. genauso anders herum.
+:::
+
+Angewandt auf den Münzwurf kommen wir wieder beim gleichen Ergebnis wie vorher an. Der Vorteil dieser Herangehensweise ist jedoch, dass wir damit eine einfache Möglichkeit gefunden haben das Ergebnis für mehr als zwei Würfe verallgemeinern zu können. Nehmen wir zum Beispiel den dreifachen Münzwurf. Die Wahrscheinlichkeit für die Folge KKZ kann direkt mittels $P(\text{KKZ}) = \frac{1}{2}\times \frac{1}{2} \times \frac{1}{2} = \frac{1}{8}$ berechnet werden.
+
+Bleiben wir aber erst noch mal kurz beim zweimaligen Münzwurf und schauen uns die Wahrscheinlichkeitsverteilung an. Hier stoßen wir nämlich auf ein Problem in der Darstellung. Wenn wir bei dem Muster aus @fig-sts-sig-coin-toss-1 bleiben wollen und auf der x-Achse die möglichen Ergnisse und auf der y-Achse die dazugehörende Wahrscheinlichkeit abtragen wollen, dann ist nicht ganz klar wie wir die Ergebnisse ordnen sollen. Eine mögliche Lösung ist in @fig-sts-sig-coin-toss-2a zu sehen.
+
+```{r}
+#| fig-cap: "Wahrscheinlichkeitsverteilung des zweimaligen Münzwurfes (K: Kopf, Z: Zahl)" 
+#| label: fig-sts-sig-coin-toss-2a
+
+ggplot(tibble(x = 1:4, y = 0.25),
+       aes(x, y=0,xend=x, yend=y)) +
+  geom_segment(size=2) +
+  scale_x_continuous('Ereignis', limits = c(0, 5), breaks=1:4,
+                     labels = c('KK','KZ','ZK','ZZ')) +
+  scale_y_continuous('Wahrscheinlichkeit P', limits = c(0, 1))
+
+```
+
+Dies ist natürlich nicht die einzige Möglichkeit wie wir die Ereignisse ordnen können sondern wahrscheinlich ist jede der 24 möglichen Anordnungen gleich sinnvoll. Als Alternative könnte wir aber auch nicht mehr die beiden einzelnen Ausgänge als Ereignisse wählen, sondern zum Beispiel nur noch die Anzahl der beobachteten Köpfe in unseren zwei Würfen zählen. Dies würde zu der folgenden Zuordnung führen (siehe @tbl-sts-sig-coin-toss-2a).
+
+| Ereignisse | Anzahl der Köpfe |
+| --- | --- |
+| (Kopf, Kopf) | 2 |
+| (Kopf, Zahl) | 1 |
+| (Zahl, Kopf) | 1 |
+| (Zahl, Zahl) | 0 |
+
+: Zuordnung der Anzahl der Köpfe zu den Ereignissen beim zweimaligen Münzwurf {# tbl-sts-sig-coin-toss-2a}
+
+Wir verlieren bei dieser Zuordnung die Information bei welchem Wurf die Zahl beobachtet wurde. In der Terminologie der Wahrscheinlichkeitstheorie wird die Anzahl der *Köpfe* als Zufallsvariable bezeichnet.
+
+::: {#def-random-variable}
+## Zufallsvariable
+
+Eine Zufallsvariable\index{Zufallsvariable} ist die Abbildung eines Zufallsereignisses auf eine Zahl.
+Formal, wenn wir mit $\Omega$ die Menge der möglichen Ausgänge eines Experiments bezeichnen, dann ist eine Zufallsvariable eine Funktion die jedem Element $\omega \in \Omega$ eine Zahl $x \in \mathbb{R}$ zuordnet (siehe @fig-sts-sig-random-variable).
+
+```{mermaid}
+%%| fig-cap: Abbildung des Ereignisses auf eine Zahl 
+%%| label: fig-sts-sig-random-variable
+
+flowchart LR 
+    A[Ereignis] --> B(Zahl)
+```
+
+:::
+
+Wenn wir uns jetzt die Wahrscheinlichkeiten für unsere Zufallsvariable anschauen, dann sehen wir aber, dass wir nicht mehr vier verschiedene Ausgänge haben, sondern nur noch drei und das die Wahrscheinlichkeit für diese drei Ereignisse nicht alle gleich sind.
+
+|Ereignisse | Zufallsvariale | Wahrscheinlichkeit |
+|---| --- | --- |
+| (Zahl, Zahl) | Keine Köpfe | $\frac{1}{4}$ |
+| (Kopf, Zahl)(Zahl,Kopf)| 1 Kopf | $\frac{1}{4} + \frac{1}{4} = \frac{1}{2}$ |
+|(Kopf,Kopf) | 2 Köpfe | $\frac{1}{4}$ |
+
+: Wahrscheinlichkeitstabelle für Zufallsvariable "Anzahl der Köpfe beim zweimaligen Münzwurf". {#tbl-sts-sig-coin-toss-2b}
+
+Wahrscheinlichkeitsverteilung unserer Zufallsvariable als Graph abtragen ergibt @fig-sts-sig-coin-toss-2c.
+
+```{r}
+#| fig-cap: "Wahrscheinlichkeitsverteilung für die Anzahl der Köpfe beim zweimaligen Münzwurf"
+#| label: fig-sts-sig-coin-toss-2c
+#| fig-height: 2
+
+ggplot(tibble(x = 0:2, y = c(0.25,0.5,0.25)), 
+       aes(x, y=y,xend=x, yend=0)) +
+  geom_segment(size=1) +
+  geom_point(size=2) +
+  scale_x_continuous('Anzahl der Köpfe', breaks=0:2) +
+  scale_y_continuous('Wahrscheinlichkeit P', limits = c(0, 1))
+
+```
+
+Nur um nebenbei noch einmal das Offensichtliche Anzusprechen. Die Summe aller Ereigniswahrscheinlichkeiten muss $1$ sein. Das sollte auch direkt einsichtig sein. Wenn ich alle möglichen Ereignisse abfrage also: "*Was ist die Wahrscheinlichkeit das ich keine Köpfe, 1 Kopf oder 2 Köpfe beim zweimaligen Münzwurf erhalte*", dann sind das alle möglichen Ausgänge und dementsprechend sollte die Wahrscheinlichkeit "1" sein oder mathematisch ausgedrückt:
+
+$$
+P(\text{0 Köpfe} \cup \text{1 Kopf} \cup \text{2 Köpfe}) = \frac{1}{4} + \frac{1}{2} + \frac{1}{4} = 1
+$$
+
+Damit haben wir den Fall zweier Münzwürfe abgefrühstückt. Gehen wir nun zum nächst komplizierteren Fall. Die Anzahl der Köpfe bei drei Münzwürfen. Welche Möglichkeiten gibt es hier? Nun bei drei Würfen kann entweder $0, 1, 2$ oder $3$ Kopf auftreten. Wenn wir die Wahrscheinlichkeiten für diese vier Ereignisse berechnen wollen, können wir aber nicht einfache $\frac{1}{4}$ für jedes Ereignis als Wahrscheinlichkeit ansetzen (Warum?). Schauen wir uns erst einmal wieder die möglichen Tupel, oder auch die Elemenarereignisse, den wir erinnern uns, dass die Anzahl der Köpfe eine Zufallsvariable ist. Also eine Abbildung der 3-fach Tupel auf eine der Zahlen $\{0, 1, 2, 3\}$.
+
+| Elementarereignis | Anzahl Kopf |
+| --- | --- |
+| (Z,Z,Z) | $0$ |
+| (K,Z,Z) | $1$ |
+| (Z,K,Z) | $1$ |
+| (Z,Z,K) | $1$ |
+| (K,K,Z) | $2$ |
+| (Z,K,K) | $2$ |
+| (K,Z,K) | $2$ |
+| (K,K,K) | $3$ |
+
+: Abbildung der 3-fach Tupel auf die Anzahl Kopf beim dreifachen Münzwurf {#tbl-sts-sig-coin-toss-3}
+
+Die Elementarereignisse in @tbl-sts-sig-coin-toss-3 sind wieder alle gleichwahrscheinlich, daher können wir einfach abzählen. Es gibt insgesamt $8$ mögliche Ausgänge. $0$-mal oder $3$-mal Kopf kommen jeweils einmal vor, $3$ Ausgänge haben jeweils $1$-mal oder $2$-mal Kopf. Daraus folgt für die Wahrscheinlichkeitsfunktion (siehe @tbl-sts-sig-coin-toss-3a).
+
+| Anzahl Kopf | P |
+| --- | --- |
+| $0$ | $\frac{1}{8}$ |
+| $1$ | $\frac{3}{8}$ |
+| $2$ | $\frac{3}{8}$ |
+| $3$ | $\frac{1}{8}$ |
+
+: Wahrscheinlichkeitsfuntion für den dreifachen Münzwurf {#tbl-sts-sig-coin-toss-3a}
+
+Das Ganze auch wieder als Graph (siehe @fig-sts-sig-coin-toss-3)
+
+```{r}
+#| fig-cap: "Wahrscheinlichkeitsverteilung für die Anzahl der Köpfe beim dreimaligen Münzwurf"
+#| label: fig-sts-sig-coin-toss-3
+#| fig-height: 2
+
+ggplot(tibble(x = 0:3, y = c(0.125,0.375,0.375,0.125)), 
+       aes(x, y=y,xend=x, yend=0)) +
+  geom_segment(size=1) +
+  geom_point(size=2) +
+  scale_x_continuous('Anzahl der Köpfe', breaks=0:3) +
+  scale_y_continuous('Wahrscheinlichkeit P', limits = c(0, 1))
+
+```
+
+Bleiben wir noch einmal kurz bei dem Beispiel und versuchen uns die Wahrscheinlichkeiten anders herzuleiten. Sollten wir zum Beispiel einmal in die Verlegenheit kommen und 20 Münzwürfe untersuchen wollen, dann wird die Tabelle relativ schnell unhandlich.
+
+Sei $N$ die Anzahl der Würfe die wir durchführen. Wenn wir $N$ kennen, wissen wir auch direkt welche möglichen Ausgänge bei dem Experiment möglich sind, nämlich alle Zahlen zwischen $0$ und $N$. $0$ wenn wir kein Kopf in den $N$ Würfen beobachtet haben, und $N$ wenn wir nur Kopf geworfen haben. Dementsprechend sind alle Zahlen dazwischen auch möglich.
+
+Schauen wir uns jetzt noch mal den dreimaligen Münzwurf an. Wenn wir kein Kopf werfen in $3$ Würfen und betrachten die Würfe wieder sequentiell, dann haben wir $\frac{1}{2}$ für die erste Zahl, $\frac{1}{2}$ für die zweite Zahl und $\frac{1}{2}$ für die dritte Zahl. Also insgesamt $P(1 \text{ Kopf}) = \frac{1}{2} \times \frac{1}{2}\times \frac{1}{2} = \frac{1}{8}$. Aber diese Wahrscheinlichkeit hat ja jedes Elementarereignis egal ob es (K,K,K) oder (K,Z,K) oder (Z,Z,K) usw. ist. Jetzt haben wir aber das Problem, das wir für $1\times$ oder $2\times$ Kopf nicht nur eine Möglichkeit vorhanden diese Anzahl an Kopf zu beobachten. In @tbl-sts-sig-coin-toss-3 haben wir bereits gezeigt, dass jeweils drei verschiedene Möglichkeiten, Kombination von Kopf und Zahl, möglich sind. D.h. wir haben ein Abzählproblem. Können wir irgendwie direkt bestimmen wie viele unterschiedliche Möglichkeiten es gibt?
+
+Schauen wir uns den Fall $1\times$ Kopf im 3-fach Tupel an. Auf wie viele Arten können wir 3-fach Tupel erzeugen mit nur einem Kopf. Kopf kann entweder an der ersten, der zweiten oder der dritten Stelle auftreten und die jeweils anderen Position im Tupel sind mit Zahl besetzt. Das hört sich aber ähnlich wie ein Problem an wie wie etwas was wir schon vorher einmal gehört haben. Als wir uns die Anzahl der möglichen Stichproben aus unserer kleinen Welt angeschaut haben. Dort hatten wir das Problem, das wir bestimmen wollten auf wie viele Möglichkeiten wir zwei Stichproben mit jeweils drei Personen aus 20 Personen ziehen können. Dabei sind wir auf den Binomialkoeffizienten gestoßen @eq-binom-coef.
+
+$$
+\text{Anzahl} = \binom{n}{k} = \frac{n!}{k!(n-k)!}
+$$
+
+Formal berechnet der Binomialkoeffizient die Möglichkeiten $k$ Objekte aus $n$ Objekten zu ziehen. Wenden wir das auf unseren Dreifachwurf an mit $n = N = 3$ und $k = 1$. Ausgeschrieben, auf wie viele Arten können wir $1\times$ Kopf aus drei Positionen auswählen erhalten wir:
+
+\begin{equation*}
+\text{Kombinationen mit }1\times\text{ Kopf} = \binom{3}{1} = \frac{3!}{1!(3-1)!} = \frac{3\times 2 \times 1}{1\times 2 \times 1} = 3
+\end{equation*}
+
+Passt. Probieren wir das auch direkt mit dem Ereignis $2\times$ Kopf, also mit $N = 3$ und $k = 2$, aus.
+
+$$
+\text{Kombinationen mit } 2\times \text{ Kopf} = \binom{3}{2} = \frac{3!}{2!(3-2)!} = \frac{3\times 2 \times 1}{2\times 1 \times 1} = 3
+$$
+
+Passt auch. Jetzt müssen wir noch nur die beiden Fälle $0\times$ und $3\times$ Kopf behandeln. Wenn wir in einem Mathebuch den Binomialkoeffizienten nachschlagen, dann sind dort die beiden folgenden Definition zu finden für die Fälle $k=0$ und $k=n$.
+
+\begin{align*}
+\binom{N}{N} &= 1 \\
+\binom{N}{0} &= 1
+\end{align*}
+
+Wenn wir diese Definition für die anderen beiden verbleibenden Fälle anwenden, erhalten wir:
+
+\begin{align*}
+\text{Kombinationen mit } 0\times \text{ Kopf} &= \binom{3}{0} = 1 \\
+\text{Kombinationen mit } 3\times \text{ Kopf} &= \binom{3}{3} = 1
+\end{align*}
+
+Damit können wir nun für alle möglichen Ausgängen die Anzahl der möglichen Elementarereignisse mittels bestimmen. Allgemein erhalten wir dadurch eine Formel für die Wahrscheinlichkeiten der Ereignisse für den dreifachen Münzwurf.
+
+$$
+P(k \times \text{Kopf}) = \binom{3}{k} \frac{1}{2} \times \frac{1}{2} \times \frac{1}{2} = \binom{3}{k} \left(\frac{1}{2}\right)^3
+$$ {#eq-coin-toss-3}
+
+Weil wir natürlich nach einer allgemeinen Lösung suchen, führen wir jetzt noch ein paar Symbole ein. Die Zufallsvariable, also die Anzahl von Kopf, bezeichnen wir mit dem Großbuchstaben $Y$. Einen speziellen Ausgang bezeichnen wir nun mit dem Kleinbuchstaben $y$ anstatt $k$. Damit würden allgemein die Wahrscheinlichkeit für irgendeines der Ereignisse mit $Y = y$ bezeichnen. Wenn wir ein spezielles Ereignis ausweisen wolle, z.B. das Ereignis $3\times$ Kopf, setzen wir $y = 3$. Formal: 
+
+\begin{equation*}
+P(Y = 3) = \binom{3}{3}\left(\frac{1}{2}\right)^3
+\end{equation*}
+
+Die nächste Verallgemeinerung die wir Vornehmen betrifft die Wahrscheinlichkeit das Kopf auftritt. Bisher sind wir von einer perfekten, symmetrischen Münze ausgegangen mit der Wahrscheinlichkeit $P(\text{Kopf}) = P(\text{Zahl}) = \frac{1}{2}$. Wir führen das Symbol $p$ für die Wahrscheinlichkeit $P(\text{Kopf}) = p$ ein. So können wir auch abbilden, wenn wir eine unfaire Münze haben. Wenn jetzt aber $p \neq \frac{1}{2}$ gilt, also zum Beispiel die Wahrscheinlichkeit für Kopf $p = \frac{2}{3}$ wäre, dann ist die Wahrscheinlichkeit für Zahl nicht mehr die Gleiche wie für Kopf. Führen wir noch für die Wahrscheinlichkeit für das Auftreten von Zahl nun das Symbol $q$ ein. Wir haben die Randbedingung das die beiden Wahrscheinlichkeiten $p$ und $q$ zusammen $=1$ sein müssen. Formal:
+
+\begin{equation*}
+p + q = 1
+\end{equation*}
+
+Daraus folgt, dass $q = 1 - p$ ist.
+
+Übertragen wir diesen Formalismus auf unseren Münzwurf. Wir können uns zunutze machen, dass wir wissen wie viele Würfe durchgeführt wurden, nämlich $N$, und wie viele davon Kopf waren, nämlich $y$. Damit wissen wir automatisch auch die Anzahl von Zahl, $N - y$. Jedes Kopf, hat die Wahrscheinlichkeit $p$ und jede Zahl hat die Wahrscheinlichkeit $q = 1 - p$. Das gilt unabhängig von der Reihenfolge, da z.B. die Wahrscheinlichkeiten $KKZK$ und $ZKKK$ gleich $ppqp = qppp$ sind. Insgesamt haben wir $y \times K$ und $(n-y) \times Z$ also $p^y$ und $q^{n-y}$. Diesen Zusammenhang können wir in eine Formel stecken.
+
+\begin{equation}
+P(Y = y) = \binom{N}{y}p^y (1-p)^{N-y} = \binom{N}{y}p^y q^{N-y} \label{eq-binom-distribution}
+\end{equation}
+
+Damit haben wir jetzt auch direkt unsere erste theoretische Verteilung kennengelernt, die in der Statistik eine zentrale Rolle spielt. Die Verteilung in Formel \eqref{eq-binom-distribution} wird als die Binomialverteilung\index{Binomialverteilung} bezeichnet. Da die Formel \eqref{eq-binom-distribution} von den Parametern $p$ und $n$ abhängt, wird die Binomialverteilung als eine Familie von Verteilungen bezeichnet. 
+
+::: {#def-binomial-distribution}
+## Binomialverteilung
+
+Die Binomialverteilung beschreibt die Anzahl der *Erfolge* in einer Serie von $N$ unabhängigen Versuchen. Die Versuche können jeweils nur genau zwei mögliche Ausgänge haben (*Erfolg* oder *Misserfolg*). Die Binomialverteilung mit $N$ Versuchen und der Erfolgswahrscheinlichkeit $p$ und der Misserfolgswahrscheinlichkeit $q = 1 - p$ und den möglichen Ausgängen $y = 0,1,\ldots,N$ berechnet sich nach:
+
+\begin{equation}
+P(Y = y) = \binom{N}{y}p^y (1-p)^{N-y} = \binom{N}{y}p^y q^{N-y}
+\end{equation}
+
+Die Binomialverteilung ist eine diskrete Verteilung da sie auf einer endlichen Anzahl möglichen Ausgängen definiert ist (nicht ganz korrekt aber ausreichend für uns). Die Binomialverteilung ist eine Familie von Verteilungen und spezielle Verteilungen werden mit dem Symbol $B(N,p,y)$ bezeichnet.
+:::
+
+```{r}
+#| layout-ncol: 2
+#| label: fig-stats-sig-binom-dist-1
+#| fig-height: 4
+#| fig-cap: "Beispiel für verschiedene Binomialverteilungen"
+#| fig-subcap:
+#|   - "$B(N = 10, p = 0.5)$"
+#|   - "$B(N = 7, p = 0.3)$"
+
+binom_dist <- function(p = 0.5, n = 10) {
+  tibble(
+    x = 0:n,
+    p = dbinom(x, n, p)
+  ) |> 
+    ggplot(aes(x, p, xend=x, yend=0)) +
+    geom_segment(size=1.5) +
+    geom_point(size=4) +
+    scale_x_continuous('Anzahl Kopf', breaks = 0:n) +
+    scale_y_continuous('Wahrscheinlichkeit')
+}
+binom_dist()
+binom_dist(n = 7, p = 0.3)
+```
+
+
+Schauen wir uns aber noch mal ob wir mit den ganzen Symbolen wirklich unseren dreifachen Münzwurf zurückbekommen. Es gilt $N = 3, p = \frac{1}{2}$. Daraus folgt das $q = 1 - p = 1 - \frac{1}{2}=\frac{1}{2}$. Wenn wir uns noch an $x^a x^b = x^{a+b}$ aus der Schule erinnern folgt:
+
+\begin{align*}
+P(Y = 0) &= \binom{3}{0} \left(\frac{1}{2}\right)^{0}\left(\frac{1}{2}\right)^3 = \binom{3}{0}\left(\frac{1}{2}\right)^3 = 1 \left(\frac{1}{2}\right)^3 \\
+P(Y = 1) &= \binom{3}{1} \left(\frac{1}{2}\right)^{1}\left(\frac{1}{2}\right)^2 = \binom{3}{1}\left(\frac{1}{2}\right)^3 = 3 \left(\frac{1}{2}\right)^3 \\
+P(Y = 2) &= \binom{3}{0} \left(\frac{1}{2}\right)^{2}\left(\frac{1}{2}\right)^1 = \binom{3}{2}\left(\frac{1}{2}\right)^3 = 3 \left(\frac{1}{2}\right)^3 \\
+P(Y = 3) &= \binom{3}{0} \left(\frac{1}{2}\right)^{3}\left(\frac{1}{2}\right)^0 = \binom{3}{3}\left(\frac{1}{2}\right)^3 = 1 \left(\frac{1}{2}\right)^3 \\
+\end{align*}
+
+Tatsächlich können wir unser Ergebnis von oben wiedergewinnen. Die Funktion der Binomialverteilung (Formel \eqref{eq-binom-distribution}) wird als Wahrscheinlichkeitsfuntion\index{Wahrscheinlichkeitsfunktion} bezeichnet.
+
+::: {#def-Wahrscheinlichkeitsfunktion}
+## Wahrscheinlichkeitsfunktion
+
+Eine Wahrscheinlichkeitsfunktion ist eine mathematische Funktion, die die Wahrscheinlichkeiten für alle möglichen Ausgänge eines diskreten Zufallsexperiments angibt. Sie wird auch als diskrete Wahrscheinlichkeitsverteilung bezeichnet. Eine Wahrscheinlichkeitsfunktion ordnet jedem möglichen Ausgang $x$ eines Experiments eine Wahrscheinlichkeit $P(X = x)$ zu. Die Wahrscheinlichkeit liegt zwischen 0 und 1. Die Summe aller Wahrscheinlichkeiten für alle möglichen Ergebnisse muss gleich 1 sein. Eine Wahrscheinlichkeitsfunktion kann als Tabelle oder als Formel dargestellt werden
+:::
+
+Für die Eigenschaften einer Verteilung gibt es einer weitere Darstellungsform, die Verteilungsfunktion.
+
+::: {#def-Verteilungsfunktion}
+## Verteilungsfunktion
+
+Die Verteilungsfunktion gibt die Wahrscheinlichkeit $P$ an, dass eine Zufallsvariable $X$ einen Wert kleiner oder gleich einem bestimmten Wert $x$ annimmt, formal $P(X \leq x)$. Sie wird daher auch als kumulative Verteilungsfunktion bezeichnet.
+:::
+
+Um die Definition der Verteilungsfunktion leichter nachzuvollziehen schauen wir uns das Ganze graphisch an (siehe @fig-stats-sig-pbinom).
+
+```{r}
+#| layout-ncol: 2
+#| label: fig-stats-sig-pbinom
+#| fig-cap: "Zusammenhang zwischen der Wahrscheinlichkeits- und der Verteilungsfunktion bei $B(N = 10, p = 0.5)$"
+#| fig-subcap: 
+#|   - Wahrscheinlichkeitsfunktion $P(X = x)$
+#|   - Verteilungsfunktion $P(X \leq x)$
+
+binom_pdist <- function(p = 0.5, n = 10) {
+  tibble(
+    x = 0:n,
+    p = pbinom(x, n, p)
+  ) |> 
+    ggplot(aes(x, p, xend=x, yend=0)) +
+    geom_segment(linewidth = 1.5) +
+    geom_point(size=4) +
+    scale_x_continuous('Anzahl Kopf', breaks = 0:n) +
+    scale_y_continuous(expression(paste('Wahrscheinlichkeit ', P(X<=x))))
+}
+binom_dist()
+binom_pdist()
+```
+
+Die Wahrscheinlichkeitsfunktion gibt, wie schon bekannt, die Wahrscheinlichkeit für eine bestimmtes Ereignis an. Zum Beispiel, die Wahrscheinlichkeit bei $p = 0.5, n = 10, 5\times$ Kopf zu sehen ist etwas unter $0.25$. Wir könnten uns aber auch fragen, was die Wahrscheinlichkeit ist $5$ oder weniger Köpfe zu beobachten. Diese Wahrscheinlichkeit setzt sich zusammen aus aus den Ereignissen $X = 0, X = 1, X = 2, X = 3, X = 4, X = 5$ zusammen. Daraus werden die Wahrscheinlichkeiten $P(X = 0) + P(X = 1) + P(X = 2) + P(X = 3) + P(X = 4) + P(X = 5)$. Genau diesen Wert gibt die Verteilungsfunktion (siehe @fig-stats-sig-pbinom-2) an. Die Wahrscheinlichkeitsfunktion und Verteilungsfunktion sind eineindeutig ineinander überführbar. Von der Wahrscheinlichkeitsfunktion zur Verteilungsfunktion haben wir eben schon gezeigt. Die gegengesetzte Richtung erhalten wir mittels:
+
+\begin{equation*}
+P(X = x) = P(X \leq x) - P(X \leq x-1)
+\end{equation*}
+
+D.h. wenn wir die Verteilungsfunktion haben, um die Wahrscheinlichkeit für $P(X = x)$ zu erhalten, nehmen wir den Wert der Verteilungsfunktion für den Wert $X = x$ und ziehen davon den Wert für $X = x - 1$ ab. Später bei den kontinuierlichen Verteilungen lernen wir noch die Dichtefunktion kennen, welche die Funktion der Wahrscheinlichkeitsfunktion einnimmt.
+
+Für unser Ausgangsproblem ist jetzt aber mit der Verteilungsfunktion die Möglichkeit gegeben, das wir bestimmte Wahrscheinlichkeitsbereiche unserer Verteilung auszeichnen können. Denn die Wahrscheinlichkeitsfunktion liefert uns die Antwort auf die Frage, welchen Wertebereich wir für eine gegebene Verteilung eher nicht erwarten würden. Schauen wir uns zum Beispiel die Verteilung bei $p = 0.5$ und $n = 30$.
+
+```{r}
+#| label: fig-stats-dist-dbinom30
+#| fig-cap: "Wahrscheinlichkeitsfunktion bei $B(N = 30, p = 0.5)$" 
+ 
+binom_dist(n = 30)
+```
+
+In @fig-stats-dist-dbinom30 sehen wir, dass wir zum Beispiel recht überrascht wären, wenn wir bei einem Durchgang von $30$ Münzwürfen einen Wert von z.B. $x = 29 \times$ Kopf beobachten würden. Es ist nicht unmöglich, aber es wäre schon überraschend. Diesen Grad der Überraschung können wir als Kriterium nehmen, um zu entscheiden ob wir eine bestimmt Beobachtung dazu verwenden würden diese als Evidenz für oder gegen eine bestimmte Verteilungsannahme zu sehen.
+
+Setzen wir unser Kriterium z.B. bei 2% an. Die Entscheidung wird jetzt folgendermaßen getroffen. Wenn wir einen Wert beobachten der unter der Annahme einer fairen Münze die wir $30\times$ aus dem Bereich der Werte von $\leq2\%$ kommt. Dann sehen wir dies als Evidenz gegen die Annahme an.
+
+In diesem Zusammenhang wird später auch noch einmal die Umkehrfunktion der Verteilungsfunktion praktisch werden. Diese Funktion wird als die Quartilfunktion bezeichnet. Angewandt auf @fig-stats-sig-pbinom-2 sieht die Quartilfunktion wie folgt aus.
+
+```{r}
+#| layout-ncol: 2
+#| label: fig-stats-sig-qbinom
+#| fig-cap: "Zusammenhang zwischen der Verteilungs- und der Quantilfunktion bei $B(N = 10, p = 0.5)$"
+#| fig-subcap: 
+#|   - Verteilungsfunktion $P(X \leq x)$
+#|   - Quantilfunktion
+
+binom_qdist <- function(p = 0.5, n = 10) {
+  tibble(
+    x = pbinom(0:10, 10, 0.5),
+    q = qbinom(x, n, p)
+  ) |> 
+    ggplot(aes(x, q, xend=x, yend=0)) +
+    geom_segment(linewidth=1.5) +
+    geom_point(size=4) +
+    scale_x_continuous('Quantile', breaks=seq(0,1,.05)) +
+    scale_y_continuous('Anzahl Kopf[#]', breaks=1:10)
+}
+binom_pdist()
+binom_qdist()
+```
+
+D.h. in @fig-stats-sig-qbinom-2 können wir auf der $x$-Achse eine Quantile ablesen, also einen Wahrscheinlichkeit für $P(X \leq x)$ und auf der $y$-Achse steht die dazugehörende Anzahl von Kopf. Der Graph hat eine etwas eigenwillige Form, der darauf zurück zu führen ist, dass wir aufgrund der Struktur des Experiment nur wenige mögliche Ausgänge $[0,1,\ldots,10]$ haben.
+
+Konkret in der Anwendung, könnten wir zum Beispiel $\alpha = 0.2$ ansetzen. Dann würden wir links und rechts jeweils $10\%$ abschneiden und als kritische Bereiche ansehen. In @fig-stats-sig-qbinom-2 können wir dann ablesen, dass bei einem Ausgang von $\leq 2$ oder $\geq 9$ Köpfen wird *überrascht* sein würden.
+
+::: {#def-quartilfunktion}
+## Quantilfunktion
+
+Die Quantilfunktion ist die Umkehrfunktion der Verteilungsfunktion. Die Quantilfunktion gibt für eine gegeben Wahrscheinlichkeit den Wert der Zufahlsvariablen an.
+
+:::
+
+## Übergang von diskreten zur kontinuierlichen Verteilungen
+
+Das Beispiel der Binomialverteilung sollte dazu dienen die Herleitung der verschiedenen Verteilungsfunktionen einmal von Grund auf aufzubauen und damit hoffentlich nachvollziehbar zu machen. In den Fällen die wir im folgenden Untersuchen, betrachten wir jedoch in den meisten Fällen kontinuierliche Verteilungen, d.h. die Zufallsvariable kann, zumindest theoretisch, alle Werte auf dem reellen Zahlenstrahl von $[-\infty, \infty]$ annehmen. Konzeptionelle ändert sich beim Übergang zu kontinuierlichen Zahlen zunächst einmal nichts. Die Herleitung ist allerdings etwas komplizierter, so dass wir die Ergebnisse hier nur zur *Kenntnis* nehmen.
+
+Ein grundlegender Unterschied besteht darin, dass wir keine Wahrscheinlichkeits- sondern eine Dichtefunktion haben. Der Unterschied rührt daher, dass wir unsere bisherige *informelle* Herleitung der Wahrscheinlichkeit bei einer kontinuierlichen Funktion nicht anwenden können. Schauen wir dazu kurz die folgende Normalverteilung an, die wir weiter unten noch mal im Detail betrachten.
+
+```{r}
+#| fig-cap: Beispiel für die Dichtefunktion eine kontinuierlichen Verteilung.
+#| label: fig-stats-dist-cdist
+
+dnorm_plot()
+```
+
+Der Wertebereich der Funktion ist $[-\infty,\infty]$. D.h. wenn ich jetzt die Wahrscheinlichkeit für einen einzelnen Werte, z.B. $x = 1$ mit unserem bisherigen Ansatz berechnen möchte, dann bekomme ich das Problem, dass die mögliche Anzahl von Ausgängen $\infty$ ist. Wenn ich daher mit unserem bisherigen Ansatz reingehen, dann erhalten wir.
+
+\begin{equation}
+P(X = 1) = \frac{1}{\infty} = 0
+\label{eq-p-cont-inf}
+\end{equation}
+
+D.h. die Wahrscheinlichkeit einen speziellen Wert zu bekommen ist $=0$. Um diesen Unterschied zur Wahrscheinlichkeitsfunktion klarzustellen wird daher daher von Dichtefunktionen gesprochen. Eine saubere Definition erfordert etwas mehr mathematische Details als für unsere weitere Anwendung notwendig ist. Daher lassen wir das hier erst einmal so stehen.
+
+Wir wollen aber trotzdem in der Lage sein Wahrscheinlichkeiten zu bestimmen. Dies können, sobald wir nicht mehr von einzlenen Werten von Intervallen sprechen. z.B. was ist die Wahrscheinlichkeit unter der Dichtefunktion in @fig-stats-dist-cdist einen Werte $0 \leq x \leq 1$ zu beobachten. Hier können wir wieder das Modell der diskreten Wahrscheinlichkeitsfunktion nehmen und summieren die Höhe aller Werte $f(x)$ zwischen $0 \leq x \leq 1$ auf (siehe @fig-stats-dist-cdist-02).
+
+```{r}
+#| fig-cap: Beispiel für die Dichtefunktion eine kontinuierlichen Verteilung und Fläche der Werte $0 \leq x \leq 1$.
+#| label: fig-stats-dist-cdist-02
+
+dnorm_plot() +
+  geom_ribbon(data = tibble(x = seq(0,1,length.out=20),p=dnorm(x)),
+              aes(ymin = 0, ymax = p), fill = 'yellow', alpha = .5)
+```
+
+Das erinnert uns natürlich zurück an die Schule und und die gelbe Fläche in @fig-stats-dist-cdist-02 unter der Kurve ist natürlich das Integral der Funktion über diesen Wertebereich. Formal folgt daher für die Wahrscheinlichkeit:
+
+\begin{equation*}
+P(X = 0 \leq x \leq 1) = \int_{x=0}^1 f(x) dx
+\end{equation*}
+
+Insgesamt können wir aber immer das mentale Modell aus der Binomialverteilung anwenden und müssen nur zur Kenntnis nehmen das Integrale anstatt Summen gebildet werden. Dies wird in unserer Arbeit aber kaum eine Rolle spielen, da die Berechnung für uns von Funktionen vorgenommen wird.
+
+Im Folgenden werden vier verschiedene theoretische Verteilungen noch einmal etwas genauer vorgestellt, da diese Verteilung immer wieder im weiteren Verlauf auftauchen werden. Dies sind die Normalverteilung, die $t$-Verteilung, die $\chi^2$-Verteilung und die $F$-Verteilung. Dabei ist es, außer bei der Normalverteilung, weniger wichtig sich die Formeln einzuprägen sondern es soll eher darum gehen die Form der Verteilung, den Wertebereich und die Parameter der Verteilung zu kennen. Also zum Beispiel wird die Normalverteilung durch zwei Parameter $\mu$ und $\sigma^2$ spezifiziert während die $\chi^2$-Verteilung nur über einen einzelnen Parameter den Freiheitsgrad $df$ bestimmt wird. Streng genommen wird auch nicht über vier Verteilungen gesprochen, sondern es handelt sich um jeweils Verteilungsfamilien, da es beispielsweise nicht die eine Normalverteilung gibt, sondern die Form wie eben beschrieben von den beiden Parametern abhängt. Dies gilt in gleichem Maßen ebenfalls für die anderen behandelten Verteilungen.
+
+### Binomialverteilung in `R`
+
+In `R` gibt es wie für die anderen Verteilung wieder vier Funktionen. `dbinom()` für die Wahrscheinlichkeitsfunktion, `pbinom()` für die Verteilungsfunktion, `qbinom()` für die Quartilfunktion und `rbinom()` um Zufallszahlen entsprechend einer Binomialverteilung zu erzeugen. Um beispielsweise die Wahrscheinlichkeiten $P(Y = y)$ für $y = 0,1,\ldots, 10$ für die Binomialverteilung mit $p = 0.3$ und $n = 10$ zu berechnen, kann der folgende Code verwendet werden.
+
+```{r}
+#| echo: true
+
+dbinom(0:10, size = 10, prob = 0.3)
+```
+
+
+## Normalverteilung
+
+Schauen wir uns als nächstes die wohl wichtigste theoretische Verteilung, die Normalverteilung \index{Normalverteilung} an. Die Funktion der Normalverteilung hat die folgende Form:
+
+\begin{equation}
+f(x|\mu,\sigma^2) = \frac{1}{\sqrt{2 \pi \sigma^2}}e^{\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)}
+\label{eq-normal-distribution}
+\end{equation}
+
+Die Normalverteilung ist wiederum eine Verteilungsfamilie mit den beiden Parametern $\mu$ und $\sigma^2$. Sie ist eine symmetrische Verteilung und hat die uns schon oft begegnete Glockenform (siehe @fig-stats-dist-ndist).
+
+```{r}
+#| fig-cap: Dichtefunktion der Normalverteilung mit den Parametern $\mu = 0$ und $\sigma = 1$.
+#| label: fig-stats-dist-ndist
+
+dnorm_plot()
+```
+
+Der Wertebereich der Normalverteilung ist $X \in [-\infty, \infty]$. Das Maximum liegt genau beim Erwartungswert $\mu$ der die Verteilung in die linken 50% und die rechten 50% unterteilt. D.h. der Median und Mittelwert sind bei der Normalverteilung gleich. Das Abfallen der Flanken wird über die Varianz $\sigma^2$ geregelt. Wird $\sigma^2$ größer, fallen die Flanken flacher ab, wird $\sigma^2$ kleiner, fallen die Flanken schneller ab (siehe @fig-stats-dist-ndist2).
+
+```{r}
+#| layout-ncol: 2
+#| label: fig-stats-dist-ndist2
+#| fig-cap: Veränderung der Dichtefunktion bei unterschiedlichen Varianzen $\sigma^2$
+#| fig-subcap:
+#|  - "$\\sigma^2 = 1$"
+#|  - "$\\sigma^2 = 2$"
+
+dnorm_plot(0, 1)
+dnorm_plot(0, 2)
+```
+
+In @fig-stats-dist-ndist wird der Graph nicht als Wahrscheinlichkeitsfunktion wie bei der Binomialverteilung sondern als Dichtefunktion bezeichnet. Der Unterschied kommt daher, dass die Normalverteilung keine diskrete Verteilung sondern eine kontinuierliche Verteilung ist. Vereinfacht ausgedrückt, wenn wir unsere bisherige Herleitung von Wahrscheinlichkeiten nehmen, dann haben wir im Unterschied zur Binomialverteilung bei der Normalverteilung unendlich viele Ereignisse (=Werte) zur Verfügung. Alle werte zwischen $-\infty$ und $\infty$ sind möglich. Dementsprechend wenn wir die Wahrscheinlichkeit für einen einzelnen Wert nach $\frac{1}{\text{Anzahl der Möglichkeiten}}$ berechnen erhalten wir $P(X) = \frac{1}{\infty} = 0$. Daher macht es im Fall einer kontinuierlichen Verteilung wenig Sinn von der Wahrscheinlichkeit für einen einzelnen Wert zu sprechen. Wahrscheinlichkeiten können in diesem Fall immer nur für bestimmte Bereiche berechnet werden.
+
+```{r}
+#| label: fig-stats-dist-ndist3
+#| fig-cap: "Dichtefunktion der Normalverteilung und ein gelb ausgezeichneter Bereich"
+ 
+dnorm_plot() +
+  geom_ribbon(data = tibble(x = seq(0,1,length.out=50),p = dnorm(x)),aes(ymin=0,ymax=p),
+              alpha = .5, fill = 'yellow') +
+  scale_x_continuous(breaks = c(-2,0,1,2),
+                     labels = c('-2', 'a','b',2))
+```
+
+In @fig-stats-dist-ndist3 ist ein Bereich gelb ausgezeichnet. Für diesen Bereich kann nun die Wahrscheinlichkeit, die Fläche unter der Kurve, berechnet werden. Wenn wir Fläche unter der Kurve hören, dann wissen natürlich sofort das das Integral der Funktion gemeint ist. Daher berechnet sich die Wahrscheinlichkeitt für ein Intervall $[a,b]$
+
+\begin{equation*}
+P(a \leq X \leq b) = \int_{a}^b f(x|\mu,\sigma^2)dx
+\end{equation*}
+
+Die Standardabweichung $\sigma$ (Wurzel der Varianz) eignet sich , die Dichtfunktion in verschiedene Intervalle um $\mu$ herum mit bestimmten Wahrscheinlichkeiten zu unterteilen. Es gelten die folgenden Zuweisungen(siehe @tbl-stats-dist-sigma-int):
+
+| $x \in$ |  P  |
+| ----  | ---- |
+|$[\mu-\sigma,\mu+\sigma]$| 0.682 |
+|$[\mu-2\sigma,\mu + 2\sigma]$| 0.955 |
+|$[\mu-3\sigma,\mu + 3\sigma]$| 0.997 |
+
+: Wahrscheinlichkeiten für verschiedene Intervalle um $\mu$ in Abhängigkeit von $\sigma$ {#tbl-stats-dist-sigma-int}
+
+Übertragen auf den Dichtegraphen folgt (siehe @fig-stats-dist-sigma-int):
+
+```{r}
+#| fig-cap: Dichtefunktion von $\mathcal{N}(\mu,\sigma^2)$
+#| label: fig-stats-dist-sigma-int
+
+x <- seq(-4, 4, 0.01)
+sigma <- 1.3
+mu <- 0
+p <- dnorm(x, mean = mu, sd = sigma)
+df <- data.frame(x, p) 
+lab_dat <- tibble(x = c(-3,-2,-1,1,2,3)*sigma, p = 0.05, 
+                  labels = c(bquote(-3~sigma),bquote(-2~sigma), bquote(-sigma),
+                             'sigma',bquote(2~sigma),bquote(3~sigma)))
+ggplot(df, aes(x,p, ymin = 0, ymax = p)) +
+#  geom_ribbon(aes(ymin = 0, ymax = p), fill = 'red', alpha=.3) +
+  geom_ribbon(data = tibble(x = seq(-1*sigma,1*sigma,0.01), p = dnorm(x, mu, sigma)), fill = 'green', alpha = .3) +
+  geom_ribbon(data = tibble(x = seq(-2*sigma,-1*sigma,0.01), p = dnorm(x, mu, sigma)), fill = 'magenta', alpha = .3) +
+  geom_ribbon(data = tibble(x = seq(1*sigma,2*sigma,0.01), p = dnorm(x, mu, sigma)), fill = 'magenta', alpha = .3) +
+  geom_ribbon(data = tibble(x = seq(2*sigma,3*sigma,0.01), p = dnorm(x, mu, sigma)), fill = 'blue', alpha = .3) +
+  geom_ribbon(data = tibble(x = seq(-3*sigma,-2*sigma,0.01), p = dnorm(x, mu, sigma)), fill = 'blue', alpha = .3) +
+  geom_line() + 
+  geom_label(data = lab_dat, aes(x = x, label = labels), parse = T) +
+  scale_x_continuous(breaks=0, labels = expression(mu)) +
+  labs(x = 'Werte', y = 'Dichte') 
+```
+
+Wie in @tbl-stats-dist-sigma-int zu sehen ist, hat der Bereich $[-2\sigma, 2\sigma]$ eine Wahrscheinlichkeit von etwas über $0.95$. Daher, wenn ich einen Bereich um den Erwartungswert $\mu$ auszeichnen möchte, der genau eine Wahrscheinlichkeit von $0.95$ hat, dann muss $\sigma$ mit einem kleineren Wert als $2$ multipliziert werden, nämlich $1.96$. Das wird hier noch mal speziell erwähnt, da die Zahl $1.96$ später immer wieder auftaucht. Formal:
+
+$$P(x\in[\mu-1.96\sigma, \mu+1.96\sigma]) = 0.95$$
+
+Anders herum, wenn es darum geht ein Konfidenzintervall abzuschätzen, dann kann die Faustregel, Teststatistik $\pm 2\times$ Standardfehler angewendet werden.
+
+### Die Standardnormalverteilung $\Phi(Z)$
+
+Eine Sonderrolle in der Familie der Normalverteilungen spielt die Standardnormalverteilung\index{Standardnormalverteilung} mit $\mu = 0$ und $\sigma^2 = 1$. Tatsächlich taucht diese so oft aus, dass die Mathematiker ihr ein eigenes Symbol spendiert haben $\Phi(z)$
+
+$$
+\Phi(z) = \mathcal{N}(\mu = 0, \sigma^2 = 1)
+$$
+
+Im Fall der Standardnormalverteilung nehmen @tbl-stats-dist-sigma-int und @fig-stats-dist-sigma-int besonders einfache Formen an da die Intervalle jeweils $[-1,1]$, $[-2,2]$ und $[-3,3]$ sind (siehe @fig-stats-dist-phi-int).
+
+```{r}
+#| fig-cap: "Dichtefunktion der Standardnormalverteilung $\\phi(x)$ mit $\\mu=0$ und $\\sigma^2=1$"
+#| label: fig-stats-dist-phi-int
+
+x <- seq(-3, 3, 0.01)
+sigma <- 1
+mu <- 0
+p <- dnorm(x, mean = mu, sd = sigma)
+df <- data.frame(x, p) 
+lab_dat <- tibble(x = c(-3,-2,-1,1,2,3)*sigma, p = 0.05, 
+                  labels = c(bquote(-3~sigma),bquote(-2~sigma), bquote(-sigma),
+                             'sigma',bquote(2~sigma),bquote(3~sigma)))
+ggplot(df, aes(x,p, ymin = 0, ymax = p)) +
+#  geom_ribbon(aes(ymin = 0, ymax = p), fill = 'red', alpha=.3) +
+  geom_ribbon(data = tibble(x = seq(-1*sigma,1*sigma,0.01), p = dnorm(x, mu, sigma)), fill = 'green', alpha = .3) +
+  geom_ribbon(data = tibble(x = seq(-2*sigma,-1*sigma,0.01), p = dnorm(x, mu, sigma)), fill = 'magenta', alpha = .3) +
+  geom_ribbon(data = tibble(x = seq(1*sigma,2*sigma,0.01), p = dnorm(x, mu, sigma)), fill = 'magenta', alpha = .3) +
+  geom_ribbon(data = tibble(x = seq(2*sigma,3*sigma,0.01), p = dnorm(x, mu, sigma)), fill = 'blue', alpha = .3) +
+  geom_ribbon(data = tibble(x = seq(-3*sigma,-2*sigma,0.01), p = dnorm(x, mu, sigma)), fill = 'blue', alpha = .3) +
+  geom_line(size=2) + 
+  geom_label(data = lab_dat, aes(x = x, label = labels), parse = T) +
+  scale_x_continuous(breaks = -3:3) +
+  labs(x = 'Werte', y = 'Dichte') 
+```
+
+### z-Transformation
+
+Jede beliebiege Normalverteilung $\mathcal{N}(\mu,\sigma^2)$ kann mittels einer Transformation auf die Standardnormalverteilung $\mathcal{N}(0,1)$ abgebildet werden. Die Transformation wird als z-Transformation\index{z-Transformation} bezeichnet und hat die folgende Form:
+
+\begin{equation}
+Z = \frac{X - \mu_X}{\sigma_X}
+\label{eq-z-transformation}
+\end{equation}
+
+D.h. der Mittelwert der Verteilung von $X$, $\mu_x$ wird von X abgezogen und die Differenz wird durch die Standardabweichung der Population $\sigma_X$ geteilt. Die Zufallsvariable $Z$ ist dann Standardnormalverteilt $Z \sim Phi(z)$.
+
+Die Umkehrfunktion der z-Transformation berechnet sich nach:
+
+\begin{equation}
+X = \mu_X + z \sigma_X
+\label{eq-z-invtransformation}
+\end{equation}
+
+Mittels der z-Transformation kann z.B. ein Intervall um eine beliebige, normalverteilte Zufallsvariable $X$ mit einer bestimmten Wahrscheinlichkeit erstellt werden. Möchte ich zum Beispiel ein Intervall $[A,B]$ mit der Wahrscheinlichkeit $P(X \in [A,B]) = 0.95$ ermitteln. Dann kann ich die z-Transformation folgendermaßen verwenden:
+
+Wir suchen das Interval $[A,B]$ in dem einer normalverteilten Zufallsvariable $X$ mit einer bestimmten Wahrscheinlichkeit $p$ enthalten ist. Formal
+
+\begin{equation*}
+P(A \leq X \leq B) = p
+\end{equation*}
+
+Jetzt wende wir auf die Werte in der ersten Klammer die z-Transformation an.
+
+\begin{equation*}
+P(A \leq X \leq B) = P(\frac{A-\mu_x}{\sigma_x} \leq \frac{X-\mu_x}{\sigma_x} \leq \frac{B-\mu_X}{\sigma_X}) 
+\end{equation*}
+
+Definieren wir uns noch zwei neue Hilfsgrenzen $A^* := \frac{A-\mu_x}{\sigma_x}$ und $B^* := \frac{B-\mu_x}{\sigma}$ und erhalten:
+
+\begin{equation*}
+P(A \leq X \leq B) = P\left(A^* \leq \frac{X-\mu_x}{\sigma_x} = B^*\right)
+\end{equation*}
+
+Der Term in der Mitte folgt nun einer Standardnormalverteilung. Die Standardnormalverteilung ist symmetrisch um den Nullpunkt herum. Daher können wir die Quartilfunktion der Standardnormalverteilung verwenden und benötigen nur linke Grenze $A^*$ da die rechte Grenze den gleichen Wert $\times (-1)$ hat.
+
+Setzen wir nun unser $p = 0.95$, d.h. wir suchen ein Intervall mit einer Wahrscheinlichkeit von 95%. In @fig-stats-dist-phi-01 haben wir links $0.025$ abgeschnitten um die Grenzen unter der Standardnormalverteilung zu ermitteln, da $2 \times 0.025 = 0.05 = 1 - 0.95$. 
+
+```{r}
+#| label: fig-stats-dist-phi-01
+#| fig-cap: "Quartilfunktion der Standardnormalverteilung."
+
+tibble(x = seq(0, 1, length.out = 100), y = qnorm(x)) |> 
+  ggplot(aes(x,y)) +
+  geom_vline(xintercept = 0.025, color = 'red', linetype = 'dashed') +
+  geom_line() +
+  labs(x = 'Wahrscheinlichkeit',  y = 'Werte')
+```
+
+Wir erhalten den Wert $-1.96$ für $A^*$ und dementsprechend $1.96$ für $B^*$. Eingesetzt und zurück transformiert erhalten wir.
+
+\begin{align*}
+P\left(-1.96 \leq \frac{X-\mu_X}{\sigma} \leq 1.96\right) &= P(-1.96\sigma \leq X-\mu_X \leq 1.96\sigma) \\
+&= P(X -1.96\sigma \leq \mu_X \leq X + 1.96\sigma)
+\end{align*}
+
+Damit erhalten wir das gewünschte Intervall, das auch noch ein Konfidenzintervall $\mu$ ist. Solange wir keinen Datenpunkt für $X$ gesammelt haben, können wir hier über Wahrscheinlichkeiten reden. Die beiden Grenzen des Konfidenzintervalls sind ebenfalls Zufallsvariablen. Sobald wir aber einen Datenpunkt gesammelt haben, also aus dem $X$ ein $x$ wird, dann ist alle Zufälligkeit weg und das Konfidenzintervall beschreibt nicht die Wahrscheinlichkeit mit der $\mu$ enthalten ist. Diese Wahrscheinlichkeit ist entweder $0$ oder $1$.
+
+### Normalverteilung in `R`
+
+Dem üblichen Muster folgend haben die Funktion für die Dichtefunktion, die Verteilungsfunktion, die Quartilfunktion und Zufallszahlen in `R` die Namen `dnorm()`, `pnorm()`, `qnorm()` und `rnorm()`. Um zehn Zufallszahlen aus der Normalverteilung mit $\mu = 2$ und $\sigma = 1.2$ zu ziehen verwenden wir.
+
+```{r}
+#| echo: true
+
+rnorm(10, mean = 2, sd = 1.25)
+```
+
+
+### Zentraler Grenzwertsatz 
+
+Die Normalverteilung spielt in der Wahrscheinlichkeitstheorie und der Statistik aus verschiedenen Gründen eine Spezialrolle. Ein Grund dafür ist der sogenannte Zentrale Grenzwertsatz, den wir hier nicht beweisen sondern nur kurz diskutieren.
+
+::: {#prp-central-limit}
+## Zentraler Grenzwertsatz
+
+Seien $X_1, X_2, \ldots, X_n$ n unabhängige, gleichverteilte Zufallsvariablen mit $E[X_i]=\mu$ und $Var[X_i]=\sigma^2$ endlich. 
+$$
+ \lim_{n\to\infty}\frac{\bar{x} - \mu}{\frac{\sigma}{\sqrt{n}}}\ \rightarrow\ \mathcal{N}(\mu=0,\sigma^2=1)
+$$
+:::
+
+In Worten besagt der Zentrale Grenzwertsatz, dass egal welche Ursprungsform die Verteilung einer Zufallsvariablen $X$ hat, wenn die Stichprobengröße gegen unendlich geht, die konvergiert die Differenz des Stichprobenmittelwerts und des Mittelwert der Verteilung geteilt durch den Stichprobenstandardfehler gegen die Standardnormalverteilung. Grenzwertsätz sind manchmal etwas schwierig zu interpretieren, da hier noch keine Aussage gemacht wird, wie groß die Stichprobe sein muss, damit diese Abschätzung valide ist. In der Praxis wird oft ab einer *gefühlt* großen Stichproben diese Abschätzung als zulässig angesehen. 
+
+In @fig-stats-dist-cltsim sind die Verteilungen drei Simulationen von binomialverteilten Zufallsstichproben der Größe $n = \{5, 30, 50\}$ abgebildet. Jede Simulation ist $400$ durchgeführt worden.
+
+```{r}
+#| label: fig-stats-dist-cltsim
+#| fig-cap: "Simulation von derVerteilung von Mittelwerten aus binomialverteilten Zufallsstichproben mit $n = \\{5, 30, 50\\}$ und der Standardnormalverteilung."
+
+foo <- function(n_sim = 400, n = 30, k = 10, p = 0.5) tibble(
+  x = n,
+  y = replicate(n_sim, mean(rbinom(n, k, p))))
+d_b <- purrr::list_rbind(purrr::map(c(5,30,50), \(x) foo(n = x)))
+d_b <- d_b |> dplyr::mutate(z = (y - 5)/sqrt(10*0.25/x))
+omega <- tibble(z = seq(min(d_b$z), max(d_b$z),length.out=100),
+                y = dnorm(z))
+ggplot(d_b, aes(z)) + 
+  geom_histogram(aes(z,after_stat(density)), bins=24) +
+  geom_line(data = omega, aes(y = y), color='red') +
+  facet_grid(~x)
+```
+
+Wir sehen, dass bei einer Stichprobengröße von $n = 30$ die Standardnormalverteilung schon eine passende Nährung der Stichprobenverteilung liefert. 
+
+## $\chi^2$-Verteilung
+
+Als Nächstes lernen wir die $\chi^2$-Verteilung kennen. Die $\chi^2$-Verteilung hat Gegensatz zur Normalverteilung einen rein positiven Definitionsbereich. D.h. die $chi^2$-Verteilung ist nur auf positiven Werten definiert bzw. hat eine Dichte $>0$. Die $\chi^2$-Verteilung wird über einen Parameter den Freiheitsgrade $df$ parameterisiert. D.h. wie auch die Normalverteilung handelt es sich bei der $\chi^2$-Verteilung um eine Familien von Verteilungen. In @fig-stats-dist-chisq sind verschiedene $\chi^2$-Verteilungen für die Freiheitsgrade $df = \{1,3,5\}$ abgebildet.
+
+```{r}
+#| fig-cap: "Beispiele für verschiedene Dichtefunktion der $\\chi^2$-Verteilung."
+#| label: fig-stats-dist-chisq
+
+chi_dist <- tibble(
+  x = seq(0, 10, length.out=n_fig_pts),
+  d1 = dchisq(x,1),
+  d2 = dchisq(x,3),
+  d3 = dchisq(x,5)
+) %>% tidyr::pivot_longer(-x, names_to='dist', values_to='v')
+ggplot(chi_dist, aes(x,v,fill=dist, ymin=0, ymax=v)) +
+  geom_ribbon(alpha=0.3) +
+  geom_line() + 
+  scale_fill_discrete("Verteilungen",
+                      breaks = c('d1', 'd2', 'd3'),
+                      labels = c(expression(df==1),
+                                 expression(df==3),
+                                 expression(df==5))) +
+  labs(x = 'Werte', y = 'Dichte') 
+```
+
+Wie wir in @fig-stats-dist-chisq erkennen können, ändert die $\chi^2$-Verteilung in Abhängigkeit von den Freiheitsgraden ihre Form relativ stark. Mit zunehmenden Freiheitsgeraden, ähnelt die Form allerdings immer mehr derjenigen einer Normalverteilung. In @fig-stats-dist-chisqnorm sind einer $\chi^2$-Verteilung mit $df = 30$ und einer Normalverteilung mit $\mu = 30, \sigma^2 = 60$ abgebildet.
+
+```{r}
+#| fig-cap: "Vergleich der Dichten für einer $\\chi^2$-Verteilung mit $df = 30$ und einer Normalverteilung mit $\\mu=30, \\sigma^2=60$"
+#| label: fig-stats-dist-chisqnorm
+x <- seq(5, 55, length.out=100)
+df <- tibble(x, p_c = dchisq(x, 30), p_n = dnorm(x, 30, sqrt(60))) |> 
+  tidyr::pivot_longer(cols=c(p_c,p_n), names_to='dist', values_to='p')
+ggplot(df, aes(x,p, fill=dist)) + 
+  geom_line(color='black') +
+  geom_ribbon(aes(ymin=0,ymax=p), alpha=.5) +
+  scale_fill_discrete('Verteilung',labels = c(
+    expression(chi[30]^2),
+    expression(paste('Normal ', mu==30)))) +
+  labs(x = 'Werte', y = 'Dichte')
+```
+
+Wir können erkennen, dass sich die Verteilungen schon relativ gut ähneln, wobei die $\chi^2$-Verteilung nicht vollständig symmetrisch ist.
+
+Der $\chi^2$-Test tritt oft im Zusammenhang mit Testungen von Varianzen auf. Die Herleitung der $\chi^2$-Verteilung stammt tatsächlich aus der Normalverteilung, da die Summe von $n$ quadrierten, standardnormalverteilten Variablen einer $\chi^2$-Verteilung mit $n$ Freiheitgraden folgt.
+
+\begin{equation*}
+Q = \sum_{i=1}^n X_i^2 \sim \chi^2(n \text{ Freiheitsgraden})
+\end{equation*}
+
+Der Erwartungswert einer $\chi^2$-verteilten Zufallsvariable mit $df = k$ Freiheitsgraden ist $X$ ist $E[X] = k$ mit einer Varianz $Var(X) = 2k$.
+
+### $\chi^2$-Verteilung in `R`
+
+Dem üblichen Muster folgend heißen die Funktion für die $\chi^2$-Verteilung in `R` `dchisq()`, `pchisq()`, `qchisq()` und `rchisq()`. Um zehn Zufallszahlen aus der $\chi^2$-Verteilung mit $df = 10$ zu ziehen verwenden wir.
+
+```{r}
+#| echo: true
+
+rchisq(10, 10)
+```
+
+## t-Verteilung
+
+Die t-Verteilung ist in ihrem Aussehen der Normalverteilung sehr ähnlich. Bei der t-Verteilung handelt sich ebenfalls um eine symmetrische Verteilung, die allerdings immer den Erwartungswert $E[X] = 0$. Die Form der t-Verteilung wird über einen Parameter, die Freiheitsgrade $df$, bestimmt. Die Freiheitsgrade beeinflussen dabei wie stark die Flanken der Verteilung abfallen. In @fig-stats-dist-t-dist-01 sind die t-Verteilungen mit den Freiheitsgraden $df = \{1, 3, 10\}$ abgebildet.
+
+```{r}
+#| fig-cap: "Beispiel für verschiedene Dichtefunktionen der t-Verteilung"
+#| label: fig-stats-dist-t-dist-01
+
+n_fig_pts <- 130
+t_dist <- tibble(
+  x = seq(-5,5,length.out=n_fig_pts),
+  t1 = dt(x,1),
+  t3 = dt(x,3),
+  t10 = dt(x,10)
+) %>% tidyr::pivot_longer(-x, names_to='dist', values_to='v')
+ggplot(t_dist, aes(x,v,fill=dist, ymin=0, ymax=v)) +
+  geom_ribbon(alpha=0.3) +
+  geom_line() + 
+  scale_fill_discrete("Verteilungen",
+                      breaks = c('t1', 't3', 't10'),
+                      labels = c(expression(df==1),
+                                 expression(df==3),
+                                 expression(df==10))) +
+  labs(x = 'Werte', y = 'Dichte') 
+```
+
+Wir können erkennen, dass die t-Verteilung mit $df = 1$ mehr Wahrscheinlichkeitsmasse in den Enden hat als die Verteilung mit $df = 10$. Man bezeichnet sie mit die Verteilung hat schwerer Enden was ausdrückt, dass die Varianz der Verteilung größer ist. 
+
+Die t-Verteilung wird oft verwendet wenn neben dem Erwartungswert $\mu$ auch die Varianz $\sigma^2$ anhand der Stichprobe bestimmt wird. Formal ist die t-Verteilung definiert als der Quotient einer Standardnormalverteilten und einer $\chi^2$-verteilten Zufallsvariable.
+
+\begin{equation*}
+t_{df} = \frac{Z}{\sqrt{\chi^2/df}}
+\end{equation*}
+
+In @fig-stats-dist-tnorm sind eine Standarnormalverteilung $\Phi(x)$ und eine t-Verteilung mit $df = 3$ abgebildet.
+
+```{r}
+#| fig-cap: "Vergleich der Standardnormalverteilung (rot) mit einer t-Verteilung mit $df = 3$ (grün)."
+#| label: fig-stats-dist-tnorm
+
+df_tn <- tibble(
+  x = seq(-5,5,length.out=100),
+  t = dt(x, 3),
+  n = dnorm(x)
+) |> pivot_longer(c(t,n), names_to = 'dist', values_to = 'p')
+ggplot(df_tn, aes(x,p,fill=dist)) +
+  geom_ribbon(aes(ymin=0, ymax=p), alpha=.5) +
+  geom_line() +
+  scale_fill_discrete('Verteilung',
+                      labels=c(
+                        expression(Phi(X)),
+                        expression(t[3])
+                      )) +
+  labs(x = 'Werte', y = 'Dichte')
+```
+
+Wir können wiederum erkennen, dass die t-Verteilung schwerere Enden als die Standardnormalverteilung hat.
+
+### $t$-Verteilung in `R`
+
+Dem üblichen Muster folgend heißen die Funktion für die $t$-Verteilung in `R` `dt()`, `pt()`, `qt()` und `rt()`. Um zehn Zufallszahlen aus der $t$-Verteilung mit $df = 10$ zu ziehen verwenden wir.
+
+```{r}
+#| echo: true
+
+rt(10, 10)
+```
+
+## F-Verteilung
+
+Eine weitere Verteilung die uns oft begegnen wird, ist die F-Verteilung. Ähnlich wie die $\chi^2$-Verteilung, hat die $F$-Verteilung auch nur einen positiven Definitionsbereich. Die Familie der $F$-Verteilungen ist mittels zweier Parameter spezifiziert $F(m,n)$. Diese werden als ebenfalls als Freiheitsgrade $m = df_1$ und $n = df_2$ bezeichnet.
+
+```{r}
+#| label: fig-stats-dist-fdistex
+#| fig-cap: "Beispiele für verschiedene Dichtefunktion der F-Verteilung."
+
+n_fig_pts <- 200
+chi_dist <- tibble(
+  x = seq(0, 10, length.out=n_fig_pts),
+  d1 = df(x,1,1),
+  d2 = df(x,3,5),
+  d3 = df(x,10,10)
+) %>% tidyr::pivot_longer(-x, names_to='dist', values_to='v')
+ggplot(chi_dist, aes(x,v,fill=dist, ymin=0, ymax=v)) +
+  geom_ribbon(alpha=0.3) +
+  geom_line() + 
+  scale_fill_discrete("Verteilungen",
+                      breaks = c('d1', 'd2', 'd3'),
+                      labels = c(expression(paste(df[1],"=1,",df[2],"=1")),
+                                 expression(paste(df[1],"=3,",df[2],"=5")),
+                                 expression(paste(df[1],"=10,",df[2],"=10")))) +
+  labs(x = 'Werte', y = 'Dichte') 
+```
+
+Wie wir in @fig-stats-dist-fdistex sehen, ändert sich die Form der $F$-Verteilung relativ stark in Abhängigkeit von den Freiheitsgraden. Formal berechnet sich die F-Verteilung als das Verhältnis zweier $\chi^2$-Verteilungen mit Freiheitsgraden $\text{df}_1$ und $\text{df}_2$. 
+
+\begin{equation*}
+F_{df_1,df_2} = \frac{\chi_{df_1}^2/df_1}{\chi_{df_2}^2/df_2}
+\end{equation*}
+
+Der Erwartungswert berechnet sich nach $E[F_{df_1,df_2}] = \frac{df_2}{df_2-2}$. Wenn eine Zufallsvariable $X$ einer $t$-Verteilung mit $n$ Freiheitgraden folgt, dann folgt $X^2$ einer $F$-Verteilung mit $df_1 = 1, df_2 = n$ Freiheitsgraden.
+
+\begin{equation*}
+X \sim t_{df} \Rightarrow X^2 \sim F(1,df)
+\end{equation*}
+
+### $F$-Verteilung in `R`
+
+Wenig überraschend heißen die Funktion für die $F$-Verteilung in `R` `df()`, `pf()`, `qf()` und `rf()`. Daher können wir zum Beispiel die $0.95$-Quantile für die $F$-Verteilung mit $df_1 = 2, df_2 = 30$ folgendermaßen berechnen.
+
+```{r}
+#| echo: true
+
+qf(0.95, 2, 3)
+```
+
+## Gleichverteilung
+
+Schauen wir uns noch als Einschub die Gleichverteilung an. Die Gleichverteilung hat eine untere $a$ und eine obere Grenze $b$ zwischen denen die Wahrscheinlichkeit der Werte konstant ist, während Wert $P(X) = 0$ für $X < a$ und $X > b$ ist. Die Definition der Dichtefunktion ist:
+
+\begin{equation*}
+  P(X) =
+  \begin{cases}
+    \frac{1}{b-a} & a < X < b \\
+    0 & \text{ sonst}
+  \end{cases}
+\end{equation*}
+
+Graphisch sieht dies zum Beispiel für $a = 1$ und $b = 3$ wie folgt aus.
+
+```{r}
+#| fig-cap: "Dichtefunktion einer Gleichverteilung mit $a = 1$ und $b = 3$."
+#| label: stats-dist-uniform-dist
+
+tibble(x = seq(0,4,0.01), y = dunif(x,1,3)) |> 
+  ggplot(aes(x,y)) +
+  geom_line() +
+  labs(x = 'Werte', y = 'Dichte')
+```
+
+### Gleichverteilung in `R`
+
+Die zu der Gleichverteilung gehörenden `R` Funktionen heißen `dunif()`, `punif()`, `qunif()` und `runif()`.
+
+## Zusammenfassung
+
+Insgesamt gehen alle Verteilungen mit denen wir uns beschäftigen auf die Normalverteilung zurück. Das betont noch einmal die zentrale Rolle der Normalverteilung in der Statistik (siehe @fig-stats-dist-distributions).
+
+```{mermaid}
+%%| fig-cap: "Zusammenhang der verschiedenen Verteilungen"
+%%| label: fig-stats-dist-distributions
+
+erDiagram
+    Normalverteilung {
+        mu Mittelwert
+        sigma Standardabweichung
+    }
+    Chiquadrat ||--o{ F-Verteilung : erzeugt
+    Chiquadrat {
+        df Freiheitsgrade
+    }
+    Binomialverteilung ||..o{ Standardnormalverteilung: "Mittelwert ZGS" 
+    F-Verteilung {
+        df1 Freiheitsgrade
+        df2 Freiheitsgrade
+    }
+    Normalverteilung ||--o{ Standardnormalverteilung : "erzeugt"
+    Standardnormalverteilung ||--o{ t-Verteilung : erzeugt
+    Standardnormalverteilung ||--o{ Chiquadrat : erzeugt
+    Chiquadrat ||--|{ t-Verteilung : erzeugt
+    t-Verteilung {
+        df Freiheitsgrade
+    }
+    Binomialverteilung {
+        p Wahrscheinlichkeit
+        n Wiederholungen
+    }
+   
+```
+
+In den folgenden Ausführungen werden wir sehen, dass der Großteil der Statistik mit der wir uns auseinandersetzen darin besteht Werte anhand einer Stichprobe zu berechnen die wir mit uns bekannten theoretischen Verteilungen in Beziehung setzen können. Im Fall des Kleine Welt Problems konnten wir die Eigenschaften der auf der Stichprobe berechneten Werte vollständig untersuchen, da wir Kenntnis über die gesamte Population hatten. Dies ist in der Regel nicht der Fall. Um trotzdem zu rationalen Entscheidungen und Erkenntnissen über eine Population zu kommen versuchen wir daher zwischen unserer beobachteten Stichprobe und bekannten theoretischen Verteilung eine Beziehung herzuleiten. Dies geschieht in den meisten Fällen durch bestimmte Annahmen.
+

@@ -1,0 +1,303 @@
+# Ablaufkontrolle 
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+source('_common.R')
+knitr::opts_chunk$set(
+  prompt = TRUE,
+  echo = TRUE
+)
+```
+
+Nachdem wir die Grunddatentypen in `R` kennengelernt haben schauen wir uns nun drei zentrale Konstrukte in der Programmierung an. Das sind Vergleiche und darauf aufbauend Bedingte Anweisungen und Verzweigungen und Schleifen. Fangen wir mit den Vergleichen an.
+
+## Vergleiche 
+
+Bei Vergleichen wird zunächst einmal genau das gemacht, was im Namen drinsteht, es werden Sachen miteinander verglichen. Und wenn ich Sachen schreibe dann vor allem erste einmal Zahlen. Dann kennen wir auch schon die Grundoperatoren noch aus der Schule (siehe @tbl-comparisons).
+
+| Operator | Vergleich |
+| --- | --- |
+| $<$ | kleiner |
+| $>$ | größer |
+| $<=$ | kleiner oder gleich |
+| $>=$ | größer oder gleich |
+| $==$ | gleich |
+
+: Vergleichsoperatoren {#tbl-comparisons}
+
+Der einzige der etwas ungewohnt erscheinen dürfte ist der Vergleich auf Gleichheit `==`, aber das ist wieder nur Syntax. In `R` ist das Ergebnis eines Vergleichs ein logischer Wert.
+
+```{r}
+#| echo: true
+
+3 < 6
+6 < 3
+6 == 6
+```
+
+Die Vergleichsoperator arbeiten dabei auch mit Vektoren.
+
+```{r}
+#| echo: true
+v_1 <- 1:6
+v_2 <- 2:7
+v_1 < 3
+3 < v_1
+v_1 < v_2
+```
+
+Wenn beide Objekte Vektoren sind, dann wird der Vergleich immer Element für Element durchgeführt. In beiden Fällen erhalten wir einen Vektor der entsprechenden Länge mit logischen Elementen.
+
+Zusammen mit dem subsetting operator `[]` können wir mit relativ wenig Aufwand Wert die eine bestimmte Bedingung erfüllt aus einem Vektor extrahieren. Zum Beispiel aus dem Vektor `v_1` alle Werte die kleiner $4$ sind.
+
+```{r}
+#| echo: true
+
+v_1[v_1 < 4]
+```
+
+Warum hat das funktioniert? Zuerst wird der Vergleich `v_1 < 4` von `R` durchgeführt, der Rückgabewert dieser Operation ist ein Vektor mit logischen Werten entsprechend des Vergleichs. Der Vektor hat die Länge von `v_1`, kann daher direkt dazu benutzt werden Elemente aus `v_1` die die Bedingung erfüllen zu extrahieren.
+
+Da wir logische Wert mit den logischen Operatoren verknüpfen können, ermöglicht dies auch komplizierte Vergleiche durchzuführe.
+
+```{r}
+#| echo: true
+
+v_1[v_1 < 3 | v_1 > 4]
+v_1[v_1 >= 3 & v_1 <= 4]
+```
+
+Die Vergleiche können wir auch gleich verwenden um bedingte Anweisungen zu verstehen.
+
+## Bedingte Anweisungen und Verzweigungen 
+
+In @fig-r-flow-ifelse ist der Grundgerüst einer bedingten Anweisungen bzw. Verzweigung im Code dargestellt.
+
+```{mermaid}
+%%| label: fig-r-flow-ifelse
+%%| fig-cap: "Bedingte Anweisungen."
+
+flowchart
+A[condition] --> B[TRUE]
+A[condition] --> C[FALSE]
+B --> D[Ausdruck A]
+C --> E[Ausdruck B]
+```
+
+Wir haben einen Ausdruck `condition` der entweder `WAHR` oder `FALSCH` sein kann, und entsprechend wird entweder `Ausdruck A` oder `Ausdruck B` ausgeführt. In `condition` wird überlicherweise in irgendeiner Form ein Vergleich vorgenommen.
+
+Syntaktisch wird die Bedingte Anweisung in `R` folgendermaßen spezifiziert.
+
+```{r}
+#| eval: false
+#| echo: true
+
+if (condition) { # <1>
+  AusdruckA      # <2>
+} else {         # 
+  AusdruckB      # <3> 
+}
+
+```
+
+1. Zunächst kommt das Schlüsselwort `if` gefolgt von einer Klammer mit dem Ausdruck `condition` der zu einem logischen Wert (`true,false`) evaluiert wird.
+2. Wenn `condition` `TRUE` ist, wird der `AusdruckA` innerhalb der geschweiften Klammern ausgeführt.
+3. Wenn `condition` `FALSE` ist, wird der `else` Zweig, bzw. der `AusdruckB` zwischen den geschweiften Klammern nach `else` ausgeführt.
+
+Schauen wir uns ein einfaches Beispiel an:
+
+```{r}
+#| echo: true
+
+m <- 0
+a <- 10
+b <- 20
+if (a < b) {
+  m <- 10
+} else {
+  m <- 20
+}
+m
+```
+
+Was passiert hier, der Wert von `m` wird unterschiedlich belegt, je nachdem welche Werte `a` und `b` haben. Mit diesem `ifelse`-Konstrukt können wir daher unterschiedliche Anweisungen in unseren Programmen ausführen lassen, in Abhängigkeit von bestimmten Bedingungen. Wir könnten zum Beispiel unsere eigene Absolutfunktion schreiben.
+
+```{r}
+#| echo: true
+
+my_abs <- function(x) {
+  if (x < 0) {
+    -x
+  } else {
+    x
+  }
+}
+my_abs(3)
+my_abs(0)
+my_abs(-3)
+```
+
+## `for`-Schleifen
+
+Als letztes Programmierkonstrukt kommen jetzt noch Schleifen, eine der Paradedisziplin von Computern, nämlich die gleiche Sache ganz oft hintereinander durchführen.
+
+Die Syntax für eine Schleife in `R` ist wie folgt.
+
+```{r}
+#| eval: false
+#| echo: true
+
+for (item in vector) { # <1>
+  Ausdruck             # <2>
+}
+
+```
+
+1. Als erstes kommt das Schlüsselwort `for` gefolgt von einer Klammer. In der Klammer werden zwei Ausdrücke benötigt. Eine Variable die hier `item` heißt, die als Schleifenzähler fungiert. Der Schleifenzähler durchläuft die Einträge des Vektors `vector` einen nach dem anderen.
+2. Jedes Mal wenn `item` mit einem neuen Wert belegt worden ist, wird `Ausdruck` zwischen den geschweiften Klammer `{}` ausgeführt. Der jeweilige aktuelle Wert von `item` steht im Ausdruck zur Verfügung.
+
+Hört sich komplizierter an als es ist. Ein einfaches Beispiel:
+
+```{r}
+#| echo: true
+
+for (i in 1:4) {
+  cat('Ausdruck wird ausgeführt\n')
+  cat('i =', i, '\n')
+}
+```
+
+Wir verwenden in dem Code die `cat()` Funktion um die Wert auf der Kommandozeile auszugeben. Das Zeichen `\n` ist lediglich ein Sonderzeichen für neue Zeile. Was passiert in dem Code. Wir haben einen Vektor mit den Elementen von $1,2,3,4$. Die Variable `item` hat jetzt den Namen `i`. `i` wird Element für Element mit den Einträgen aus dem Vektor belegt und jedes mal wird der Ausdruck zwischen den Klammern ausgeführt.
+
+Ein wird könnten nun zum Beispiel den Vektor als Index für die Einträge in einen anderen Vektor mit Elementen ansehen und dementsprechend über die Einträge des anderen Vektoren mit `i` iterieren.
+
+```{r}
+#| echo: true
+
+vec <- c('mama','papa','daughter','son') 
+for (i in 1:4) {
+  cat('Ausdruck wird ausgeführt\n')
+  cat('i =', i, ': ', vec[i], '\n')
+}
+```
+
+
+### Ein längeres Beispiel mit `for`
+
+Zum Abschluss schauen wir uns ein Beispiel aus der Statistik an zu Publikationsfilter und welche Auswirkung der Filter auf die Effektstärke hat.
+
+Wir machen führen wiederholte t-Tests aus. Wir gehen davon aus, dass es eine Effektstärke von $D = 0.1$ gibt. Dazu ziehen wir zwei Stichproben der Größe $n$ aus den entsprechenden Normalverteilung die unserer Populationen darstellen. Dann berechnen wir den t-Test und wenn es sich um ein statistisch signifikantes Ergebnis handelt dann speichern wir den Unterschied zwischen den beiden Gruppen. Da es sich um ein Zufallsexperiment handelt, wissen wir vorher nicht, wie viele Vergleiche statistisch signifikant werden und wir speichern müssen, daher erstellen wir einen Ergebnisvektor der gleichen Länge wie oft wir das Experiment durchführen. Wir setzen der Einfachheit halber $n = 10, \delta = 0.1, \sigma = 1, \alpha = 0.05$ (zweiseitig). Dadurch ist der Unterschied zwischen den beiden Stichproben auch direkt als Cohen's D Effektstärke zu interpretieren. Führen wir die Simulation $N_{sim} = 100$ durch. Mit der Funktion `rnorm()` können wir normalverteilte Zufallszahlen ziehen und mit `qt()` können wir den kritischen Wert der t-Verteilung bestimmen. In Code:
+
+```{r}
+#| echo: true
+
+n_sim <- 100
+n <- 10
+mu <- 0
+delta <- 0.1
+sigma <- 1
+df <- 2*n - 2
+kritischer_wert <- qt(0.975, df)
+ergebnis_vektor <- numeric(n_sim)
+for (i in 1:n_sim) {
+  # ziehen der Stichproben
+  stichprobe_a <- rnorm(n, mu, sigma)
+  stichprobe_b <- rnorm(n, delta, sigma)
+  
+  # zwischenwerte berechnen
+  a_bar <- mean(stichprobe_a)
+  b_bar <- mean(stichprobe_b)
+  a_sd <- sd(stichprobe_a)
+  b_sd <- sd(stichprobe_b)
+  
+  # t-Statistik berechnen
+  Delta <- abs(a_bar - b_bar)
+  s_pooled <- sqrt((a_sd**2 + b_sd**2)/2)
+  s_e <- s_pooled * sqrt(2/n)
+  t <- Delta/s_e
+  
+  # überprüfen auf statistische Signifikanz
+  if (t > kritischer_wert) {
+    ergebnis_vektor[i] <- Delta
+  }
+}
+
+statistisch_signifikant <- ergebnis_vektor[ergebnis_vektor > 0]
+D_bar <- mean(statistisch_signifikant)
+D_sd <- sd(statistisch_signifikant)
+cat('Die Effektstärke ist D =', D_bar,'+-', D_sd, '\n')
+```
+
+Als Hausaufgaben versucht das Programm nachzuvollziehen und das Ergebnis zu interpretieren.
+
+## Wiederholungen mit `replicate()`
+
+Eine weitere Möglichkeit `R` eine Gruppe von Anweisungen wiederholt durchführen zu lassen, kann mittels der Funktion `replicate()` erreicht werden. In den meisten Fällen wird `replicate()` verwendet um eine Simulation durchzuführen. D.h. das Beispiel von eben könnte ebenfalls mittels `replicate()` programmiert werden. `replicate()` hat zwei Hauptargumente. Das erste `n` bestimmt die Anzahl der Wiederholungen während das zweite Argument eine Anweisung, in den meisten Fällen eine Funktion ist.
+
+Nehmen wir als Anwendungsfall, dass wir wiederholt Mittelwerte $\bar{x}$ aus einer Zufallsstichprobe erzeugen wollen. Wir ziehen beispielsweise eine Stichprobe von $n = 20$ Werten aus einer Normalverteilung mit den Parametern $\mu = 3, \sigma = .7$. Und wir wollen uns die Stichprobenverteilung der Mittelwerte ansehen. Wir beginnen mit einem einfach proof-of-concept.
+
+```{r}
+#| echo: true
+mu <- 3
+sigma <- 0.7
+n <- 20
+
+x_bar <- mean(rnorm(n, mu, sigma))
+cat('Der beobachtete Mittelwert ist: ', x_bar, '\n')
+```
+
+Okay, funktioniert. Wir wollen diese Anweisung jetzt nicht einmal sondern $100$mal durchführen. Dazu stecken wir sie in eine Funktion (streng genommen brauchen wir das nicht, aber damit es besser generalisiert machen wir hier etwas mehr Aufwand). Die Parameter für die Normalverteilung setzen wir in der Signatur der Funktion als Standardwerte.
+
+```{r}
+#| echo: true
+
+x_bar_func <- function(n = 20, mu = 3, sigma = 0.7) {
+  mean(rnorm(n, mu, sigma))
+}
+```
+
+Wenn wir `x_bar_func()` aufrufen, erhalten wir entsprechend einen zufälligen Mittelwert aus einer Stichrprobe der Größe $n = `r n`$ aus der Normalverteilung $\mathcal{N}(`r mu`, `r sigma`)$.
+
+```{r}
+#| echo: true
+
+x_bar_func()
+```
+
+Diese Funktion können wir nun an `replicate()` als zweiters Argument übergeben mit dem ersten Argument der Anzahl der Wiederholungen. Starten wir erst mal nur mit $N_{sim} = 5$ Wiederholungen, um den Überblick zu behalten. 
+
+```{r}
+#| echo: true
+
+N_sim <- 5
+replicate(N_sim, x_bar_func())
+```
+
+Als Rückgabewert von `x_bar_func()` erhalten wir einen Vektor mit den Rückgabewerten von `x_bar_func()`. Dementsprechend können wir den Rückgabewert an eine Variable zuweisen und können uns zum Beispiel ein Histogramm der Mittelwert erzeugen.
+
+```{r}
+#| echo: true
+
+N_sim <- 100
+x_bar_s <- replicate(N_sim, x_bar_func())
+hist(x_bar_s)
+```
+
+Zusammenfassend, beginnen wir mit der Definition einer Funktion welche die benötigten Werte erzeugt. Diese Funktion übergeben wir an `replicate()` und können so einfach bestimmte Werte generieren.
+
+Der Vollständigkeit halber eine Ausführung mit einer `for`-Schleife.
+
+```{r}
+#| echo: true
+
+x_bar_s2 <- numeric(N_sim)
+for (i in 1:N_sim) {
+  x_bar_s2[i] <- x_bar_func()
+}
+hist(x_bar_s2)
+```
+
+Hier sehen wir, dass der Code nicht viel länger ist, wir aber expliziter uns um die Zuweisung der Ergebnisse kümmern müssen, während dies bei `replicate()` automatisch stattfindet. D.h. wenn wir mit der Schleifenvariable nichts explizit machen müssen/wollen, dann bietet `replicate()` eine Alternative zu `for`-Schleifen.
+

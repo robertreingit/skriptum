@@ -1,0 +1,635 @@
+# Integration von nominalen Variablen 
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+source('_common.R')
+```
+
+
+```{r defs_dummy}
+N <- 30
+set.seed(123)
+height <- tibble::tibble(cm = rnorm(2*N,rep(c(180,167),each=N),10),
+                 gender = factor(rep(c('m','f'),each=N)))
+mu_s <- height |> dplyr::group_by(gender) |> dplyr::summarize(m = mean(cm))
+mu_f <- mu_s |> dplyr::filter(gender == 'f') |> pull() |> round(2) 
+mu_m <- mu_s |> dplyr::filter(gender == 'm') |> pull() |> round(2)
+Delta <- round(mu_m - mu_f, 2)
+N <- 20
+K <- 4
+set.seed(1)
+data <- tibble::tibble(
+  group = gl(K, N, labels = c('A','B','C','D')),
+  rt = rnorm(K * N, mean = rep(seq(500,800,100), each=N), sd = 50)
+)
+```
+
+Bisher haben wir nur kontinuierliche, beziehungsweise metrische, Variablen in unsere lineares Modell aufgenommen. Im Folgenden werden wir sehen, dass wir mit einem kleinem Trick genause nominale Variablen in das Modell integrieren können, ohne dass wir fundamental etwas neues lernen müssen.
+
+## Vergleich von zwei Gruppen
+
+Beginnen wir mit einem einfachen Beispiel. Wir wollen die Unterschiede zwischen Männern und Frauen in Bezug auf die Körpergröße untersuchen. In @fig-mlm-dummy-gender ist ein hypothetischer Datensatz von Körpergrößen von Frauen und Männern abgebildet. Wenig überraschen, da der Datensatz so erstellt wurde, sind Männer im Mittel größer als Frauen.
+
+```{r}
+#| fig-cap: "Simulierte Daten: Verteilung von Körpergrößen nach Geschlecht für Männer (m) und Frauen (f)"
+#| label: fig-mlm-dummy-gender
+
+ggplot(height, aes(gender,cm)) + 
+  see::geom_violindot(size_dots=20, fill_dots='red') +
+  labs(x = 'Gender', y = 'Körpergröße[cm]') 
+```
+
+In @tbl-mlm-dummy-gender ist ein Ausschnit aus den Daten tabellarisch dargestellt. Wenig überraschend, haben wir zwei Datenspalten. In der ersten Spalte stehen die Körpergrößen, während in der zweiten Spalte eine Indikatorvariable steht die entweder den Wert $m$ für Männer oder $f$ für Frauen annimmt.
+
+```{r}
+#| label: tbl-mlm-dummy-gender
+#| tbl-cap: "Ausschnitt aus den Daten."
+
+height[c(1:3,31:33),] |> 
+  knitr::kable(
+    booktabs = T,
+    caption = "Ausschnitt aus den Daten",
+    digits = 1,
+    linesep = ''
+  )
+```
+
+In @tbl-mlm-dummy-gender-desc sind dann auch noch einmal die deskriptiven Statistiken der Körpergrößendaten abgebildet die auch noch einmal den Eindruck aus @fig-mlm-dummy-gender bestätigen.
+
+```{r}
+#| label: tbl-mlm-dummy-gender-desc
+#| tbl-cap: "Deskriptive Statistiken der Körpergrößendaten."
+ 
+x_hat <- height |> dplyr::group_by(gender) |>
+  dplyr::summarize(m = round(mean(cm),1), sd = round(sd(cm),1))
+knitr::kable(x_hat, booktabs=TRUE,
+             caption = "Deskriptive Werte")
+```
+
+Wir müssen jetzt allerdings erst einmal eine kurze Detour nehmen und verstehen, wie nominale Werte in `R` repräsentiert werden.
+
+## Nominale Variablen in `R` (detour)
+
+Nominale Variablen werden in `R` mit einen speziellen Typ repräsentiert dem sogenannten `factor`. Erstellt werden kann ein Faktor mit der `factor()`-Funktion. Die Funktion hat drei wichtige Parameter. Der erste Parameter bezeichnet die Werte, der zweite die möglichen Faktorstufen (`levels`) und der dritte Parameter die dazugehörigen Bezeichnungen (`labels`). Ein einfaches Beispiel sieht dann so aus:
+
+```{r}
+#| echo: true
+gender <- factor(c(0,0,1,1),
+                 levels = c(0,1),
+                 labels = c('m','f'))
+gender
+```
+
+D.h. wir haben einen Datenvektor mit den Elemente $(0,0,1,1)$. Wir spezifizieren die `levels` dementsprechend mit $0$ und $1$ und definieren die dazugehörigen `labels` mit $m$ und $f$. Dabei sind jeweils Vektoren übergeben worden (siehe `c()`). Wenn wir die neue Variable `gender` aufrufen erhalten wird der Datenvektor mit den entsprechenden `labels` ausgegeben und zusätzlich gibt `R` die möglichen `labels` an.
+
+Wenn wir den Parameter `levels` nicht angegeben hätten, dann extrahiert `factor()` die eineindeutigen Werte selbst und führt die Abbidlung auf die `labels` entsprechend der Sortierung aus.
+
+```{r}
+#| echo: true
+gender <- factor(c(0,0,1,1),
+                 labels = c('m','f'))
+gender
+str(gender)
+```
+
+Dabei muss darauf geachtet werden, dass die Abbildung auch tatsächlich diejenige ist, die gewünscht ist.
+
+```{r}
+#| echo: true
+gender <- factor(c(0,0,1,1),
+                 labels = c('f','m'))
+gender
+```
+
+Daher ist es fast immer sinnvoll `labels` und `levels` immer zusammen zu nehmen. Wenn die Parameter nicht angegeben werden, dann führt `factor` die Abbildung wiederum automatisch durch und für die `labels` werden die Datenwerte übernommen. 
+
+```{r}
+#| echo: true
+gender <- factor(c(0,0,1,1))
+gender
+```
+
+::: {.callout-warning}
+Achtung, die Variable `gender` sieht zwar aus wie ein numerischer Vektor, sie ist es aber nicht.
+
+```{r}
+#| echo: true
+
+is.numeric(gender)
+```
+
+Intern wird eine Faktorvariable von `R` zwar als ein numerischer Vektor abgelegt. Aber die "sichtbaren" Werte sind nun die Zeichenketten der `labels`, die daher auch angezeigt werden. Die interne numerische Repräsentation muss auch nicht mehr den ursprünglichen Datenwerten entsprechen.
+
+```{r}
+#| echo: true
+
+as.numeric(gender)
+```
+
+Die Datenwerte waren ursprünglich $(0,1)$ und sind jetzt auf $(1,2)$ abgebildet worden. Erinnert euch an die Eigenschaft von nominalen Variablen. Nominale Variablen sind einfach voneinander unterscheidbare Werte die jedoch in keiner Ordnung stehen.
+:::
+
+Die automatische Konvertierung von `factor()` funktioniert am intuitivsten mit Zeichenkettenvektoren.
+
+```{r}
+#| echo: true
+
+gender <- factor(c('m','f','m','f'))
+gender
+str(gender)
+```
+
+`factor()` ermittelt zunächst die eineindeutigen Werte und sortiert diese dann entsprechend des Typen. In diesem Fall wird die Zeichenkette alphabetisch sortiert. Dann erfolgt die Abbildung der Werte auf die `labels`. Dies führt in diesem Fall dazu, dass die Werte `m` intern den Wert $2$ zugeordnet bekommen, obwohl der erste Wert in den Daten `m` ist. Diese Sortierung der Daten wird später noch einmal von Bedeutung werden.
+
+Die Abfolge der `levels` kann durch eine explizite Angabe der Reihenfolge selbst bestimmt werden.
+
+```{r}
+#| echo: true
+
+gender <- factor(c('m','f','m','f'),
+                 levels = c('m','f'))
+gender
+str(gender)
+gender <- factor(c('m','f','m','f'),
+                 levels = c('f','m'))
+gender
+str(gender)
+```
+
+::: {.callout-tip}
+Im package `forcats` sind eine Reihe von Funktionen hinterlegt, mit denen die Eigenschaften von `factor`-Variablen einfach manipuliert werden können. Zum Beispiel, wenn die Reihenfolge von Faktorstufen geändert werden soll kann die Funktion `fct_relevel()` verwendet.
+
+```{r}
+gender <- factor(c('m','f','m','f'),
+                 levels = c('f','m'))
+gender
+forcats::fct_relevel(gender, 'm')
+```
+
+Schaut euch die ausführliche Dokumentation der Funktionen und die Beispiel an, wenn ihr auf Probleme mit `factor`-Variablen stoßt.
+
+:::
+
+::: {.callout-tip}
+Viele Funktionen in `R`, wie z.B. `lm()`, transformieren Vektoren mit Zeichenketten automatisch in einen `factor()` um. Wird in `lm()` in der Formel beispielsweise `y ~ gender` benutzt und `gender` ist eine Datenspalte die aus den Zeichenketten `c('m','m','f','f')` besteht, dann ruft `lm()` intern die Funktion `factor()` für diese Daten auf und führt dann die Berechnung mit dem Faktor durch.
+
+Dies erleichtert natürlich oft den Umgang mit den Daten, hat aber den Nachteil das immer klar sein muss, dass die automatische Konvertierung auch tatsächlich diejenige ist, dich auch gewünscht ist.
+:::
+
+## Vergleich von zwei Gruppen (continued)
+
+Kommen wir zurück zum Körpergrößenvergleich. Normalerweise würden wir die Unterschiede zwischen den beiden Gruppen mit einem t-Test für unabhängige Stichproben untersuchen. In `R` können wird dies mit der `t.test()`-Funktion durchführen.
+
+```{r}
+#| echo: true
+
+t.test(cm ~ gender, data=height, var.equal=T)
+```
+
+Wir beobachten ein statistisch signifikantes Ergebnis.
+
+Erinnern wir uns noch einmal an die Modellformulierung beim t-Test bei gleich großen Gruppen $(n_w = n_m)$.
+
+\begin{equation}
+\begin{aligned}
+Y_{if} &= \mu_{f} + \epsilon_{if}, \quad \epsilon_{if} \sim \mathcal{N}(0,\sigma^2) \\
+Y_{im} &= \mu_{m} + \epsilon_{im}, \quad \epsilon_{im} \sim \mathcal{N}(0,\sigma^2)
+\end{aligned}
+\label{eq-mlm-dummy-tTest-model}
+\end{equation}
+
+Beide Gruppen sollten normalverteilt sein mit gleicher Varianz $\sigma^2$ und Erwartungswert $\mu_f$ für die weiblichen Teilnehmerinnen und $\mu_m$ für die männlichen Teilnehmer. Die Hypothesen beim t-Test sind
+
+\begin{align*}
+H_0&: \delta = 0 \\
+H_1&: \delta \neq 0
+\end{align*}
+
+D.h. wir gehen unter der $H_0$ Hypothese davon aus, dass kein Unterschied im Mittelwert zwischen den beiden Gruppen besteht. Die dazugehörige Teststatistik ist:
+\begin{equation}
+t = \frac{\bar{y}_m - \bar{y}_w}{\sqrt{\frac{s_m^2 + s_w^2}{2}}\sqrt{\frac{2}{n}}}
+\label{eq-tTest}
+\end{equation}
+
+Unter der $H_0$ folgt die Referenz- bzw. Stichprobenverteilung einer t-Verteilung mit $N - 2$ Freiheitsgraden.
+
+\begin{equation*}
+t \sim t_{df=2n-2}
+\end{equation*}
+
+```{r}
+#| label: fig-mlm-dummy-tDist
+#| fig-cap: "Dichtefunktion der t-Verteilung mit $df=58$"
+
+n_fig_pts <- 100
+t_dist <- tibble::tibble(
+  x = seq(-3,3,length.out=n_fig_pts),
+  t = dt(x,58)
+) 
+ggplot(t_dist, aes(x,t)) +
+  geom_ribbon(aes(ymin=0, ymax=t), alpha=0.3, fill='red') +
+  geom_line() + 
+  labs(x = 't-Werte', y = 'Dichte') 
+```
+
+Soweit nicht Neues. Wir wollen aber alles mit dem linearen Modell machen. Daher...
+
+## Kann ich aus dem t-Test ein lineares Modell machen? 
+
+Unsere bekanntes lineares Modell hat die folgende Form:
+
+\begin{equation}
+Y_i = \beta_0 + \beta_1 \cdot x_i + \epsilon_i 
+\label{eq-mlm-dummy-lm}
+\end{equation}
+
+Können wir diese Modell irgendwie auf die Formeln \eqref{eq-mlm-dummy-tTest-model} und \eqref{eq-tTest} abbilden? Tatsächlich gibt es eine relativ einfache Möglichkeit mittels sogenannter Dummy- oder Indikatorvariablen. Wenn $x_i$ in Formel \eqref{eq-mlm-dummy-lm} als Indikatorvariable verwendet wird, dann nimmt $x_i$ nur zwei verschiedene Werte an. Entweder den Wert $0$ oder den Wert $1$. Mit diesem Trick können wir die Gruppenzugehörigkeit, im Beispiel männlich oder weiblich, abbilden. Dazu legen wir eine Referenzgruppe fest, beispielsweise weiblich. Wenn nun ein Wert $y_i$ aus der Gruppe weiblich kommt, dann wird $x_i = 0$ gesetzt, während wenn ein Wert $y_i$ aus der Gruppe männlich kommt, dann wird $x_i = 1$ gesetzt.
+
+\begin{equation*}
+x_i = \begin{cases}
+0\text{ wenn weiblich}\\
+1\text{ wenn männlich}
+\end{cases} 
+\end{equation*}
+
+Jetzt müssen wir noch $\beta_0$ und $\beta_1$ in Formel \eqref{eq-mlm-dummy-lm} festlegen. Wir können den $y$-Achsenabschnitt $\beta_0$ gleich des Mittelwerts der Referenzgruppe setzen. Also $\beta_0 = \mu_f$. Damit fehlt noch $\beta_1$, hier machen wir die Festlegung $\beta_1 = \mu_m - \mu_f = \Delta$. D.h. der Unterschied zwischen den beiden Gruppenmittelwerten. Damit ist aus Formel \eqref{eq-mlm-dummy-tTest-model} das folgende lineare Modell geworden.
+
+\begin{align*}
+Y_i &= \mu_f + \Delta_{m} \times x_{i} + \epsilon_i \\
+\Delta_m &= \mu_m - \mu_f \\
+\end{align*}
+
+Schauen wir uns einmal an wie das konkret aussieht. Wir definieren dazu noch die *Residuen* $e_i$ im Modell \eqref{eq-mlm-dummy-tTest-model}.
+
+\begin{align*}
+e_{if} &= y_{if} - \mu_f \\
+e_{im} &= y_{im} - \mu_m
+\end{align*}
+
+Im t-Test Modell ist eine Voraussetzung, dass die Werte Normalverteilt sind, damit sind wiederum die Residuen $e_i$ ebenfalls Normalverteilt, da die Subtraktion des Mittelwerts $\mu$ von den Werten nichts an der Form der Verteilung ändert, sondern nur deren Mittelwert verschiebt.
+
+Damit können wir nun zum Beispiel den ersten Wert aus @tbl-mlm-dummy-gender $y_{1m} = 174.4$, mit $\Delta = `r mu_m` - `r mu_f` = `r mu_m - mu_f`, e_{1m} = 174.4 - `r mu_m`= -5.13$ und $x_{1m} = 1$ abbilden.
+
+\begin{align*}
+y_{1m} = 174.4 &= \mu_f + \Delta \cdot x_{1m} + e_{1m} \\
+&= 168.78 + 10.74 \cdot 1 - 5.13 
+\end{align*}
+
+Das Gleiche für den ersten weiblichen Wert in @tbl-mlm-dummy-gender $y_{1f} = 171.3, \Delta = `r Delta`, e_{1f} = 171.3 - `r mu_f` = 2.52$ und $x_{1f} = 0.
+
+\begin{align*}
+y_{1f} = 171.3 &= \mu_f + \Delta \cdot x_{1f} + e_{1f} \\
+&= 168.78 + 10.74 \cdot 0 + 2.52
+\end{align*}
+
+Zusammenfassend, haben wir mit der Indikatorvariable und dem $\Delta$ zwischen den Mittelwerten der beiden Gruppen eine Möglichkeit gefunden das t-Test Modell auf das lineare Modell abzubilden. Und tatsächlich, wenn das Modell in `lm()` eingeben:
+
+```{r}
+#| eval: false
+#| echo: true
+
+mod <- lm(cm ~ gender, height)
+```
+```{r}
+mod <- lm(cm ~ gender, height)
+lm_tbl_knitr(mod)
+```
+
+Dann sehen wir, dass wir genau diese Werte auch herausbekommen. `lm()` gibt die Faktorstufe nach dem Namen der Faktorvariable an. Im Beispiel steht `genderm` für Stufe `m` aus dem Faktor `gender`. Wenn wir uns die Werte für den t-Wert für $\beta_1 = \Delta$ anschauen, dann sehen wir, dass der Wert exakt mit demjenigen übereinstimmt, den wir mittels des t-Test berechnet haben. Lediglich das Vorzeichen ist in der anderen Richtung was aber nur damit zusammenhängt welcher Gruppenmittelwert von dem anderen Gruppenmittelwert subtrahiert werden. Schauen wir uns das Konfidenzintervall für den *Steigungskoeffizienten* $\beta_1$ an:
+
+```{r}
+#| echo: true
+
+confint(mod)
+```
+
+Dann sehen wir, dass auch das Konfidenzintervall exakt demjenigen des t-Test, bis auf das Vorzeichen, entspricht. D.h. nochmal wir können einen t-Test als ein lineares Modell verstehen und anders herum wir können nun ohne Probleme nominale Variablen in ein lineares Modell mit aufnehmen.
+
+Damit haben wir auch schon eine sehr gute Idee wie 'lm()' intern gemacht hat. Bei der Modellevaluierung erkennt `lm()` gender als nominale Variable und ersetzt es durch die Dummykodierung (siehe @tbl-mlm-dummy-dummy-lm).
+
+```{r}
+#| label: tbl-mlm-dummy-dummy-lm
+#| tbl-cap: "Repräsentation der Faktorvariablen"
+
+cbind(height, (0:1)[as.numeric(height$gender)])[c(1:3,41:43),] |> 
+  knitr::kable(booktabs = TRUE,
+               col.names = c('cm', 'gender', '$x_1$'),
+               row.names = F,
+               escape = F,
+               linesep = '',
+               digits = 2)
+```
+
+`lm()` ersetzt `gender` durch die Dummy-Variable, also durch Zahlenwerte, und dann kann einfach wieder die uns bekannte Maschinerie des linearen Modell angeworfen werden. Schauen wir uns an, wie ein Residuenplot bei einer Dummyvariablen aussieht (siehe @fig-mlm-dummy-resid-plot).
+
+```{r}
+#| label: fig-mlm-dummy-resid-plot 
+#| fig-cap: "Residuenplot des Körpergrößenmodells"
+
+height |> dplyr::mutate(y_hat = predict(mod),
+                 e_hat = resid(mod)) |> 
+  ggplot(aes(y_hat, e_hat)) +
+  geom_point() +
+  geom_hline(yintercept = 0, col = 'red', linetype = 'dashed') +
+  labs(x = expression(paste('Vorhergesagte Werte ', hat(y)[i])),
+       y = expression(paste('Residuen ', hat(e)[i]))) 
+```
+
+Der Plot sieht etwas komisch aus, da die Residuen nur für zwei vorhergesagte Werte $\hat{y}_i$ angezeigt werden. Kurzes überlegen sollte uns aber davon überzeugen, dass dies korrekt ist, da wir nun noch zwei verschiedene $y$-Wert vorhersagen. Nämlich für die Werte $x_i = 0$ und $x_i = 1$, eben die Mittelwerte aus den beiden Gruppen.
+
+
+## Dummyvariablen bei mehr als zwei Faktorstufen
+
+Nachdem wir ein Beispiel mit zwei Faktorstufen durchgegangen sind stellt sich die Frage ob wir auch mehr als zwei Faktorstufen bei einer nominalen Variablen in ein lineares Modell überführen können?
+
+Schauen wir uns dazu wiederum ein einfaches synthetisches Beispiel an (siehe @fig-mlm-dummy-reaction-01)
+
+```{r}
+#| label: fig-mlm-dummy-reaction-01
+#| fig-cap: "Ein Reaktionszeitexperiment mit vier Stufen A, B, C und D"
+
+ggplot(data, aes(group, rt)) + geom_boxplot() +
+  geom_point(alpha=.1, col='red') +
+  labs(x = 'Gruppe', y = 'Reaktionszeit') 
+```
+
+Wir haben Daten zu einem Reaktionszeitexperiment bei dem Probanden unter vier verschiedenen Konditionen $A,B,C$ und $D$ beobachtet wurden. Die deskriptive Daten sind @tbl-mlm-dummy-reaction-01 einsehbar. Der Einfachheit halber sind die Daten so generiert, dass die Gruppenmittelwert von $A$ nach $D$ immer größer werden.
+
+```{r}
+#| label: tbl-mlm-dummy-reaction-01
+#| tbl-cap: "Gruppenmittelwerte, Standardabweichung und Unterschiede zu Stufe A"
+tmp <- data |> dplyr::group_by(group) |>
+  dplyr::summarize(y_hat = mean(rt), sd = sd(rt))
+mat <-  t(matrix(c(-1,1,0,0,-1,0,1,0,-1,0,0,1),nr=4))
+tmp |> dplyr::mutate(delta = c(NA,mat %*% y_hat)) |>
+  knitr::kable(booktabs = TRUE,
+               col.names = c('Gruppe','$\\bar{y}_j$', '$s_j$', '$\\Delta_{j-A}$'),
+               digits = 2,
+               escape=F)
+```
+
+Die letzten Spalte zeigt die Abweichungen der Gruppenmittelwerte der Gruppen $B,C,D$ von der Gruppe $A$ an. Das sollte jetzt auch schon direkt eine Möglichkeit aufzeigen, wie wir diese Daten in ein lineares Modell überführen. Wir setzen wieder eine Referenzgruppe fest, z.B. Gruppe $A$ und anstatt ein einzelnes $Delta$ führen wir drei $\Delta$s ein, die jeweils die Abweichungen der Faktorstufen von der Referenzstufe repräsentieren. Für jedes dieser $\Delta_i$s führen wir jetzt eine Dummyvariable $x_{ij}$ ein, mit der wir jeweils über die $0$ und $1$ die Zugehörig des $y_i$ Wertes zu der Gruppe kodieren. Ein lineares Modell lässt nun wie folgt formulieren:
+
+$$
+y_i = \mu_A + \Delta_{B-A} x_{1i} + \Delta_{C-A} x_{2i} + \Delta_{D-A} x_{3i} + \epsilon_i
+$$
+
+Wir haben drei Dummyvariablen $x_{1i}, x_{2i}$ und $x_{3i}$ eingeführt und die Modellkoeffizienten bilden jeweils die Abweichungen der Mittelwerte von Gruppe $A$ ab. Dies führt dann zu der folgenden Kodierung der Daten (siehe @tbl-mlm-dummy-reaction-02).
+
+```{r}
+#| label: tbl-mlm-dummy-reaction-02
+#| tbl-cap: "Kodierung der Dummyvariablen für das Reaktionszeitexperiment."
+
+mat <- contrasts(data$group)
+colnames(mat) <- c('x1','x2','x3')
+knitr::kable(mat, booktabs=TRUE) |>
+  kableExtra::kable_styling(position = 'center')
+```
+
+Wenn ein Wert $y_i$ aus Gruppe $A$ kommt, dann werden die Dummyvariablen $x_{1i}, x_{2i}, x_{3i}$ mit den Werten $(0,0,0)$ belegt. Wenn ein Wert $y_i$ aus Gruppe $B$ kommt, dann $(1,0,0)$ belegt usw..
+
+Dieser Ansatz lässt sich wie folgt Verallgemeinern (siehe @tbl-mlm-dummy-coding).
+
+|     | $x_1$ | $x_2$ | $\ldots$ | $x_{K-1}$ | 
+| --- | --- | --- | --- | --- |
+| Referenz ($j=1$) | 0 | 0 |  | 0 | 
+| $j=2$ | 1 | 0 | $\ldots$  | 0 | 
+| $j=3$ | 0 | 1 | $\ldots$  | 0 |
+| $j=K$ | 0 | 0 | $\ldots$  | 1 | 
+
+: Dummykodierung bei $k$-Faktorstufen. {#tbl-mlm-dummy-coding}
+
+Bei Integration einer nominalen Variable mit $K$ Faktorstufen werden $K-1$ Dummyvariablen $x_1, x_2, \ldots, x_{K-1}$ benötigt. Eine der Faktorstufen wird als Referenzstufe definiert. Die Dummyvariablen $x_1$ bis $x_{K-1}$ kodieren dann die Abweichungen der anderen Stufen von der Referenzstufe. Diese Art der Kodierung wird in der Literatur auch als *treatment* Kodierung bezeichnet.
+
+::: {#def-dummy}
+## Dummyvariablen \index{Dummyvariablen}
+
+Eine Dummyvariable, auch Indikatorvariable, ist eine binäre Prädiktorvariable die nur die Werte $0$ oder $1$ annimmt in einem linearem Modell einnimmt. Mit einer Dummyvariable kann die An- bzw. Abwesenheit eines kategorialen Effekts modelliert werden.
+:::
+
+Das lineare Modell in unserem Reaktionszeitexperiment ergibt den folgenden Modellfit (siehe @tbl-mlm-dummy-reaction-03).
+
+```{r}
+#| echo: true
+#| eval: false
+
+mod <- lm(rt ~ group, data)
+```
+
+```{r}
+#| label: tbl-mlm-dummy-reaction-03
+#| tbl-cap: "Koeffizientenmatrix für die Dummykodierung des Reaktionszeitexperiments."
+
+mod <- lm(rt ~ group, data)
+lm_tbl_knitr(mod)
+```
+
+Wir erhalten als Steigungskoeffizienten eben genau die Abweichungen der Mittelwerte der jeweiligen Faktorstufen von der Referenzstufe (siehe @tbl-mlm-dummy-reaction-02). D.h. insgesamt haben wir also die Möglichkeit eine nominale Variable mit beliebig vielen Faktorstufen in einem linearen Modell abzubilden. Damit ist dann auch die Unterscheidung in ANOVA und linear Regression als überfällig anzusehen, da beide letztendlich auf dem gleichem Modell, nämlich dem linearen Modell, beruhen.
+
+Schauen wir uns noch den Residuenplot an (siehe @fig-mlm-dummy-reaction-02).
+
+```{r}
+#| label: fig-mlm-dummy-reaction-02
+#| fig-cap: "Residuenplot für das Modell der Reaktionszeitdaten."
+
+data |> mutate(y_hat = predict(mod), e_i = resid(mod)) |> 
+ggplot(aes(y_hat, e_i)) + 
+  geom_point() +
+  geom_hline(yintercept = 0, col = 'red', linetype = 'dashed') +
+  labs(x = expression(paste('Vorhergesagte Werte ', hat(y)[i])),
+       y = expression(paste('Residuen ', hat(e)[i]))) 
+```
+
+Hier sehen wir wieder, dass nur vier verschiedene $\hat{y}_i$ Werte vorhergesagt werden, nämlich die Mittelwerte $\bar{y}_k$ in den jeweiligen $K$ Gruppen. Die Residuen $e_i$ streuen daher nur um diese vorhergesagten Werte.
+
+Wir können die Dummy-Kodierung explizit von `R` mittels der `dummy.coef()`-Funktion erhalten.
+
+```{r}
+#| echo: true
+
+dummy.coef(mod)
+```
+
+
+## Kombination von kontinuierlichen und nominalen Prädiktorvariablen
+
+Schauen wir uns nun als weiteren Fall ein Modell an, bei dem beide Typen von Variablen, nominale und kontinuierliche, integriert sind. In @fig-mlm-dummy-combi-01 haben wir einen hypothetischen Zusammenhang zwischen der körperlichen Leistung dem Trainingsalter und dem Gender.
+
+```{r}
+#| label: fig-mlm-dummy-combi-01
+#| fig-cap: "Hypothetische Leistungsentwicklung in Abhängigkeit vom Alter und Gender"
+
+N <- 50
+set.seed(1)
+lew <- tibble::tibble(
+  ta = sample(10, N, replace=T),
+  gender = sample(0:1, N, replace=T),
+  perf = rnorm(N, 30, 3) + 2 * ta + 10*gender,
+  gender_f = factor(gender, levels = c(1,0), labels=c('f','m'))
+)
+ggplot(lew, aes(ta, perf, color = gender_f)) +
+  geom_point(size=2) +
+  labs(x = 'Trainingsalter', y = 'Performance') +
+  scale_color_discrete('Gender') 
+```
+
+Das Trainingsalter geht wie bisher als kontinuierliche Variable in das Modell ein, während wir gender als nominale Variable über eine Dummyvariable modellieren. Weibliche Teilnehmerinnen der Studie legen wir als Referenzstufe fest. Das resultiert in dem folgenden linearen Modell:
+
+\begin{align*}
+Y_i &= \beta_{ta = 0,x_{1i}=0} + \Delta_m \times x_{1i} + \beta_{ta} \times ta + \epsilon_i \\
+x_1 &= 
+\begin{cases}
+0\text{ wenn weiblich}\\
+1\text{ wenn männlich}
+\end{cases} \\
+\end{align*}
+
+Modellieren mit `lm()` führt dann zu:
+
+```{r}
+#| echo: true
+
+mod <- lm(perf ~ gender_f + ta, lew)
+```
+```{r}
+#| label: tbl-mlm-dummy-combi-01
+#| tbl-cap: "Modellfit für das Modell mit Trainingsalter und Gender."
+
+broom::tidy(mod) |> knitr::kable(
+  booktabs = TRUE,
+  digits = 3,
+)
+```
+
+Die Variable `gender` ist durch `lm()` als Dummyvariable definiert worden und der Steigungskoeffizient $\beta_1=$`gender_fm` kodiert den mittleren Unterschied zwischen männlichen und weiblichen Studienteilnehmerinnen. Der $y$-Achsenabschnitt kodiert daher die Leistung von weiblichen Teilnehmerinnen mit einem Trainingsalter von `ta`$= 0$. (Warum?). Schauen wir uns dazu die resultierenden Graden der vorhergesagten $\hat{y}_i$ an (siehe @fig-mlm-dummy-combi-02).
+
+```{r}
+#| label: fig-mlm-dummy-combi-02
+#| fig-cap: "Leistungsentwicklung in Abhängigkeit vom Alter und Gender"
+
+new_lew <- data.frame(ta = c(1,10,1,10),
+           gender_f = factor(c(0,0,1,1),
+                             levels=0:1,
+                             labels=c('f','m')))
+new_lew <- new_lew |> dplyr::mutate(y_hat=predict(mod, new_lew))
+ggplot(lew, aes(ta, perf, color = gender_f)) + geom_point() +
+  geom_line(data = new_lew, aes(y = y_hat)) +
+  labs(x = 'Trainingsalter', y = 'Performance') +
+  scale_color_discrete('Gender') 
+```
+
+Wir haben zwei Geraden eine für die weiblichen und eine für die männlichen Teilnehmer mittels des Modells gefittet. Die Geraden sind parallel und um den Wert von $\beta_1$ gegeneinander verschoben.
+
+Nichts hält uns davon ab auch eine Interaktion zwischen kontinuierlichen und nominalen Variablen zu modellieren. Wenn die Daten zum Beispiel dem Trend in @fig-mlm-dummy-combi-03 folgen.
+
+```{r}
+#| label: fig-mlm-dummy-combi-03
+#| fig-cap: "Leistungsentwicklung in Abhängigkeit vom Alter und Gender"
+
+N <- 50
+set.seed(1)
+lew <- tibble::tibble(
+  ta = sample(10, N, replace=T),
+  gender = sample(0:1, N, replace=T),
+  perf = rnorm(N, 30, 3) + 2 * ta + 10*gender + 2*ta*gender,
+  gender_f = factor(gender, levels = c(0,1), labels=c('f','m'))
+)
+ggplot(lew, aes(ta, perf, color = gender_f)) +
+  geom_point(size=2) +
+  labs(x = 'Trainingsalter', y = 'Performance') +
+  scale_color_discrete('Gender') 
+```
+
+Hier sehen wir, dass die Zunahme der Leistung mit dem Trainingsalter nicht gleich ist in beiden gendern. Bei männlichen Teilnehmern ist der Zuwachs mit dem Trainingsalter größer. D.h der Einfluss der Prädiktorvariable Trainingsalter hängt mit der Ausprägung der Prädiktorvariablen gender zusammen. Es liegt ein Interaktionseffekt vor. Übertragen auf ein lineares Modell könnte der Modellansatz wie folgt aussehen:
+
+\begin{equation*}
+y_i = \beta_{ta=0,x_{1i}=0} + \Delta_m \times x_{1i} + \beta_{ta} \times ta + \beta_{ta \times gender} \times x_{1i} \times ta + \epsilon_i
+\end{equation*}
+
+In `lm()` ausgedrückt:
+
+```{r}
+#| echo: true
+
+mod <- lm(perf ~ gender_f * ta, lew)
+```
+```{r}
+#| label: tbl-mlm-dummy-combi-02
+#| tbl-cap: "Modellfit für das Interaktionsmodell mit Trainingsalter und Gender."
+
+broom::tidy(mod) |> knitr::kable(
+  booktabs = TRUE,
+  digits = 3
+)
+```
+
+Die gefitteten Regressionsgeraden nehmen dann die folgende Form an (siehe @fig-mlm-dummy-combi-04).
+
+```{r}
+#| label: fig-mlm-dummy-combi-04 
+#| fig-cap: "Leistungsentwicklung in Abhängigkeit vom Alter und Gender"
+
+new_lew <- data.frame(ta = c(1,10,1,10),
+           gender_f = factor(c(0,0,1,1),
+                             levels=0:1,
+                             labels=c('f','m')))
+new_lew <- new_lew |> dplyr::mutate(y_hat = predict(mod,new_lew))
+ggplot(lew, aes(ta, perf, color = gender_f)) +
+  geom_point() +
+  geom_line(data = new_lew, aes(y = y_hat)) +
+  labs(x = 'Trainingsalter', y = 'Performance') +
+  scale_color_discrete('Gender') 
+```
+
+## Zusammenfassung
+
+In diesem Kapitel haben wir gesehen, dass wir ohne Probleme auch nominale Prädiktorvariablen in das lineare Modell integrieren können. Dabei können die Variablen rein additiv oder auch als interaktive Effekte eingehen. Damit haben wir eine extrem flexiblen Prozess um Daten zu modellieren und dabei immer in dem bekannten Punkt-Steigungs-Modell bleiben.
+
+## Herleitung der Identität von t-Test und linearen Modell (advanced)
+
+Seien beide Gruppen gleich groß ($n$) mit $N = n_m + n_w = 2 \times n$. Der t-Wert für $\beta_1$ berechnet sich aus $t = \frac{b_1}{s_b}$ mit:
+
+$$
+s_b = \sqrt{\frac{\sum_{i=1}^N (y_i - \bar{y})^2}{N-2}\frac{1}{\sum_{i=1}^N(x_i-\bar{x})^2}}
+$$
+Dadurch, das die $x_i$ entweder gleich $0$ oder $1$ sind, ist $\bar{x}=0.5$ und die Abweichungsquadrate im zweiten Term sind alle gleich $\frac{1}{4}$.
+
+$$
+\sum_{i=1}^N(x_i - \bar{x})^2=\sum_{i=1}^N\left(x_i - \frac{1}{2}\right)^2 = \sum_{i=1}^N\frac{1}{4}=\frac{N}{4}=\frac{2n}{4}=\frac{n}{2}
+$$
+
+Der ersten Term kann mit etwas Algebra und der Definition für die Stichprobenvarianz $s^2$ auf die gewünschte Form gebracht werden.
+
+$$
+\frac{\sum_{i=1}^N(y_i-\hat{y})^2}{N-2}=\frac{\sum_{i=1}^n(\overbrace{y_{im} - \bar{y}_m}^{Männer})^2+\sum_{i=1}^n(\overbrace{y_{iw}-\bar{y}_w}^{Frauen})^2}{2(n-1)}=\frac{(n-1)s_m^2+(n-1)s_w^2}{2(n-1)}=\frac{s_m^2+s_w^2}{2}
+$$
+
+Die Herleitung für $\beta_1 = \Delta = \mu_w - \mu_m$ ist ebenfalls relativ geradlinig wenn wir uns an den Zusammenhang zwischen $\beta_1$ und der Kovarianz zwischen $x$ und $y$ erinnern. Mit $s_x^2 = \frac{N\frac{1}{4}}{N-1} = \frac{N}{4(N-1)}$ folgt:
+
+\begin{align*}
+    b_1 &= \frac{cov(x,y)}{s_x^2} \\
+    &= \frac{\sum_{i=1}^N(y_i - \bar{y})(x_i - \bar{x})}{N-1} \frac{4(N-1)}{N} \\
+    &= 4\frac{\sum_{i=1}^n(y_{im}-\bar{y})\frac{-1}{2}+\sum(y_{iw}-\bar{y})\frac{1}{2}}{N} \\
+    &= \frac{4}{2}\frac{\sum_{i=1}^n(y_{iw}-\bar{y}) - \sum_{i=1}^n(y_{im}-\bar{y})}{2n} \\
+    &= \frac{\sum_{i=1}^n y_{iw}}{n} - \frac{n\bar{y}}{n} - \frac{\sum_{i=1}^n y_{im}}{n} + \frac{n\bar{y}}{n} \\
+    &= \bar{y}_w - \bar{y}_m = \Delta
+\end{align*}
+
+Zu guter Letzt noch die Herleitung für $\beta_0 = \mu_m$.
+
+Mit $b_1 = \Delta = \bar{y}_w - \bar{y}_m$:
+\begin{align*}
+b_0 &= \bar{y} - \Delta \times \bar{x} \\
+&= \frac{\sum_{i=1}^N y_i}{N} - \Delta \times \frac{1}{2} \\
+&= \frac{\sum_{i=1}^n y_{im} + \sum_{i=1}^n y_{iw}}{2n} - \frac{1}{2}(\bar{y}_w - \bar{y}_m)  \\
+&= \frac{1}{2}\frac{\sum_{i=1}^ny_{im}}{n} + \frac{1}{2}\frac{\sum_{i=1}^ny_{iw}}{n} - \frac{1}{2}\bar{y}_w + \frac{1}{2}\bar{y}_m \\
+&= \frac{1}{2}\bar{y}_m + \frac{1}{2}\bar{y}_w - \frac{1}{2}\bar{y}_w + \frac{1}{2}\bar{y}_m \\
+&= \bar{y}_m
+\end{align*}
+
+## Zum Nach- und Weiterlesen
+
+In [@kutner2005, p.313-319] sind die Herleitungen noch mal genauer erkärt.
+

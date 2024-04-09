@@ -1,0 +1,2023 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Skriptum - Fortgeschrittene Statistik - 2&nbsp; R Kickoff</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./r_flowcontrol.html" rel="next">
+<link href="./r_intro.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-contrib/kbd/kbd.js"></script>
+<link href="site_libs/quarto-contrib/kbd/kbd.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "Keine Treffer",
+    "search-matching-documents-text": "Treffer",
+    "search-copy-link-title": "Link in die Suche kopieren",
+    "search-hide-matches-text": "Zusätzliche Treffer verbergen",
+    "search-more-match-text": "weitere Treffer in diesem Dokument",
+    "search-more-matches-text": "weitere Treffer in diesem Dokument",
+    "search-clear-button-title": "Zurücksetzen",
+    "search-detached-cancel-button-title": "Abbrechen",
+    "search-submit-button-title": "Abschicken",
+    "search-label": "Suchen"
+  }
+}</script>
+<script>
+  MathJax = {
+    tex: {
+      tags: 'ams'  // should be 'ams', 'none', or 'all'
+    }
+  };
+</script>
+<script src="site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./r_startup.html">Eine Schnelleinführung in R</a></li><li class="breadcrumb-item"><a href="./r_kickoff.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">`R` Kickoff</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Skriptum - Fortgeschrittene Statistik</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Suchen"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Vorwort</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./r_startup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Eine Schnelleinführung in R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Abschnitt umschalten">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./r_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Eine Übersicht über <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./r_kickoff.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title"><code>R</code> Kickoff</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./r_flowcontrol.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Ablaufkontrolle</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./r_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Einfache Datenbearbeitung und Visualisierung in <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./r_literate_programming.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Literate programming in <code>R</code></span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./stats_title.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Statistik</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Abschnitt umschalten">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./stats_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Eine kleine Welt der Unsicherheit</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./stats_significance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Statistische Signifikanz, p-Wert und Power</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./stats_estimation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Parameterschätzung</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./stats_distributions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Theoretische Verteilungen</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./stats_hypotheses.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Hypothesen testen</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./slm_title.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Das einfache Regressionmodell</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Abschnitt umschalten">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./slm_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Einführung</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./slm_inference.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Inferenz</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./slm_model_fit.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Modellfit</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./slm_prediction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Vorhersage</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./mlm_title.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Multiple Regression</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="Abschnitt umschalten">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mlm_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Einführung</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mlm_interactions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Interaktionseffekte</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mlm_dummy_coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Integration von nominalen Variablen</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mlm_hierarchies.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Modellhierarchien</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./lm_title.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Das allgemeine lineare Modell</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Abschnitt umschalten">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lm_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Synthese</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./ed_title.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Experimentelles Design</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Abschnitt umschalten">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ed_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Einführung</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ed_crd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Completely Randomized Design</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ed_linear_contrasts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Lineare Kontraste</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ed_crfd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Completely Randomized Factorial Design</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ed_ancova.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">ANCOVA</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ed_crbd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Completely Randomized Block Design</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ed_irbd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Incomplete Randomized Block Design</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ed_split_plot.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Split-plot Design</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ed_cross_over.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Cross-over Design</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Literatur</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Inhaltsverzeichnis</h2>
+   
+  <ul>
+  <li><a href="#variablen-in-r" id="toc-variablen-in-r" class="nav-link active" data-scroll-target="#variablen-in-r"><span class="header-section-number">2.1</span> Variablen in <code>R</code></a></li>
+  <li><a href="#funktionen-in-r" id="toc-funktionen-in-r" class="nav-link" data-scroll-target="#funktionen-in-r"><span class="header-section-number">2.2</span> Funktionen in <code>R</code></a>
+  <ul class="collapse">
+  <li><a href="#funktionen-anwenden" id="toc-funktionen-anwenden" class="nav-link" data-scroll-target="#funktionen-anwenden"><span class="header-section-number">2.2.1</span> Funktionen anwenden</a></li>
+  <li><a href="#funktionen-in-r-paketen" id="toc-funktionen-in-r-paketen" class="nav-link" data-scroll-target="#funktionen-in-r-paketen"><span class="header-section-number">2.2.2</span> Funktionen in <code>R</code>-Paketen</a></li>
+  <li><a href="#eigene-funktionen-schreiben" id="toc-eigene-funktionen-schreiben" class="nav-link" data-scroll-target="#eigene-funktionen-schreiben"><span class="header-section-number">2.2.3</span> Eigene Funktionen schreiben</a></li>
+  </ul></li>
+  <li><a href="#datentypen" id="toc-datentypen" class="nav-link" data-scroll-target="#datentypen"><span class="header-section-number">2.3</span> Datentypen</a>
+  <ul class="collapse">
+  <li><a href="#numerisch" id="toc-numerisch" class="nav-link" data-scroll-target="#numerisch"><span class="header-section-number">2.3.1</span> Numerisch</a></li>
+  <li><a href="#zeichenketten-strings" id="toc-zeichenketten-strings" class="nav-link" data-scroll-target="#zeichenketten-strings"><span class="header-section-number">2.3.2</span> Zeichenketten (Strings)</a></li>
+  <li><a href="#logische-boolean-werte" id="toc-logische-boolean-werte" class="nav-link" data-scroll-target="#logische-boolean-werte"><span class="header-section-number">2.3.3</span> Logische (Boolean) Werte</a></li>
+  <li><a href="#vektoren" id="toc-vektoren" class="nav-link" data-scroll-target="#vektoren"><span class="header-section-number">2.3.4</span> Vektoren</a></li>
+  <li><a href="#matrizen" id="toc-matrizen" class="nav-link" data-scroll-target="#matrizen"><span class="header-section-number">2.3.5</span> Matrizen</a></li>
+  <li><a href="#data.frame-oder-tibble" id="toc-data.frame-oder-tibble" class="nav-link" data-scroll-target="#data.frame-oder-tibble"><span class="header-section-number">2.3.6</span> <code>data.frame()</code> oder <code>tibble()</code></a></li>
+  <li><a href="#zusammenfassung" id="toc-zusammenfassung" class="nav-link" data-scroll-target="#zusammenfassung"><span class="header-section-number">2.3.7</span> Zusammenfassung</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title"><code>R</code> Kickoff</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p>Wie bereits angedeutet, der Umgang mit <code>R</code> besteht vor allem in der Benutzung von bestimmten Befehlen. Die Befehle, auch Anweisungen genannt, werden <code>R</code> auf der Kommandozeile übergeben, <code>R</code> liest die Anweisungen ein und führt entsprechende Operationen durch. Im einfachsten Fall, kann <code>R</code> beispielsweise als ein überproportionierter Taschenrechner verwendet werden. In R-Studio ist die Kommandozeile üblicherweise unten-links zu sehen und signalisiert durch das Prompt <code>&gt;</code> die Bereitschaft an Befehle anzunehmen. Beispielsweise führt auf der <code>R</code> Kommandozeile der folgende Befehl <code>2 + 2</code> gefolgt von einem <kbd>ENTER</kbd> zu folgender Ausgabe:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="dv">2</span> <span class="sc">+</span> <span class="dv">2</span></span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 4</code></pre>
+</div>
+</div>
+<p>Das <code>[1]</code> kennzeichnet die erste Zeile des von <code>R</code> generierten Outputs.</p>
+<p>Die Kommandozeile in <code>R</code> funktioniert nach dem Prinzip einer sogenannten <em>REPL</em>. <em>REPL</em> ist eine Abkürzung für die englischen Begriffe read-eval-print loop. Die Eingabe wird durch <code>R</code> eingelesen (R), im Rahmen der Programmiersprache evaluiert (E), das Ergebnis wird ausgegeben (P) und anschließend geht die Kommandozeile zurück zum Ausgangszustand (L). <code>R</code> liest die Eingabe <code>2 + 2</code>, evaluiert diese Eingabe, dies führt zu dem Ergebnis <code>4</code>, das Ergebnis wird auf der Kommandozeile ausgegeben, und <code>R</code> wartet nun wieder auf die nächste Eingabe <code>&gt;</code>. Wenig überraschend, führt die Eingabe <code>3 * 3</code> zu folgenden Ablauf.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="dv">3</span> <span class="sc">*</span> <span class="dv">3</span></span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 9</code></pre>
+</div>
+</div>
+<p>In R-Studio gibt es einen short-cut um in die Kommandozeile zu springen <kbd>STRG+2</kbd>.</p>
+<p>In der Kommandozeile in <code>R</code> ist es nach der Ausführung eines Befehlt nicht möglich mit dem Cursor wieder nach oben zu gehen und bei einer fehlerhaften Eingabe diese zu berichten. Sondern der komplette Befehl muss noch einmal eingegeben werden. Allerdings merkt sich R-Studio die Befehlt und mit den Pfeiltasten <kbd>UP</kbd> und <kbd>DOWN</kbd> können diese wieder aufgerufen werden und entsprechend angepasst werden.</p>
+<p>Die Anweisungen <code>2 + 2</code> oder <code>3 * 3</code> werden allgemein als <strong>Ausdrücke</strong> bezeichnet. Wir könnten die Beispiele jetzt mit den üblichen Grundrechenarten <code>+-/*</code> weiterführen, aber es würde nichts Neues dazukommen. Daher schauen wir uns jetzt an, wie wir komplexere, mehrstufige Berechnungen durchführen können. Dazu schauen wir uns ein zentrales Konzept von Programmiersprachen an: Variablen.</p>
+<section id="variablen-in-r" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="variablen-in-r"><span class="header-section-number">2.1</span> Variablen in <code>R</code></h2>
+<p>Nehmen wir, wir wollen das Ergebnis der letzten komplexen Berechnung, in irgendeiner Form weiter verwenden. Die im Beispiel berechnete <code>9</code> steht jetzt allerdings für die weitere Bearbeitung nicht mehr zur Verfügung. <code>R</code> hat die REPL ausgeführt, die Berechnung der <code>9</code>, und da jetzt mit dieser Ausgabe nichts weiteres durchgeführt wurde, ist die Ausgabe auch nirgends gespeichert worden. Die Ausgabe bzw. das Ergebnis eines Befehlt wird als Rückgabewert bezeichnet. Um den Rückgabewert eines Ausdrucks weiter zu bearbeiten, muss dieser Wert in irgendeiner Form <code>R</code> zugänglich gemacht werden, d.h. der Rückgabewert muss irgendwie gespeichert werden. Um Werte weiter verwenden zu kommen, wird den Werten daher ein Bezeichner, ein Name, zugewiesen. Es wird eine Variable eingeführt. Erfahrungsgemäß stellt dieses Konzept eine erste Größe Hürde im Umgang mit <code>R</code>da, das diese Konzept beispielweise in Tabellenkalkulationsprogrammen, bei denen die Berechnungen scheinbar direkt auf den zu sehenden Daten stattfindet, nicht vorhanden ist. Letztendlich ist eine Variable aber nichts als ein Wert in <code>R</code> dem ein Name zugewiesen wurde.</p>
+<p>Um in <code>R</code> einem Ausdruck bzw. dessen Rückgabewert einen Namen zuzuweisen wird ein spezieller in <code>R</code> definierter Befehl verwendet, der Zuweisungsoperator <code>&lt;-</code>. Möchte ich beispielsweise das Ergebnis der „komplexen“ Berechnung <code>3 * 3</code> später weiter verwenden, dann verwende ich den Zuweisungsoperator <code>&lt;-</code> um dem Rückgabewert einen Namen zu geben.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> wert_1 <span class="ot">&lt;-</span> <span class="dv">3</span> <span class="sc">*</span> <span class="dv">3</span></span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>R</code> jetzte keinen Ausdruck mehr zurück, da das Ergebnis des Zuweisungsoperator die Zuweisung eines Namens ist, was keinen Wert zurückgibt mehr ergibt. Intern hat <code>R</code> die Berechnung durchgeführt und dem Rückgabewert den Namen <code>wert_1</code> zugewiesen. Der Name ist dabei, im Rahmen bestimmter Konventionen vollkommen willkührlich und <code>R</code> hätte mich nicht daran gehindert <code>wert_2</code>, <code>wert_123</code>, <code>thomas</code>, <code>steffie</code> oder einen anderen Namen zu verwenden.</p>
+<p>Dies Frage stellt sich jetzt natürlich, wie komme ich meinen berechneten Wert wieder heran. Einfach indem ich den Bezeichner, den Namen, <code>wert_1</code> an <code>R</code> übergebe.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> wert_1</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 9</code></pre>
+</div>
+</div>
+<p>In R-Studio, gibt es oben-rechts einen Reiter mit der Aufschrift <strong>Environment</strong>, hier sollte jetzt auch ein Eintrag zu finden sein mit dem Bezeichner <code>wert_1</code> und dem angehängten Wert <span class="math inline">\(9\)</span>.</p>
+<p>Dieser Prozess funktionert genau gleich mit einem komplexeren Ausdruck wie <code>2 + 2 * 4</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> x <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">+</span> <span class="dv">2</span> <span class="sc">*</span> <span class="dv">4</span></span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Aufruf des Bezeichners <code>x</code> von auf der Kommandozeile führt dann entsprechend wieder zu der Ausgabe des Wertes.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> x</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 10</code></pre>
+</div>
+</div>
+<p>Konzeptionell stellt sich der Vorgang der Zuweisung in etwa so dar. Im internen Speicher von <code>R</code> wird der Wert <span class="math inline">\(10\)</span> an einer passen Stelle abgespeichert und in einer Tabelle wird ein Eintrag mit dem Bezeichner <code>x</code> zusammen mit der Adresse des Wertes <span class="math inline">\(10\)</span> abgelegt. Wenn <code>R</code> dann auf den Bezeichner <code>x</code> trifft, dann schaut es in der Tabelle nach, an welcher Stellt sich der Wert befindet und gibt diesen aus. Dies hat zur Folge, dass Bezeichner genauso wieder in Ausdrücken verwendet werden können wie Werte. <code>R</code> ersetzt den jeweiligen Bezeichner mit dem hinterlegten Wert und führt den Ausdruck aus.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> x <span class="sc">+</span> wert_1</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 19</code></pre>
+</div>
+</div>
+<p><code>R</code> ersetzt den Bezeichner <code>x</code> mit dem Wert <span class="math inline">\(10\)</span> und den Bezeichner <code>wert_1</code> mit dem Wert <span class="math inline">\(9\)</span> und addiert die beiden Werte zusammen.</p>
+<p>In dieser Vorgehensweise besteht ein grundlegender Unterschied zur der Arbeitsweise mit Tabellenprogrammen bei denen immer direkt auf den jeweiligen Zellen gearbeitet wird. In <code>R</code> werden Berechnungen, die Rückgabewerte von Ausdrücken, Bezeichner zugewiesen und können dann in späteren Ausdrücken (Befehlen) wieder aufgerufen werden. Anders herum, wenn Zwischenergebnisse keinen Bezeichner haben, können sie auch nicht wiederverwendet werden.</p>
+<p>Zwei weitere Erläuterungen zu den bisherigen Beispielen sind notwendig. In den bisherigen Ausdrücken sind Leerzeichen zwischen die einzelnen Teile der Ausdrücke gesetzt worden. Diese Leerzeichen dienen lediglich der Leserlichkeit und haben keinen Einfluss auf die Evaluierung des Ausdrucks durch <code>R</code>. Daher sind die Ausdrücke <code>2 + 2 * 4</code> und <code>2+2*4</code> äquivalent und führen zum gleichen Ergebnis. Bei der Ausgabe des Wertes ist wahrscheinlich auch aufgefallen, das <code>R</code> nicht den Wert <span class="math inline">\(16\)</span> berechnet hat, der korrekt wäre, wenn die Evaluierung des Ausdrucks streng von links nach rechts durchgeführt wird <code>2 + 2 * 4 = 4 * 4 = 16</code>. <code>R</code> hat jedoch die korrekte mathematischen Regel Punkt-vor-Strich angewendet und ist daher zum korrekten Ergebnis <code>10</code> gekommen.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Wichtig
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In <code>R</code> wird bei Bezeichnern zwischen Groß- und Kleinschreibung unterscheidet. Daher führt der Aufruf des Bezeichners <code>X</code> zu einem Fehler.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> X</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in eval(expr, envir, enclos): Objekt 'X' nicht gefunden</code></pre>
+</div>
+</div>
+<p>Die Fehlermeldung von <code>R</code> gibt auch direkt an, was das Problem ist, das nämlich kein Objekt mit der Bezeichnung <code>X</code> gefunden werden kann.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tipp
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Das Auftreten von Fehler führt bei R Neueinsteigerinnen oft zu großer Verwirrung ist aber im Programmieralltag ein vollkommen normales Ereignis und sollte daher niemanden aus der Ruhe bringen. Im vorliegenden Fall bemängelt R lediglich das es den Bezeichner X nicht finden kann und dementsprechend nicht weiß wie es weiter verfahren soll.</p>
+</div>
+</div>
+<p>Damit haben wir jetzt das erste große Konzept in <code>R</code>, bzw. in allen Programmiersprachen, das der <strong>Variable</strong> kennengelernt. Als nächstes wenden wir uns dem Konzept der Funktionen in <code>R</code> zu.</p>
+</section>
+<section id="funktionen-in-r" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="funktionen-in-r"><span class="header-section-number">2.2</span> Funktionen in <code>R</code></h2>
+<p>Ein gutes Template für Funktionen in Programmiersprachen sind Funktionen aus der Mathematik.</p>
+<p><span class="math display">\[\begin{equation*}
+y = f(x)
+\end{equation*}\]</span></p>
+<p>Wir haben eine Funktion <span class="math inline">\(f()\)</span>, dieser Funktion übergeben wir ein Argument (auch Parameter) <span class="math inline">\(x\)</span>. Die Funktion <span class="math inline">\(f()\)</span> macht dann etwas mit diesem Parameter und gibt einen Rückgabewert <span class="math inline">\(y\)</span> zurück. Sei zum Beispiel die folgenden Funktion definiert.</p>
+<p><span class="math display">\[\begin{equation*}
+f(x) = x^2
+\end{equation*}\]</span></p>
+<p>D.h. der Funktion <span class="math inline">\(f()\)</span> wird der Parameter <span class="math inline">\(x\)</span> übergeben. Dieser Wert wird anschließend quadriert und das Ergebnis der Berechnung wird zurück gegeben.</p>
+<p>In <code>R</code> werden Funktionen nach dem Muster <name>(<par1>,<par2>,…,<park>) aufgerufen (die Zeichen &lt;&gt; stehen für einen beliebigen Bezeichner). D.h. sobald ein rundes Klammerpaar auf einen Bezeichner folgt, geht <code>R</code> davon aus, dass die Anwenderin eine Funktion aufrufen möchte. Über <par1>,<par2>,…,<park> können der Funktion durch Komma getrennte Parameter übergeben werden. Die Anzahl der Parameter hängt dabei von der Definition der Funktion ab. In der Mathematik wäre ein Beispiel eine Funktion mit zwei Argumenten.</park></par2></par1></park></par2></par1></name></p>
+<p><span class="math display">\[\begin{equation*}
+f(x,y) = x^2 + y^2
+\end{equation*}\]</span></p>
+<section id="funktionen-anwenden" class="level3" data-number="2.2.1">
+<h3 data-number="2.2.1" class="anchored" data-anchor-id="funktionen-anwenden"><span class="header-section-number">2.2.1</span> Funktionen anwenden</h3>
+<p>Ein einfaches Beispiel ist die Anwendung der Wurzelfunktion auf einen numerischen Wert. In <code>R</code> gibt es schon eine vordefinierte Funktion mit dem Bezeichner <code>sqrt()</code>, welche die Wurzel des übergebenen Parameters berechnet.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> y <span class="ot">&lt;-</span> <span class="dv">9</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">sqrt</span>(y)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3</code></pre>
+</div>
+</div>
+<p>Im Beispiel wird zunächst dem Wert <span class="math inline">\(9\)</span> der Bezeichner <code>y</code> zugewiesen. Dieser wird dann an die Wurzelfunktion <code>sqrt()</code> übergeben.</p>
+<p>Ein etwas näher an der Anwendung liegendes Beispiel wäre beispielsweise die Berechnung des Mittelwerts oder die Summe der Datenreihe <span class="math inline">\((3, 5, 7)\)</span> sein. In <code>R</code> wird eine solche geordnete Reihe von Zahlen als Vektor repräsentiert. Um einen solchen Vektor zu erstellen wird wiederum eine Funktion <code>c()</code> (für concatenation) verwendet.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> z <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">7</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Mit dieser Anweisung hat <code>R</code> einen Vektor mit den drei Einträgen erstellt. Wir können jetzt den Mittelwert <span class="math inline">\(\bar{z} = \frac{1}{3}\sum_{i=1}^3z_i\)</span> mittels der Funktion <code>mean()</code> berechnen.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">mean</span>(z)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 5</code></pre>
+</div>
+</div>
+<p>Vielleicht interessiert uns jetzt nicht der Mittelwert sondern die Summe <span class="math inline">\(\bar{z} = \sum_{i=1}^3z_i\)</span>. Dafür können wir die <code>sum()</code> Funktion verwenden.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">sum</span>(z)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 15</code></pre>
+</div>
+</div>
+<p>Dies sind jetzt nur einige wenige Beispiele und einer der Skills im Umgang mit <code>R</code> besteht darin die Namen der Funktion sich zu merken. Dies kann am schnellesten durch den täglichen Umgang mit <code>R</code> erlernt werden. Am Besten ab heute.</p>
+</section>
+<section id="funktionen-in-r-paketen" class="level3" data-number="2.2.2">
+<h3 data-number="2.2.2" class="anchored" data-anchor-id="funktionen-in-r-paketen"><span class="header-section-number">2.2.2</span> Funktionen in <code>R</code>-Paketen</h3>
+<p>Sollte sich der Fall ergeben, dass keine geeignete Funktion mit <code>R</code> mitgeliefert wird, dann können Zusatzfunktionen mittels sogenannter Pakete installiert werden. Ein Paket kann dabei als eine Sammlung von Funktionen und Anweisungen angesehen werden mit deren Hilfe die Funktionalität von <code>R</code> erweitert werden kann. Daher wird zunächst Information darüber benötigt, in welchem Paket die gewünschte Funktionalität vorhanden ist. Hierfür reicht meistens eine kurze Suche mittels Google aus.</p>
+<p>Ist das Paket nun bekannt, dann sind zwei Schritte zunächst durchzuführen. Wobei der 1. Schritt nur beim ersten Mal durchgeführt werden muss. Zunächst muss das benötigte Paket in der lokalen, d.h. derjenigen auf dem Rechner laufenden, <code>R</code>-Umgebung installiert werden, wenn es noch nicht bereits vorher installiert wurde (in R-Studio: Reiter unten-links <strong>Packages</strong>).</p>
+<p>Ein Paket kann mittels des Befehlt <code>install.packages()</code> installiert werden. Der Name des Paket muss in Gänsefüßchen an die Funktion übergeben werden. Wollen wir beispielsweise das Paket <code>performance</code> installieren, führen wir den folgenden Befehl aus.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">install.packages</span>(<span class="st">"performance"</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>R</code> kontaktiert im Hintergrund den CRAN-Server und lädt das Paket sowie benötigte Abhängigkeiten automatisch herunter. Wenn alles gut läuft, dann ist das Paket nun in der lokalen Umgebung <em>installiert</em>. Die Funktionalität des Paket steht jedoch noch nicht direkt zur Verfügung! Sondern, das Paket muss mit einem weiteren Befehl in die derzeit aktive Arbeitsumgebung geladen werden.</p>
+<p>Um das Paket in die aktive Arbeitsumgebung zu laden wird gibt es zwei Befehle in <code>R</code>, <code>library()</code> und <code>require()</code>. Bei <code>require()</code> überprüft <code>R</code> zunächst ob das Paket schon geladen wurde, während bei <code>library()</code> das Paket einfach geladen wird. Um die Funktionalität von <code>performance</code> jetzt in der aktiven Session zu nutzen, kann dementsprechend <code>library()</code> benutzt werden.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">library</span>(performance)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Dieser zweite Schritt des Paket laden, muss jedes mal nach einen Neustart von <code>R</code> wieder durchgeführt werden. Zusatzpakete werden durch <code>R</code> beim Start nicht automatisch geladen.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tipp
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Neue Pakete müssen nur beim ersten Mal neu installiert werden. Danach immer nur noch entweder mit <code>library()</code> oder <code>require()</code> geladen werden.</p>
+</div>
+</div>
+<p>Der große Vorteil von <code>R</code>, beziehungsweise von jeder vollwertigen Programmiersprache, besteht nun darin, dass problemlos eigene Funktion definiert werden können sollten sich keine bereits fertigen Funktionen finden lassen. Dies führt dazu, dass ständig neue Funktionalität zu <code>R</code> hinzugefügt werden kann und mittlerweile kaum eine Disziplin nicht mit eigenen, spezialisierten Paketen aufwarten kann.</p>
+</section>
+<section id="eigene-funktionen-schreiben" class="level3" data-number="2.2.3">
+<h3 data-number="2.2.3" class="anchored" data-anchor-id="eigene-funktionen-schreiben"><span class="header-section-number">2.2.3</span> Eigene Funktionen schreiben</h3>
+<p>Im folgenden wird nur kurz examplarisch das Schreiben eigener Funktionen gezeigt, da damit deutlich tiefer in die Programmierung mit <code>R</code> eingestiegen werden muss, als dass zum jetzigen Zeitpunkt notwendig ist.</p>
+<p>Wollen wir zum Beispiel eine Funktion schreiben die den gewichteten Mittelwert aus zwei Werten berechnet mit den Gewichten <span class="math inline">\((\frac{1}{3},\frac{2}{3})\)</span>:</p>
+<p><span class="math display">\[\begin{equation*}
+f(x,y) = \frac{1}{3}x + \frac{2}{3}y
+\end{equation*}\]</span></p>
+<p>Dann könnten wir das in <code>R</code> wie folgt ausdrücken.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> mein_gewichteter_mittelwert <span class="ot">&lt;-</span> <span class="cf">function</span>(x,y) { </span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   x<span class="sc">/</span><span class="dv">3</span> <span class="sc">+</span> <span class="dv">2</span><span class="sc">*</span>y<span class="sc">/</span><span class="dv">3</span> </span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Um eine eigene Funktion zu defineren, muss das <em>Schlüsselworts</em> <code>function()</code> verwendet werden. Wenn <code>R</code> den Ausdruck <code>function</code> sieht, dann interpretiert es den Ausdruck als Definition einer neuen Funktion. Auf das Schlüsselwort folgen runde Klammern <code>()</code> die die benötigten Parameter der Funktion umschließen. Im Beispiel werden zwei Parameter definiert <span class="math inline">\(x\)</span> und <span class="math inline">\(y\)</span>. Die Namen der Parameter sind dabei vollkommen willkürlich und müssen lediglich zu späteren Ausdruck in der Funktion passen. Es folgen dann zwei geschweifte Klammern <code>{}</code> die den sogenannten Funktionskörper definieren. Im Funktionskörper ist die Funktionalität der Funktion hinterlegt. Konkret stehen hier die Ausdrücke mit derer die Funktion ihren Ergebniswert berechnen kann. Um die Funktion aufrufbar zu machen, braucht sie wieder einen Bezeichner. Dieser wird mittels des Zuweisungsoperators <code>&lt;-</code> definiert. In R-Studio sollte in der <strong>Environment</strong> nach dem Ausführen der Anweisung nun ein Eintrag mit dem Namen <code>mein_gewichteter_mittelwert</code> stehen. Der Name ist wiederum vollkommen willkürlich und es <code>R</code> kontrolliert nicht ob mein Bezeichner semantisch dem entspricht was die Funktion berechnet.</p>
+<p>Nachdem ich die Funktion definiert habe, kann ich sie wie jeder andere Funktion aufrufen. Bei Aufrufen der Funktion werden die Parameter entsprechend der übergegebenen Werte in den Klammern im Funktionskörper ersetzt. Und <code>R</code> führt die Anweisungen im Funktionskörper aus. Der Rückgabewert der Funktion ist die letzte Anweisung des Funktionskörpers. Im vorliegenden Beispiel, da es nur eine Anweisung gibt, wird dieser Wert zurück gegeben.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">mein_gewichteter_mittelwert</span>(<span class="dv">3</span>,<span class="dv">6</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 5</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Hinweis
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Was die letzte Anweisung für den Rückgabewert bedeutet ist etwas einfacher zu sehen, wenn wir die Funktion etwas kompliziert schreiben.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> mein_gewichteter_mittelwert_2 <span class="ot">&lt;-</span> <span class="cf">function</span>(x,y) { </span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   a <span class="ot">&lt;-</span> x<span class="sc">/</span><span class="dv">3</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   b <span class="ot">&lt;-</span> <span class="dv">2</span><span class="sc">*</span>y<span class="sc">/</span><span class="dv">3</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   a <span class="sc">+</span> b</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">mein_gewichteter_mittelwert_2</span>(<span class="dv">3</span>,<span class="dv">6</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 5</code></pre>
+</div>
+</div>
+<p>Hier haben wir mit <code>a</code> und <code>b</code> zunächst zwei Zwischenberechnung durchgeführt und dann in der letzten Anweisung das Ergebnis für den Rückgabewert berechnet.</p>
+</div>
+</div>
+<p>Wer tiefer in die Programmierung von Funktion in <code>R</code> einsteigen möchte, sollte sich <a href="https://r4ds.hadley.nz/functions.html">R4DS</a> und <a href="https://adv-r.hadley.nz/functions.html">Advanced R</a> anschauen.</p>
+</section>
+</section>
+<section id="datentypen" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="datentypen"><span class="header-section-number">2.3</span> Datentypen</h2>
+<p>Um mit <code>R</code> effektiv zu arbeiten ist ein zumindest oberflächliches Verständnis von sogenannten Datentypen notwendig. Konzeptionell sind Datentypen Eigenschaften von Werten die bestimmen welche Operationen mit diesem Wert möglich sind. Der einfachste Datentyp numerisch erlaubt zum Beispiel die üblichen mathematischen Operationen <code>+-/*</code> die wir bereits kennengelernt haben. Eine Zeichenkette <code>"Haus"</code> lässt sich dagegen nicht dividieren. Die Werte können auch als Objekte bezeichnet werden, was konzeptionell einfacher nachzuvollziehen. Den Datentypen eines Objektes kann mittels der Funktion <code>typeof()</code> bestimmt werden. Ein Objekt hat einen Typ und einen Wert. Wir beginnen mit den grundlegendsten, den atomaren (atomic), Datentypen: Numerisch, Zeichenketten und logische Werte.</p>
+<section id="numerisch" class="level3" data-number="2.3.1">
+<h3 data-number="2.3.1" class="anchored" data-anchor-id="numerisch"><span class="header-section-number">2.3.1</span> Numerisch</h3>
+<p>Wie bereits beschreiben, ist einer der einfachsten Datentypen ein numerischer Wert wie <code>1</code>, <code>123345</code> <code>12.3456</code>. Es gibt noch eine Unterscheidung in <code>R</code> zwischen ganzzahligen Werten (integer) und Dezimalzahlen (double), wobei für die meisten Anwendungsfälle die Unterscheidung nicht von großer Bedeutung ist. Das Dezimaltrennzeichen in <code>R</code> ist ein Punkt <code>.</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> dezimal_zahl <span class="ot">&lt;-</span> <span class="fl">12.345</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> dezimal_zahl</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 12.345</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">typeof</span>(dezimal_zahl)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "double"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">typeof</span>(<span class="fl">12.345</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "double"</code></pre>
+</div>
+</div>
+<p>Integer Werte werden in <code>R</code> mit einem angehängtem <code>L</code> spezifiziert. Wir kein <code>L</code> angehängt geht <code>R</code> per default bei Zahlen immer von einer Dezimalzahl aus.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> ganz_zahl <span class="ot">&lt;-</span> 12345L</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> ganz_zahl</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 12345</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">typeof</span>(ganz_zahl)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "integer"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">typeof</span>(<span class="dv">12345</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "double"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">typeof</span>(12345L)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "integer"</code></pre>
+</div>
+</div>
+<p>Die numerischen Werte erlauben die üblichen mathematischen Operationen.</p>
+</section>
+<section id="zeichenketten-strings" class="level3" data-number="2.3.2">
+<h3 data-number="2.3.2" class="anchored" data-anchor-id="zeichenketten-strings"><span class="header-section-number">2.3.2</span> Zeichenketten (Strings)</h3>
+<p>Der nächste Datentyp sind Zeichenketten (character in den meisten anderen Programmiersprachen strings). Zeichenketten repräsentieren Textdaten und werden oft für die Manipulation von Texten und die Verarbeitung von Zeichen verwendet. Zeichenketten können mit einfachen Anführungszeichen (<code>'</code>) oder doppelten Anführungszeichen (<code>"</code>) erstellt werden.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> s_1 <span class="ot">&lt;-</span> <span class="st">"Haus"</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> s_1</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Haus"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">typeof</span>(s_1)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "character"</code></pre>
+</div>
+</div>
+<p>In <code>R</code> wird der Typ von Zeichenketten als <code>character</code> bezeichnet.</p>
+<p>Bezüglich der Anführungszeiche, besteht semantisch kein Unterschied zwischen den einfachen und den doppelten Anführungszeichen und es ist mehr ein Zeichen persönlicher Präferenz welche Art benutzt wird. Ein Anwendungsfall wo die Art von Bedeutung ist, erfolgt wenn innerhalb der Zeichenketten Anführungszeichen benötigt werden. Dann müssen die äußeren Zeichenketten der jeweils andere Typ sein, da ansonsten <code>R</code> die Zeichenkette nicht als solche erkennt. Also zum Beispiel wenn ich als Zeichenkette den Wert: <code>Er sagte: "Nein"!</code>, benötige, verwende ich die einfachen Anführungszeichen um <code>R</code> zu signalisieren das ich eine Zeichenkette benötige.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> s_2 <span class="ot">&lt;-</span> <span class="st">'Er sagte: "Nein"!'</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> s_2</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Er sagte: \"Nein\"!"</code></pre>
+</div>
+</div>
+<p>Um Operationen auf Zeichenketten anzuwenden gibt es in <code>R</code> eine ganze Reihe von spezialisierten Funktionen. Möchte ich zum Beispiel einen Teil der Zeichen aus einer Zeichenkette extrahieren, kann ich die <code>substring()</code>-Funktion verwenden.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> s_3 <span class="ot">&lt;-</span> <span class="st">"DasisteinelangeZeichenkette"</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">substring</span>(s_3, <span class="dv">4</span>, <span class="dv">6</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "ist"</code></pre>
+</div>
+</div>
+<p>Der erste Parameter übergibt die Zeichenkette an <code>substring()</code> während der zweiter Parameter den Startposition und der dritte Parameter die Endposition des zu extrahierenden Strings angibt.</p>
+<p>Die Länge einer Zeichenkette kann mit der Funktion <code>nchar()</code> bestimmt werden.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">nchar</span>(s_3)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 27</code></pre>
+</div>
+</div>
+<p>Eine Funktion die oft mit Zeichenketten eine Anwendung findet ist die <code>paste()</code> bzw. die Spezialform <code>paste0()</code>. Mit <code>paste()</code> können Zeichenkette zusammengesetzt werden.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">paste</span>(<span class="st">'Ich'</span>, <span class="st">'bin'</span>, <span class="st">'ein'</span>, <span class="st">'Berliner'</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Ich bin ein Berliner"</code></pre>
+</div>
+</div>
+<p>Per default fügt <code>paste()</code> ein Leerzeichen zwischen die Zeichenketten ein. Dies kann entsprechend angepasst werden.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">paste</span>(<span class="st">'Ich'</span>, <span class="st">'bin'</span>, <span class="st">'ein'</span>, <span class="st">'Kölner'</span>, <span class="at">sep =</span> <span class="st">'--'</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Ich--bin--ein--Kölner"</code></pre>
+</div>
+</div>
+<p>Die Argumente an <code>paste()</code> müssen nicht alle Zeichenketten sein, werden aber dann in Zeichenketten konvertiert.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">paste</span>(<span class="dv">3</span>, <span class="dv">2</span>, <span class="st">'-mal'</span>, <span class="at">sep=</span><span class="st">''</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "32-mal"</code></pre>
+</div>
+</div>
+<p><code>paste0()</code> ist eine Spezielform von <code>paste()</code> bei der das Argument <code>sep</code> auf <code>""</code> gesetzt ist. Das heißt, die Zeichenketten werden direkt aneinander gehängt.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">paste0</span>(<span class="st">'kein'</span>,<span class="st">'zwischen'</span>,<span class="st">'raum'</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "keinzwischenraum"</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tipp
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Das Paket <code>stringr</code> bietet eine große Sammlung von Funktion die den Umgang und die Manipulation von Zeichenketten stark vereinfachen.</p>
+</div>
+</div>
+</section>
+<section id="logische-boolean-werte" class="level3" data-number="2.3.3">
+<h3 data-number="2.3.3" class="anchored" data-anchor-id="logische-boolean-werte"><span class="header-section-number">2.3.3</span> Logische (Boolean) Werte</h3>
+<p>Der nächste Datentyp sind sogenannte logische Werte oder Wahrheitswerte. Logische Werte können nur einen von zwei Werten annehmen, entweder WAHR oder FALSCH. Logische Ausdrücke kennt ihr wahrscheinlich aus der Schule in Form von Wahrheitstabellen bei denen boolesche Werte entweder mit <strong>und</strong> <span class="math inline">\(\cap\)</span> oder <strong>oder</strong> <span class="math inline">\(\cup\)</span> verknüpft werden (siehe <a href="#tbl-r-kickoff-bool">Tabelle&nbsp;<span>2.1</span></a>).</p>
+<div id="tbl-r-kickoff-bool" class="tbl-parent quarto-layout-panel anchored">
+<div class="panel-caption table-caption">
+<p>Tabelle&nbsp;2.1: Verknüpfung von Wahrheitswerten mit und (<span class="math inline">\(\cap\)</span>) bzw. oder (<span class="math inline">\(\cup\)</span>).</p>
+</div>
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div id="tbl-r-kickoff-bool-1" class="quarto-layout-cell quarto-layout-cell-subref anchored" data-ref-parent="tbl-r-kickoff-bool" style="flex-basis: 50.0%;justify-content: center;">
+<table class="table">
+<caption>(a) Verknüpfung mit <span class="math inline">\(\cap\)</span></caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;"><span class="math inline">\(\cap\)</span></th>
+<th style="text-align: left;">TRUE</th>
+<th style="text-align: left;">FALSE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: left;">FALSE</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: left;">FALSE</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="tbl-r-kickoff-bool-2" class="quarto-layout-cell quarto-layout-cell-subref anchored" data-ref-parent="tbl-r-kickoff-bool" style="flex-basis: 50.0%;justify-content: center;">
+<table class="table">
+<caption>(b) Verknüpfung mit <span class="math inline">\(\cup\)</span></caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;"><span class="math inline">\(\cup\)</span></th>
+<th style="text-align: left;">TRUE</th>
+<th style="text-align: left;">FALSE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: left;">TRUE</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: left;">FALSE</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>In <code>R</code> werden die beiden Werte mit <code>TRUE</code> und <code>FALSE</code> oder in der abgekürzten Form <code>T</code> und <code>F</code> dargestellt.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> wahr <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> wahr</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> falsch <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> falsch</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] FALSE</code></pre>
+</div>
+</div>
+<p>Die beiden Verknüpfungen werden mit <code>&amp;</code> für <span class="math inline">\(\cap\)</span> und <code>|</code> für <span class="math inline">\(\cup\)</span>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> wahr <span class="sc">&amp;</span> wahr</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> wahr <span class="sc">&amp;</span> falsch</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] FALSE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> falsch <span class="sc">&amp;</span> falsch</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] FALSE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> wahr <span class="sc">|</span> wahr</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> wahr <span class="sc">|</span> falsch</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> falsch <span class="sc">|</span> falsch</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] FALSE</code></pre>
+</div>
+</div>
+<p>Logische Werte sind vor allem bei der Ablaufkontrolle und beim Indexieren wichtig.</p>
+<p>Logische Werte können in numerische Werte konvertiert (coercion) werden, dabei wird <code>FALSE</code> zu <span class="math inline">\(0\)</span> und <code>TRUE</code> zu <span class="math inline">\(1\)</span>. Mit der Funktion <code>as.numeric()</code> können wir zum Beispiel Objekte von einem Typ in einen numerischen Typ konvergieren.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">as.numeric</span>(wahr)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">as.numeric</span>(falsch)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+</div>
+<p>Die umgekehrte Richtung, von numerisch zum logischen Wert, kann mittels der Funktion <code>as.logical()</code> durchgeführt werden. Dabei werden alle Werte <span class="math inline">\(\neq0\)</span> zu WAHR und <span class="math inline">\(0\)</span> zu FALSCH.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">as.logical</span>(<span class="dv">123</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">as.logical</span>(<span class="fl">1.23</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">as.logical</span>(<span class="dv">0</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] FALSE</code></pre>
+</div>
+</div>
+<p>Die Konvertierung von einem Datentyp in einen anderen Datentyp passiert zum Teil auch automatisch. Gebe ich zum Beispiel den foglenden Ausdruck ein:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="dv">1</span> <span class="sc">&amp;</span> <span class="cn">TRUE</span></span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+<p>Erhalten wir als Ergebnis des Ausdrucks den Wert <code>TRUE</code>. Der Operator <code>&amp;</code> kann nur mit logischen Werten arbeiten. Wir haben aber einen numerischen und einen logischen Wert übergeben. <code>R</code> versucht daher zunächst den nicht-logischen Wert in einen logischen Wert zu konvertieren. In dem Falle geht das problemlos da numerische Werte, wie oben gesprochen, nach der folgenden Regel konvertiert werden.</p>
+<p><span class="math display">\[\begin{equation*}
+\text{logical}(x) = \begin{cases}
+\text{F}, \text{if } x = 0 \\
+\text{T}, \text{if } x \neq 0
+\end{cases}
+\end{equation*}\]</span></p>
+<p>Nach dieser Regel wird die <code>1</code> in <code>TRUE</code> konvertiert und dann der neue Ausdruck <code>TRUE &amp; TRUE</code> ausgewertet, der dann entsprechend zu <code>TRUE</code> führt.</p>
+<p>Eine praktische Funktion im Zusammenhang ist logischen Werte, insbesonderen logischen Vektoren, ist <code>which()</code>. <code>which()</code> gibt bei einen logischen Vektor die Position der Wert mit dem Wert <code>TRUE</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">which</span>(<span class="fu">c</span>(<span class="cn">TRUE</span>, <span class="cn">FALSE</span>, <span class="cn">TRUE</span>, <span class="cn">FALSE</span>, <span class="cn">TRUE</span>, <span class="cn">TRUE</span>))</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1 3 5 6</code></pre>
+</div>
+</div>
+</section>
+<section id="vektoren" class="level3" data-number="2.3.4">
+<h3 data-number="2.3.4" class="anchored" data-anchor-id="vektoren"><span class="header-section-number">2.3.4</span> Vektoren</h3>
+<p>Vektoren sind ein grundlegender Datentypein <code>R</code> und können sowohl numerische als auch nicht-numerische Werte speichern. Allerdings kann immer nur eine Datentyp in einem Vektor gespeichert werden. Da Vektoren sehr oft bei Datenanalysen verwendet werden und oft zur Datenrepräsentation verwendet werden, werden sie entsprechend direkt in <code>R</code> unterstützt. Etwas allgemeiner betrachtet können Vektoren als eine geordnete Sammlung von Elementen betrachtet werden. Geordnet bedeutet dabei, dass sie ein feststehende Abfolge haben.</p>
+<p>Die direkteste Art einen Vektoren in <code>R</code> zu erstellen, ist mittels der <code>c()</code> Funktion (<code>c</code> von combine). Wollen wir zum Beispiel einen numerischen Vektor mit den folgenden Einträgen erstellen.</p>
+<p><span class="math display">\[\begin{equation}
+v_1 = \begin{pmatrix}3\\7\\8\end{pmatrix}
+\end{equation}\]</span></p>
+<p>Dann sieht dies in <code>R</code> folgendermaßen aus.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_1 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">7</span>,<span class="dv">8</span>)</span>
+<span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_1</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3 7 8</code></pre>
+</div>
+</div>
+<p>Das gleiche Prinzip funktioniert auch mit anderen Typen. Beispielweise mit einem Zeichenkettenvektor.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb93"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_2 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'mama'</span>,<span class="st">'papa'</span>,<span class="st">'tochter'</span>)</span>
+<span id="cb93-2"><a href="#cb93-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_2</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "mama"    "papa"    "tochter"</code></pre>
+</div>
+</div>
+<p>Oder einem logischen Vektor.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb95"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_bool <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="cn">TRUE</span>, <span class="cn">TRUE</span>, <span class="cn">FALSE</span>, <span class="cn">TRUE</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Auf einzelne Elemente oder Teile eines Vektor kann mittels des sogenannten subsettings zugegriffen werden. Jeder Vektor hat eine definierte Länge die wir mit <code>length()</code> bestimmen können.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb96"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">length</span>(v_2)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3</code></pre>
+</div>
+</div>
+<p>Mit eckigen Klammern <code>[]</code> können wir Teilelemente des Vektors extrahieren. Die Indizierung geht dabei von <span class="math inline">\(1\)</span> bis $n = $ <code>length(Vektor)</code>. Wollen wir zum Beispiel das zweite Element aus <span class="math inline">\(v_1\)</span> extrahieren, dann verwenden wir.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb98"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb98-1"><a href="#cb98-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_1[<span class="dv">2</span>]</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 7</code></pre>
+</div>
+</div>
+<p>Wenn der Index außerhalb des erlaubten Bereichs ist, dann wird ein <code>NA</code> für <code>(N)ot (A)vailable</code> von <code>R</code> zurückgegeben.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb100"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_1[<span class="dv">10</span>]</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] NA</code></pre>
+</div>
+</div>
+<p><code>R</code> erlaubt die Verwendung von Vektoren zum subsetten. Wenn ich das 1. und 3. Element aus <span class="math inline">\(v_2\)</span> extrahieren möchte, kann ich einen Vektor mit den beiden Elementen <span class="math inline">\(1\)</span> und <span class="math inline">\(3\)</span>, <span class="math inline">\(v_{\text{index}} = (1,3)\)</span> an <code>[]</code> übergeben.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb102"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_i <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">3</span>)</span>
+<span id="cb102-2"><a href="#cb102-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_2[v_i]</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "mama"    "tochter"</code></pre>
+</div>
+</div>
+<p>Das funktioniert ebenfalls ohne den Zwischenvektor.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb104"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb104-1"><a href="#cb104-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_2[<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">3</span>)]</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "mama"    "tochter"</code></pre>
+</div>
+</div>
+<p>Der zurückgegebene Wert ist dann auch wieder ein Vektor. Wir können dadurch zum Beispiel einen Vektor erstellen, der länger als der Ursprungsvektor ist.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb106"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb106-1"><a href="#cb106-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_1[<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">3</span>)]</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3 3 7 7 8 8</code></pre>
+</div>
+</div>
+<p>Zum subsetten können auch logische Vektoren verwendet werden. Der resultierende Vektor ist ein Vektor mit denjenigen Elementen, für die der logische Vektor den Wert <code>TRUE</code> hat.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb108"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb108-1"><a href="#cb108-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_bool <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="cn">TRUE</span>, <span class="cn">FALSE</span>, <span class="cn">TRUE</span>)</span>
+<span id="cb108-2"><a href="#cb108-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_1[v_bool]</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3 8</code></pre>
+</div>
+</div>
+<p>Wird ein negativer Wert an <code>[]</code> übergeben, dann wird dieser bzw. diese Wert(e) von <code>R</code> ausgeschlossen.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb110"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb110-1"><a href="#cb110-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_1[<span class="sc">-</span><span class="dv">2</span>]</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3 8</code></pre>
+</div>
+</div>
+<p>Das funktioniert auch wieder mit Vektoren.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb112"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb112-1"><a href="#cb112-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_lang <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">6</span>,<span class="dv">7</span>)</span>
+<span id="cb112-2"><a href="#cb112-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_lang[<span class="sc">-</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">6</span>)]</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1 4 5 7</code></pre>
+</div>
+</div>
+<p>Bei all diesen Anwendungen ist immer darauf zu achten, dass solange keine Zuweisung mittels <code>&lt;-</code> ausgeführt, der jeweilige Vektor nicht verändert wird.</p>
+<p>Auf numerische Vektoren können die gängigen mathematischen Operatoren (<code>+-*/</code>) angewendet werden. Die Operationen werden elementweise ausgeführt.</p>
+<p><span class="math display">\[\begin{equation*}
+\begin{pmatrix}v_1\\v_2\\\vdots\\v_n\end{pmatrix} \times
+\begin{pmatrix}a\\b\\\vdots\\c\end{pmatrix} =
+\begin{pmatrix}av_1\\bv_2\\\vdots\\cv_n\end{pmatrix} \cdot
+\end{equation*}\]</span></p>
+<p>Dementsprechend können Vektoren auch addiert werden, wenn die Längen gleich sind. Die Addition erfolgt dann ebenfalls elementweise.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb114"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb114-1"><a href="#cb114-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_3 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>)</span>
+<span id="cb114-2"><a href="#cb114-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_4 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">6</span>)</span>
+<span id="cb114-3"><a href="#cb114-3" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_3 <span class="sc">+</span> v_4</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 5 7 9</code></pre>
+</div>
+</div>
+<p>Multiplikation mit einem Skalar folgt der üblichen Skalarmultiplikation von Vektoren aus der Mathematik.</p>
+<p><span class="math display">\[\begin{equation}
+\begin{pmatrix}3\\7\\8\end{pmatrix} \cdot 3 = \begin{pmatrix}9\\21\\24\end{pmatrix}
+\end{equation}\]</span></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb116"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb116-1"><a href="#cb116-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_1 <span class="sc">*</span> <span class="dv">3</span></span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  9 21 24</code></pre>
+</div>
+</div>
+<p>Eine etwas unglückliche gewählte Operation von <code>R</code> ist, dass auch Vektoren mit unterschiedlichen Längen addiert (subtrahiert, multipliziert, dividiert) werden können. Allerdings nur wenn die Länge des längeren Vektors ein Vielfaches des kürzeren Vektors ist. <code>R</code> wiederholt dann die Abfolge der Elemente des kürzeren Vektors so oft bis die Länge des längeren Vektors erreicht wird.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb118"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb118-1"><a href="#cb118-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_5 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>)</span>
+<span id="cb118-2"><a href="#cb118-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_6 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">6</span>)</span>
+<span id="cb118-3"><a href="#cb118-3" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_5 <span class="sc">+</span> v_6</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2 4 4 6 6 8</code></pre>
+</div>
+</div>
+<p>Dieses Verhalten ist wie gesagt etwas unglücklich gewählt, da sich sehr schnell subtile Fehler in den Code einschleichen können. Diese sind erfahrungsgemäß nur sehr schwer wieder ausfindig zu machen. Daher sollte auf diese Feature möglichst verzichtet werden.</p>
+<p>Das subsetting wird auch benutzt, wenn ich einem bestehenden Vektor Werte zuweisen will. Möchte ich zum Beispiel bei <span class="math inline">\(v_1\)</span> den zweiten Wert von einer <span class="math inline">\(2\)</span> in eine <span class="math inline">\(20\)</span> ändern. Dann verwende ich wiederum <code>[]</code> mit dem Indexwert <code>2</code> weise den entsprechend wert <code>20</code> zu.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb120"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb120-1"><a href="#cb120-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_1[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="dv">20</span></span>
+<span id="cb120-2"><a href="#cb120-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_1</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  3 20  8</code></pre>
+</div>
+</div>
+<p>Dies funktioniert auch für mehrere Werte</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb122"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb122-1"><a href="#cb122-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_1[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">100</span>)</span>
+<span id="cb122-2"><a href="#cb122-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_1</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  10 100   8</code></pre>
+</div>
+</div>
+<p>Ich kann auch nur einen einzelnen Wert zuweisen, der dann an mehrere Stellen geschrieben wird.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb124"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb124-1"><a href="#cb124-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_1[<span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
+<span id="cb124-2"><a href="#cb124-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_1</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]   10 1000 1000</code></pre>
+</div>
+</div>
+<p>Das funktioniert auch mit logischen Indexvektoren.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb126"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb126-1"><a href="#cb126-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_1[<span class="fu">c</span>(<span class="cn">TRUE</span>,<span class="cn">FALSE</span>,<span class="cn">TRUE</span>)] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">13</span></span>
+<span id="cb126-2"><a href="#cb126-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_1</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  -13 1000  -13</code></pre>
+</div>
+</div>
+<p>Per default werden Vektoren in <code>R</code> nicht als Spaltenvektoren wie in der Mathematik angesehen. Das kann manchmal ebenfalls zu Problemen in Rechnungen führen, wenn Formeln eins-zu-eins in <code>R</code> übertragen werden und die Formel von der üblichen Algebra bei Vektoren und Matrizen ausgeht. Dies sollte daher im Hinterkopf behalten werden.</p>
+<p>Wenn das Skalarprodukt <span class="math inline">\(v_x v_y = \sum_{i=1}^nv_{xi}v_{yi}\)</span> zweier Vektoren berechnet werden soll, dann muss ein spezieller Matrizenmultiplikator benutzt werden <code>%*%</code>. In unserem Beispiel mit <span class="math inline">\(v_3\)</span> und <span class="math inline">\(v_4\)</span></p>
+<p><span class="math display">\[\begin{equation*}
+v_3 \cdot v_4 = 1\cdot4 + 2\cdot5 + 3\cdot6 = 32
+\end{equation*}\]</span></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb128"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb128-1"><a href="#cb128-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_3 <span class="sc">%*%</span> v_4</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1]
+[1,]   32</code></pre>
+</div>
+</div>
+<p>In <code>R</code> gibt es verschiedene Funktion um schnell Vektoren mit bestimmten Strukturen zu erstellen. Wird ein Vektor mit aufeinanderfolgenden Ganzzahlen benötigt kann der <code>:</code> Operator verwendet werden. Es wird ein Vektor nach dem Muster <code>a:b</code> = <span class="math inline">\((a,a+1,\ldots,b-1,b)\)</span> erstellt.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb130"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb130-1"><a href="#cb130-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span></span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1 2 3</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb132"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb132-1"><a href="#cb132-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="dv">10</span><span class="sc">:</span><span class="dv">15</span></span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 10 11 12 13 14 15</code></pre>
+</div>
+</div>
+<p>Soll die Zahlenfolgen nicht ganzzahlig sein sondern ein anderes Interval haben, dann kann die <code>seq()</code> Funktion verwendet werden.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="annotated-cell-69"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><a class="code-annotation-anchor" data-target-cell="annotated-cell-69" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-69-1" class="code-annotation-target"><a href="#annotated-cell-69-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">1</span>, <span class="at">to =</span> <span class="dv">10</span>, <span class="at">by =</span> <span class="dv">2</span>)</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-69" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-69-2" class="code-annotation-target"><a href="#annotated-cell-69-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">2</span>, <span class="fl">0.25</span>)</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-69" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-69-3" class="code-annotation-target"><a href="#annotated-cell-69-3" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">2</span><span class="sc">*</span>pi, <span class="at">length.out =</span> <span class="dv">10</span>)</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-annotation">
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-69" data-target-annotation="1">1</dt>
+<dd>
+<span data-code-lines="1" data-code-cell="annotated-cell-69" data-code-annotation="1">Erstelle eine Sequenz von 1 bis 10 in Intervallen der Größe 2</span>
+</dd>
+<dt data-target-cell="annotated-cell-69" data-target-annotation="2">2</dt>
+<dd>
+<span data-code-lines="2" data-code-cell="annotated-cell-69" data-code-annotation="2">Erstelle eines Sequenz von 0 bis 0 in Intervallen der Größe <span class="math inline">\(0.25\)</span></span>
+</dd>
+<dt data-target-cell="annotated-cell-69" data-target-annotation="3">3</dt>
+<dd>
+<span data-code-lines="3" data-code-cell="annotated-cell-69" data-code-annotation="3">Erstelle eiene Sequenz von 0 bis <span class="math inline">\(2\pi\)</span> die die Länge 10 hat.</span>
+</dd>
+</dl>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1 3 5 7 9
+[1] 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00
+ [1] 0.0000000 0.6981317 1.3962634 2.0943951 2.7925268 3.4906585 4.1887902
+ [8] 4.8869219 5.5850536 6.2831853</code></pre>
+</div>
+</div>
+<p>Eine weitere Funktion die oft einen Einsatz findet ist die <code>rep()</code> Funktion mit der Vektoren mit bestimmten Wiederholungsmustern erstellt werden können.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="annotated-cell-70"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><a class="code-annotation-anchor" data-target-cell="annotated-cell-70" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-70-1" class="code-annotation-target"><a href="#annotated-cell-70-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">rep</span>(<span class="dv">3</span>, <span class="dv">5</span>)</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-70" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-70-2" class="code-annotation-target"><a href="#annotated-cell-70-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>), <span class="dv">3</span>)</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-70" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-70-3" class="code-annotation-target"><a href="#annotated-cell-70-3" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>), <span class="at">each=</span><span class="dv">3</span>)</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-annotation">
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-70" data-target-annotation="1">1</dt>
+<dd>
+<span data-code-lines="1" data-code-cell="annotated-cell-70" data-code-annotation="1">Wiederhole die Zahl 3 fünfmal.</span>
+</dd>
+<dt data-target-cell="annotated-cell-70" data-target-annotation="2">2</dt>
+<dd>
+<span data-code-lines="2" data-code-cell="annotated-cell-70" data-code-annotation="2">Wiederhole den Vektor <span class="math inline">\((1,2)\)</span> dreimal.</span>
+</dd>
+<dt data-target-cell="annotated-cell-70" data-target-annotation="3">3</dt>
+<dd>
+<span data-code-lines="3" data-code-cell="annotated-cell-70" data-code-annotation="3">Wiederhole jedes Element des Vektor <span class="math inline">\((1,2)\)</span> dreimal.</span>
+</dd>
+</dl>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3 3 3 3 3
+[1] 1 2 1 2 1 2
+[1] 1 1 1 2 2 2</code></pre>
+</div>
+</div>
+<p>Wie in den Beispielen gezeigt, können relativ unkompliziert Vektoren mit beliebigen Wiederholungen erzeugt werden.</p>
+<p>Eine weitere praktische Funktion in diesem Zusammenhang ist die Funktion <code>paste()</code> die wir schon bei den Zeichenketten kennengelernt haben. Werden Vektoren an <code>paste()</code> übergeben, werden die kürzeren Werte so oft wiederholt bis die Länge des längsten Vektors erreicht wird. Dann erfolgt erst die Zusammensetzung der Vektoren wiederum elementweise. Als Rückgabewert wird daher wiederum ein Vektor gegeben.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb136"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb136-1"><a href="#cb136-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">paste</span>(<span class="st">'Participant'</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="at">sep =</span> <span class="st">'_'</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Participant_1" "Participant_2" "Participant_3"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb138"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb138-1"><a href="#cb138-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">paste</span>(<span class="fu">c</span>(<span class="st">'A'</span>,<span class="st">'B'</span>), <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="at">sep =</span> <span class="st">'x'</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Ax1" "Bx2" "Ax3" "Bx4"</code></pre>
+</div>
+</div>
+<p>Zuletzt, benötige ich einen Vektor einer bestimmen Länge bei dem alle Elemente gleich sind kann ich die Funktionen <code>numeric()</code>, <code>character()</code> und <code>logical()</code> verwenden. Zum Beispiel wenn ich einen numerischen Vektor der Länge <span class="math inline">\(11\)</span> mit nur <span class="math inline">\(13\)</span> als Einträg gebrauche.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb140"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb140-1"><a href="#cb140-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">numeric</span>(<span class="dv">11</span>) <span class="sc">+</span> <span class="dv">13</span></span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] 13 13 13 13 13 13 13 13 13 13 13</code></pre>
+</div>
+</div>
+<p>Da Vektoren ein zentraler Datentyp in <code>R</code> sind, ist es wichtig sich möglichst eingehend mit den Eigenschaften von Vektoren zu beschäftigen. Es ist praktisch unmöglich in <code>R</code> produktiv zu werden ohne zumindest die Grundeigenschaften von Vektoren verstanden zu haben.</p>
+</section>
+<section id="matrizen" class="level3" data-number="2.3.5">
+<h3 data-number="2.3.5" class="anchored" data-anchor-id="matrizen"><span class="header-section-number">2.3.5</span> Matrizen</h3>
+<p>Matrizen sind rechteckige und damit zweidimensionale Datenstrukturen, die aus Zeilen und Spalten bestehen und als Verallgemeinerung von Vektoren zu verstehen sind. Matrizen liegen zahllosen Berechnungen in der Statistik zugrunde, auch wenn diese vorwiegend im Hintergrund stattfinden. In <code>R</code> können Matrizen genauso wie Vektoren auch Werte wie Zeichenketten oder logischen Werten haben. Wir werden uns allerdings auf numerische Matrizen beschränken, da diese am ehesten benötigt werden.</p>
+<p>Eine Matrize der Dimension <span class="math inline">\(m \times n\)</span> wird in der Mathematik wie folgt definiert.</p>
+<p><span class="math display">\[\begin{equation}
+A = (a_{ij}) = \begin{pmatrix}a_{11} &amp; \ldots &amp; a_{1n} \\
+\vdots &amp; &amp; \vdots \\
+a_{m1} &amp; \ldots &amp; a_{mn}
+\end{pmatrix}
+\end{equation}\]</span></p>
+<p>In <code>R</code> werden Matrizen mit der <code>matrix()</code>-Funktion erzeugt. In den meisten Fällen sind zwei von drei Parametern notwenig. Der erste Parameter gibt die einzelnen Werte an gefolgt von der Anzahl der Zeilen (<code>nrow</code>) und der Anzahl der Spalten (<code>ncol</code>). Meist sind nur zwei Parameter notwendig, da wenn z.B. <span class="math inline">\(m\times n\)</span> Werte an <code>matrix()</code> übergeben werden, dann kann nach Angabe der Anzahl der Zeilen, die Anzahl der Spalten hergeleitet werden bzw. genauso andersherum.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb142"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb142-1"><a href="#cb142-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="at">nrow =</span> <span class="dv">3</span>, <span class="at">ncol =</span> <span class="dv">2</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1] [,2]
+[1,]    1    4
+[2,]    2    5
+[3,]    3    6</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb144"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb144-1"><a href="#cb144-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="at">nrow =</span> <span class="dv">3</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1] [,2]
+[1,]    1    4
+[2,]    2    5
+[3,]    3    6</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb146"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb146-1"><a href="#cb146-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="at">ncol =</span> <span class="dv">2</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1] [,2]
+[1,]    1    4
+[2,]    2    5
+[3,]    3    6</code></pre>
+</div>
+</div>
+<p>Wie immer, wenn die Matrize weiter benötigt wird, dann muss der Rückgabewert von <code>matrix()</code> einer Variable zugewiesen werden.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb148"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb148-1"><a href="#cb148-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> mat_1 <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="at">nrow=</span><span class="dv">2</span>, <span class="at">ncol =</span> <span class="dv">2</span>)</span>
+<span id="cb148-2"><a href="#cb148-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> mat_1</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1] [,2]
+[1,]    1    3
+[2,]    2    4</code></pre>
+</div>
+</div>
+<p>Um Elemente in der Matrize zu manipulieren oder zu extrahieren verwendet wir wieder den subsetting Operator <code>[]</code>. Im Unterschied zum Vektor, der nur eine Dimension hat, müssen bei einer Matrize dzwei Indezis angegeben werden. Die Spezifikation erfolgt nach dem Muster <code>mat[zeile,spalte]</code>. Wie beim Vektor sind bei der Indizierung Vektoren, logische Werte und negative Werte erlaubt. Wenn ihr eine Dimension weglasst, werden entsprechend alle Zeilen bzw. Spalten angesteuert.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb150"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb150-1"><a href="#cb150-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> mat_1[<span class="dv">1</span>,<span class="dv">1</span>] <span class="co"># Element a_11</span></span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb152"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb152-1"><a href="#cb152-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> mat_1[<span class="dv">2</span>,<span class="dv">2</span>] <span class="co"># Element a_22</span></span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 4</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb154"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb154-1"><a href="#cb154-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> mat_1[,<span class="dv">1</span>]  <span class="co"># Elemente a_i1</span></span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1 2</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb156"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb156-1"><a href="#cb156-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> mat_1[<span class="dv">2</span>,]  <span class="co"># Elemente a_2j</span></span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2 4</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb158"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb158-1"><a href="#cb158-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> mat_1[<span class="sc">-</span><span class="dv">2</span>,<span class="dv">1</span>] <span class="co"># alle Elemente der ersten Spalte ohne Zeile 2</span></span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1</code></pre>
+</div>
+</div>
+<p>Über das subsetting können den indizierten Werte in der Matrize neue Werte zugewiesen werden.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb160"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb160-1"><a href="#cb160-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> mat_0 <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nr=</span><span class="dv">6</span>, <span class="at">nc =</span> <span class="dv">3</span>)</span>
+<span id="cb160-2"><a href="#cb160-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> mat_0</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1] [,2] [,3]
+[1,]    0    0    0
+[2,]    0    0    0
+[3,]    0    0    0
+[4,]    0    0    0
+[5,]    0    0    0
+[6,]    0    0    0</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb162"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb162-1"><a href="#cb162-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> mat_0[<span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>,<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span></span>
+<span id="cb162-2"><a href="#cb162-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> mat_0[<span class="dv">5</span>,<span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">13</span></span>
+<span id="cb162-3"><a href="#cb162-3" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> mat_0</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1] [,2] [,3]
+[1,]    0    0    0
+[2,]    0    1    0
+[3,]    0    2    0
+[4,]    0    0    0
+[5,]    0  -13  -13
+[6,]    0    0    0</code></pre>
+</div>
+</div>
+<p>Matrizen können wie Vektoren auf zwei Arten multipliziert werden. Entweder die Elementweise mittels <code>*</code> oder Matrizenmultiplikation über <code>%*%</code> nach dem Muster.</p>
+<p><span class="math display">\[\begin{gather*}
+\begin{bmatrix}
+    a_{11} &amp; a_{12} &amp; \dots  &amp; a_{1n} \\
+    a_{21} &amp; a_{22} &amp; \dots  &amp; a_{2n} \\
+    \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+    a_{m1} &amp; a_{m2} &amp; \dots  &amp; a_{mn}
+\end{bmatrix}
+\times
+\begin{bmatrix}
+    b_{11} &amp; b_{12} &amp; \dots  &amp; b_{1p} \\
+    b_{21} &amp; b_{22} &amp; \dots  &amp; b_{2p} \\
+    \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+    b_{n1} &amp; b_{n2} &amp; \dots  &amp; b_{np}
+\end{bmatrix}
+=
+\begin{bmatrix}
+    c_{11} &amp; c_{12} &amp; \dots  &amp; c_{1p} \\
+    c_{21} &amp; c_{22} &amp; \dots  &amp; c_{2p} \\
+    \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+    c_{m1} &amp; c_{m2} &amp; \dots  &amp; c_{mp}
+\end{bmatrix} \\
+\text{mit } c_{ij} = a_{i1}b_{1j} + a_{i2}b_{2j} + \dots + a_{in}b_{nj} \text{ für } 1 \leq i \leq m \text{ und } 1 \leq j \leq p.
+\end{gather*}\]</span></p>
+<p>Etwas übersichtlicher mit einem einfachen Beispiel.</p>
+<p><span class="math display">\[
+\begin{matrix}
+&amp; \begin{pmatrix}
+b_1 &amp; b_2 \\
+b_3 &amp; b_4
+\end{pmatrix} \\
+\begin{pmatrix}
+a_1 &amp; a_2 \\
+a_3 &amp; a_4 \\
+\end{pmatrix} &amp;
+\begin{pmatrix}
+a_1 \cdot b_1 + a_2 \cdot b_3 &amp; a_1\cdot b_2 + a_2\cdot b_4 \\
+a_3 \cdot b_1 + a_4 \cdot b_3 &amp; a_3\cdot b_2 + a_4\cdot b_4 \\
+\end{pmatrix}
+\end{matrix}
+\]</span></p>
+<p>D.h. die Zeilen von <span class="math inline">\(A\)</span> werden mit den Spalten von <span class="math inline">\(B\)</span> per Skalaprodukt multipliziert. Für die Matrizenmultiplikation müssen die Matrizen <span class="math inline">\(A\)</span> und <span class="math inline">\(B\)</span> konform sein. Die Anzahl der Spalten von <span class="math inline">\(A\)</span> muss gleich der Anzahl der Zeilen von <span class="math inline">\(B\)</span> sein.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb164"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb164-1"><a href="#cb164-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> A <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="at">nr=</span><span class="dv">2</span>)</span>
+<span id="cb164-2"><a href="#cb164-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> B <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="at">nr=</span><span class="dv">3</span>)</span>
+<span id="cb164-3"><a href="#cb164-3" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> A</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1] [,2] [,3]
+[1,]    1    3    5
+[2,]    2    4    6</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb166"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb166-1"><a href="#cb166-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> B</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1] [,2]
+[1,]    1    4
+[2,]    2    5
+[3,]    3    6</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb168"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb168-1"><a href="#cb168-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> A <span class="sc">%*%</span> B</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1] [,2]
+[1,]   22   49
+[2,]   28   64</code></pre>
+</div>
+</div>
+<p>Um die Dimension einer Matrize, d.h. die Anzahl der Zeilen und Spalten, zu bestimmen gibt es in <code>R</code> die Funktion <code>dim()</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb170"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb170-1"><a href="#cb170-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">dim</span>(A)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2 3</code></pre>
+</div>
+</div>
+<p>Der erste Wert gibt entsprechend die Anzahl der Zeilen an während der zweite Wert die Anzahl der Spalten anzeigt. Wenn nur einer der Werte benötigt wird, gibt es auch die beiden Kurzfunktionen:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb172"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb172-1"><a href="#cb172-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">nrow</span>(A)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb174"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb174-1"><a href="#cb174-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">ncol</span>(A)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3</code></pre>
+</div>
+</div>
+<p>Ansonsten funktionieren die mathematischen Operator wie in der Matrizenalgebra zu erwarten ist. Wenn z.B. zwei Matrizen addiert werden sollen, dann müssen die Dimensionen übereinstimmen.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb176"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb176-1"><a href="#cb176-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> A <span class="sc">+</span> B</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in A + B: nicht passende Arrays</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb178"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb178-1"><a href="#cb178-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> D <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">11</span><span class="sc">:</span><span class="dv">16</span>, <span class="at">nr=</span><span class="dv">2</span>)</span>
+<span id="cb178-2"><a href="#cb178-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">dim</span>(D)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2 3</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb180"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb180-1"><a href="#cb180-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> A <span class="sc">+</span> D</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1] [,2] [,3]
+[1,]   12   16   20
+[2,]   14   18   22</code></pre>
+</div>
+</div>
+<p>Mit der Funktion <code>diag()</code> kann eine quadratische Diagonalmatrize erzeugt werden. Eine Diagonalmatrize hat nur auf der sogenannten Hauptdiagonalen Einträge, während alle anderen Werte <span class="math inline">\(=0\)</span> sind (siehe Formel <span class="math inline">\(\eqref{eq-r-kickoff-diag}\)</span>).</p>
+<p><span class="math display">\[\begin{equation}
+\begin{pmatrix}
+d_{11}&amp; 0      &amp; 0 &amp; \cdots &amp; 0 \\
+0     &amp; d_{22} &amp; 0 &amp;        &amp;\vdots \\
+0     &amp; 0      &amp; \ddots &amp;   &amp;  \\
+\vdots&amp;        &amp;   &amp;        &amp;  \\
+0     &amp;  \cdots &amp;  &amp;        &amp; d_{nn}
+\end{pmatrix}
+\label{eq-r-kickoff-diag}
+\end{equation}\]</span></p>
+<p>Eine in der Statistik und generell in der linearen Algebra wichtige Matrize ist die Einheitsmatrize <span class="math inline">\(\mathbf{I}_n\)</span>. Die Einheitsmatrize ist eine Diagonalmatrize bei der alle Einträge auf der Hauptdiagonalen <span class="math inline">\(=1\)</span> sind.</p>
+<p><span class="math display">\[\begin{equation}
+\mathbf{I}_n = \begin{pmatrix}
+1 &amp; 0 &amp; \cdots &amp; 0 \\
+0 &amp; 1 &amp; &amp; \vdots \\
+\vdots &amp;  &amp; \ddots &amp;  \\
+0 &amp; \cdots &amp; &amp; 1
+\end{pmatrix}
+\label{eq-unity-matrix}
+\end{equation}\]</span></p>
+<p>Der Parameter <span class="math inline">\(n\)</span> gibt die Dimension an. Da es sich um eine quadratische Matrize handelt ist die Anzahl der Zeilen gleich der Anzahl der Spalten. Die Einheitsmatrize hat in der linearen Algebra die Funktion des Einselement. Wenn eine Matrize <span class="math inline">\(M\)</span> mit der Einheitsmatrize <span class="math inline">\(\mathbf{I}\)</span> multipliziert, dann ist das Ergebnis wieder die Matrize <span class="math inline">\(M\)</span>, wie auch <span class="math inline">\(m \cdot 1 = m\)</span>.</p>
+<p>Mit <code>diag(n)</code> kann eine Einheitsmatrize in <code>R</code> generiert werden.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb182"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb182-1"><a href="#cb182-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> I_3 <span class="ot">&lt;-</span> <span class="fu">diag</span>(<span class="dv">3</span>)</span>
+<span id="cb182-2"><a href="#cb182-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> I_3</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1] [,2] [,3]
+[1,]    1    0    0
+[2,]    0    1    0
+[3,]    0    0    1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb184"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb184-1"><a href="#cb184-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> M <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>, <span class="at">nr=</span><span class="dv">3</span>)</span>
+<span id="cb184-2"><a href="#cb184-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> I_3 <span class="sc">%*%</span> M</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1] [,2] [,3]
+[1,]    1    4    7
+[2,]    2    5    8
+[3,]    3    6    9</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb186"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb186-1"><a href="#cb186-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> M <span class="sc">%*%</span> I_3</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1] [,2] [,3]
+[1,]    1    4    7
+[2,]    2    5    8
+[3,]    3    6    9</code></pre>
+</div>
+</div>
+<p>Möchte ich eine Diagonalmatrize erstellen die bestimmte Wert auf der Hauptdiagonalen hat, dann kann ich <code>diag()</code> auch einen Vektor mit den Werten übergeben.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb188"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb188-1"><a href="#cb188-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">diag</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>) </span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1] [,2] [,3] [,4]
+[1,]    1    0    0    0
+[2,]    0    2    0    0
+[3,]    0    0    3    0
+[4,]    0    0    0    4</code></pre>
+</div>
+</div>
+<p>Wenn <code>diag()</code> eine Matrize übergeben wird, dann werden die Elemente auf der Hauptdiagonalen extrahiert.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb190"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb190-1"><a href="#cb190-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> E <span class="ot">&lt;-</span> <span class="fu">diag</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>)</span>
+<span id="cb190-2"><a href="#cb190-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">diag</span>(E)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1 2 3 4</code></pre>
+</div>
+</div>
+<p>Eine Matrize kann mit Hilfe der <code>t()</code> Funktion transponiert werden.</p>
+<p><span class="math display">\[\begin{align*}
+A^T = a_{ji} = \begin{pmatrix}a_{11} &amp; \ldots &amp; a_{m1} \\
+\vdots &amp; &amp; \vdots \\
+a_{n1} &amp; \ldots &amp; a_{mn}
+\end{pmatrix}
+\end{align*}\]</span></p>
+<p>Ein anschauliches Beispiel:</p>
+<p><span class="math display">\[\begin{align*}
+(a_{ij}) &amp;= \begin{pmatrix} 1 &amp; 3 &amp; 5 \\ 2 &amp; 4 &amp; 6\end{pmatrix} \\
+(a_{ij})^T = (a_{ji}) &amp;= \begin{pmatrix} 1 &amp; 2 \\ 3 &amp; 4 \\ 5 &amp; 6 \end{pmatrix}
+\end{align*}\]</span></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb192"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb192-1"><a href="#cb192-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">t</span>(A)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1] [,2]
+[1,]    1    2
+[2,]    3    4
+[3,]    5    6</code></pre>
+</div>
+</div>
+<p>D.h. beim transponieren, werden die Zeilen und Spalten der Matrize vertauscht.</p>
+<p>Mit den Funktionen <code>cbind()</code> und <code>rbind()</code> können zusätzliche Spalten bzw. Zeilen an eine Matrize angehängt werden. Dabei werden die Argumente so wiederholt, dass die Anzahl der Elemente übereinstimmt, bzw. ein Fehler geworfen wenn die Anzahl kein Vielfaches voneinander ist.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb194"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb194-1"><a href="#cb194-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">cbind</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, E)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    1    0    0    0
+[2,]    2    0    2    0    0
+[3,]    1    0    0    3    0
+[4,]    2    0    0    0    4</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb196"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb196-1"><a href="#cb196-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">rbind</span>(E,<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1] [,2] [,3] [,4]
+[1,]    1    0    0    0
+[2,]    0    2    0    0
+[3,]    0    0    3    0
+[4,]    0    0    0    4
+[5,]    1    2    1    2</code></pre>
+</div>
+</div>
+<p>Um die Inverse eine quadratischen Matrize zu berechnen bzw. um lineare Gleichungsysteme zu lösen kann die <code>solve()</code> Funktion verwendet werden.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb198"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb198-1"><a href="#cb198-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> E_inv <span class="ot">&lt;-</span> <span class="fu">solve</span>(E)</span>
+<span id="cb198-2"><a href="#cb198-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> E_inv <span class="sc">%*%</span> E</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1] [,2] [,3] [,4]
+[1,]    1    0    0    0
+[2,]    0    1    0    0
+[3,]    0    0    1    0
+[4,]    0    0    0    1</code></pre>
+</div>
+</div>
+<p>Um das Gleichungssystem</p>
+<p><span class="math display">\[\begin{align*}
+2x + 3y &amp;= 7 \\
+-4x + y &amp;= 2 \\
+\end{align*}\]</span></p>
+<p>zu lösen, kann zum Beispiel der folgende Code verwendet.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb200"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb200-1"><a href="#cb200-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> A <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">2</span>,<span class="sc">-</span><span class="dv">4</span>,<span class="dv">3</span>,<span class="dv">1</span>), <span class="at">nr=</span><span class="dv">2</span>)</span>
+<span id="cb200-2"><a href="#cb200-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> y <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">7</span>,<span class="dv">2</span>)</span>
+<span id="cb200-3"><a href="#cb200-3" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> x <span class="ot">&lt;-</span> <span class="fu">solve</span>(A,y)</span>
+<span id="cb200-4"><a href="#cb200-4" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> x</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.07142857 2.28571429</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb202"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb202-1"><a href="#cb202-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> A <span class="sc">%*%</span> x</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1]
+[1,]    7
+[2,]    2</code></pre>
+</div>
+</div>
+<p>Weitere Funktionen wie beispielweise die QR-Zerlegung findet ihr in der Dokumentation.</p>
+<p>Eine weitere hilfreiche Funktion im Zusammenhang mit der Programmierung mit Matrizen ist die <code>apply()</code> Funktion. Mit <code>apply()</code> kann eine Funktion auf die einzelnen Spalten oder Zeilen einer Matrize angewendet werden.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="annotated-cell-105"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><a class="code-annotation-anchor" data-target-cell="annotated-cell-105" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-105-1" class="code-annotation-target"><a href="#annotated-cell-105-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> F <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">1</span>, <span class="at">nr =</span> <span class="dv">4</span>, <span class="at">nc =</span> <span class="dv">3</span>)</span>
+<span id="annotated-cell-105-2"><a href="#annotated-cell-105-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> F</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-105" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-105-3" class="code-annotation-target"><a href="#annotated-cell-105-3" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">apply</span>(F, <span class="dv">1</span>, sum)</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-105" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-105-4" class="code-annotation-target"><a href="#annotated-cell-105-4" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">apply</span>(F, <span class="dv">2</span>, sum)</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-annotation">
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-105" data-target-annotation="1">1</dt>
+<dd>
+<span data-code-lines="1" data-code-cell="annotated-cell-105" data-code-annotation="1">Eine Matrize <span class="math inline">\(F\)</span> mit vier Zeilen und drei Spalten die nur Einsen als Einträge hat wird erstellt.</span>
+</dd>
+<dt data-target-cell="annotated-cell-105" data-target-annotation="2">2</dt>
+<dd>
+<span data-code-lines="3" data-code-cell="annotated-cell-105" data-code-annotation="2">Die Summenfunktion wird entlang der ersten Dimension (Zeilen) auf <span class="math inline">\(F\)</span> angewendet.</span>
+</dd>
+<dt data-target-cell="annotated-cell-105" data-target-annotation="3">3</dt>
+<dd>
+<span data-code-lines="4" data-code-cell="annotated-cell-105" data-code-annotation="3">Die Summenfunktion wird entlang der zweiten Dimension (Spalten) auf <span class="math inline">\(F\)</span> angewendet.</span>
+</dd>
+</dl>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1] [,2] [,3]
+[1,]    1    1    1
+[2,]    1    1    1
+[3,]    1    1    1
+[4,]    1    1    1
+[1] 3 3 3 3
+[1] 4 4 4</code></pre>
+</div>
+</div>
+</section>
+<section id="data.frame-oder-tibble" class="level3" data-number="2.3.6">
+<h3 data-number="2.3.6" class="anchored" data-anchor-id="data.frame-oder-tibble"><span class="header-section-number">2.3.6</span> <code>data.frame()</code> oder <code>tibble()</code></h3>
+<p>Dataframes sind eine zentrale Datenstruktur in <code>R</code> da praktisch alle Arten von Daten mittels Dataframes organisiert werden. Konzeptionell sind Dataframes ähnlich zu Matrizen, sie ermöglichen allerdings die Speicherung verschiedener Datentypen (z. B. numerisch, Zeichenfolgen, Faktoren) in verschiedenen Spalten ähnlich wie die Daten in einem Tabellenprogramm organisiert sind. Jede Spalte hat dabei die gleiche Anzahl an Elementen und muss einen eineindeutigen Namen haben.</p>
+<p>Klassischerweise werden Dataframes mittels der Funktion <code>data.frame()</code> erstellt. Eine modernere Version sind die sogenannten <code>tibbles()</code> aus dem Package <code>tibble</code>. Dieses werden hier im Weiteren verwenden, d.h. <code>tibbles()</code> aus Anwendersicht verschiedene Verbesserungen mitbringen. Wir verwenden jedoch weiter den Term Dataframe um den Datentyp zu becshreiben. Daher, wenn wir ein Dataframe mittels <code>tibble()</code> erstellen wollen, müssen wir zunächst das Package <code>tibble()</code> laden.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb205"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb205-1"><a href="#cb205-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">library</span>(tibble)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Dann können wir einen Dataframe erstellen.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb206"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb206-1"><a href="#cb206-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> df_1 <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">a =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="at">b =</span> <span class="fu">c</span>(<span class="st">'eins'</span>,<span class="st">'zwei'</span>,<span class="st">'drei'</span>))</span>
+<span id="cb206-2"><a href="#cb206-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> df_1</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 2
+      a b    
+  &lt;int&gt; &lt;chr&gt;
+1     1 eins 
+2     2 zwei 
+3     3 drei </code></pre>
+</div>
+</div>
+<p>Wenn ich mir den Inhalt eines Dataframes ausgeben lasse, dann werden mir die Namen der Spalten angezeigt, in vorliegenden Fall <code>a</code> und <code>b</code>. Gefolgt vom Datentyp hier <code>&lt;int&gt;</code> den wir strenggenommen noch nicht kennengelernt haben aber auch ein numerischer Typ ist, und <code>&lt;chr&gt;</code> was die Kurzform für <code>character</code> und entsprechend Zeichenketten bezeichnet. Danach folgen die Einträge in den beiden Spalten. Standardmäßig werden nur die ersten zehn Zeilen gezeigt, was in diesem Fall nicht weiter auffällt.</p>
+<p>Wir können auf die einzelnen Spalten über zwei verschiedene Operatoren zugreifen. Einmal mittels des <code>$</code> Operator oder über <code>[[]]</code> Im ersten Fall können wir den Namen direkt verwenden.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb208"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb208-1"><a href="#cb208-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> df_1<span class="sc">$</span>a</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1 2 3</code></pre>
+</div>
+</div>
+<p>Bei der doppelten, eckigen Klammer <code>[[]]</code> müssen wir den Namen als eine Zeichenkette, also entweder in <code>'</code> oder <code>"</code> einschließen.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb210"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb210-1"><a href="#cb210-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> df_1[[<span class="st">'a'</span>]]</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1 2 3</code></pre>
+</div>
+</div>
+<p>Wenn ich eine neue Spalte hinzufügen will, kann ich einfache das Dataframe nehmen und über die Syntax von eben eine neue Spalte definieren.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb212"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb212-1"><a href="#cb212-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> df_1<span class="sc">$</span>neu <span class="ot">&lt;-</span> <span class="dv">11</span><span class="sc">:</span><span class="dv">13</span></span>
+<span id="cb212-2"><a href="#cb212-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> df_1</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 3
+      a b       neu
+  &lt;int&gt; &lt;chr&gt; &lt;int&gt;
+1     1 eins     11
+2     2 zwei     12
+3     3 drei     13</code></pre>
+</div>
+</div>
+<p>Entsprechend kann ich über eine Kombination von Spaltennamen und subsetting einzelne Elemente verändern.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb214"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb214-1"><a href="#cb214-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> df_1<span class="sc">$</span>b[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="st">"AA"</span></span>
+<span id="cb214-2"><a href="#cb214-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> df_1</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 3
+      a b       neu
+  &lt;int&gt; &lt;chr&gt; &lt;int&gt;
+1     1 eins     11
+2     2 AA       12
+3     3 drei     13</code></pre>
+</div>
+</div>
+<p>Da Daten praktisch immer in Form von Dataframes bearbeitet werden, gibt es eine ganze Reihe von Hilfsfunktionen um mit Dataframes zu arbeiten. Erstellen wir uns zunächst ein etwas größeres Beispiel.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb216"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb216-1"><a href="#cb216-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> df_2 <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb216-2"><a href="#cb216-2" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   <span class="at">id =</span> <span class="fu">paste0</span>(<span class="st">'P'</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>),</span>
+<span id="cb216-3"><a href="#cb216-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   <span class="at">gruppe =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">'CON'</span>,<span class="st">'TRT'</span>), <span class="at">each=</span><span class="dv">5</span>),</span>
+<span id="cb216-4"><a href="#cb216-4" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   <span class="at">wert =</span> <span class="dv">21</span><span class="sc">:</span><span class="dv">30</span></span>
+<span id="cb216-5"><a href="#cb216-5" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> )</span>
+<span id="cb216-6"><a href="#cb216-6" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> df_2</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 3
+   id    gruppe  wert
+   &lt;chr&gt; &lt;chr&gt;  &lt;int&gt;
+ 1 P1    CON       21
+ 2 P2    CON       22
+ 3 P3    CON       23
+ 4 P4    CON       24
+ 5 P5    CON       25
+ 6 P6    TRT       26
+ 7 P7    TRT       27
+ 8 P8    TRT       28
+ 9 P9    TRT       29
+10 P10   TRT       30</code></pre>
+</div>
+</div>
+<p>Mit der Funktion <code>summary()</code> erstellt <code>R</code> eine kurze Zusammenfassung mit deskriptiven Statistiken zum Dataframe.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb218"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb218-1"><a href="#cb218-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">summary</span>(df_2)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      id               gruppe               wert      
+ Length:10          Length:10          Min.   :21.00  
+ Class :character   Class :character   1st Qu.:23.25  
+ Mode  :character   Mode  :character   Median :25.50  
+                                       Mean   :25.50  
+                                       3rd Qu.:27.75  
+                                       Max.   :30.00  </code></pre>
+</div>
+</div>
+<p>Eine ähnliche Funktion erfüllt die Funktion <code>glimpse()</code> aus dem Package <code>tibble()</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb220"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb220-1"><a href="#cb220-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">glimpse</span>(df_2)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 10
+Columns: 3
+$ id     &lt;chr&gt; "P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8", "P9", "P10"
+$ gruppe &lt;chr&gt; "CON", "CON", "CON", "CON", "CON", "TRT", "TRT", "TRT", "TRT", …
+$ wert   &lt;int&gt; 21, 22, 23, 24, 25, 26, 27, 28, 29, 30</code></pre>
+</div>
+</div>
+<p>Die ersten <code>n</code> Elemente (default <code>n = 6</code>) mit <code>head()</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb222"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb222-1"><a href="#cb222-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">head</span>(df_2, <span class="at">n =</span> <span class="dv">4</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 3
+  id    gruppe  wert
+  &lt;chr&gt; &lt;chr&gt;  &lt;int&gt;
+1 P1    CON       21
+2 P2    CON       22
+3 P3    CON       23
+4 P4    CON       24</code></pre>
+</div>
+</div>
+<p>Die letzten <code>n</code> elemente (default <code>n = 6</code>) mit tail().</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb224"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb224-1"><a href="#cb224-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">tail</span>(df_2, <span class="at">n =</span> <span class="dv">3</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 3
+  id    gruppe  wert
+  &lt;chr&gt; &lt;chr&gt;  &lt;int&gt;
+1 P8    TRT       28
+2 P9    TRT       29
+3 P10   TRT       30</code></pre>
+</div>
+</div>
+<p>Die Spaltennamen werden mittels <code>names()</code> ausgegeben.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb226"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb226-1"><a href="#cb226-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">names</span>(df_2)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "id"     "gruppe" "wert"  </code></pre>
+</div>
+</div>
+<p>Die <code>names()</code> Funktion kann auch verwendet werden um die Spaltennamen zu verändern. Dazu kann entweder subsetting angewendet werden um bestimmte Namen zu verändern oder auch alle auf einmal.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb228"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb228-1"><a href="#cb228-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">names</span>(df_2)[<span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="st">'value'</span></span>
+<span id="cb228-2"><a href="#cb228-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> df_2</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 3
+   id    gruppe value
+   &lt;chr&gt; &lt;chr&gt;  &lt;int&gt;
+ 1 P1    CON       21
+ 2 P2    CON       22
+ 3 P3    CON       23
+ 4 P4    CON       24
+ 5 P5    CON       25
+ 6 P6    TRT       26
+ 7 P7    TRT       27
+ 8 P8    TRT       28
+ 9 P9    TRT       29
+10 P10   TRT       30</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb230"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb230-1"><a href="#cb230-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">names</span>(df_2) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'pid'</span>, <span class="st">'group'</span>, <span class="st">'measurement'</span>)</span>
+<span id="cb230-2"><a href="#cb230-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> df_2</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 3
+   pid   group measurement
+   &lt;chr&gt; &lt;chr&gt;       &lt;int&gt;
+ 1 P1    CON            21
+ 2 P2    CON            22
+ 3 P3    CON            23
+ 4 P4    CON            24
+ 5 P5    CON            25
+ 6 P6    TRT            26
+ 7 P7    TRT            27
+ 8 P8    TRT            28
+ 9 P9    TRT            29
+10 P10   TRT            30</code></pre>
+</div>
+</div>
+<p>Datenframes sind wie Vektoren zentral in der Arbeit mit <code>R</code> und es ist deshalb wiederum wichtig sich schnell in diesen Datentyp einzuarbeiten. Tatsächlich werden ihr feststellen, dass ihr sehr selten Dataframes von Hand erstellt, sondern meistens liegen die Daten schon in digitaler Form auf eurem Rechner vor und ihr ladet mittels Funktionen, die wir später kennenlernen, die Daten in <code>R</code> wo sie dann als Dataframe repräsentiert werden.</p>
+</section>
+<section id="zusammenfassung" class="level3" data-number="2.3.7">
+<h3 data-number="2.3.7" class="anchored" data-anchor-id="zusammenfassung"><span class="header-section-number">2.3.7</span> Zusammenfassung</h3>
+<p>Damit haben wir auch schon die wichtigsten Datentypen in <code>R</code> kennengelernt. In <a href="#fig-r-kickoff-dependencies">Abbildung&nbsp;<span>2.1</span></a> sind die verschiedenen Datentypen und deren Abhängigkeiten noch einmal abgebildet.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-r-kickoff-dependencies" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-r-kickoff-dependencies">flowchart TD
+    A[Dataframe] --&gt; B[Vektor]
+    F[Matrize] --&gt; B
+    B --&gt; C(Numerisch)
+    B --&gt; D(Zeichenkette)
+    B --&gt; E(Logisch)
+</pre>
+</div>
+<figcaption class="figure-caption">Abbildung&nbsp;2.1: Hierarchie der Datentypen.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Dies war natürlich nur eine Übersicht, aber sollte euch schon relativ weit in der Arbeit mit <code>R</code> bringen.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Kopiert");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Kopiert");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./r_intro.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Eine Übersicht über <code>R</code></span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./r_flowcontrol.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Ablaufkontrolle</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

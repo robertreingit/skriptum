@@ -1,0 +1,397 @@
+# Einführung 
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+source('_common.R')
+library(tibble)
+library(knitr)
+library(ggplot2)
+```
+
+Im Folgenden beschäftigen wir uns mit experimentellen Design. D.h. wir untersuchen wie wir ein Experiment aus statistischer Sicht erstellen sollten um die Wahrscheinlichkeit einen bestimmten Effekt zu beobachten möglichst Effizient zu erhöhen. Eine zentrale Größe wird dabei immer wieder der Standardfehler $\sigma_e$ der jeweiligen Statistik spielen die wählen um einen bestimmten Effekt zu untersuchen. Daher fangen wir erst einmal mit einem einfachen Beispiel an.
+
+## Zuteilung der Stichprobengrößen in zwei Gruppen
+
+Die folgenden Beispiele sind alle aus @goos2011 entnommen. Wir möchten Mittelwertsunterschied zwischen zwei Gruppen, Gruppe $1$ und Gruppe $2$, untersuchen. In Gruppe $1$ haben wir eine Stichprobengröße von $n_1$ und entsprechend eine Stichprobegröße $n_2$ in Gruppe $2$.
+
+Um den Unterschied zwischen den beiden Gruppenmittelwerten zu berechnen, verwenden wir den unspektakulär:
+
+\begin{equation}
+D = \bar{X}_1 - \bar{X}_2
+\end{equation}
+
+Der Unterschied $D$ für sich ist noch relativ wenig informativ, da er mit den Einheiten und vor allem vor dem Hintergrund der Streuung der Werte zu betrachten ist. D.h. wir benötigen auch ein Maß um die Unsicherheit $\widehat{=}$ Streuung um einen gegebenen Unterschied zu bewerten. Den Standardfehler können wir mit den uns bekannten Rechenregeln für die Varianz relativ einfach herleiten und erhalten:
+
+\begin{equation}
+\sigma^2(D) = \frac{\sigma_1^2}{n_1} + \frac{\sigma_2^2}{n_2} 
+\end{equation}
+
+Um die Wahrscheinlichkeit zu erhöhen einen relevanten Unterschied $D$ zwischen den Gruppen zu finden wählen wir nun ein Design des Experiments, dass die Varianz $\sigma^2(D)$ bzw. den Standardfehler $\sigma_e(D)$ von $D$ möglichst klein werden lässt. Denn, umso kleiner der Standardfehler umso geringer sind die Streuungen der Stichprobenverteilung und umso geringer unsere Unsicherheit. 
+
+Schauen wir uns an, was dies in einem konkreten Fall bedeutet. Gehen wir, der Übersichtlichkeit halber, von einer Gesamtstichprobengröße $N = 12$ aus mit Standardabweichungen in beiden Population von $\sigma^2_1 = \sigma^2_2 = \sigma^2 = 1$. D.h. wir nehmen an, dass in beiden Stichproben die gleiche Streuung vorliegt.
+
+```{r}
+#| tbl-cap: "Abhängigkeit der Varianz und des Standardfehler von $D$ mit der Stichprobenverteilung bei gleicher Varianz"
+#| label: tbl-ed-basics-sample-01
+
+n <- 12
+var_d12 <- function(n_1,sigma_1,sigma_2) sigma_1/n_1 - sigma_2/(n_1-12)
+var_d <- function(n_1) var_d12(n_1, 1, 1)
+tibble(n_1 = 1:11, n_2 = seq(11,1), v_d = var_d(n_1), se_d = sqrt(v_d), eff = min(v_d)/v_d) |> 
+  kable(
+    booktabs = TRUE,
+    linesep = '',
+    escape = FALSE,
+    col.names = c('$n_1$','$n_2$', '$\\sigma^2(D)$', '$\\sigma_e(D)$', 'Effizienz'),
+    digits = 2
+  )
+```
+
+In @tbl-ed-basics-sample-01 sind die Varianz $\sigma^2(D)$ und der Standardfehler $\sigma_e(D)$ gegen die Stichprobenverteilung abgetragen. Wir können sehen, dass bei gleicher Stichprobenanzahl in beiden Gruppen die Varianz und somit auch der Standardfehler den kleinsten Wert annehmen. In der fünften Spalte von @tbl-ed-basics-sample-01 ist ein Wert Effizient eingetragen. Dieser Wert berechnet sich aus dem Verhältnis der kleinstmöglichen Varianz zur jeweiligen Varianz. Wir können an diesem Wert abschätzen, das ein Design bei dem in einer der Gruppen nur eine einzige Person ist, die Effizienz nur noch ein Drittel dessen ist, was bei einer gleichmäßigen Stichprobenverteilung zu errreichen ist. D.h. so weit ist die übliche Herangehensweise, beide Gruppen möglichst gleichgroß zu gestalten vollkommmen sinnvoll.
+
+Schauen wir uns als Nächstes an, wie das aussieht wenn die Stichprobengröße $N$ anwächst. In @fig-ed-basics-sample-01 ist der Standardfehler $\sigma_e(D)$ gegen verschiedene Zuteilungen der Stichproben in die beiden Gruppen für verschiedene Stichprobengrößen abgebildet.
+
+```{r}
+#| fig-cap: "Zusammenhang zwischen den Standardfehler und Verteilung der Stichproben in die Gruppen für verschiedene Stichprobengrößen"
+#| label: fig-ed-basics-sample-01
+
+sigma <- 1
+foo <- function(p, N, sigma) {
+  sqrt(1/(p*N) + 1/((1-p)*N))
+}
+bar <- function(p, n, sigma) {
+  purrr::map_dbl(p, ~foo(.x, n, sigma))
+}
+n_s <- c(10, 20, 40, 60, 80, 100)
+p_s <- seq(0.1, 0.9, 0.05)
+t_n <- tibble(
+  p = rep(p_s, length(n_s)),
+  y = purrr::as_vector(purrr::map(n_s, ~bar(p_s, .x, sigma))),
+  n = as.character(rep(n_s, each=(length(p_s)))))
+p_1 <- ggplot(t_n, aes(p,y)) + 
+  geom_line(linewidth=1.3, aes(color=n)) +
+  scale_color_manual("N", breaks = unique(t_n$n),
+                     values = RColorBrewer::brewer.pal(length(n_s), "Set3")) +
+  labs(x = expression(paste('Proportion der', n[1])),
+       y = expression(sqrt(frac(1,n[1])~+~frac(1,n[2])))) 
+print(p_1)
+```
+
+In @fig-ed-basics-sample-01 ist zu sehen, das das bei gleichen Varianzen die gleichmäßige Verteilung der Stichprobe in die beiden Gruppen immer diejenige mit dem kleinsten Standardfehler ist. Der Standardfehler nimmt natürlich mit der Größe der Stichprobe ab. Allerdings nimmt auch die Größe der Verschlechterung bei ungleicher Verteilung mit der Größe der Stichprobe ab. Daher, wenn wir eine große Stichprobe haben, dann ist die gleichmäßige Verteilung der Stichproben weniger wichtig als bei kleinen Stichprobengrößen.
+
+Schauen wir uns daher als nächsten Fall an, was passiert wenn die Varianzen in den beiden Gruppen nicht mehr gleich sind. Sei zum Beispiel $\sigma^2 = 1$ und $\sigma^2 = 9$. Also ein recht extremer Unterschied zwischen den beiden Gruppen.
+
+```{r}
+#| tbl-cap: "Abhängigkeit der Varianz und des Standardfehler von $D$ mit der Stichprobenverteilung bei ungleicher Varianz $\\sigma_1^2 = 1, \\sigma_2^2=9$"
+#| label: tbl-ed-basics-sample-02
+
+n <- 12
+sigma_1 <- 1
+sigma_2 <- 9
+tibble(n_1 = 1:11, n_2 = seq(11,1), v_d = var_d12(n_1, sigma_1, sigma_2), se_d = sqrt(v_d), eff = min(v_d)/v_d) |> 
+  kable(
+    booktabs = TRUE,
+    linesep = '',
+    escape = FALSE,
+    col.names = c('$n_1$','$n_2$', '$\\sigma^2(D)$', '$\\sigma_e(D)$', 'Effizienz'),
+    digits = 2
+  )
+```
+
+In @tbl-ed-basics-sample-02 sind wieder die verschiedenen Werte für $\sigma^2(D)$, $\sigma_e(D)$ und die Effizienz berechnet worden. Wir können sehen, dass jetzt nicht mehr das Design mit gleichgroßen Stichproben optimal ist, sondern das Design mit $n_1 = 3$ und $n_2 = 9$. D.h. die ungleiche Varianz in den beiden Gruppen hat dazu geführt, dass der minimale Standardfehler dann eingenommen wird, wenn wir einen größere Stichprobe aus Gruppe $2$ ziehen als aus Gruppe $1$.
+
+Wenn wir diese nicht gewusst hätten und in beiden Gruppen wieder mit $n_i = 6$ gearbeitet hätten, hätten wir somit $20\%$ Effizienz eingebüßt. Intuitiv macht diese ungleiche Verteilung auch Sinn. Da die Varianz in Gruppe $2$ größer ist, ist auch unserer Unsicherheit über den Mittelwert in dieser Gruppe größer. Um diese Unsicherheit auszugleichen erhöhen wir die Stichprobenanzahl im Verhältnis zu Gruppe $1$ um mehr Information über die diese Gruppe zu erhalten. Intuitiv macht diese ungleiche Verteilung auch Sinn. Da die Varianz in Gruppe $2$ größer ist, ist auch unserer Unsicherheit über den Mittelwert in dieser Gruppe größer. Um diese Unsicherheit auszugleichen erhöhen wir die Stichprobenanzahl im Verhältnis zu Gruppe $1$ um mehr Information über die diese Gruppe zu erhalten.
+
+Schauen wir uns ein Beispiel an, bei dem die Unterschied in den Varianzen zwischen den beiden Gruppen nicht ganz so extrem sind (siehe @tbl-ed-basics-sample-03).
+
+```{r}
+#| tbl-cap: "Abhängigkeit der Varianz und des Standardfehler von $D$ mit der Stichprobenverteilung bei ungleicher Varianz $\\sigma_1^2 = 1, \\sigma_2^2=2$"
+#| label: tbl-ed-basics-sample-03
+
+n <- 12
+sigma_1 <- 1
+sigma_2 <- 2
+tibble(n_1 = 1:11, n_2 = seq(11,1), v_d = var_d12(n_1, sigma_1, sigma_2), se_d = sqrt(v_d), eff = min(v_d)/v_d) |> 
+  kable(
+    booktabs = TRUE,
+    linesep = '',
+    escape = FALSE,
+    col.names = c('$n_1$','$n_2$', '$\\sigma^2(D)$', '$\\sigma_e(D)$', 'Effizienz'),
+    digits = 2
+  )
+```
+
+In @tbl-ed-basics-sample-03 sehen wir wieder, das das effizienteste Design nicht gleich große Stichproben in den beiden Gruppen hat, sondern hier würde das Design mit $n_1 = 5$ und $n_2 = 7$ den niedrigsten Standardfehler zeigen. Der Verlust an Effizienz bei gleich großen Gruppen wäre hier praktisch zu vernachlässigen. D.h. wenn wir keine genauen Information haben wie sich die Varianzen in den beiden Gruppen verhalten, aber wir keine großen Unterschiede erwarten, dann sind wir mit gleichgroßen Gruppen wahrscheinlich oft gut bedient.
+
+Untersuchen wir die Effizienz noch einmal aus einer anderen Perspektive, nämlich des Budget das uns zur Verfügung steht. Nehmen wir an wir müssen die Untersuchung in einem Speziallabor durchführen und wir haben nur eine begrenzte Zeit zur Verfügung. Wir untersuchen wieder zwei Gruppen bei denen aber die Vorbereitung des Experiment doppelt solange für Gruppe $2$ dauert im Vergleich zu Gruppe $1$. Zum Beispiel in Gruppe $1$ benötigen wir das Labor für eine Stunde während wir für Teilnehmerinnen und Teilnehmer aus Gruppe $2$ zwei Stunden benötigen. In Gruppe $2$ ist vielleicht eine spezielle Patientenpopulation bei der wir mehr Zeit einplanen müssen. Wir haben aber nur insgesamt $24$ Stunden das Labor zu Verfügung. Wir setzen wieder $\sigma^2 = 1$ an. Wie sollten wir die Gruppengrößen zuteilen?
+
+Wir können jetzt nicht einfach die gleiche Tabelle wie in den obigen Fällen benutzen, da wir unser Zeitbudget beachten müssen. Mit etwas ausprobieren kommen wir zu folgendem Ergebnis.
+
+```{r}
+#| tbl-cap: "Abhängigkeit der Varianz und des Standardfehler von $D$ bei $\\sigma_i^2 = 1$ und Budgetbeschränkungen von $24$ Stunden"
+#| label: tbl-ed-basics-sample-04
+
+n <- 12
+tibble(n_1 = seq(22,2,-2), n_2 = 1:11, zeit = n_1  + 2*n_2, v_d = 1/n_1 + 1/n_2, se_d = sqrt(v_d), eff = min(v_d)/v_d) |>  
+  kable(
+    booktabs = TRUE,
+    linesep = '',
+    escape = FALSE,
+    col.names = c('$n_1$','$n_2$', 'Kosten', '$\\sigma^2(D)$', '$\\sigma_e(D)$', 'Effizienz'),
+    digits = 2
+  )
+```
+
+Wir sehen wieder in @tbl-ed-basics-sample-04, dass eine ungleiche Verteilung in die Gruppen die höchste Effizienz hat. Der Effekt hier, ist dass wir hier eine Balance finden müssen zwischen den größten Anzahl einer Teilnehmerinnen und Teilnehmer und der Ungleichheit der Stichprobengrößen.
+
+Zusammenfassend können wir sagen, dass bei Vergleichen zweier Gruppen das Design mit gleich großen Stichproben in beiden Gruppen die Beste Wahl ist. In Abhängigkeit wie sich die Varianzen zwischen den Gruppen verhalten und oder auch welche Randbedingungen wir für die Durchführung des Experiment haben können die Aussagen sehr unterschiedlich sein. Daher macht es Sinn sich für seinen speziellen Fall etwas Gedanken zu machen welches Design den bestmöglichen Output liefert und vielleicht nicht einfach nur ein Standarddesign aus der Schublade. Die Problematik eine informierte Entscheidung diesbezüglich zu treffen wird in den folgenden Kapitel immer wieder aufgegriffen.
+
+## Terminologie
+
+Zunächst müssen einmal vier Grundbegriffe des experimentellen Designs definiert werden diese sind, die Experimentelle Einheit (engl. Experimental unit), die Beobachtungseinheit (engl. observational unit), der Replikationsfaktor (engl. replication) und der Wiederholungsfaktor (engl. repetition bzw. auch Pseudoreplication).
+
+::: {#def-experimental-unit}
+### Experimentelle Einheit (EU)
+
+Die experimentelle Einheit \index{experimental unit} \index{Experimentelle Einheit} bezeichnet das Objekt welches untersucht wird und dem eine bestimmte Intervention (engl. treatment) bzw. experimentelle Kondition zugewiesen wird. Diese Zuweisung muss zufällig (randomisiert) stattfinden. Die Intervention bzw. die Kondition muss unabhängig von anderen experimentellen Einheiten zugewiesen werden. Die Gesamtzahl der experimentellen Einheiten bestimmt die Stichprobengröße des Experiments.
+:::
+
+::: {#def-observation-unit}
+### Beobachtungseinheit (OU)
+
+Die Beobachtungseinheit \index{Beobachtungseinheit} \index{observational unit} ist das Objekt, an der eine Messung vorgenommen wird. Die Beobachtungseinheit kann sich von der experimentellen Einheit unterscheiden.
+
+Führen wir zum Beispiel ein fünf-tägiges Experiment mit $10$ Teilneherinnen durch. Wenn wir nur eine Messung auf jeder Person am Ende des Experiments durchführen. Dann sind insgesamt $12$ Beobachtungseinheiten vorhanden. Messen wir aber jede Person an jedem Tag erhalten wir $5 \times 12 = 60$ Beobachtungseinheiten. Im ersten Fall, sind die experimentellen Einheiten und die Beobachtungseinheiten identisch.
+:::
+
+::: {#def-replication}
+### Replikation
+
+Eine Replikation ist die Wiederholung der Versuchssituation durch
+Replikation der Versuchseinheit. Replikationsläufe sind zwei oder mehr Versuche, die mit denselben Bedingungen der experimentellen Kondition bzw. unabhängigen Variablen mit **unterschiedlichen** experimentellen Einheiten durchgeführt werden. Der Wert der gemessene abhängigen Variable kann sich zwischen den Replikationsläufen aufgrund von Änderungen, Störvariablen und inhärenten Unterschieden in den Versuchseinheiten unterscheiden.
+:::
+
+::: {#def-repetition}
+### Wiederholung/Pseudoreplikation
+
+Wenn die experimentelle Einheit nach der Applikation des Treatments bzw. der Kondition aufgeteilt wird, spricht man von einer Untereinheit. Die Messungen an Untereinheiten derselben experimentellen Einheit sind in der Regel korreliert und sollten daher nicht als unabhängige Ergebnisse behandelt werden.
+:::
+
+In @tbl-ed-basics-ex-01 ist ein Beispiel für eine einfaches experimentelle Design abgebildet. Es wurden insgesamt $9$ TeilnehmerInnen zufällig auf $3$ Konditionen $A_1, A_2, A_3$ verteilt und auf jeder Person wurde eine Messung unter der entsprechenden Kondition durchgeführt. Jede Person ist einzeln untersucht wurden.
+
++------------+-----------------------+
+| Teilnehmer |         Faktor        |
+|            +-------+-------+-------+
+|            | $A_1$ | $A_2$ | $A_3$ |
++============+=======+=======+=======+
+| P1         |   X   |       |       |
++------------+-------+-------+-------+
+| P2         |       |   X   |       |
++------------+-------+-------+-------+
+| P3         |       |   X   |       |
++------------+-------+-------+-------+
+| P4         |       |       |   X   |
++------------+-------+-------+-------+
+| P5         |   X   |       |       |
++------------+-------+-------+-------+
+| P6         |       |       |   X   |
++------------+-------+-------+-------+
+| P7         |       |   X   |       |
++------------+-------+-------+-------+
+| P8         |   X   |       |       |
++------------+-------+-------+-------+
+| P9         |       |       | X     |
++------------+-------+-------+-------+
+
+: Beispiel für ein experientelles Design (X = Messung) {#tbl-ed-basics-ex-01}
+
+Was sind in diesem Fall die EU und OUs und was ist der Replikationsfaktor und der Wiederholungsfaktor? Die Personen sind randomisiert den verschiedenen Konditionen zugewiesen worden und das *treatment* erfolgt unabhängig von allen anderen Personen. Daher sind die Personen die EU und $N = 9$. Da auf jeder Person nur eine Messung erfolgt, haben wir auch insgesamt $9$ OUs. D.h. die experimentellen Einheiten und die Beobachtungseinheiten sind in diesem Design identisch. Jede Kondition wurde dreimal durch unabhängige EUs repliziert, daher ist der Replikationsfaktor $3$. Wir haben keine Wiederholungen auf den EUs, dadurch haben wir keine Pseudoreplikation.
+
+In @tbl-ed-basics-ex-02 haben wir ein ähnliches Design. Im Unterschied zu @tbl-ed-basics-ex-01 sind auf jeder Person nun zwei Messungen durchgeüführt worden.
+
++------------+-----------------------+
+| Teilnehmer |         Faktor        |
+|            +-------+-------+-------+
+|            | $A_1$ | $A_2$ | $A_3$ |
++============+=======+=======+=======+
+| P1         |  X X  |       |       |
++------------+-------+-------+-------+
+| P2         |       |  X X  |       |
++------------+-------+-------+-------+
+| P3         |       |  X X  |       |
++------------+-------+-------+-------+
+| P4         |       |       |  X X  |
++------------+-------+-------+-------+
+| P5         |  X X  |       |       |
++------------+-------+-------+-------+
+| P6         |       |       |  X X  |
++------------+-------+-------+-------+
+| P7         |       |  X X  |       |
++------------+-------+-------+-------+
+| P8         |  X X  |       |       |
++------------+-------+-------+-------+
+| P9         |       |       |  X X  |
++------------+-------+-------+-------+
+
+: Beispiel für ein experientelles Design mit zwei Messungen (X = Messung) {#tbl-ed-basics-ex-02}
+
+Dadurch sind immernoch die $EU = 9$ und der Replikationsfaktor $=2$. Die Beobachtungseinheiten sind jetzt verdoppelt $OU = 18$ und wir erhalten einen Pseudoreplikationsfaktor von $2$.
+
+Im nächsten Design wird es nun etwas komplizierter. Wir untersuchen drei verschiedene Treatments $A_1, A_2$ und $A_3$ mit insgesamt neun Studienteilnehmern. Die Teilnehmer wurden aus drei verschiedenen Vereinen akquiriert. Als Randbedingung können wir die Treatments immer nur einheitlich pro Verein anwenden. D.h. alle Teilnehmer aus einem Verein erhalten das gleiche Treatment. Die Zuordnung der Treatments auf die Vereine erfolgt jedoch randomisiert. Es ergibt sich die folgende Designstruktur @tbl-ed-basics-ex-03.
+
++------------+------------+-----------------------+
+|            | Teilnehmer |         Faktor        |
+|            |            +-------+-------+-------+
+|            |            | $A_1$ | $A_2$ | $A_3$ |
++============+============+=======+=======+=======+
+| Verein I   |    P1      |       |   X   |       |
+|            +------------+-------+-------+-------+
+|            |    P2      |       |   X   |       |
+|            +------------+-------+-------+-------+
+|            |    P3      |       |   X   |       |
++------------+------------+-------+-------+-------+
+| Verein II  |    P4      |   X   |       |       |
+|            +------------+-------+-------+-------+
+|            |    P5      |   X   |       |       |
+|            +------------+-------+-------+-------+
+|            |    P6      |   X   |       |       |
++------------+------------+-------+-------+-------+
+| Verein III |    P7      |       |       |   X   |
+|            +------------+-------+-------+-------+
+|            |    P8      |       |       |   X   |
+|            +------------+-------+-------+-------+
+|            |    P9      |       |       |   X   |
++------------+------------+-------+-------+-------+
+
+: Beispiel für ein experientelles Design mit einer Gruppierungstruktur (X = Messung) {#tbl-ed-basics-ex-03}
+
+In diesem Fall erfolgt die Zuweisung der Treatments also nicht auf dem Level der Teilnehmer, sondern auf dem Level der drei Vereine. Dies führt nun dazu, da die experimentellen Einheiten laut der Definition die Treatment randomisiert zugewiesen bekommen müssen, dazu, dass die Vereine zu den experimentellen Einheiten werden, nicht die einzelnen Teilnehmer. Folgerichtig ist $N$ is diesem Fall $N = 3$ und nicht $N = 9$ wie in den beiden vorhergehenden Fällen. Dies führt weiterhin dazu, dass wir keine Replikation der experimentellen Einheiten vorliegen haben, da jede Kondition nur einmal unter eine experimentellen Einheit beobachtet wurde. Darauf folgt sofort, dass es nicht möglich ist die Ergebnisse über die Studiegruppe hinaus zu generalisieren, da keine ausreichend große Stichprobe gezogen haben. Wir haben nur eine einzelne experimentelle Einheit beobachtet und können keine Aussagen über die Varianz zwischen experimentellen Einheiten aussagen. Die drei Teilnehmer innerhalb der jeweiligen Vereine werden als Pseudoreplikationen mit einem Faktor von $3$ interpretiert. Da wir insgesamt neun Messungen beobachten erhalten wir neun Beobachtungseinheiten.
+
+Um aus den Teilnehmern tatsächlich auch neun experimentelle Einheiten zu machen, müssen wir die Treatments unabhängig von den Vereinen randomisieren. Zusätzlich müssen wir auch noch sicherstellen, das das Treatment in isolation durchgeführt wird, da, wieder der Definition folgend, das Treatment unabhängig von den anderen experimentellen Einheiten durchgeführt werden muss. D.h. wir können auch keine Gruppen bilden die beispielsweise gemeinsam trainieren, da es dadurch auch wieder zu ungewollten Interaktioneffekten zwischen den experimentellen Einheiten kommen kann, welche die Unabhängigkeit der experimentellen Einheiten beeinflusst. Dadurch würde dann wieder jede Gruppe zu einer experimentellen Einheit zusammengeführt. Die Nichtbeachtung von Abhängigkeiten zwischen experimentellen Einheiten führt in der Analyse zu fehlerhaften Ergebnisse die insbesondere zu einer Vergrößerung des Type-I Fehler führen. D.h. Ergebnisse werden zu oft als statistisch signifikant deklariert (@hurlbert1984, @lazic2018, @silverman2004).
+
+Die Anzahl der Replikationen der EU bestimmt die Präzision des experimentellen Fehlers $\sigma^2$ in der jeweiligen Untersuchung. Nehmen wir zum Beispiel zwei EUs welche das gleiche Treatment zugewiesen bekommen haben, z.B. zwei Athletinnen. Wenn wir nun eine Messung durchführen, z.B. die Sprungleistung, dann wird sich die Sprungleistung zwischen den bieden Athletinnen üblicherweise unterschieden einfach schon auf Grund der Inter-individuellen Unterschiede zwischen Personen. Wir vernachlässigen zunächst, das bei biologischen System selbst schon bei Wiederholung der gleichen Messung zum Teil bedeutsame Unterschiede auftreten werden. Die Unterschiede zwischen den Messungen der beiden Athletinnen spiegeln unseren experimentellen Fehler wieder. Im Sinne des generellen linearen Modells ist dies unser altbekannter Residualfehler $\epsilon_i$. Umso mehr Replikationen wir haben, umso präziser werden wir diesen experimentellen Fehler bestimmen. D.h. mit Hilfe der Replikation versuchen wir die Präzision $\widehat{=}$ unsere Unsicherheit über den Residualfehler zu verkleinern.
+
+Die Anzahl der Wiederholungen ziele im Gegensatz zur Repliationen dagegen ab, die Streuung innerhalb der EUs zu minimieren. Zum Beispiel wenn wir unsere Athletinnen nicht nur einmal sondern mit entsprechenden Pausen mehrmals springen lassen. Dadurch wir unsere Abschätzung der Sprungleistung der Athletinnen besser.
+
+Versuchen wir diese beiden Beiträge etwas zu formalisieren. Seien drei verschiedene Varianzkomponenten gegeben. 1) die Varianz zwischen den Athletinnen $\sigma_{\text{Person}}^2$, 2) die Varianz innerhalb der jeweiligen Athleting $\sigma_{\text{innerhalb}}^2$ und dann noch eine Residualstreuung die auf zufällige Einflüsse zurück zu führen ist $\sigma_{\epsilon}^2$. Die Gesamtvarianz $\sigma_{\text{total}}^2$ die wir nun in den Messungen der Sprunghöhen beobachten kann dann als die Summe dieser drei Komponenten beobachtet werden (Wir gehen davon aus, dass sich die Komponenten untereinander nicht beeinflussen also unabhängig voneinander sind).
+
+\begin{equation}
+\sigma_{\text{total}}^2 = \sigma_{\text{Person}}^2 + \sigma_{\text{innerhalb}}^2 + \sigma_{\epsilon}^2
+\end{equation}
+
+Diese Gleichung beschreibt die Varianzkomponenten innerhalb einer Treatmentstufe. Wenn wir nun EUs aus unterschiedlichen Treatmentstufen $\tau_i$ zusammenstecken, dann wird die Gleichung entsprechend um diese zusätzliche Varianzkomponente $\sigma_{\tau}^2$ erweitert. 
+
+\begin{equation}
+\sigma_{\text{total}}^2 = \sigma_{\tau}^2 + \sigma_{\text{Person}}^2 + \sigma_{\text{innerhalb}}^2 + \sigma_{\epsilon}^2
+\end{equation}
+
+Die Idee des experimentellen Designs ist es nun, ein Design zu finden, das es ermöglicht diese Komponenten durch eine intelligente Verteilung der Faktorstufen, Replikationen und Wiederholungen möglichst präzise zu bestimmen.
+
+Möchte ich zum Beispiel den Einfluss des Treatment $\tau_i$ bestimmen, dann Vergleiche ich die durch das Treatment entstehende Varianz $\sigma_{\tau}^2$ mit dem experimentellen Fehler $\sigma_{\epsilon}^2$ um zu entscheiden ob die Unterschiede zwischen den Faktorstufen auch wirklich bedeutsam sind. In Pseudoschreibweise:
+
+\begin{equation*}
+\frac{\sigma_{\tau}^2}{\sigma_{\epsilon}^2}
+\end{equation*}
+
+Wähle ich nun aber ein Design bei dem ich die Varianz innerhalb der Athletinnen $\sigma_{\text{innerhalb}}^2$ nicht isoliert bestimmen kann, dann geht $\sigma_{\text{innerhalb}}^2$ in $\sigma_{\epsilon}^2$ auf. Im englischen heißt, dass confounded. Ich kann die beiden Varianzkomponenten nicht voneinander trennen. Dadurch wird dann der Vergleich von $\sigma_{\tau}^2$ mit $\sigma_{\epsilon}^2$ entsprechend schlechter ausfallen.
+
+\begin{equation*}
+\frac{\sigma_{\tau}^2}{\sigma_{\epsilon^*}^2} = \frac{\sigma_{\tau}^2}{\sigma_{\epsilon}^2 + \sigma_{\text{innerhalb}}^2}
+\end{equation*}
+
+Im folgenden sehen wir eine Übersicht über verschiedene Standarddesigns.
+
+## Übersicht über verschiedene Designs
+
+Das einfachste Design ist ein *completely randomized design* oder kurz *CRD*. Wir haben eine unabhängige, nominale Variable $A$ die verschiedene Faktorstufen (auch Levels) hat. Die EUs werden randomisiert auf die Faktorstufen verteilt und es wird nur eine Messung und somit eine Beobachtungseinheit bestimmt. In diesem Fall können wir auch nur eine Varianzkomponente $\sigma_{\tau}^2$ bestimmen. In @tbl-ed-basic-crd ist  ein Beispiel mit drei Faktorstufen für $A$ und zwei Replikationen abgebildet.
+
++-----+----+----+----+
+|     |  Factor A    |
++-----+----+----+----+
+| EU  | A1 | A2 | A3 |
++=====+:==:+:==:+:==:+
+| 1   |  X |    |    |
++-----+----+----+----+
+| 2   |    | X  |    |
++-----+----+----+----+
+| 3   |    |    | X  |
++-----+----+----+----+
+| 4   |  X |    |    |
++-----+----+----+----+
+| 5   |    | X  |    |
++-----+----+----+----+
+| 6   |    |    | X  |
++-----+----+----+----+
+
+: Beispiel für ein Completely Randomized Design (X zeigt die Beobachtungseinheiten an). {#tbl-ed-basic-crd}
+
+Wenn wir nicht mehr nur eine unabhängige Variablen mit verschiedenen Faktorstufen haben, sondern mehrere dann sprechen wir von einen *completely randomized factorial design (CRFD)*. In diesem Fall kommen noch weitere Varianzkomponenten für die jeweiligen unabhängigen Variablen hinzu, sowie mögliche Interaktioneffekte wie wir sie schon abhand der Interaktionen in der multiplen Regression kennengelernt haben. In @tbl-ed-basic-crfd ist eine einfacher Fall mit zwei unabhängigen Variablen $A$ und $B$ mit jeweils zwei Stufen dargestellt. Damit die Tabelle nicht zu groß wird, ist nur eine Replikation dargestellt.
+
++-----+---------+---------+
+|     | A1      | A2      |
++-----+----+----+----+----+
+| EU  | B1 | B2 | B1 | B2 |
++=====+:==:+:==:+:==:+:==:+
+| 1   |  X |    |    |    |
++-----+----+----+----+----+
+| 2   |    |  X |    |    |
++-----+----+----+----+----+
+| 3   |    |    |  X |    |
++-----+----+----+----+----+
+| 4   |    |    |    |  X |
++-----+----+----+----+----+
+
+: Beispiel für ein Completely Randomized Factorial Design mit zwei Faktoren {#tbl-ed-basic-crfd} 
+
+
++-----+----+----+----+
+| B   | A1 | A2 | A3 |
++=====+:==:+:==:+:==:+
+| I   | X  | X  | X  |
++-----+----+----+----+
+| II  | X  | X  | X  |
++-----+----+----+----+
+| III | X  | X  | X  |
++-----+----+----+----+
+| IV  | X  | X  | X  |
++-----+----+----+----+
+
+: Example for a Completely Randomized Block Design
+
+
++------+----+----+----+
+|Block | A1 | A2 | A3 |
++======+:==:+:==:+:==:+
+| I    | X  | X  |    |
++------+----+----+----+
+| II   | X  |    | X  |
++------+----+----+----+
+| III  |    | X  | X  |
++------+----+----+----+
+| IV   | X  | X  |    |
++------+----+----+----+
+| V    | X  |    | X  |
++------+----+----+----+
+| VI   |    | X  | X  |
++------+----+----+----+
+
+: Example for an Incomplete Block Design
+
+
++----+--------------+--------------+
+|    | A1           | A2           |
++----+----+----+----+----+----+----+
+| EU | B1 | B2 | B3 | B1 | B2 | B3 |
++====+:==:+:==:+:==:+:==:+:==:+:==:+
+| 1  | X  | X  | X  |    |    |    |
++----+----+----+----+----+----+----+
+| 2  | X  | X  | X  |    |    |    |
++----+----+----+----+----+----+----+
+| 3  |    |    |    | X  | X  | X  |
++----+----+----+----+----+----+----+
+| 4  |    |    |    | X  | X  | X  |
++----+----+----+----+----+----+----+
+
+: Example for a Split-plot Design

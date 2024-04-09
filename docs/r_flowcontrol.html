@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Skriptum - Fortgeschrittene Statistik - 3&nbsp; Ablaufkontrolle</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./r_basics.html" rel="next">
+<link href="./r_kickoff.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "Keine Treffer",
+    "search-matching-documents-text": "Treffer",
+    "search-copy-link-title": "Link in die Suche kopieren",
+    "search-hide-matches-text": "Zusätzliche Treffer verbergen",
+    "search-more-match-text": "weitere Treffer in diesem Dokument",
+    "search-more-matches-text": "weitere Treffer in diesem Dokument",
+    "search-clear-button-title": "Zurücksetzen",
+    "search-detached-cancel-button-title": "Abbrechen",
+    "search-submit-button-title": "Abschicken",
+    "search-label": "Suchen"
+  }
+}</script>
+<script>
+  MathJax = {
+    tex: {
+      tags: 'ams'  // should be 'ams', 'none', or 'all'
+    }
+  };
+</script>
+<script src="site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./r_startup.html">Eine Schnelleinführung in R</a></li><li class="breadcrumb-item"><a href="./r_flowcontrol.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Ablaufkontrolle</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Skriptum - Fortgeschrittene Statistik</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Suchen"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Vorwort</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./r_startup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Eine Schnelleinführung in R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Abschnitt umschalten">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./r_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Eine Übersicht über <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./r_kickoff.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title"><code>R</code> Kickoff</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./r_flowcontrol.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Ablaufkontrolle</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./r_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Einfache Datenbearbeitung und Visualisierung in <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./r_literate_programming.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Literate programming in <code>R</code></span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./stats_title.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Statistik</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Abschnitt umschalten">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./stats_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Eine kleine Welt der Unsicherheit</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./stats_significance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Statistische Signifikanz, p-Wert und Power</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./stats_estimation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Parameterschätzung</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./stats_distributions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Theoretische Verteilungen</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./stats_hypotheses.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Hypothesen testen</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./slm_title.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Das einfache Regressionmodell</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Abschnitt umschalten">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./slm_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Einführung</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./slm_inference.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Inferenz</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./slm_model_fit.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Modellfit</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./slm_prediction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Vorhersage</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./mlm_title.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Multiple Regression</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="Abschnitt umschalten">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mlm_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Einführung</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mlm_interactions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Interaktionseffekte</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mlm_dummy_coding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Integration von nominalen Variablen</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mlm_hierarchies.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Modellhierarchien</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./lm_title.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Das allgemeine lineare Modell</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Abschnitt umschalten">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lm_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Synthese</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./ed_title.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Experimentelles Design</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Abschnitt umschalten">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ed_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Einführung</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ed_crd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Completely Randomized Design</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ed_linear_contrasts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Lineare Kontraste</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ed_crfd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Completely Randomized Factorial Design</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ed_ancova.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">ANCOVA</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ed_crbd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Completely Randomized Block Design</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ed_irbd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Incomplete Randomized Block Design</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ed_split_plot.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Split-plot Design</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ed_cross_over.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Cross-over Design</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Literatur</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Inhaltsverzeichnis</h2>
+   
+  <ul>
+  <li><a href="#vergleiche" id="toc-vergleiche" class="nav-link active" data-scroll-target="#vergleiche"><span class="header-section-number">3.1</span> Vergleiche</a></li>
+  <li><a href="#bedingte-anweisungen-und-verzweigungen" id="toc-bedingte-anweisungen-und-verzweigungen" class="nav-link" data-scroll-target="#bedingte-anweisungen-und-verzweigungen"><span class="header-section-number">3.2</span> Bedingte Anweisungen und Verzweigungen</a></li>
+  <li><a href="#for-schleifen" id="toc-for-schleifen" class="nav-link" data-scroll-target="#for-schleifen"><span class="header-section-number">3.3</span> <code>for</code>-Schleifen</a>
+  <ul class="collapse">
+  <li><a href="#ein-längeres-beispiel-mit-for" id="toc-ein-längeres-beispiel-mit-for" class="nav-link" data-scroll-target="#ein-längeres-beispiel-mit-for"><span class="header-section-number">3.3.1</span> Ein längeres Beispiel mit <code>for</code></a></li>
+  </ul></li>
+  <li><a href="#wiederholungen-mit-replicate" id="toc-wiederholungen-mit-replicate" class="nav-link" data-scroll-target="#wiederholungen-mit-replicate"><span class="header-section-number">3.4</span> Wiederholungen mit <code>replicate()</code></a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Ablaufkontrolle</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p>Nachdem wir die Grunddatentypen in <code>R</code> kennengelernt haben schauen wir uns nun drei zentrale Konstrukte in der Programmierung an. Das sind Vergleiche und darauf aufbauend Bedingte Anweisungen und Verzweigungen und Schleifen. Fangen wir mit den Vergleichen an.</p>
+<section id="vergleiche" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="vergleiche"><span class="header-section-number">3.1</span> Vergleiche</h2>
+<p>Bei Vergleichen wird zunächst einmal genau das gemacht, was im Namen drinsteht, es werden Sachen miteinander verglichen. Und wenn ich Sachen schreibe dann vor allem erste einmal Zahlen. Dann kennen wir auch schon die Grundoperatoren noch aus der Schule (siehe <a href="#tbl-comparisons">Tabelle&nbsp;<span>3.1</span></a>).</p>
+<div id="tbl-comparisons" class="anchored">
+<table class="table">
+<caption>Tabelle&nbsp;3.1: Vergleichsoperatoren</caption>
+<thead>
+<tr class="header">
+<th>Operator</th>
+<th>Vergleich</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(&lt;\)</span></td>
+<td>kleiner</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(&gt;\)</span></td>
+<td>größer</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(&lt;=\)</span></td>
+<td>kleiner oder gleich</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(&gt;=\)</span></td>
+<td>größer oder gleich</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(==\)</span></td>
+<td>gleich</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Der einzige der etwas ungewohnt erscheinen dürfte ist der Vergleich auf Gleichheit <code>==</code>, aber das ist wieder nur Syntax. In <code>R</code> ist das Ergebnis eines Vergleichs ein logischer Wert.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="dv">3</span> <span class="sc">&lt;</span> <span class="dv">6</span></span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="dv">6</span> <span class="sc">&lt;</span> <span class="dv">3</span></span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] FALSE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="dv">6</span> <span class="sc">==</span> <span class="dv">6</span></span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+<p>Die Vergleichsoperator arbeiten dabei auch mit Vektoren.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_1 <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_2 <span class="ot">&lt;-</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">7</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_1 <span class="sc">&lt;</span> <span class="dv">3</span></span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  TRUE  TRUE FALSE FALSE FALSE FALSE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="dv">3</span> <span class="sc">&lt;</span> v_1</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] FALSE FALSE FALSE  TRUE  TRUE  TRUE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_1 <span class="sc">&lt;</span> v_2</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE TRUE TRUE TRUE TRUE TRUE</code></pre>
+</div>
+</div>
+<p>Wenn beide Objekte Vektoren sind, dann wird der Vergleich immer Element für Element durchgeführt. In beiden Fällen erhalten wir einen Vektor der entsprechenden Länge mit logischen Elementen.</p>
+<p>Zusammen mit dem subsetting operator <code>[]</code> können wir mit relativ wenig Aufwand Wert die eine bestimmte Bedingung erfüllt aus einem Vektor extrahieren. Zum Beispiel aus dem Vektor <code>v_1</code> alle Werte die kleiner <span class="math inline">\(4\)</span> sind.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_1[v_1 <span class="sc">&lt;</span> <span class="dv">4</span>]</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1 2 3</code></pre>
+</div>
+</div>
+<p>Warum hat das funktioniert? Zuerst wird der Vergleich <code>v_1 &lt; 4</code> von <code>R</code> durchgeführt, der Rückgabewert dieser Operation ist ein Vektor mit logischen Werten entsprechend des Vergleichs. Der Vektor hat die Länge von <code>v_1</code>, kann daher direkt dazu benutzt werden Elemente aus <code>v_1</code> die die Bedingung erfüllen zu extrahieren.</p>
+<p>Da wir logische Wert mit den logischen Operatoren verknüpfen können, ermöglicht dies auch komplizierte Vergleiche durchzuführe.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_1[v_1 <span class="sc">&lt;</span> <span class="dv">3</span> <span class="sc">|</span> v_1 <span class="sc">&gt;</span> <span class="dv">4</span>]</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1 2 5 6</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> v_1[v_1 <span class="sc">&gt;=</span> <span class="dv">3</span> <span class="sc">&amp;</span> v_1 <span class="sc">&lt;=</span> <span class="dv">4</span>]</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3 4</code></pre>
+</div>
+</div>
+<p>Die Vergleiche können wir auch gleich verwenden um bedingte Anweisungen zu verstehen.</p>
+</section>
+<section id="bedingte-anweisungen-und-verzweigungen" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="bedingte-anweisungen-und-verzweigungen"><span class="header-section-number">3.2</span> Bedingte Anweisungen und Verzweigungen</h2>
+<p>In <a href="#fig-r-flow-ifelse">Abbildung&nbsp;<span>3.1</span></a> ist der Grundgerüst einer bedingten Anweisungen bzw. Verzweigung im Code dargestellt.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-r-flow-ifelse" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-r-flow-ifelse">flowchart
+A[condition] --&gt; B[TRUE]
+A[condition] --&gt; C[FALSE]
+B --&gt; D[Ausdruck A]
+C --&gt; E[Ausdruck B]
+</pre>
+</div>
+<figcaption class="figure-caption">Abbildung&nbsp;3.1: Bedingte Anweisungen.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Wir haben einen Ausdruck <code>condition</code> der entweder <code>WAHR</code> oder <code>FALSCH</code> sein kann, und entsprechend wird entweder <code>Ausdruck A</code> oder <code>Ausdruck B</code> ausgeführt. In <code>condition</code> wird überlicherweise in irgendeiner Form ein Vergleich vorgenommen.</p>
+<p>Syntaktisch wird die Bedingte Anweisung in <code>R</code> folgendermaßen spezifiziert.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="annotated-cell-10"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><a class="code-annotation-anchor" data-target-cell="annotated-cell-10" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-10-1" class="code-annotation-target"><a href="#annotated-cell-10-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="cf">if</span> (condition) {</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-10" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-10-2" class="code-annotation-target"><a href="#annotated-cell-10-2" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   AusdruckA</span>
+<span id="annotated-cell-10-3"><a href="#annotated-cell-10-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> } <span class="cf">else</span> {         <span class="co"># </span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-10" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-10-4" class="code-annotation-target"><a href="#annotated-cell-10-4" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   AusdruckB</span>
+<span id="annotated-cell-10-5"><a href="#annotated-cell-10-5" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-annotation">
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-10" data-target-annotation="1">1</dt>
+<dd>
+<span data-code-annotation="1" data-code-cell="annotated-cell-10" data-code-lines="1">Zunächst kommt das Schlüsselwort <code>if</code> gefolgt von einer Klammer mit dem Ausdruck <code>condition</code> der zu einem logischen Wert (<code>true,false</code>) evaluiert wird.</span>
+</dd>
+<dt data-target-cell="annotated-cell-10" data-target-annotation="2">2</dt>
+<dd>
+<span data-code-annotation="2" data-code-cell="annotated-cell-10" data-code-lines="2">Wenn <code>condition</code> <code>TRUE</code> ist, wird der <code>AusdruckA</code> innerhalb der geschweiften Klammern ausgeführt.</span>
+</dd>
+<dt data-target-cell="annotated-cell-10" data-target-annotation="3">3</dt>
+<dd>
+<span data-code-annotation="3" data-code-cell="annotated-cell-10" data-code-lines="4">Wenn <code>condition</code> <code>FALSE</code> ist, wird der <code>else</code> Zweig, bzw. der <code>AusdruckB</code> zwischen den geschweiften Klammern nach <code>else</code> ausgeführt.</span>
+</dd>
+</dl>
+</div>
+</div>
+<p>Schauen wir uns ein einfaches Beispiel an:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> m <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> a <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> b <span class="ot">&lt;-</span> <span class="dv">20</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="cf">if</span> (a <span class="sc">&lt;</span> b) {</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   m <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> } <span class="cf">else</span> {</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   m <span class="ot">&lt;-</span> <span class="dv">20</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> m</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 10</code></pre>
+</div>
+</div>
+<p>Was passiert hier, der Wert von <code>m</code> wird unterschiedlich belegt, je nachdem welche Werte <code>a</code> und <code>b</code> haben. Mit diesem <code>ifelse</code>-Konstrukt können wir daher unterschiedliche Anweisungen in unseren Programmen ausführen lassen, in Abhängigkeit von bestimmten Bedingungen. Wir könnten zum Beispiel unsere eigene Absolutfunktion schreiben.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> my_abs <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   <span class="cf">if</span> (x <span class="sc">&lt;</span> <span class="dv">0</span>) {</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>     <span class="sc">-</span>x</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   } <span class="cf">else</span> {</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>     x</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   }</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">my_abs</span>(<span class="dv">3</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">my_abs</span>(<span class="dv">0</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">my_abs</span>(<span class="sc">-</span><span class="dv">3</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3</code></pre>
+</div>
+</div>
+</section>
+<section id="for-schleifen" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="for-schleifen"><span class="header-section-number">3.3</span> <code>for</code>-Schleifen</h2>
+<p>Als letztes Programmierkonstrukt kommen jetzt noch Schleifen, eine der Paradedisziplin von Computern, nämlich die gleiche Sache ganz oft hintereinander durchführen.</p>
+<p>Die Syntax für eine Schleife in <code>R</code> ist wie folgt.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="annotated-cell-15"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><a class="code-annotation-anchor" data-target-cell="annotated-cell-15" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-15-1" class="code-annotation-target"><a href="#annotated-cell-15-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="cf">for</span> (item <span class="cf">in</span> vector) {</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-15" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-15-2" class="code-annotation-target"><a href="#annotated-cell-15-2" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   Ausdruck</span>
+<span id="annotated-cell-15-3"><a href="#annotated-cell-15-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-annotation">
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-15" data-target-annotation="1">1</dt>
+<dd>
+<span data-code-annotation="1" data-code-cell="annotated-cell-15" data-code-lines="1">Als erstes kommt das Schlüsselwort <code>for</code> gefolgt von einer Klammer. In der Klammer werden zwei Ausdrücke benötigt. Eine Variable die hier <code>item</code> heißt, die als Schleifenzähler fungiert. Der Schleifenzähler durchläuft die Einträge des Vektors <code>vector</code> einen nach dem anderen.</span>
+</dd>
+<dt data-target-cell="annotated-cell-15" data-target-annotation="2">2</dt>
+<dd>
+<span data-code-annotation="2" data-code-cell="annotated-cell-15" data-code-lines="2">Jedes Mal wenn <code>item</code> mit einem neuen Wert belegt worden ist, wird <code>Ausdruck</code> zwischen den geschweiften Klammer <code>{}</code> ausgeführt. Der jeweilige aktuelle Wert von <code>item</code> steht im Ausdruck zur Verfügung.</span>
+</dd>
+</dl>
+</div>
+</div>
+<p>Hört sich komplizierter an als es ist. Ein einfaches Beispiel:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>) {</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   <span class="fu">cat</span>(<span class="st">'Ausdruck wird ausgeführt</span><span class="sc">\n</span><span class="st">'</span>)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   <span class="fu">cat</span>(<span class="st">'i ='</span>, i, <span class="st">'</span><span class="sc">\n</span><span class="st">'</span>)</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Ausdruck wird ausgeführt
+i = 1 
+Ausdruck wird ausgeführt
+i = 2 
+Ausdruck wird ausgeführt
+i = 3 
+Ausdruck wird ausgeführt
+i = 4 </code></pre>
+</div>
+</div>
+<p>Wir verwenden in dem Code die <code>cat()</code> Funktion um die Wert auf der Kommandozeile auszugeben. Das Zeichen <code>\n</code> ist lediglich ein Sonderzeichen für neue Zeile. Was passiert in dem Code. Wir haben einen Vektor mit den Elementen von <span class="math inline">\(1,2,3,4\)</span>. Die Variable <code>item</code> hat jetzt den Namen <code>i</code>. <code>i</code> wird Element für Element mit den Einträgen aus dem Vektor belegt und jedes mal wird der Ausdruck zwischen den Klammern ausgeführt.</p>
+<p>Ein wird könnten nun zum Beispiel den Vektor als Index für die Einträge in einen anderen Vektor mit Elementen ansehen und dementsprechend über die Einträge des anderen Vektoren mit <code>i</code> iterieren.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> vec <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'mama'</span>,<span class="st">'papa'</span>,<span class="st">'daughter'</span>,<span class="st">'son'</span>) </span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>) {</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   <span class="fu">cat</span>(<span class="st">'Ausdruck wird ausgeführt</span><span class="sc">\n</span><span class="st">'</span>)</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   <span class="fu">cat</span>(<span class="st">'i ='</span>, i, <span class="st">': '</span>, vec[i], <span class="st">'</span><span class="sc">\n</span><span class="st">'</span>)</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Ausdruck wird ausgeführt
+i = 1 :  mama 
+Ausdruck wird ausgeführt
+i = 2 :  papa 
+Ausdruck wird ausgeführt
+i = 3 :  daughter 
+Ausdruck wird ausgeführt
+i = 4 :  son </code></pre>
+</div>
+</div>
+<section id="ein-längeres-beispiel-mit-for" class="level3" data-number="3.3.1">
+<h3 data-number="3.3.1" class="anchored" data-anchor-id="ein-längeres-beispiel-mit-for"><span class="header-section-number">3.3.1</span> Ein längeres Beispiel mit <code>for</code></h3>
+<p>Zum Abschluss schauen wir uns ein Beispiel aus der Statistik an zu Publikationsfilter und welche Auswirkung der Filter auf die Effektstärke hat.</p>
+<p>Wir machen führen wiederholte t-Tests aus. Wir gehen davon aus, dass es eine Effektstärke von <span class="math inline">\(D = 0.1\)</span> gibt. Dazu ziehen wir zwei Stichproben der Größe <span class="math inline">\(n\)</span> aus den entsprechenden Normalverteilung die unserer Populationen darstellen. Dann berechnen wir den t-Test und wenn es sich um ein statistisch signifikantes Ergebnis handelt dann speichern wir den Unterschied zwischen den beiden Gruppen. Da es sich um ein Zufallsexperiment handelt, wissen wir vorher nicht, wie viele Vergleiche statistisch signifikant werden und wir speichern müssen, daher erstellen wir einen Ergebnisvektor der gleichen Länge wie oft wir das Experiment durchführen. Wir setzen der Einfachheit halber <span class="math inline">\(n = 10, \delta = 0.1, \sigma = 1, \alpha = 0.05\)</span> (zweiseitig). Dadurch ist der Unterschied zwischen den beiden Stichproben auch direkt als Cohen’s D Effektstärke zu interpretieren. Führen wir die Simulation <span class="math inline">\(N_{sim} = 100\)</span> durch. Mit der Funktion <code>rnorm()</code> können wir normalverteilte Zufallszahlen ziehen und mit <code>qt()</code> können wir den kritischen Wert der t-Verteilung bestimmen. In Code:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> n_sim <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> n <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> mu <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> delta <span class="ot">&lt;-</span> <span class="fl">0.1</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> sigma <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> df <span class="ot">&lt;-</span> <span class="dv">2</span><span class="sc">*</span>n <span class="sc">-</span> <span class="dv">2</span></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> kritischer_wert <span class="ot">&lt;-</span> <span class="fu">qt</span>(<span class="fl">0.975</span>, df)</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> ergebnis_vektor <span class="ot">&lt;-</span> <span class="fu">numeric</span>(n_sim)</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_sim) {</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   <span class="co"># ziehen der Stichproben</span></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   stichprobe_a <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, mu, sigma)</span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   stichprobe_b <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, delta, sigma)</span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   </span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   <span class="co"># zwischenwerte berechnen</span></span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   a_bar <span class="ot">&lt;-</span> <span class="fu">mean</span>(stichprobe_a)</span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   b_bar <span class="ot">&lt;-</span> <span class="fu">mean</span>(stichprobe_b)</span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   a_sd <span class="ot">&lt;-</span> <span class="fu">sd</span>(stichprobe_a)</span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   b_sd <span class="ot">&lt;-</span> <span class="fu">sd</span>(stichprobe_b)</span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   </span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   <span class="co"># t-Statistik berechnen</span></span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   Delta <span class="ot">&lt;-</span> <span class="fu">abs</span>(a_bar <span class="sc">-</span> b_bar)</span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   s_pooled <span class="ot">&lt;-</span> <span class="fu">sqrt</span>((a_sd<span class="sc">**</span><span class="dv">2</span> <span class="sc">+</span> b_sd<span class="sc">**</span><span class="dv">2</span>)<span class="sc">/</span><span class="dv">2</span>)</span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   s_e <span class="ot">&lt;-</span> s_pooled <span class="sc">*</span> <span class="fu">sqrt</span>(<span class="dv">2</span><span class="sc">/</span>n)</span>
+<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   t <span class="ot">&lt;-</span> Delta<span class="sc">/</span>s_e</span>
+<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   </span>
+<span id="cb31-26"><a href="#cb31-26" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   <span class="co"># überprüfen auf statistische Signifikanz</span></span>
+<span id="cb31-27"><a href="#cb31-27" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   <span class="cf">if</span> (t <span class="sc">&gt;</span> kritischer_wert) {</span>
+<span id="cb31-28"><a href="#cb31-28" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>     ergebnis_vektor[i] <span class="ot">&lt;-</span> Delta</span>
+<span id="cb31-29"><a href="#cb31-29" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   }</span>
+<span id="cb31-30"><a href="#cb31-30" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span>
+<span id="cb31-31"><a href="#cb31-31" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> </span>
+<span id="cb31-32"><a href="#cb31-32" aria-hidden="true" tabindex="-1"></a><span class="er">&gt;</span> statistisch_signifikant <span class="ot">&lt;-</span> ergebnis_vektor[ergebnis_vektor <span class="sc">&gt;</span> <span class="dv">0</span>]</span>
+<span id="cb31-33"><a href="#cb31-33" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> D_bar <span class="ot">&lt;-</span> <span class="fu">mean</span>(statistisch_signifikant)</span>
+<span id="cb31-34"><a href="#cb31-34" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> D_sd <span class="ot">&lt;-</span> <span class="fu">sd</span>(statistisch_signifikant)</span>
+<span id="cb31-35"><a href="#cb31-35" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">cat</span>(<span class="st">'Die Effektstärke ist D ='</span>, D_bar,<span class="st">'+-'</span>, D_sd, <span class="st">'</span><span class="sc">\n</span><span class="st">'</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Die Effektstärke ist D = 0.9901079 +- 0.1629801 </code></pre>
+</div>
+</div>
+<p>Als Hausaufgaben versucht das Programm nachzuvollziehen und das Ergebnis zu interpretieren.</p>
+</section>
+</section>
+<section id="wiederholungen-mit-replicate" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="wiederholungen-mit-replicate"><span class="header-section-number">3.4</span> Wiederholungen mit <code>replicate()</code></h2>
+<p>Eine weitere Möglichkeit <code>R</code> eine Gruppe von Anweisungen wiederholt durchführen zu lassen, kann mittels der Funktion <code>replicate()</code> erreicht werden. In den meisten Fällen wird <code>replicate()</code> verwendet um eine Simulation durchzuführen. D.h. das Beispiel von eben könnte ebenfalls mittels <code>replicate()</code> programmiert werden. <code>replicate()</code> hat zwei Hauptargumente. Das erste <code>n</code> bestimmt die Anzahl der Wiederholungen während das zweite Argument eine Anweisung, in den meisten Fällen eine Funktion ist.</p>
+<p>Nehmen wir als Anwendungsfall, dass wir wiederholt Mittelwerte <span class="math inline">\(\bar{x}\)</span> aus einer Zufallsstichprobe erzeugen wollen. Wir ziehen beispielsweise eine Stichprobe von <span class="math inline">\(n = 20\)</span> Werten aus einer Normalverteilung mit den Parametern <span class="math inline">\(\mu = 3, \sigma = .7\)</span>. Und wir wollen uns die Stichprobenverteilung der Mittelwerte ansehen. Wir beginnen mit einem einfach proof-of-concept.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> mu <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> sigma <span class="ot">&lt;-</span> <span class="fl">0.7</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> n <span class="ot">&lt;-</span> <span class="dv">20</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> </span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="er">&gt;</span> x_bar <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">rnorm</span>(n, mu, sigma))</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">cat</span>(<span class="st">'Der beobachtete Mittelwert ist: '</span>, x_bar, <span class="st">'</span><span class="sc">\n</span><span class="st">'</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Der beobachtete Mittelwert ist:  2.74366 </code></pre>
+</div>
+</div>
+<p>Okay, funktioniert. Wir wollen diese Anweisung jetzt nicht einmal sondern <span class="math inline">\(100\)</span>mal durchführen. Dazu stecken wir sie in eine Funktion (streng genommen brauchen wir das nicht, aber damit es besser generalisiert machen wir hier etwas mehr Aufwand). Die Parameter für die Normalverteilung setzen wir in der Signatur der Funktion als Standardwerte.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> x_bar_func <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">n =</span> <span class="dv">20</span>, <span class="at">mu =</span> <span class="dv">3</span>, <span class="at">sigma =</span> <span class="fl">0.7</span>) {</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   <span class="fu">mean</span>(<span class="fu">rnorm</span>(n, mu, sigma))</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Wenn wir <code>x_bar_func()</code> aufrufen, erhalten wir entsprechend einen zufälligen Mittelwert aus einer Stichrprobe der Größe <span class="math inline">\(n = 20\)</span> aus der Normalverteilung <span class="math inline">\(\mathcal{N}(3, 0.7)\)</span>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">x_bar_func</span>()</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3.207046</code></pre>
+</div>
+</div>
+<p>Diese Funktion können wir nun an <code>replicate()</code> als zweiters Argument übergeben mit dem ersten Argument der Anzahl der Wiederholungen. Starten wir erst mal nur mit <span class="math inline">\(N_{sim} = 5\)</span> Wiederholungen, um den Überblick zu behalten.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> N_sim <span class="ot">&lt;-</span> <span class="dv">5</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">replicate</span>(N_sim, <span class="fu">x_bar_func</span>())</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3.069745 3.010485 2.847602 2.827677 2.796975</code></pre>
+</div>
+</div>
+<p>Als Rückgabewert von <code>x_bar_func()</code> erhalten wir einen Vektor mit den Rückgabewerten von <code>x_bar_func()</code>. Dementsprechend können wir den Rückgabewert an eine Variable zuweisen und können uns zum Beispiel ein Histogramm der Mittelwert erzeugen.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> N_sim <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> x_bar_s <span class="ot">&lt;-</span> <span class="fu">replicate</span>(N_sim, <span class="fu">x_bar_func</span>())</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">hist</span>(x_bar_s)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="r_flowcontrol_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Zusammenfassend, beginnen wir mit der Definition einer Funktion welche die benötigten Werte erzeugt. Diese Funktion übergeben wir an <code>replicate()</code> und können so einfach bestimmte Werte generieren.</p>
+<p>Der Vollständigkeit halber eine Ausführung mit einer <code>for</code>-Schleife.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> x_bar_s2 <span class="ot">&lt;-</span> <span class="fu">numeric</span>(N_sim)</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N_sim) {</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   x_bar_s2[i] <span class="ot">&lt;-</span> <span class="fu">x_bar_func</span>()</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">hist</span>(x_bar_s2)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="r_flowcontrol_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Hier sehen wir, dass der Code nicht viel länger ist, wir aber expliziter uns um die Zuweisung der Ergebnisse kümmern müssen, während dies bei <code>replicate()</code> automatisch stattfindet. D.h. wenn wir mit der Schleifenvariable nichts explizit machen müssen/wollen, dann bietet <code>replicate()</code> eine Alternative zu <code>for</code>-Schleifen.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Kopiert");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Kopiert");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./r_kickoff.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title"><code>R</code> Kickoff</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./r_basics.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Einfache Datenbearbeitung und Visualisierung in <code>R</code></span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

@@ -1,0 +1,643 @@
+# Completely Randomized Factorial Design 
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+library(emmeans)
+library(summarytools)
+source('_common.R')
+```
+
+```{r defs_aov_2f}
+source('../resources/nice_format_helper_fcn.R')
+label_parse <- function(breaks) {
+  parse(text = breaks)
+}
+N <- 25
+sigma <- 0.5
+set.seed(10)
+sway <- tibble(
+  Gruppe = gl(3, 2*N, labels = c('U19','U21','PRO')),
+  Auge = gl(2, N, length = 3 * 2 * N,
+            labels = c('Offen','Geschlossen')),
+  sway = c(
+    rnorm(N, 1.3, sigma), rnorm(N, 2.33, sigma),
+    rnorm(N, 1.2, sigma), rnorm(N, 2.49, sigma),
+    rnorm(N, 1.05, sigma), rnorm(N, 1.87, sigma)
+  )
+)
+```
+
+Nachdem wir uns im vorhergehenden Abschnitt mit dem Completely Randomized Design Untersuchungsdesigns angeschaut haben, bei dem nur eine unabhängige nominale Variable variiert wurde, schauen wir uns jetzt den Fall an, wenn wir den Einfluss zweier nominale unabhängige Variablen auf eine abhängige Variable untersuchen wollen. Wie wir sehen werden führt dies zu einem zusätzlichen Effekt dem Interaktionseffekt. Inhaltlich bedeutet dies nicht allerdings erst mal gar nichts Neues, da wir Interaktionseffekt schon im Zusammenhang mit der multiplen Regression kennengelernt haben und die Interpretation daher auch nichts neues bedeutet. Daher wir ein Hauptaugenmerk in diesem Kapitel darin liegen, wir wir Interaktionseffekte interpretieren können bzw. welchen Einfluss diese auf die Interpretation von Haupteffekten bedeutet und welchen Einfluss Interaktionseffekte auf die Anzahl der notwendigen Replikationen haben um eine gewünschte Power zu gewährleisten. Generell wenn mehr als ein nominaler Faktor an dem Untersuchungsdesign beteiligt ist, dann wir von einem Completely Randomized **Factorial** Design (CRFD) gesprochen.
+
+Die Annahmen beim CRDF sind die gleichen wie auch beim CRD. Seien ein CRFD mit zwei Faktoren $A$ und $B$ gegeben die jeweils $p$ bzw. $q$ Faktorstufen haben. Dann gelten die folgenden Annahmen.
+
+- Unabhängige EUs 
+- Die EUs sind \emph{zufällig} in die $p\times q$ Gruppen eingeteilt worden
+- Die Werte in jeder Gruppe sind Normalverteilt $Y_{ijk} \sim \mathcal{N}(\mu_{ij}, \sigma^2)$ mit der gleichen Varianz $\sigma^2$
+
+In der Literatur im Zusammenhang mit einem CRFD oft der Term *Zellen* verwendet. Dieser bezeichnet die jeweiligen Kombinationen der Faktorstufen. Sei zum Beispiel $p = 3$ und $q = 2$ dann erhalten wir die folgende Anordnung von Zellen (siehe @tbl-ed-crfd-cells)
+
++-------+:---------:+:---------:+:---------:+
+|       | $A_1$     | $A_2$     | $A_3$     |
++-------+-----------+-----------+-----------+
+| $B_1$ | $A_1B_1$  | $A_2B_1$  | $A_3B_1$  |
++-------+-----------+-----------+-----------+
+| $B_2$ | $A_1B_2$  | $A_2B_2$  | $A_3B_2$  |
++-------+-----------+-----------+-----------+
+
+: Zellanordnung in einem CRFD mit Faktor $A$, $p = 3$ und Faktor $B$, $q = 2$. {#tbl-ed-crfd-cells}
+
+Faktoren werden als **gekreuzt** bezeichnet, wenn alle Kombinationen der Faktoren beobachtet wurden.
+
+## Das statistische Modell im CRFD
+
+Das statistische Modell im CRFD besteht in einer natürlichen Erweiterung des Modells für ein CRD. Die Modellstruktur ist die folgende:
+
+\begin{equation}
+Y_{ijk} = \mu + \alpha_i + \beta_j + (\alpha\beta)_{ij} + \epsilon_{ijk}, \qquad \epsilon_{ijk}\sim \mathcal{N}(0,\sigma^2)
+\label{eq-ed-crfd-model}
+\end{equation}
+
+$i$ und $j$ sind die Indikatoren der jeweiligen Fakorstufen für die Faktoren $A$ und $B$, während $k$ der Indikator der jeweiligen EUs (Replikation) ist. $\mu$ bezeichnet den Gesamtmittelwert und $\alpha_i$ ist der Einfluss der $i$-ten Stufe von Faktor $A$, $\beta_j$ ist der Einfluss der $j$-ten Stufe von Faktor $B$, und $(\alpha\beta)_{ij}$ bezeichent den Einfluss der Kombination der Faktoren $A$ und $B$ also den Interaktionsfaktor. Wenn wir das Modell im Sinne der vorher eingeführten Herleitung aus der multiplen Regression betrachten, dann werden die Effekte im Modell über Indikatorvariablen abgebildet. 
+
+Die folgenden Herleitung sind für ein balanciertes Modell, bei dem die Zellbesetzungen alle gleich sind, z.B. $r$. In diesem Fall gilt für den Indikator $k, k = 1, \ldots, r$ oder anders ausgedrückt, $r_{ij} = r$ für alle $i,j$.
+
+Um wieder den uns bekannten Ansatz von Modellvergleichen durchzuführen, stellen wir wiederum eine Modellhierarchie auf. Das full model ist das eben beschriebene Modell (siehe Formel \eqref{eq-ed-crfd-model} während die reduzierten Modelle die folgende Reihenfolge ermöglichen:
+
+\begin{align}
+Y_{ijk} &= \mu + \alpha_i + \beta_j + \epsilon_{ijk}  \label{eq-ed-crfd-additiv} \\
+Y_{ijk} &= \mu + \alpha_i + \epsilon_{ijk} \qquad (\textrm{alternativ}: Y_{ijk} = \mu + \beta_j + \epsilon_{ijk})\\ 
+Y_{ijk} &= \mu + \epsilon_{ijk}
+\end{align}
+
+Dadurch, dass zwei unabhängige Variablen vorhanden sind, können auch zwei verschiedene Abfolgen durchlaufen werden. Nach dem Wegfall des Interaktionseffekts $(\alpha\beta)_{ij}$ kann entweder erst $\alpha_i$ oder $\beta_j$ weggelassen werden. Tatsächlich macht die Reihenfolge keinen Unterschied, **wenn** die Stichprobengröße $r_i$ in allen Zellen gleich ist. Entsprechend gilt dies nicht mehr, wenn die Stichprobengrößen sich unterscheiden. 
+
+::: {.callout-note}
+Eine Besonderheit die in der Literatur auftauchen kann ist die Modellformulierung in Formel \eqref{eq-ed-crfd-additiv}. D.h. das Modell ohne den Interaktionsfaktor. Dieses Modell kann in manchen Fälle auch das full model sein, wenn davon ausgegangen werden kann, dass keine Interaktionseffekte zwischen den beiden Variablen vorhanden sein können bzw. vorhanden sind. In der Literatur wird dieses Modell als additives Modell bzw. two-way main effects model bezeichnet. 
+:::
+
+Die statistischen Hypothesen sind wenig überraschend die üblichen mit der Annahme von keinen Effekten unter der $H_0$ und entsprechend Effekten unter der $H_1$. Entsprechend ist die Formulierung der $H_0$-Hypothesen für die Hauptfaktoren $A$ und $B$ bzw. den Interaktionseffekt $A\times B$:
+
+\begin{align*}
+\alpha_1 &= \alpha_2 = \ldots = \alpha_p = 0\\
+\beta_1 &= \beta_2 = \ldots = \beta_q = 0  \\
+(\alpha\beta)_{11} &= (\alpha\beta)_{12} = \ldots = (\alpha\beta)_{pq} = 0 \\
+\end{align*}
+
+bzw. die entsprechenden Alternativhypothesen $H_1$, dass sich mindestens zwei Faktorstufen $\alpha_i$ bzw. $\beta_j$ oder Interaktionskombinationen $(\alpha\beta)_{ij}$ voneinander unterscheiden. Unter dem Ansatz des Modellvergleichs sind die Hypothesen wieder dahingehend zu interpretieren, dass die Hinzunahme bzw. das Weglassen einer Modellkomponente eine statistisch signifikante Verbesserung des Modells nach sich zieht bzw. eben nicht.
+
+Die alternative aber äquivalente Herleitung der Hypothesen im Sinne einer Variananalyse führt zu einer Unterteilung der Gesamtvarianz in einzelne Komponenten auf der Grundlage der verschiedenen Modellkomponenten.
+
+\begin{equation}
+SS_{\text{total}} = SS_{\text{Faktor }A} + SS_{\text{Faktor }B} + SS_{A\times B} + SS_{\text{error}}
+\label{eq-ed-crfd-sstotal}
+\end{equation}
+
+Es ergibt sich die folgende $F$-Tabelle bei einer Zellbesetzung mit $r$ Replikationen.
+
+| Term | $df$ | $SSQ$ | $MSQ$ | $F$  |
+| --- | --- | --- | --- | --- |
+| Faktor $A$ | $p-1$ | $ssA$ | $\frac{ssA}{p-1}$ | $\frac{msA}{msE}$ |
+| Faktor $B$ | $q-1$ | $ssB$ | $\frac{ssB}{q-1}$ | $\frac{msB}{msE}$ |
+| $AB$ | $(p-1)(q-1)$ | $ssAB$ | $\frac{ssAB}{(p-1)(q-1)}$ | $\frac{msAB}{msE}$ |
+| Error | $n - pq$ | $ssE$ | $\frac{ssE}{n-pq}$ |  |
+
+: Varianztabelle beim CRFD {#tbl-ed-crf-anova}
+
+| $ssE = \sum_i \sum_j \sum_k (y_{ijk} - \bar{y}_{ij.})^2$
+| $sstot = \sum_{i}\sum_{j}\sum_k y_{ijk}^2 - n\bar{y}_{...}^2$
+| $ssA = qr\sum_i \bar{y}_{i..}^2-n\bar{y}_{...}^2$
+| $ssB = pr\sum_j \bar{y}_{.j.}^2-n\bar{y}_{...}^2$
+| $ssAB = r\sum_i\sum_j \bar{y}_{ij.}^2 - qr\sum_i\bar{y}_{i..}^2 - pr\sum_j\bar{y}_{.j.}^2+n\bar{y}_{...}^2$
+
+
+Der Schätzer für $\sigma^2$ ist wie gewohnt die mittlere Summe $MSE$ der quadrierten Abweichungen von den jeweiligen Gruppenmittelwerten $\bar{y}_{ij.}$, also die Residuen $\hat{\epsilon}_{ijk} = e_{ijk}$.
+
+\begin{equation}
+\hat{\sigma}^2 = MSE = \frac{\sum_i \sum_j \sum_k (y_{ijk} - \bar{y}_{ij.})^2}{N-(pq)}
+\end{equation}
+
+Eine obere Konfidenzintervallgrenze kann abgeschätzt werden mit:
+
+\begin{equation}
+\sigma^2 \leq \frac{ssE}{\chi^2_{n-pq,\alpha}}
+\end{equation}
+
+
+In @fig-ed-crfd-soccer-ex ist ein Beispiel adaptiert nach @jadczak2019 mit hypothetischen Daten dargestellt.
+
+```{r}
+#| fig-cap: "Gleichgewicht bei Fußballern"
+#| label: fig-ed-crfd-soccer-ex
+
+ggplot(sway, aes(Gruppe, sway, fill = Auge)) + geom_boxplot() +
+  labs(y = 'Schwankung des\nKSP[DEG]') 
+```
+
+Es wurde die Gleichgewichtsfähigkeit bei drei verschiedenen Gruppen (Faktor $A, p = 3$) unter zwei Konditionen (Faktor $B, q = 2$) untersucht. Größere Werte deuten auf eine schlechtere Gleichgewichtsfähigkeit hin. Wie zu erwarten nimmt in allen drei Gruppen die Gleichgewichtsfähigkeit bei geschlossen Augen ab. Allerdings scheint der Unterschied über die drei Gruppen unterschiedlich stark ausgeprägt zu sein. D.h. die Daten deuten auf einen Interaktionseffekt. Um Interaktionseffekte noch einmal besser zu verstehen schauen wir uns im Folgenden verschiedene Arten von Interaktionseffekten und deren Beziehung zu Haupteffekten an. 
+
+## Einordnung von Interaktionseffekten
+
+In @fig-ed-crfd-ordinal sind beispielhaft die Ergebnisse für ein $2\times 2$ CRFD abgetragen.
+
+```{r}
+#| fig-cap: "Beispiel für ordinale Interaktionseffekte"
+#| label: fig-ed-crfd-ordinal
+
+ordinal <- tibble(
+  A = paste0('A[', c(1,1,2,2),']'),
+  B = paste0('B[', c(1,2,1,2), ']'),
+  y = c(4,3,7,4)
+)
+p1 <- ggplot(ordinal, aes(A,y,color = B, group=B)) +
+  geom_line(size=2) +
+  geom_point(size = 4) +
+  scale_x_discrete('Factor A', labels = label_parse) +
+  scale_y_continuous(name = '', breaks = NULL,
+                    limits = c(0, 10)) +
+  scale_color_discrete(name = 'Factor B', labels = label_parse) 
+p2 <- ggplot(ordinal, aes(B,y,color = A, group=A)) +
+  geom_line(size=2) +
+  geom_point(size = 4) +
+  scale_x_discrete('Factor B', labels = label_parse) +
+  scale_y_continuous(name = '', breaks = NULL,
+                    limits = c(0, 10)) +
+  scale_color_discrete(name = 'Factor A', labels = label_parse) 
+gridExtra::grid.arrange(p1, p2, ncol=2)
+```
+
+Wir haben zwei Faktoren $A$ und $B$ die jeweils zwei Stufen haben $A_1, A_2$ und $B_1, B_2$. Um die Beziehung zwischen den Haupteffekten als den Unterschieden zwischen $A_1$ und $A_2$ bzw. $B_1$ und $B_2$ unabhängige von Wert der jeweils anderern Variable zu interpretieren ist es am einfachsten die Frage zu stellen: "Wenn ich innerhalb eines Faktors von einer Stufe zur nächsten Stufe gehe. Kann ich dann eine einheitliche Aussage treffen?". Also im Fall @fig-ed-crfd-ordinal wenn ich von $A_1$ nach $A_2$ gehe, dann beobachten wir eine Zunahme der abhängigen Variable unabhängig ob ich mich in Stufe $B_1$ oder $B_2$ befinde. Das Gleiche gilt für Hauptfaktor $B$. Wenn ich von $B_1$ nach $B_2$ gehe, dann nimmt in beiden Fällen ($A_1$ und $A_2$) der Wert der abhängigen Variablen ab. D.h. in diesem Fall kann sinnvoll über den Haupteffekt gesprochen werden, trotzdem ein Interaktionseffekt vorliegt, die die Zunahme unter $A$ bzw. die Abnahme unter $B$ unterschiedlich ist, je nach dem Wert der jeweils anderen Variable. Wenn die Haupt- und Interkationseffekte dies Form annehmen, dann wird von einem ordinalen Interaktionseffekt \index{ordinaler Interaktionseffekt} gesprochen. D.h. bei einem ordinalen Interaktionseffekt kann auch sinnvoll über die Haupteffekte gesprochen werden.
+
+In @fig-ed-crfd-hybrid ist nun ein andere Konfiguratino der Interaktionseffekte abgebildet.
+
+```{r}
+#| fig-cap: "Beispiel für hybride/semidisordinale Interaktionseffekte"
+#| label: fig-ed-crfd-hybrid
+
+hybrid <- tibble(
+  A = paste0('A[', c(1,1,2,2),']'),
+  B = paste0('B[', c(1,2,1,2), ']'),
+  y = c(4,3,7,2)
+)
+p1 <- ggplot(hybrid, aes(A,y,color = B, group=B)) +
+  geom_line(size=2) +
+  geom_point(size = 4) +
+  scale_x_discrete('Factor A', labels = label_parse) +
+  scale_y_continuous(name = '', breaks = NULL,
+                    limits = c(0, 10)) +
+  scale_color_discrete(name = 'Factor B', labels = label_parse) 
+
+p2 <- ggplot(hybrid, aes(B,y,color = A, group=A)) +
+  geom_line(size=2) +
+  geom_point(size = 4) +
+  scale_x_discrete('Factor B', labels = label_parse) +
+  scale_y_continuous(name = '', breaks = NULL,
+                    limits = c(0, 10)) +
+  scale_color_discrete(name = 'Factor A', labels = label_parse) 
+gridExtra::grid.arrange(p1, p2, ncol=2)
+```
+
+Hier macht die Interpretation der Haupteffekt nur noch im Fall von Faktor $B$ Sinn, da in beiden Fällen es zu einer Abnahme der Werte der abhängigen Variable kommt. Für Faktor $A$ dagegen, hängt die Veränderung in der abhängigen Variablen wenn von $A_1$ nach $A_2$ gegangen wird, davon ab, ob es Faktor $B$ den Wert $B_1$ hat, bei dem e szu einer Zunahme der abhängigen Variable kommt, während es unter $B_2$ zu einer Abnahme kommt. Diese Art des Interaktionseffekt wird daher als hybrid oder semidisordinaler Interaktionseffekt \index{semidisorindaler Interaktioseffekt} bezeichnet. D.h. hier können wir nur für Faktor $B$ sinnvoll über den Haupteffekt sprechen. Allerdings, hängt die Höhe der Abnahme von $B_1$ nach $B_2$ von Faktor $A$ ab.
+
+Wenig überraschend gibt es noch eine weitere Konfiguration von Interaktionseffekten die in @fig-ed-crfd-disordinal abgebildet sind.
+
+```{r}
+#| fig-cap: "Beispiel für disordinale Interaktionseffekte"
+#| label: fig-ed-crfd-disordinal
+
+discordial <- tibble(
+  A = paste0('A[', c(1,1,2,2),']'),
+  B = paste0('B[', c(1,2,1,2), ']'),
+  y = c(3,6,7,2)
+)
+p2 <- ggplot(discordial, aes(A,y,color = B, group=B)) +
+  geom_line(size=2) +
+  geom_point(size = 4) +
+  scale_x_discrete('Factor A', labels = label_parse) +
+  scale_y_continuous(name = '', breaks = NULL,
+                    limits = c(0, 10)) +
+  scale_color_discrete(name = 'Factor B', labels = label_parse) 
+p2 <- ggplot(discordial, aes(B,y,color = A, group=A)) +
+  geom_line(size=2) +
+  geom_point(size = 4) +
+  scale_x_discrete('Factor B', labels = label_parse) +
+  scale_y_continuous(name = '', breaks = NULL,
+                    limits = c(0, 10)) +
+  scale_color_discrete(name = 'Factor A', labels = label_parse) 
+gridExtra::grid.arrange(p1, p2, ncol=2)
+```
+
+Im disordinalen Fall \index{disordinaler Interaktioseffekt} kann für beide Faktoren nicht sinnvoll über die Hauptfaktoren gesprochen werden, da die Veränderung der abhängigen Variablen jeweils immer von der Kombination der Faktoren abhängig ist.
+
+Tatsächlich ist leider die Einteilung von ordinal, semidisoridnal und disoridnalen Interaktionseffekten selten in realen Experimenten zu beobachten, da oftmals mehr als nur $2\times 2$ CRFD durchgeführt werden. In @fig-ed-crfd-interactions-01 sind mögliche Interaktionseffekte wenn $p,q > 2$ gilt abgetragen.
+
+```{r}
+#| fig-cap: "Mögliche Interaktionen bei $A=2\\times B=3$ Faktorstufen. (+) Effekt, (-) kein Effekt, (?) unklar"
+#| label: fig-ed-crfd-interactions-01
+
+df <- tibble::tibble(
+  y = c(rep(c(1,1.1),each=3),rep(1:2, each=3),c(2,1,1,2.1,1.1,1.1),c(2.1,1.1,1.1,1.6,0.6,0.6),
+        c(2,1.8,1.7,1,1.2,1.3),c(2,1.5,1,1.5,1,2),c(1.7,1,1.7,1.3,2,1.3),
+        c(1,2,1.7,1.3,1,1.5)),
+  x = c(rep(1:3,16)),
+  fac = rep(rep(c('A[1]','A[2]'), each=3),8),
+  type = rep(c('a','b','c','d','e','f','g','h'),each=6)
+)
+to_inter <- as_labeller(c(a='A-B-A:B-', b='A+B-A:B-', c='A-B+A:B-', d='A+B+A:B-',
+                          e='A+B?A:B+', f='A?B+A:B+', g='A?B?A:B+', h='A?B?A:B+'))
+ggplot(df, aes(x,y, color=fac, group=fac)) +
+  geom_line(size=1.3) +
+  geom_point(size=3) +
+  facet_wrap(~type,ncol=4, labeller = to_inter) +
+  scale_x_continuous('Faktor B', breaks=1:3,
+        labels=c(expression(B[1]), expression(B[2]), expression(B[3])),
+        limits=c(0.3,3.7), minor_breaks = NULL) +
+  scale_y_continuous("Mittelwerte", breaks=NULL, limits=c(.5,2.2)) +
+  scale_color_discrete('Faktor A', label = label_parse) +
+  theme(panel.spacing.x = grid::unit(0.5, "lines")) 
+```
+
+In @fig-ed-crfd-interactions-01 ist die Interpretation der Haupteffekte bzw. die Anwesenheit von Interaktionseffekten mit ($+$), ($-$) und ($?$). Hier zeigt sich, dass die mögliche Anordnung von Haupt- und Interaktionseffekten sehr schnell sehr unübersichtlich wird. Daher kann als Faustregel genommen werden. In der ersten Zeile sind keine Interpretationseffekte beteiligt und in diesen Fällen ist die Interpretation der Haupteffekte unproblematisch. In der zweiten Zeile dagegen sind teilweise Interpretation möglich aber müssen immer durch mehrere Qualikationsklauseln begleigtet werden um die Daten korrekt zu interpretieren. Zum Beispiel im zweiten Beispiel von links in der zweiten Reihe, sehen wir eine Abnahme der abhängigen Variablen unter Variable $B$, allerdings nur wir von $B_1$ nach $B_2$ gehen. Daher kann oft die folgende Faustregel angewendet werden.
+
+::: {.callout-note}
+Wenn Interaktionseffekte vorhanden sind, dann ist die Interpretation von Haupteffekten selten sinnvoll.
+:::
+
+Letztendlich ist die Definition eines Interaktionseffekts, dass der Effekt der einen Variablen von der Ausprägung der anderen Variablen abhängt. Dies sollte daher immer Berücksichtigung finden. Denn Beispieln in @fig-ed-crfd-interactions-01 folgend ist bei einem CRFD die erstellen eines sogenannten Interaktionsdiagramm sinnvall. Bei dem einfach nur die Mittelwerte gegen die Konditionen der einen Variable und verbundenüber die andere Variable dargestellt werden. In @fig-ed-crfd-intergraph ist ein Interaktionsdiagramm für die Fußballbalancierdaten abgebildet.
+
+```{r}
+#| fig-cap: "Interaktionsdiagramm der Gleichgewichtsdaten"
+#| label: fig-ed-crfd-intergraph
+
+sway_m <- sway |> group_by(Gruppe, Auge) |>
+  summarize(m = mean(sway), s = sd(sway))
+ggplot(sway_m, aes(Gruppe, m, color = Auge, linetype = Auge, group = Auge)) + 
+  geom_path(size = 1.3) +
+  geom_point(size = 4) +
+  labs(y = 'Mittlere Schwankung\ndes KSP[°]') +
+  lims(y = c(0.7,3)) 
+```
+
+Da das CRFD nicht beschränkt ist auf nur zwei Variablen sondern beliebig weiter ausgeweitet werden kann, sollte allerdings unter dem Gesichtspunkt von interpretierbaren Interaktionseffekten genau überprüft werden wie sinnvoll die Einbeziehung vieler Faktoren ist. Beispielsweise sind bei drei Variablen eben schon Dreifachinteraktionen zu interpretieren zu denen es oft schwierig ist interpretierbare wissenschaftliche Hypothesen bzw. interpretationen zu erstellen.
+
+Allgemein ist dabei zu sagen, dass ein Experiment mit mehreren Faktoren üblicherweise effizienter ist, als mehrere Experimenten bei denen die Faktoren einzeln untersucht werden. Zusätzlich ist eine Analyse von Interaktionseffekten bei mehreren kleinen Experimenten nicht oft nicht möglich.
+
+## Analse eines CRFD in `R`
+
+Die Analyse von CRFDs in `R` bringt eigentlich wenig Neues mit sich und kann mit den üblichen Modellbeschreibungen des linearen Modells durchgeführt werden. 
+
+Ein Paket das die Erstellung von deskriptive Statistiken sehr stark vereinfacht ist `summarytools`, bzw. die Funktion `descr()` aus diesem Paket.
+
+```{r}
+#| echo: true
+#| eval: false 
+
+sway |> group_by(Gruppe, Auge) |>  
+  descr(stats = c('mean','med','sd','q1','q3'))
+```
+
+```{r}
+#| results: asis
+#| tbl-cap: "Deskriptive Statistik der KSP-Schwankungen pro Gruppe und Kondition (alle in DEG)"
+
+sway |> group_by(Gruppe, Auge) |>
+  summarytools::descr(stats = c('mean','med','sd','q1','q3'), plain.ascii = F, style='rmarkdown', transpose = T) |> summarytools::tb() |>
+  knitr::kable(digits=2, booktabs=T, linesep=c('','\\addlinespace'))
+```
+
+Mittels der `lm()`-Funktion können wir wie immer über den Modellvergleich gehen.
+
+```{r}
+#| echo: true
+
+mod_f <- lm(sway ~ Gruppe * Auge, sway)
+mod_r1 <- lm(sway ~ Gruppe + Auge, sway)
+mod_r2 <- lm(sway ~ Gruppe, sway)
+mod_r3 <- lm(sway ~ 1, sway)
+anova(mod_r3, mod_r2, mod_r1, mod_f)
+```
+
+Oder wir verwenden direkt `aov()` um die $F$-Tabelle zu erhalten:
+
+```{r}
+#| echo: true
+#| lst-label: lst-ed-crfd-ftable-01
+#| lst-cap: "F-Tabelle mit `aov()` erstellen."
+
+mod_aov <- aov(sway ~ Gruppe * Auge, data = sway)
+summary(mod_aov)
+```
+
+Wie immer wieder betont, bei der Verwendung mit `aov()` geschieht nichts anderes und es wird lediglich `lm()` im Hintergrund aufgerufen. So können wir von `aov()` auch die `coef()`-Funktion anwenden und erhalten genau die gleichen *Steigungskoeffizienten* $\beta_i$ wie bei `lm()`.
+
+```{r}
+#| echo: true
+
+cbind(coef(mod_f), coef(mod_aov))
+```
+
+Da es sich bei der Analyse eines CRFD um nichts anderes als um ein lineares Modell handelt, kann der Modellfit wie immer über die uns schon bekannten Methoden mittels der Residuen untersucht werden.
+
+::: {.callout-tip}
+Den Levene-Test können wir ebenfalls wie beim CRD anwenden.
+
+```{r}
+#| echo: true
+
+car::leveneTest(mod_aov)
+```
+
+Die $H_0$-Hypothese des Levene-Tests ist die Varianzgleichheit, d.h. alle Faktorkombinationen haben die gleiche Varianz. Da der Test als Voraussetzungstest eingesetzt wird, setzen wir die Irrtumswahrscheinlichkeit wieder mit $\alpha = 0.1$ an. Dementsprechend wird im vorliegenen Fall die $H_0$ nicht abgelehnt und die Annahme der Varianzgleichheit beibehalten.
+:::
+
+## Effektstärken im CRFD
+
+Natürlich kann für ein CRFD ebenfalls eine Effektstärke wie für ein CRD berechnet werden. Natürlich gilt hier aber genause, dass es keine eins-zu-eins Abbildung einer Effektstärke auf eine spezifische Anordnung der Stufenmittelwerte $y_{ij.}$ gibt. Zusätzlich kommt beim CRFD dazu, dass es unterschiedliche Arten gibt die Residualvarianz zu bestimmen. Wenn wir uns noch einmal die Effektstärke $f$ im CRD anschauen, da haben wir das Modell, dass wir eine Effektvarianz durch eine Fehlervarianz teilen.
+
+\begin{equation*}
+f = \frac{\sigma_{\text{Effekt}}}{\sigma_{\epsilon}} 
+\end{equation*}
+
+Im CRFD haben wir nun die Möglichkeit die Fehlervarianz $\sigma_{\epsilon}$ auf unterschiedliche Arten zu bestimmen. Vergleichen wir dazu noch einmal zwei Modelle. Das volle Model mit beiden Faktoren und ein reduziertes Modell mit nur dem einen Faktor $A$.
+
+\begin{align}
+y_{ijk} &= \mu + \alpha_j + \beta_k + (\alpha\beta)_{jk} + \epsilon_{ijk} \\
+y_{ij} &= \mu + \alpha_j + \epsilon_{ij} \\
+\end{align}
+
+Wir interessieren uns für die Effektstärke von Faktor $A$. Wenn wir die beiden Modell in Bezug auf die Varianzkomponenten aufschreiben, erhalten wie bereits oben beschrieben für das volle Modell:
+
+\begin{equation}
+\sigma_y^2 = \sigma_{\alpha}^2 + \sigma_{\beta}^2 + \sigma_{(\alpha\beta)}^2 + \sigma_{\epsilon(full)}^2
+\end{equation}
+
+Entsprechend für das reduzierte Modell: 
+
+\begin{equation}
+\sigma_y^2 = \sigma_{\alpha}^2 + \sigma_{\epsilon(reduced)}^2
+\end{equation}
+
+Dementsprechend ist der Zähler $\sigma_{\alpha}^2$ in beiden Fällen gleich, aber der Nenner $\sigma_{\epsilon}$ wird sich unterscheiden, da $\sigma_{\epsilon(full)}^2 \neq \sigma_{\epsilon(reduced)}^2$ gilt. Warum ist das so? Im reduzierten Modell, wird die Varianz die auf Grund des Faktors $B$ also $\sigma_{\beta}$ und der Interaktion $A:B$ also $\sigma_{(\alpha\beta)}$ ensteht nicht modelliert und wird daher durch den Fehlerterm $\sigma_{\epsilon(reduced)}^2$ aufgesaugt. Daher gilt:
+
+\begin{equation*}
+\sigma_{\epsilon(full)}^2 \leq \sigma_{\epsilon(reduced)}^2
+\end{equation*}
+
+Beziehungsweise präziser:
+
+\begin{equation*}
+\sigma_{\epsilon(full)}^2 + \sigma_{\alpha}^2 + \sigma_{\beta}^2 + \sigma_{(\alpha\beta)}^2 = \sigma_{\epsilon(reduced)}^2
+\end{equation*}
+
+Dies wiederum führt dazu je nachdem durch welche Residualvarianz wir die Effektvarianz $\sigma_{\text{Effekt}}^2$ teilen, wir bei $\sigma_{\epsilon(full)}^2$ einen größeren Effekt bestimmen als wenn wir $\sigma_{\epsilon(reduced)}^2$ verwenden. Im zweiten Fall wird die Effektstärke als **partial** bezeichnet. D.h. wir können mittels des vollen Modells zwei verschiedene Arten der Effektstärke bestimmen.
+
+\begin{align*}
+f &= \frac{\sigma_{\alpha}^2}{\sigma_{\beta}^2 + \sigma_{(\alpha\beta)}^2 + \sigma_{\epsilon}^2} \\
+f_{\text{partial}} &= \frac{\sigma_{\alpha}^2}{\sigma_{\epsilon}^2} \\
+\end{align*}
+
+Diese Formeln sind dabei nur konzeptionell zu verstehen und wir bestimmen die beiden Formeln wieder mittels einer $\omega^2$-Effektstärke.
+
+\begin{align*}
+\hat{\omega}^2 &= \frac{ss\text{Eff}-df_{\text{Eff}}\cdot MSE}{ssT+MSE} \\
+ &= \frac{df\text{Eff} \cdot (F_{\text{Effekt}})-1)}{\sum_{\text{alle Effekte}}(df_{\text{Eff}_i} F_{\text{Eff}_i}) + dfE + 1}
+\end{align*}
+
+\begin{align*}
+\hat{\omega}_{\text{partial}}^2 &= \frac{SS_{\text{effect}}-df_{\text{effect}}MS_W}{SS_{\text{effect}}+(N-df_{\text{effect}})MS_W} \\ 
+&=  \frac{df_{\text{effect}}(F_{\text{effect}})-1)}{df_{\text{effect}}(F_{\text{effect}}-1)+N}
+\end{align*}
+
+D.h. wir können für alle drei Effekt $A$, $B$ und $A:B$ jeweils Effektstärken bestimmen.
+
+Die Einordnung der Effektstärken ist wieder die gleiche wie bereits im Rahmen des CRD eingeführt.
+
+|    | $\omega^2$ | 
+|--- | --- |
+| klein | 0.01 | 
+| mittel |  0.06 | 
+| groß |  0.14 | 
+
+: Einordnung der $\omega^2$ Effektstärken {#tbl-ed-crfd-effsize}
+
+::: {.callout-warning}
+Die Interpretation der Effektstärke nach @tbl-ed-crfd-effsize ist genauso willkürlich wie die Irrtumswahrscheinlichkeit von $\alpha = 0.05$!
+:::
+
+:::{#exm-crfd-effect-01}
+
+In @lst-ed-crfd-ftable-01 haben wir die $F$-Tabelle für die Fußballdaten berechnet und nun möchten wir die Effektstärke $\omega^2$ für den Effekt der Gruppe bestimmen. Dazu extrahieren wir die benötigten Komponenten aus der Tabelle um $\omega^2$ zu bestimmen.
+
+```{r}
+#| echo: true
+
+ssEff <- 4.18
+dfEff <- 2
+ssT <- 4.18 + 40.07 + 2.98 + 32.15 
+MSE <- 0.22
+omega_sqr_gruppe <- (ssEff - dfEff * MSE)/(ssT + MSE)
+omega_sqr_gruppe
+```
+D.h bei dem Einfluss der Gruppe handelt es sich um eine mittlere Effektstärke.
+:::
+
+### Effektstärken $\omega^2$ und $\omega_{\text{partial}}^2$ in R
+
+In `R` können wir nachdem wir das Modell mit `lm()` gefittet haben mittels der Funktion `omega_squared()` aus dem Paket `effectsize` die Effektstärken bestimmen. `omega_squared()` hat einen Parameter `partial` den wir benutzen können um entweder die *normale* Effektstärke oder die partial Effektstärke zu bestimmen. Mit dem Parameter auf `FALSE` gesetzt werden die normalen Effektstärken bestimmt.
+
+```{r}
+#| echo: true
+
+effectsize::omega_squared(mod_aov, partial=FALSE, ci=0.95)
+```
+
+Entsprechend mit `partial=TRUE` erhalten wir die partiellen Effektstärken.
+
+```{r}
+#| echo: true
+
+effectsize::omega_squared(mod_aov, partial=TRUE, ci=0.95)
+```
+
+## Mehrfachvergleiche im CRFD 
+
+Im CRFD können wir genauso wie auch im CRD Mehrfachvergleiche einsetzen um gezielt Unterschiede zwischen bestimmten Kombination der Faktorstufen zu untersuchen. 
+
+Prinzipiell läufen die Mehrfachvergleiche parallel wie im CRD ab mit unterschiedlichen kritischen Werten $w$, je nachdem welche Methode verwendet wird. Ein zusätzlicher Punkt ist beim Interaktionsmodell, dass nicht immer alle algebraisch möglichen Vergleiche auch inhaltlich sinnvoll sind.
+
+```{r}
+#| layout-ncol: 2
+#| fig-cap: "Mehrfachvergleiche für das Fußballbeispiel"
+#| fig-subcap:
+#|   - "Unterschiede innerhalb der Gruppen"
+#|   - "Unterschiede innerhalb Augenkondition"
+#| label: fig-ed-crfd-multcom-01
+ 
+sway_m_w <- sway_m |> select(-s) |>
+  tidyr::pivot_wider(names_from = Auge, values_from = m)
+ggplot(sway_m, aes(Gruppe, m)) + 
+  geom_segment(data = sway_m_w,
+               aes(x = Gruppe, xend = Gruppe,
+                   y = Offen, yend = Geschlossen), size =1.5) +
+  geom_point(size = 6, aes(color = Auge)) +
+  labs(y = 'Mittlere Schwankung \ndes KSP[°]') 
+
+ggplot(sway_m, aes(Gruppe, m)) + 
+  geom_polygon(aes(group = Auge), fill=NA, color = 'black', size = 1.5) + 
+  geom_point(size = 6, aes(color = Auge)) +
+  labs(y = 'Mittlere Schwankung \ndes KSP[°]') 
+```
+
+In @fig-ed-crfd-multcom-01 sind die *wahrscheinlich* sinnvollen Vergleiche abgebildet. D.h. auf Grund der Interaktion sollte der Unterschied zwischen den Gruppen getrennt für die beiden Augenkonditionen untersucht werden bzw. der Unterschied zwischen den Augenkonditionen für jede Gruppe getrennt. Algebraisch ist natürlich auch möglich beispielsweise die U19 bei geschlossenen Augen mit den PROs mit offenen Augen zu vergleichen, allerdings ist dieser Vergleich aus wissenschaftlicher Sicht wahrscheinlich wenig sinnvoll.
+
+Achtung!!! @gelman2006 @nieuwenhuis2011
+
+```{r}
+#| out.width="70%"
+
+knitr::include_graphics('../pics/gelman2006.png')
+```
+
+Nochmal Kontraste bei Paarvergleichen
+
+Standardfehler Haupteffekts:
+
+$$
+s_{\text{Haupteffekt}} = \frac{2\sigma}{\sqrt{N}}
+$$
+
+Standardfehler Interaktionseffekts:
+
+$$
+H_0: \mu_{12} - \mu_{22} = \mu_{11} - \mu_{21} \Leftrightarrow H_0: \mu_{12}-\mu_{22}-\mu_{11}-\mu_{21}=0
+$$
+
+$$
+s_{\text{Interaktion}} = \sigma\sqrt{\frac{1}{N/4} + \frac{1}{N/4} + \frac{1}{N/4}+\frac{1}{N/4}}=\frac{4\sigma}{\sqrt{N}} = 2s_{\text{Haupteffekt}}
+$$
+
+Power - Interaktionseffekt
+
+```{r}
+#| fig-cap: "Zusammenhang zwischen Power für den Interaktionseffekt in Relation zur Größe des Interaktionseffekts zum Haupteffekt bei Power = $0.8$ für den Haupteffekt"
+#| fig-width: 4
+#| fig-height: 1.8
+ 
+ref <- 2.8
+tibble(
+  mult = seq(0.5, 2, 0.1),
+  p = 1 - pnorm(1.96, ref*mult/2, 1)
+) |> 
+  ggplot(aes(mult, p)) +
+  geom_line() +
+  scale_x_continuous("Verhältnis Interaktions- zu Haupteffekt",
+                     breaks = c(0.5, 1, 1.5, 2.0),
+                     labels = c(
+                       expression(frac(1,2)),
+                       1,
+                       expression(frac(3,2)),
+                       2
+                     )) +
+  scale_y_continuous("Power",
+                     breaks = seq(0.1, 1, 0.1)) 
+```
+
+see @gelman2018
+
+## Mehrfachvergleiche in `R`
+
+In `R` läuft der Vergleich wiederum nach dem bekannten Muster ab. Zunächst werden die Modellmittelwerte mittels der `emmeans()`-Funktion aus dem Paket `emmeans` anhand des Modells bestimmt. Anschließend kann dann mittels der `pairs()` bzw. der `contrast()`-Funktion der gewünschte Vergleich durchgeführt werden.
+
+Beispielsweise die paarweisen Vergleiche für alle möglichen Kombinationen, auch diejenigen die wenig sinnvoll sind, mittels:
+
+```{r}
+#| echo: true
+
+mod_em <- emmeans(mod_aov, ~Gruppe*Auge)
+pairs(mod_em, infer=T)
+```
+
+Hätten wir uns a-priori entschieden schon fest zu setzen nur die Vergleiche innerhalb der Gruppen bzw. der Augenkonditionen zu untersuchen und mittels Bonferroni-Korrektur den $\alpha$-Level zu kontrollieren. Dann sieht die Syntax in `R` folgendermaßen aus: 
+
+```{r} 
+#| echo: true
+
+mod_em_cauge <- emmeans(mod_aov, ~Gruppe|Auge)
+pairs(mod_em_cauge, adjust = 'bonferroni', level = 1-0.05/2, infer=T)
+```
+
+Die Syntax `~Gruppe|Auge` bedeutet Unterschiede nach `Gruppe` geblockt nach `Auge`. Parallel dazu `Auge`-Unterschiede geblockt für `Gruppe`: Ein Besonderheit ist hier jetzt allerdings der $\alpha$-Level für die beiden Tests. Da wir zwei Mehrfachvergleiche durchführen wollen, sollten wir die $\alpha$-Level für die beiden Gruppen von Mehrfachvergleichen so anpassen, dass wir insgesamt unter den anvisiertem $\alpha$ bleiben. In diesem Fall also $\alpha/2$.
+
+Wir sehen, dass zwischen den Gruppen bei offenen Augen keine Unterschiede gefunden wurde, während bei geschlossenen Augen alle Unterschied statistsch signifikant sind.
+
+```{r}
+#| echo: true
+
+mod_em_cgroup <- emmeans(mod_aov, ~Auge|Gruppe)
+pairs(mod_em_cgroup, adjust = 'bonferroni', level = 1-0.05/2, infer=T)
+```
+
+Hier können wir erkennen dass alle Unterschiede zwischen den Augenkonditionen innerhalb der Gruppen statistisch signifikant sind.
+
+Alternativ hätten wir auch die Befehle `pairs(mod_em, simple="Gruppe", adjust="bonferroni", level=0.975, infer=T)`, bzw. `pairs(mod_em, simple='Auge', adjust="bonferroni", level=0.975, infer=T)` verwenden können um die gleichen Mehrfachvergleich durchzuführen. Das package `emmeans` ist sehr umfangreich und die Dokumentation hat zahlreiche Beispiele für die Syntax um gewünschte Vergleiche durchführen zu können.
+
+Cohen's d für Mehrfachvergleiche 
+
+```{r}
+#| echo: true
+
+eff_size(mod_em_cauge, sigma=sigma(mod_aov),
+                 edf=df.residual(mod_aov))
+```
+
+## Anzahl der Replikationen a-priori ermitteln
+
+Drei Möglichkeiten: 
+
+1) Anhand der Literatur wird $f$ bestimmt.
+2) Es wird ein relevantes/plausibels $\Delta$, als der Unterschied zwischen zwei Gruppen angesetzt.^[$\sigma$ muss trotzdem anhand der Literatur abgeschätzt werden., k = Anzahl der Freiheitsgrade, $f = \sqrt{\omega^2/(1-\omega^2)}$]
+3) Konfidenzintervalle
+
+$$
+f = \sqrt{\frac{\Delta^2}{2(k+1)\sigma^2}}
+$$
+
+Stichprobengröße a-prior ermitteln
+
+```{r}
+#| results: asis
+#| echo: true
+
+pwr::pwr.anova.test(f = 0.27, k = 3, sig.level = 0.05, power = 0.8)
+```
+Aus dem Beispiel $f = \sqrt{\omega^2/(1-\omega^2)} = \sqrt{0.07/0.93} = 0.27$
+
+Stichprobengrößen a-priori ermitteln
+
+Berechnung der Stichprobengröße pro Zelle wie beim CRD. Allerdings wird für $k$ die Anzahl der Freiheitsgrade + 1 verwendet. Also für die Haupteffekte entweder $p$ oder $q$ und für den Interaktionseffekt $(p-1)\times(q-1)+1$  Anschließend Korrektur des erhaltenten $n'$ mittels:
+
+$$
+n_c = \frac{(n'-1)(u+1)}{\#n\ \mathrm{Zellen}} + 1
+$$
+
+Anz. Zellen = $p \times q$, u = Freiheitsgrade für den gewünschten Effekt entweder $(p-1), (q-1)$ oder $(p-1)\times(q-1)$.
+
+Die Gesamtstichprobengröße N ist dann $n_c \times \#Zellen$.
+
+Im Beispiel
+
+```{r}
+k_p <- pwr::pwr.anova.test(f = 0.27, k = 3,
+                    sig.level = 0.05, power = 0.8)
+n_s <- ceiling(k_p$n)
+n_c <- ((n_s - 1)*(2+1))/6 + 1
+```
+
+Für den Interaktionseffekt $n' = `r n_s`$ mit `pwr::pwr.anova.test()` bestimmt.
+
+$$
+n_c = \frac{(`r n_s` - 1)(2+1)}{6} + 1 = `r n_c`
+$$
+
