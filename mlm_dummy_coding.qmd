@@ -26,11 +26,11 @@ data <- tibble::tibble(
 )
 ```
 
-Bisher haben wir nur kontinuierliche, beziehungsweise metrische, Variablen in unsere lineares Modell aufgenommen. Im Folgenden werden wir sehen, dass wir mit einem kleinem Trick genause nominale Variablen in das Modell integrieren können, ohne dass wir fundamental etwas neues lernen müssen.
+Bisher haben wir nur kontinuierliche, beziehungsweise metrische Variablen in unsere linearen Modelle aufgenommen. Im Folgenden werden wir sehen, dass wir mit einem kleinem Trick genauso nominale Variablen, also z.B. TREATMENT versus CONTROL, in das Modell integrieren können, ohne dass wir dafür etwas fundamental neues lernen müssen.
 
 ## Vergleich von zwei Gruppen
 
-Beginnen wir mit einem einfachen Beispiel. Wir wollen die Unterschiede zwischen Männern und Frauen in Bezug auf die Körpergröße untersuchen. In @fig-mlm-dummy-gender ist ein hypothetischer Datensatz von Körpergrößen von Frauen und Männern abgebildet. Wenig überraschen, da der Datensatz so erstellt wurde, sind Männer im Mittel größer als Frauen.
+Beginnen wir mit einem einfachen Beispiel. Wir wollen die Unterschiede zwischen Männern und Frauen in Bezug auf die Körpergröße untersuchen statistisch untersuchen. In @fig-mlm-dummy-gender ist ein hypothetischer Datensatz von Körpergrößen von Frauen und Männern abgebildet. Wenig überraschend, da der Datensatz so erstellt wurde, sind Männer im Mittel größer als Frauen.
 
 ```{r}
 #| fig-cap: "Simulierte Daten: Verteilung von Körpergrößen nach Geschlecht für Männer (m) und Frauen (f)"
@@ -41,7 +41,7 @@ ggplot(height, aes(gender,cm)) +
   labs(x = 'Gender', y = 'Körpergröße[cm]') 
 ```
 
-In @tbl-mlm-dummy-gender ist ein Ausschnit aus den Daten tabellarisch dargestellt. Wenig überraschend, haben wir zwei Datenspalten. In der ersten Spalte stehen die Körpergrößen, während in der zweiten Spalte eine Indikatorvariable steht die entweder den Wert $m$ für Männer oder $f$ für Frauen annimmt.
+In @tbl-mlm-dummy-gender ist ein Ausschnit der Daten tabellarisch dargestellt. Wir haben zwei Datenspalten. In der ersten Spalte stehen die Körpergrößen, während in der zweiten Spalte die nominale Variable `gender` steht die entweder den Wert $m$ für Männer oder $f$ für Frauen annimmt.
 
 ```{r}
 #| label: tbl-mlm-dummy-gender
@@ -65,14 +65,16 @@ In @tbl-mlm-dummy-gender-desc sind dann auch noch einmal die deskriptiven Statis
 x_hat <- height |> dplyr::group_by(gender) |>
   dplyr::summarize(m = round(mean(cm),1), sd = round(sd(cm),1))
 knitr::kable(x_hat, booktabs=TRUE,
-             caption = "Deskriptive Werte")
+             caption = "Deskriptive Werte",
+             col.names = c('Gender', "$\\bar{x}$", "SD"),
+             escape = FALSE)
 ```
 
-Wir müssen jetzt allerdings erst einmal eine kurze Detour nehmen und verstehen, wie nominale Werte in `R` repräsentiert werden.
+Wir müssen zunächst einmal eine kurze Detour nehmen und uns einmal genauer anschauen wie nominale Werte in `R` repräsentiert werden.
 
 ## Nominale Variablen in `R` (detour)
 
-Nominale Variablen werden in `R` mit einen speziellen Typ repräsentiert dem sogenannten `factor`. Erstellt werden kann ein Faktor mit der `factor()`-Funktion. Die Funktion hat drei wichtige Parameter. Der erste Parameter bezeichnet die Werte, der zweite die möglichen Faktorstufen (`levels`) und der dritte Parameter die dazugehörigen Bezeichnungen (`labels`). Ein einfaches Beispiel sieht dann so aus:
+Nominale Variablen werden in `R` mittels eines eigenem Datentyps `factor` repräsentiert. Erstellt werden kann ein Faktor mit der `factor()`-Funktion. Die Funktion hat drei wichtige Parameter. Der erste Parameter bezeichnet die Werte, der zweite die möglichen Faktorstufen (`levels`) und der dritte Parameter die dazugehörigen Bezeichnungen (`labels`). Ein einfaches Beispiel sieht dann so aus:
 
 ```{r}
 #| echo: true
@@ -82,9 +84,9 @@ gender <- factor(c(0,0,1,1),
 gender
 ```
 
-D.h. wir haben einen Datenvektor mit den Elemente $(0,0,1,1)$. Wir spezifizieren die `levels` dementsprechend mit $0$ und $1$ und definieren die dazugehörigen `labels` mit $m$ und $f$. Dabei sind jeweils Vektoren übergeben worden (siehe `c()`). Wenn wir die neue Variable `gender` aufrufen erhalten wird der Datenvektor mit den entsprechenden `labels` ausgegeben und zusätzlich gibt `R` die möglichen `labels` an.
+D.h. wir haben einen Datenvektor mit den Elemente $(0,0,1,1)$. Wir spezifizieren die `levels` dementsprechend mit $0$ und $1$ und definieren die dazugehörigen `labels` mit $m$ und $f$. Dabei sind jeweils Vektoren übergeben worden (siehe `c()`). Wenn wir die neue Variable `gender` aufrufen erhalten wir den Datenvektor mit den entsprechenden `labels`. Zusätzlich gibt `R` die möglichen `labels` auch noch einmal explizit als `Levels` an.
 
-Wenn wir den Parameter `levels` nicht angegeben hätten, dann extrahiert `factor()` die eineindeutigen Werte selbst und führt die Abbidlung auf die `labels` entsprechend der Sortierung aus.
+Wenn wir den Parameter `levels` nicht angegeben hätten, dann extrahiert `factor()` die eineindeutigen Werte selbst und führt die Abbidlung auf die `labels` entsprechend der standard Sortierungsregeln von `R` aus.
 
 ```{r}
 #| echo: true
@@ -103,7 +105,7 @@ gender <- factor(c(0,0,1,1),
 gender
 ```
 
-Daher ist es fast immer sinnvoll `labels` und `levels` immer zusammen zu nehmen. Wenn die Parameter nicht angegeben werden, dann führt `factor` die Abbildung wiederum automatisch durch und für die `labels` werden die Datenwerte übernommen. 
+Daher ist es fast immer sinnvoll `labels` und `levels` immer zusammen zu spezifizieren. Wenn die Parameter nicht angegeben werden, dann führt `factor` die Abbildung automatisch durch und für die `labels` werden die Datenwerte übernommen. 
 
 ```{r}
 #| echo: true
@@ -118,6 +120,7 @@ Achtung, die Variable `gender` sieht zwar aus wie ein numerischer Vektor, sie is
 #| echo: true
 
 is.numeric(gender)
+gender + 1
 ```
 
 Intern wird eine Faktorvariable von `R` zwar als ein numerischer Vektor abgelegt. Aber die "sichtbaren" Werte sind nun die Zeichenketten der `labels`, die daher auch angezeigt werden. Die interne numerische Repräsentation muss auch nicht mehr den ursprünglichen Datenwerten entsprechen.
@@ -143,7 +146,7 @@ str(gender)
 
 `factor()` ermittelt zunächst die eineindeutigen Werte und sortiert diese dann entsprechend des Typen. In diesem Fall wird die Zeichenkette alphabetisch sortiert. Dann erfolgt die Abbildung der Werte auf die `labels`. Dies führt in diesem Fall dazu, dass die Werte `m` intern den Wert $2$ zugeordnet bekommen, obwohl der erste Wert in den Daten `m` ist. Diese Sortierung der Daten wird später noch einmal von Bedeutung werden.
 
-Die Abfolge der `levels` kann durch eine explizite Angabe der Reihenfolge selbst bestimmt werden.
+Die Reihenfolge der Faktorstufen wird durch die Angabe des `levels` explizit bestimmt werden und ist daher auch noch mal ein Argument dafür das `levels`-Argument zu verwenden.
 
 ```{r}
 #| echo: true
@@ -175,12 +178,12 @@ Schaut euch die ausführliche Dokumentation der Funktionen und die Beispiel an, 
 ::: {.callout-tip}
 Viele Funktionen in `R`, wie z.B. `lm()`, transformieren Vektoren mit Zeichenketten automatisch in einen `factor()` um. Wird in `lm()` in der Formel beispielsweise `y ~ gender` benutzt und `gender` ist eine Datenspalte die aus den Zeichenketten `c('m','m','f','f')` besteht, dann ruft `lm()` intern die Funktion `factor()` für diese Daten auf und führt dann die Berechnung mit dem Faktor durch.
 
-Dies erleichtert natürlich oft den Umgang mit den Daten, hat aber den Nachteil das immer klar sein muss, dass die automatische Konvertierung auch tatsächlich diejenige ist, dich auch gewünscht ist.
+Dies erleichtert natürlich oft den Umgang mit den Daten, hat aber den Nachteil das einem immer klar sein muss, dass die automatische Konvertierung auch tatsächlich diejenige ist, dich auch gewünscht ist.
 :::
 
 ## Vergleich von zwei Gruppen (continued)
 
-Kommen wir zurück zum Körpergrößenvergleich. Normalerweise würden wir die Unterschiede zwischen den beiden Gruppen mit einem t-Test für unabhängige Stichproben untersuchen. In `R` können wird dies mit der `t.test()`-Funktion durchführen.
+Kommen wir zurück zum Körpergrößenvergleich. Normalerweise würden wir die Unterschiede zwischen den beiden Gruppen mit einem klassischen t-Test für unabhängige Stichproben unter der Annahme der Varianzgleichheit untersuchen. In `R` können wird dies mit der `t.test()`-Funktion durchführen.
 
 ```{r}
 #| echo: true
@@ -188,7 +191,7 @@ Kommen wir zurück zum Körpergrößenvergleich. Normalerweise würden wir die U
 t.test(cm ~ gender, data=height, var.equal=T)
 ```
 
-Wir beobachten ein statistisch signifikantes Ergebnis.
+Dem Output von `t.test() ist ein statistisch signifikantes Ergebnis zu entnehmen.
 
 Erinnern wir uns noch einmal an die Modellformulierung beim t-Test bei gleich großen Gruppen $(n_w = n_m)$.
 
@@ -200,14 +203,15 @@ Y_{im} &= \mu_{m} + \epsilon_{im}, \quad \epsilon_{im} \sim \mathcal{N}(0,\sigma
 \label{eq-mlm-dummy-tTest-model}
 \end{equation}
 
-Beide Gruppen sollten normalverteilt sein mit gleicher Varianz $\sigma^2$ und Erwartungswert $\mu_f$ für die weiblichen Teilnehmerinnen und $\mu_m$ für die männlichen Teilnehmer. Die Hypothesen beim t-Test sind
+Beide Gruppen sollten normalverteilt sein mit gleicher Varianz $\sigma^2$ und den Erwartungswerten $\mu_f$ für die weiblichen Teilnehmerinnen und $\mu_m$ für die männlichen Teilnehmer. Die Hypothesen beim t-Test sind unter der Nullhypothese die übliche Annahme der Gleichheit der Mittelwerte bzw. unter der Alternativhypothese die Ungleichheit der Mittelwerte.
 
 \begin{align*}
 H_0&: \delta = 0 \\
 H_1&: \delta \neq 0
 \end{align*}
 
-D.h. wir gehen unter der $H_0$ Hypothese davon aus, dass kein Unterschied im Mittelwert zwischen den beiden Gruppen besteht. Die dazugehörige Teststatistik ist:
+Daraus resultiert die folgende Teststatistik:
+
 \begin{equation}
 t = \frac{\bar{y}_m - \bar{y}_w}{\sqrt{\frac{s_m^2 + s_w^2}{2}}\sqrt{\frac{2}{n}}}
 \label{eq-tTest}
@@ -218,6 +222,8 @@ Unter der $H_0$ folgt die Referenz- bzw. Stichprobenverteilung einer t-Verteilun
 \begin{equation*}
 t \sim t_{df=2n-2}
 \end{equation*}
+
+Die entsprechende Dichtefunktion hat die folgende graphische Darstellung (siehe @fig-mlm-dummy-tDist). 
 
 ```{r}
 #| label: fig-mlm-dummy-tDist
@@ -234,18 +240,35 @@ ggplot(t_dist, aes(x,t)) +
   labs(x = 't-Werte', y = 'Dichte') 
 ```
 
-Soweit nicht Neues. Wir wollen aber alles mit dem linearen Modell machen. Daher...
+Soweit nicht Neues. Im Beispiel haben wir einen $t$-Wert von $t = -4.6$ beobachtet der derart extrem ist, dass wir ihn in @fig-mlm-dummy-tDist schon gar nicht mehr unterbringen können. 
+
+Da wir aber faul sind und uns nicht verschiedene Tests merken wollen schauen wir uns jetzt an, wie Wir auf das gleiche Ergebnis mittels eines linearen Modellansatzes kommen können. Die Frage ist daher nun:
 
 ## Kann ich aus dem t-Test ein lineares Modell machen? 
 
-Unsere bekanntes lineares Modell hat die folgende Form:
+Unser altbekanntes lineares Modell hat im einfachsten Fall die folgende Form für eine einfache Regression:
 
 \begin{equation}
-Y_i = \beta_0 + \beta_1 \cdot x_i + \epsilon_i 
+y_i = \beta_0 + \beta_1 \cdot x_i + \epsilon_i 
 \label{eq-mlm-dummy-lm}
 \end{equation}
 
-Können wir diese Modell irgendwie auf die Formeln \eqref{eq-mlm-dummy-tTest-model} und \eqref{eq-tTest} abbilden? Tatsächlich gibt es eine relativ einfache Möglichkeit mittels sogenannter Dummy- oder Indikatorvariablen. Wenn $x_i$ in Formel \eqref{eq-mlm-dummy-lm} als Indikatorvariable verwendet wird, dann nimmt $x_i$ nur zwei verschiedene Werte an. Entweder den Wert $0$ oder den Wert $1$. Mit diesem Trick können wir die Gruppenzugehörigkeit, im Beispiel männlich oder weiblich, abbilden. Dazu legen wir eine Referenzgruppe fest, beispielsweise weiblich. Wenn nun ein Wert $y_i$ aus der Gruppe weiblich kommt, dann wird $x_i = 0$ gesetzt, während wenn ein Wert $y_i$ aus der Gruppe männlich kommt, dann wird $x_i = 1$ gesetzt.
+Können wir diese Modell irgendwie auf die Formeln \eqref{eq-mlm-dummy-tTest-model} und \eqref{eq-tTest} abbilden?
+
+Tatsächlich gibt es eine relativ einfache Möglichkeit mittels eines Ansatzes mit sogenannten Dummy- oder auch Indikatorvariablen. Die $Y$-Variable, die abhängige Variable ist die gleiche wie im t-Test. Im Beispiel also die Körpergrößen. Daher bleibt für die $X$-Variable nur noch die unabhängige Variable, in unserem Beispiel die `gender`-Variable. Jetzt haben wir aber das Problem,  dass $x_i$ nur zwei verschiedene Werte annehmen kann und diese auch noch entweder `m` oder `f` im Beispiel sind. Offensichtlich macht die folgende Formulierung wenig Sinn:
+
+\begin{equation*}
+y_i = \beta_0 + \beta_1 \cdot m + \epsilon_i
+\end{equation*}
+
+Wir machen aus $x_i$ ein Indikatorvariable. Eine Indikatorvariable kann nur zwei verschiedene numerische Werte einnehmen. Entweder den Wert $0$ oder den Wert $1$ (es gibt auch andere Schemata, aber die Ignoriren wir mal). Jetzt macht die Formel wieder mehr Sinn.
+
+\begin{align*}
+y_i &= \beta_0 + \beta_1 \cdot 0 + \epsilon_i \quad \text{oder} \\
+y_i &= \beta_0 + \beta_1 \cdot 1 + \epsilon_i \quad
+\end{align*}
+
+Wir brauchen jetzt nur noch eine Abbildung von unseren Werten `m` und `f` auf die Werte $0$ und $1$ um die Gruppenzugehörigkeit zu kodieren. Dazu legen wir eine sogenannte Referenzgruppe fest die denn Wert $x_i = 0$ zugewiesen bekommt. Im Beispiel sei die weibliche Gruppe die Referenzgruppe. Dies führt zu der folgenden Vorschrift: Wenn ein Wert $y_i$ aus der Gruppe weiblich (`f`) kommt, dann wird $x_i = 0$ gesetzt, während wenn ein Wert $y_i$ aus der Gruppe männlich (`m`) kommt, dann wird $x_i = 1$ gesetzt.
 
 \begin{equation*}
 x_i = \begin{cases}
@@ -254,30 +277,55 @@ x_i = \begin{cases}
 \end{cases} 
 \end{equation*}
 
-Jetzt müssen wir noch $\beta_0$ und $\beta_1$ in Formel \eqref{eq-mlm-dummy-lm} festlegen. Wir können den $y$-Achsenabschnitt $\beta_0$ gleich des Mittelwerts der Referenzgruppe setzen. Also $\beta_0 = \mu_f$. Damit fehlt noch $\beta_1$, hier machen wir die Festlegung $\beta_1 = \mu_m - \mu_f = \Delta$. D.h. der Unterschied zwischen den beiden Gruppenmittelwerten. Damit ist aus Formel \eqref{eq-mlm-dummy-tTest-model} das folgende lineare Modell geworden.
+So weit so gut. Jetzt können wir uns mit den Koeffizienten $\beta_0$ und $\beta_1$ in Formel \eqref{eq-mlm-dummy-lm} beschäftigen und deren Bedeutung unter dem Indikatorvariablenansatz verstehen. In der weiblichen Gruppe mit $x_i = 0$ folgt für \eqref{eq-mlm-dummy-lm}:
+
+\begin{equation*}
+y_i = \beta_0 + \beta_1 x_i + \epsilon_i = \beta_0 + \epsilon
+\end{equation*}
+
+D.h. der $y$-Achsenabschnitt $\beta_0$ wird zum Mittelwert der Referenzgruppe, im Beispiel der `f`. Die Formulierung ist genau die gleich wie diejenige die wir im t-Test-Ansatz verwendet haben (siehe \eqref{eq-mlm-dummy-tTest-model}). Formal also 
+
+\begin{equation*}
+\beta_0 = \mu_f
+\end{equation*}
+
+Schauen wir uns $\beta_1$ nun an. Wenn ein Datenpunkt aus der Gruppe `m` kommt dann wird $x_i = 1$ gesetzt. Formal:
+
+\begin{equation*}
+y_i = \beta_0 + \beta_1 x_i + \epsilon_i = \beta_0 + \beta_1 + \epsilon
+\end{equation*}
+
+Das sieht jetzt etwas unverständlich aus. Machen wir einfach mal die folgende Festlegung: $\beta_1 = \mu_m - \mu_f = \Delta$. D.h. wir setzen als $\beta_1$ der Unterschied zwischen den beiden Gruppenmittelwerten. Setzen wir das mal ein und schauen ob uns das weiter bringt.
+
+\begin{align*}
+y_i &= \beta_0 + \beta_1 \cdot 0 + \epsilon_i = \mu_f + \Delta \cdot 0 + \epsilon_i = \mu_f + \epsilon_i \\
+y_i &= \beta_0 + \beta_1 \cdot 1 + \epsilon_i = \mu_f + \Delta \cdot 1 + \epsilon_i = \mu_f + (\mu_m - \mu_f) + \epsilon_i = \mu_m + \epsilon_i
+\end{align*}
+
+D.h. wir sind mittels der Indikatorvariablen in der Lage das Modell des t-Test (Formel \eqref{eq-mlm-dummy-tTest-model}) in ein lineares Modell eine einfache lineare Regression zu übersetzen.
 
 \begin{align*}
 Y_i &= \mu_f + \Delta_{m} \times x_{i} + \epsilon_i \\
 \Delta_m &= \mu_m - \mu_f \\
 \end{align*}
 
-Schauen wir uns einmal an wie das konkret aussieht. Wir definieren dazu noch die *Residuen* $e_i$ im Modell \eqref{eq-mlm-dummy-tTest-model}.
+Eine der Voraussetzungen im t-Test ist die Normalverteilung der Wert. Letztendlich bedeutet dies, dass wenn ich von den $y_i$-Werten eine Konstante abziehen, das der Rest auch wieder Normalverteilt ist. Der Rest ist jetzt nichts anderes als die Residuen, wenn ich von den $y$-Werten die jeweiligen Gruppenmittelwerte abziehe. 
 
 \begin{align*}
 e_{if} &= y_{if} - \mu_f \\
 e_{im} &= y_{im} - \mu_m
 \end{align*}
 
-Im t-Test Modell ist eine Voraussetzung, dass die Werte Normalverteilt sind, damit sind wiederum die Residuen $e_i$ ebenfalls Normalverteilt, da die Subtraktion des Mittelwerts $\mu$ von den Werten nichts an der Form der Verteilung ändert, sondern nur deren Mittelwert verschiebt.
+D.h. somit, dass die Residuen $e_i$ Normalverteilt. Das ist aber auch eine der Voraussetzungen für die Inferenz im linearen Modell. Im linearen Modell wird weiterhin Homoskedasitzität voraussgetzt, was nichts anderes als die Varianzgleichheit im t-Test ist.
 
-Damit können wir nun zum Beispiel den ersten Wert aus @tbl-mlm-dummy-gender $y_{1m} = 174.4$, mit $\Delta = `r mu_m` - `r mu_f` = `r mu_m - mu_f`, e_{1m} = 174.4 - `r mu_m`= -5.13$ und $x_{1m} = 1$ abbilden.
+Um den Ansatz einmal konkret zu machen, können wir zum Beispiel den ersten Wert aus @tbl-mlm-dummy-gender $y_{1m} = 174.4$ in seine Komponenten aufteilen. Wir erhalten $\Delta = `r mu_m` - `r mu_f` = `r mu_m - mu_f`, e_{1m} = 174.4 - `r mu_m`= -5.13$ und $x_{1m} = 1$.
 
 \begin{align*}
 y_{1m} = 174.4 &= \mu_f + \Delta \cdot x_{1m} + e_{1m} \\
 &= 168.78 + 10.74 \cdot 1 - 5.13 
 \end{align*}
 
-Das Gleiche für den ersten weiblichen Wert in @tbl-mlm-dummy-gender $y_{1f} = 171.3, \Delta = `r Delta`, e_{1f} = 171.3 - `r mu_f` = 2.52$ und $x_{1f} = 0.
+Das Gleiche für den ersten weiblichen Wert in @tbl-mlm-dummy-gender $y_{1f} = 171.3, \Delta = `r Delta`, e_{1f} = 171.3 - `r mu_f` = 2.52$ und $x_{1f} = 0$.
 
 \begin{align*}
 y_{1f} = 171.3 &= \mu_f + \Delta \cdot x_{1f} + e_{1f} \\

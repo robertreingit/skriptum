@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.326">
+<meta name="generator" content="quarto-1.4.550">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -22,7 +22,7 @@ ul.task-list li input[type="checkbox"] {
 }
 /* CSS for syntax highlighting */
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -58,6 +58,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 div.csl-bib-body { }
 div.csl-entry {
   clear: both;
+  margin-bottom: 0em;
 }
 .hanging-indent div.csl-entry {
   margin-left:2em;
@@ -100,7 +101,13 @@ div.csl-indent {
   "collapse-after": 3,
   "panel-placement": "start",
   "type": "textbox",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "Keine Treffer",
     "search-matching-documents-text": "Treffer",
@@ -109,8 +116,10 @@ div.csl-indent {
     "search-more-match-text": "weitere Treffer in diesem Dokument",
     "search-more-matches-text": "weitere Treffer in diesem Dokument",
     "search-clear-button-title": "Zurücksetzen",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Abbrechen",
-    "search-submit-button-title": "Abschicken"
+    "search-submit-button-title": "Abschicken",
+    "search-label": "Suchen"
   }
 }</script>
 <script>
@@ -124,6 +133,33 @@ div.csl-indent {
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
 </head>
 
 <body class="nav-sidebar floating">
@@ -132,13 +168,13 @@ div.csl-indent {
   <header id="quarto-header" class="headroom fixed-top">
   <nav class="quarto-secondary-nav">
     <div class="container-fluid d-flex">
-      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./mlm_title.html">Multiple Regression</a></li><li class="breadcrumb-item"><a href="./mlm_interactions.html"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Interaktionseffekte</span></a></li></ol></nav>
-      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
-      </a>
-      <button type="button" class="btn quarto-search-button" aria-label="Suchen" onclick="window.quartoOpenSearch();">
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./mlm_title.html">Multiple Regression</a></li><li class="breadcrumb-item"><a href="./mlm_interactions.html"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Interaktionseffekte</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
         <i class="bi bi-search"></i>
       </button>
     </div>
@@ -147,7 +183,7 @@ div.csl-indent {
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
       <a href="./">Skriptum - Fortgeschrittene Statistik</a> 
@@ -382,20 +418,8 @@ div.csl-indent {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ed_irbd.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Incomplete Randomized Block Design</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="./ed_split_plot.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Split-plot Design</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./ed_cross_over.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Cross-over Design</span></span></a>
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Split-plot Design</span></span></a>
   </div>
 </li>
       </ul>
@@ -409,7 +433,7 @@ div.csl-indent {
     </ul>
     </div>
 </nav>
-<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         <nav id="TOC" role="doc-toc" class="toc-active">
@@ -432,7 +456,7 @@ div.csl-indent {
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./mlm_title.html">Multiple Regression</a></li><li class="breadcrumb-item"><a href="./mlm_interactions.html"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Interaktionseffekte</span></a></li></ol></nav>
 <div class="quarto-title">
 <h1 class="title"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Interaktionseffekte</span></h1>
 </div>
@@ -447,16 +471,21 @@ div.csl-indent {
   </div>
   
 
+
 </header>
+
 
 <p>Bisher haben wir uns additive Effekte angeschaut. D.h. in unserer Modellspezifikation sind die Prädiktorvariablen <span class="math inline">\(x_i\)</span> immer nur mit einem <span class="math inline">\(+\)</span> in die Formel eingegangen. Im folgenden werden wir sehen, das das lineare Modell nicht nur auf solche Effekt beschränkt ist, sondern Prädiktorvariablen <span class="math inline">\(x_i\)</span> auch multiplikativ in die Formel eingehen können.</p>
 <section id="ein-handballbeispiel" class="level2" data-number="16.1">
 <h2 data-number="16.1" class="anchored" data-anchor-id="ein-handballbeispiel"><span class="header-section-number">16.1</span> Ein Handballbeispiel</h2>
-<p>Fangen wir mit einem hypothetischen Datensatz zum Handball an. Wir haben drei Datenspalten zur Wurfgeschwindigkeit, der Körpermasse und der Armspannweite und unser Ziel ist es, die Wurfgeschwindigkeit anhand der Körpermasse und der Armspanweite vorherzusagen. Die Fragestellung ist angelehnt an <span class="citation" data-cites="debanne2011">Debanne und Laffaye (<a href="references.html#ref-debanne2011" role="doc-biblioref">2011</a>)</span>. Schauen wir uns zunächst die deskriptiven Daten (siehe <a href="#tbl-mlm-inter-handball-01">Tabelle&nbsp;<span>16.1</span></a>).</p>
-<div class="cell">
-<div id="tbl-mlm-inter-handball-01" class="anchored">
-<table class="table table-sm table-striped small">
-<caption>Tabelle&nbsp;16.1: Deskriptive Statistiken der Handballdaten</caption>
+<p>Fangen wir mit einem hypothetischen Datensatz zum Handball an. Wir haben drei Datenspalten zur Wurfgeschwindigkeit, der Körpermasse und der Armspannweite und unser Ziel ist es, die Wurfgeschwindigkeit anhand der Körpermasse und der Armspanweite vorherzusagen. Die Fragestellung ist angelehnt an <span class="citation" data-cites="debanne2011">Debanne und Laffaye (<a href="references.html#ref-debanne2011" role="doc-biblioref">2011</a>)</span>. Schauen wir uns zunächst die deskriptiven Daten (siehe <a href="#tbl-mlm-inter-handball-01" class="quarto-xref">Tabelle&nbsp;<span>16.1</span></a>).</p>
+<div id="tbl-mlm-inter-handball-01" class="cell quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mlm-inter-handball-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabelle&nbsp;16.1: Deskriptive Statistiken der Handballdaten
+</figcaption>
+<div aria-describedby="tbl-mlm-inter-handball-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="cell table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th style="text-align: right;">&nbsp;</th>
@@ -491,32 +520,45 @@ div.csl-indent {
 </tbody>
 </table>
 </div>
+</figure>
 </div>
-<p>In <a href="#tbl-mlm-inter-handball-01">Tabelle&nbsp;<span>16.1</span></a> ist zunächst einmal nichts auffallendes zu sehen. Vielleicht sind die Wurfgeschwindigkeiten etwas niedring für Hochleistungshandballer, aber das soll uns nun nicht weiter stören. Schauen wir uns die Daten als Streudiagramme an.</p>
-<div id="fig-mlm-inter-handball-01" class="cell quarto-layout-panel">
-<figure class="figure">
-<div class="quarto-layout-row quarto-layout-valign-top">
-<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
-<div id="fig-mlm-inter-handball-01-1" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="mlm_interactions_files/figure-html/fig-mlm-inter-handball-01-1.png" class="img-fluid figure-img" data-ref-parent="fig-mlm-inter-handball-01" width="672"></p>
-<p></p><figcaption class="figure-caption">(a) Geschwindigkeit gegen Körpergewicht</figcaption><p></p>
+<p>In <a href="#tbl-mlm-inter-handball-01" class="quarto-xref">Tabelle&nbsp;<span>16.1</span></a> ist zunächst einmal nichts auffallendes zu sehen. Vielleicht sind die Wurfgeschwindigkeiten etwas niedring für Hochleistungshandballer, aber das soll uns nun nicht weiter stören. Schauen wir uns die Daten als Streudiagramme an.</p>
+<div id="fig-mlm-inter-handball-01" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mlm-inter-handball-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-mlm-inter-handball-01" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-mlm-inter-handball-01-1" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-mlm-inter-handball-01-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="mlm_interactions_files/figure-html/fig-mlm-inter-handball-01-1.png" class="img-fluid figure-img" data-ref-parent="fig-mlm-inter-handball-01" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-mlm-inter-handball-01-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(a) Geschwindigkeit gegen Körpergewicht
+</figcaption>
 </figure>
 </div>
 </div>
-<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
-<div id="fig-mlm-inter-handball-01-2" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="mlm_interactions_files/figure-html/fig-mlm-inter-handball-01-2.png" class="img-fluid figure-img" data-ref-parent="fig-mlm-inter-handball-01" width="672"></p>
-<p></p><figcaption class="figure-caption">(b) Geschwindigkeit gegen Armspannweite</figcaption><p></p>
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-mlm-inter-handball-01" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-mlm-inter-handball-01-2" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-mlm-inter-handball-01-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="mlm_interactions_files/figure-html/fig-mlm-inter-handball-01-2.png" class="img-fluid figure-img" data-ref-parent="fig-mlm-inter-handball-01" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-mlm-inter-handball-01-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(b) Geschwindigkeit gegen Armspannweite
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;16.1: Streudiagramme der Handballdaten.</figcaption><p></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mlm-inter-handball-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;16.1: Streudiagramme der Handballdaten.
+</figcaption>
 </figure>
 </div>
-<p>In beiden Graphen ist mit etwas gutem Willen ein positiver Zusammenhang zwischen den jeweiligen Prädiktorvariablen und der Wurfgeschwindigkeit zu identifzieren. Für das Körpergewicht in <a href="#fig-mlm-inter-handball-01-1">Abbildung&nbsp;<span>16.1 (a)</span></a> vielleicht etwas mehr als für die Armspannweite in <a href="#fig-mlm-inter-handball-01-2">Abbildung&nbsp;<span>16.1 (b)</span></a>.</p>
+<p>In beiden Graphen ist mit etwas gutem Willen ein positiver Zusammenhang zwischen den jeweiligen Prädiktorvariablen und der Wurfgeschwindigkeit zu identifzieren. Für das Körpergewicht in <a href="#fig-mlm-inter-handball-01-1" class="quarto-xref">Abbildung&nbsp;<span>16.1 (a)</span></a> vielleicht etwas mehr als für die Armspannweite in <a href="#fig-mlm-inter-handball-01-2" class="quarto-xref">Abbildung&nbsp;<span>16.1 (b)</span></a>.</p>
 <p>Versuchen wir nun die Daten mittels eines linearen Modells zu modellieren.</p>
 <p><span class="math display">\[\begin{equation*}
 Y_{i} = \beta_0 + \beta_1 \times \textrm{bm}_i + \beta_2 \times \textrm{as}_i + \epsilon_i
@@ -525,12 +567,17 @@ Y_{i} = \beta_0 + \beta_1 \times \textrm{bm}_i + \beta_2 \times \textrm{as}_i + 
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>mod_1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(vel <span class="sc">~</span> body_mass <span class="sc">+</span> arm_span, handball)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Wenn wir uns die Parameter des Modells ansehen (siehe <a href="#tbl-mlm-inter-handball-mod1">Tabelle&nbsp;<span>16.2</span></a>), dann sehen wir dass die Steigungskoeffizienten zwar knapp statistisch signifikant sind, aber in Bezug auf die Residualvarianz bzw. den Standardfehler <span class="math inline">\(\hat{\sigma}\)</span> wir eine ziemlich hohe Restunsicherheit haben, die letztendlich Vorhersagen des Modell unbrauchbar macht.</p>
+<p>Wenn wir uns die Parameter des Modells ansehen (siehe <a href="#tbl-mlm-inter-handball-mod1" class="quarto-xref">Tabelle&nbsp;<span>16.2</span></a>), dann sehen wir dass die Steigungskoeffizienten zwar knapp statistisch signifikant sind, aber in Bezug auf die Residualvarianz bzw. den Standardfehler <span class="math inline">\(\hat{\sigma}\)</span> wir eine ziemlich hohe Restunsicherheit haben, die letztendlich Vorhersagen des Modell unbrauchbar macht.</p>
 <div class="cell">
+<div id="tbl-mlm-inter-handball-mod1" class="cell quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mlm-inter-handball-mod1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabelle&nbsp;16.2: Modellfit der Handballdaten aus Model 1
+</figcaption>
+<div aria-describedby="tbl-mlm-inter-handball-mod1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div id="tbl-mlm-inter-handball-mod1" class="anchored">
-<table class="table table-sm table-striped small">
-<caption>Tabelle&nbsp;16.2: Modellfit der Handballdaten aus Model 1</caption>
+<table class="do-not-create-environment cell table table-sm table-striped small">
+<caption>Modell 1</caption>
 <thead>
 <tr class="header">
 <th style="text-align: left;"></th>
@@ -573,6 +620,8 @@ Y_{i} = \beta_0 + \beta_1 \times \textrm{bm}_i + \beta_2 \times \textrm{as}_i + 
 </table>
 </div>
 </div>
+</figure>
+</div>
 </div>
 <p>Der y-Achsenabschnitt <span class="math inline">\(\beta_0\)</span> im Modell macht auch keinen Sinn, da er verbal übersetzt ausdrücken würde, dass ein Handballer mit <span class="math inline">\(0\)</span>cm Spannweite und einer Körpermasse von <span class="math inline">\(0\)</span> Kg eine Wurfgeschwindigkeit von <span class="math inline">\(v = -1.8\)</span>m/s erreichen würde.</p>
 <p>Zentrieren wir die Daten damit die Koeffizienten besser interpretierbar werden. Das ändert zwar nichts an dem Modellfit, aber der y-Achsenabschnitt bekommt dadurch einen sinnvollen Wert. Wie immer beim Zentrieren, ziehen wir von den Prädiktorvariablen den jeweiligen Mittelwert der Variablen ab.</p>
@@ -585,12 +634,17 @@ Y_{i} = \beta_0 + \beta_1 \times \textrm{bm}_i + \beta_2 \times \textrm{as}_i + 
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>mod_2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(vel <span class="sc">~</span> body_mass_c <span class="sc">+</span> arm_span_c, handball)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Wie erwartet ändert dies nichts an den Werten, bis auf den y-Achsenabschnitt. Der Wert von <span class="math inline">\(21.8\)</span> ist jetzt so zu interpretieren, dass ein Handballer mit einer Armspannweite von <span class="math inline">\(184\)</span>cm und einer Körpermasse von <span class="math inline">\(77\)</span>Kg eine Wurfgeschwindigkeit von <span class="math inline">\(21.9\)</span>m/s erreichen sollte (siehe <a href="#tbl-mlm-inter-handball-01">Tabelle&nbsp;<span>16.1</span></a> und <a href="#tbl-mlm-inter-handball-mod2">Tabelle&nbsp;<span>16.3</span></a>).</p>
+<p>Wie erwartet ändert dies nichts an den Werten, bis auf den y-Achsenabschnitt. Der Wert von <span class="math inline">\(21.8\)</span> ist jetzt so zu interpretieren, dass ein Handballer mit einer Armspannweite von <span class="math inline">\(184\)</span>cm und einer Körpermasse von <span class="math inline">\(77\)</span>Kg eine Wurfgeschwindigkeit von <span class="math inline">\(21.9\)</span>m/s erreichen sollte (siehe <a href="#tbl-mlm-inter-handball-01" class="quarto-xref">Tabelle&nbsp;<span>16.1</span></a> und <a href="#tbl-mlm-inter-handball-mod2" class="quarto-xref">Tabelle&nbsp;<span>16.3</span></a>).</p>
 <div class="cell">
+<div id="tbl-mlm-inter-handball-mod2" class="cell quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mlm-inter-handball-mod2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabelle&nbsp;16.3: Modellfit der Handballdaten aus Model 2
+</figcaption>
+<div aria-describedby="tbl-mlm-inter-handball-mod2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div id="tbl-mlm-inter-handball-mod2" class="anchored">
-<table class="table table-sm table-striped small">
-<caption>Tabelle&nbsp;16.3: Modellfit der Handballdaten aus Model 2</caption>
+<table class="do-not-create-environment cell table table-sm table-striped small">
+<caption>Modell 2</caption>
 <thead>
 <tr class="header">
 <th style="text-align: left;"></th>
@@ -633,14 +687,20 @@ Y_{i} = \beta_0 + \beta_1 \times \textrm{bm}_i + \beta_2 \times \textrm{as}_i + 
 </table>
 </div>
 </div>
+</figure>
 </div>
-<p>Schauen wir uns als nächstes die Residuen <span class="math inline">\(e_i\)</span> im zentrierten, additiven Modell (Model 2) an (siehe <a href="#fig-mlm-inter-handball-02">Abbildung&nbsp;<span>16.2</span></a>).</p>
+</div>
+<p>Schauen wir uns als nächstes die Residuen <span class="math inline">\(e_i\)</span> im zentrierten, additiven Modell (Model 2) an (siehe <a href="#fig-mlm-inter-handball-02" class="quarto-xref">Abbildung&nbsp;<span>16.2</span></a>).</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="fig-mlm-inter-handball-02" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="mlm_interactions_files/figure-html/fig-mlm-inter-handball-02-1.png" class="img-fluid figure-img" width="672"></p>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;16.2: Residuenplot unter Modell 2</figcaption><p></p>
+<div id="fig-mlm-inter-handball-02" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mlm-inter-handball-02-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="mlm_interactions_files/figure-html/fig-mlm-inter-handball-02-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mlm-inter-handball-02-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;16.2: Residuenplot unter Modell 2
+</figcaption>
 </figure>
 </div>
 </div>
@@ -654,13 +714,17 @@ Y_{i} = \beta_0 + \beta_1 \times \textrm{bm}_i + \beta_2 \times \textrm{as}_i + 
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">bm_f =</span> <span class="fu">cut_number</span>(body_mass_c, <span class="dv">3</span>, <span class="at">labels=</span><span class="fu">c</span>(<span class="st">'leicht'</span>,<span class="st">'mittel'</span>,<span class="st">'schwer'</span>))</span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  ) </span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Schauen wir uns die Daten nun wieder mittels eines Graphen an (siehe <a href="#fig-mlm-inter-handball-03">Abbildung&nbsp;<span>16.3</span></a>).</p>
+<p>Schauen wir uns die Daten nun wieder mittels eines Graphen an (siehe <a href="#fig-mlm-inter-handball-03" class="quarto-xref">Abbildung&nbsp;<span>16.3</span></a>).</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="fig-mlm-inter-handball-03" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="mlm_interactions_files/figure-html/fig-mlm-inter-handball-03-1.png" class="img-fluid figure-img" width="672"></p>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;16.3: Mittlere Wurfgeschwindigkeiten (<span class="math inline">\(\pm\)</span>SD) für die Unterteilung nach Körpergewicht und Armspannweite in Kategorien</figcaption><p></p>
+<div id="fig-mlm-inter-handball-03" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mlm-inter-handball-03-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="mlm_interactions_files/figure-html/fig-mlm-inter-handball-03-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mlm-inter-handball-03-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;16.3: Mittlere Wurfgeschwindigkeiten (<span class="math inline">\(\pm\)</span>SD) für die Unterteilung nach Körpergewicht und Armspannweite in Kategorien
+</figcaption>
 </figure>
 </div>
 </div>
@@ -670,7 +734,7 @@ Y_{i} = \beta_0 + \beta_1 \times \textrm{bm}_i + \beta_2 \times \textrm{as}_i + 
 <section id="interaktion-zwischen-zwei-effekten" class="level2" data-number="16.2">
 <h2 data-number="16.2" class="anchored" data-anchor-id="interaktion-zwischen-zwei-effekten"><span class="header-section-number">16.2</span> Interaktion zwischen zwei Effekten</h2>
 <div id="def-interaction" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 16.1 (Interaktionseffekt) </strong></span>Wenn der Effekt einer unabhängigen Variable auf die abhängige Variable davon abhängt welche Ausprägung eine weitere unabhängige Variable hat, dann wird dies als ein Interaktionseffekt bezeichnet.</p>
+<p><span class="theorem-title"><strong>Definition 16.1 (Interaktionseffekt)</strong></span> Wenn der Effekt einer unabhängigen Variable auf die abhängige Variable davon abhängt welche Ausprägung eine weitere unabhängige Variable hat, dann wird dies als ein Interaktionseffekt bezeichnet.</p>
 </div>
 <p>Im Rahmen eines linearen Modells, wird ein solcher Interaktionseffekt durch einen multiplikativen Term zwischen den beiden Variablen modelliert.</p>
 <p><span class="math display">\[\begin{equation}
@@ -687,12 +751,17 @@ Y_{i} = \beta_0 + \beta_1 \times \textrm{bm}_i + \beta_2 \times \textrm{as}_i + 
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>mod_3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(vel <span class="sc">~</span> body_mass_c <span class="sc">*</span> arm_span_c, handball) </span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Die Funktion <code>lm()</code> multipliziert Terme der Form <code>A*B</code> in <code>A + B + A:B</code> aus.</p>
-<p>Schauen wir uns jetzt den Fit von Modell 3 an (siehe <a href="#tbl-mlm-inter-handball-mod3">Tabelle&nbsp;<span>16.4</span></a>)</p>
+<p>Schauen wir uns jetzt den Fit von Modell 3 an (siehe <a href="#tbl-mlm-inter-handball-mod3" class="quarto-xref">Tabelle&nbsp;<span>16.4</span></a>)</p>
 <div class="cell">
+<div id="tbl-mlm-inter-handball-mod3" class="cell quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mlm-inter-handball-mod3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabelle&nbsp;16.4: Modellfit der Handballdaten unter Momdell 3
+</figcaption>
+<div aria-describedby="tbl-mlm-inter-handball-mod3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div id="tbl-mlm-inter-handball-mod3" class="anchored">
-<table class="table table-sm table-striped small">
-<caption>Tabelle&nbsp;16.4: Modellfit der Handballdaten unter Momdell 3</caption>
+<table class="do-not-create-environment cell table table-sm table-striped small">
+<caption>Modell 3</caption>
 <thead>
 <tr class="header">
 <th style="text-align: left;"></th>
@@ -742,14 +811,20 @@ Y_{i} = \beta_0 + \beta_1 \times \textrm{bm}_i + \beta_2 \times \textrm{as}_i + 
 </table>
 </div>
 </div>
+</figure>
 </div>
-<p>Als erstes sehen wir, dass sich die Residualvarianz <span class="math inline">\(\hat{\sigma}\)</span> mehr als halbiert hat. D.h unser Modell ist schon einmal deutlich präziser geworden. Auch die Standardfehler der beiden Steigungskoeffizienten für die Haupteffekte haben sich deutlich verringert (vgl. <a href="#tbl-mlm-inter-handball-mod2">Tabelle&nbsp;<span>16.3</span></a>). Dementsprechend sind beide Koeffizienten statistisch signifikant. Der neu dazugekommene Koeffizient für den Interaktionseffekt ist ebenfalls statistisch signifikant mit einem sehr kleinen Standardfehler. D.h durch die Hinzunahme des Interaktionseffekt sind in dem vorliegenden Fall in der Lage den Modellfit zunächst einmal zu verbessern.</p>
-<p>Jetzt müssen wir nur noch verstehen was die Koeffizienten und insbesondere <span class="math inline">\(\beta_3\)</span> eigentlich bedeuten. Schauen wir dazu zunächst die Vorhersagen <span class="math inline">\(\hat{y}_i\)</span> unter den beiden Modellen Modell 2 und Modell 3 an. Zur Erinnerung, beide Modell arbeiten mit zentrierten Prädiktorvariablen. Um einen besseren Überblick über die Vorhersagen zu bekommen, vereinfachen wir die Daten und nehmen nur drei verschiedene Werte für die Armspannweite <span class="math inline">\(as = \{-10,0,10\}\)</span> cm. D.h. einen hypothetischen Handballer mit der Durchschnittsspannweite, sowie jeweils einen mit <span class="math inline">\(10\)</span> cm kürzerer bzw. <span class="math inline">\(10\)</span> cm längerer Spannweite. Wir kombinieren diese drei Werte mit drei verschiedenen Körpermassen <span class="math inline">\(bm = \{-2,0,2\}\)</span> Kg. D.h. eine durchschnittliche Körpermasse und jeweils <span class="math inline">\(2\)</span> und <span class="math inline">\(2\)</span> Kg darüber und darunter. Dies führt zu der folgenden Kombination von Prädiktorvariablen (siehe <a href="#tbl-mlm-inter-handball-xpred">Tabelle&nbsp;<span>16.5</span></a>).</p>
+</div>
+<p>Als erstes sehen wir, dass sich die Residualvarianz <span class="math inline">\(\hat{\sigma}\)</span> mehr als halbiert hat. D.h unser Modell ist schon einmal deutlich präziser geworden. Auch die Standardfehler der beiden Steigungskoeffizienten für die Haupteffekte haben sich deutlich verringert (vgl. <a href="#tbl-mlm-inter-handball-mod2" class="quarto-xref">Tabelle&nbsp;<span>16.3</span></a>). Dementsprechend sind beide Koeffizienten statistisch signifikant. Der neu dazugekommene Koeffizient für den Interaktionseffekt ist ebenfalls statistisch signifikant mit einem sehr kleinen Standardfehler. D.h durch die Hinzunahme des Interaktionseffekt sind in dem vorliegenden Fall in der Lage den Modellfit zunächst einmal zu verbessern.</p>
+<p>Jetzt müssen wir nur noch verstehen was die Koeffizienten und insbesondere <span class="math inline">\(\beta_3\)</span> eigentlich bedeuten. Schauen wir dazu zunächst die Vorhersagen <span class="math inline">\(\hat{y}_i\)</span> unter den beiden Modellen Modell 2 und Modell 3 an. Zur Erinnerung, beide Modell arbeiten mit zentrierten Prädiktorvariablen. Um einen besseren Überblick über die Vorhersagen zu bekommen, vereinfachen wir die Daten und nehmen nur drei verschiedene Werte für die Armspannweite <span class="math inline">\(as = \{-10,0,10\}\)</span> cm. D.h. einen hypothetischen Handballer mit der Durchschnittsspannweite, sowie jeweils einen mit <span class="math inline">\(10\)</span> cm kürzerer bzw. <span class="math inline">\(10\)</span> cm längerer Spannweite. Wir kombinieren diese drei Werte mit drei verschiedenen Körpermassen <span class="math inline">\(bm = \{-2,0,2\}\)</span> Kg. D.h. eine durchschnittliche Körpermasse und jeweils <span class="math inline">\(2\)</span> und <span class="math inline">\(2\)</span> Kg darüber und darunter. Dies führt zu der folgenden Kombination von Prädiktorvariablen (siehe <a href="#tbl-mlm-inter-handball-xpred" class="quarto-xref">Tabelle&nbsp;<span>16.5</span></a>).</p>
 <div class="cell">
+<div id="tbl-mlm-inter-handball-xpred" class="cell quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mlm-inter-handball-xpred-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabelle&nbsp;16.5: Alle Kombinationen von Prädiktorvariablen.
+</figcaption>
+<div aria-describedby="tbl-mlm-inter-handball-xpred-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div id="tbl-mlm-inter-handball-xpred" class="anchored">
-<table class="table table-sm table-striped small">
-<caption>Tabelle&nbsp;16.5: Alle Kombinationen von Prädiktorvariablen.</caption>
+<table class="do-not-create-environment cell table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th style="text-align: right;">Armspannweite</th>
@@ -797,81 +872,118 @@ Y_{i} = \beta_0 + \beta_1 \times \textrm{bm}_i + \beta_2 \times \textrm{as}_i + 
 </table>
 </div>
 </div>
-</div>
-<p>Berechnen wir jetzt die vorhergesagten Wert <span class="math inline">\(\hat{y}_i\)</span> unter den beiden verschiedenen Modellen (siehe <a href="#fig-mlm-inter-simple">Abbildung&nbsp;<span>16.4</span></a>).</p>
-<div id="fig-mlm-inter-simple" class="cell quarto-layout-panel">
-<figure class="figure">
-<div class="quarto-layout-row quarto-layout-valign-top">
-<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
-<div id="fig-mlm-inter-simple-1" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="mlm_interactions_files/figure-html/fig-mlm-inter-simple-1.png" class="img-fluid figure-img" data-ref-parent="fig-mlm-inter-simple" width="672"></p>
-<p></p><figcaption class="figure-caption">(a) Vorhersage unter Modell 2</figcaption><p></p>
 </figure>
 </div>
 </div>
-<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
-<div id="fig-mlm-inter-simple-2" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="mlm_interactions_files/figure-html/fig-mlm-inter-simple-2.png" class="img-fluid figure-img" data-ref-parent="fig-mlm-inter-simple" width="672"></p>
-<p></p><figcaption class="figure-caption">(b) Vorhersage unter Modell 3</figcaption><p></p>
+<p>Berechnen wir jetzt die vorhergesagten Wert <span class="math inline">\(\hat{y}_i\)</span> unter den beiden verschiedenen Modellen (siehe <a href="#fig-mlm-inter-simple" class="quarto-xref">Abbildung&nbsp;<span>16.4</span></a>).</p>
+<div id="fig-mlm-inter-simple" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mlm-inter-simple-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-mlm-inter-simple" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-mlm-inter-simple-1" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-mlm-inter-simple-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="mlm_interactions_files/figure-html/fig-mlm-inter-simple-1.png" class="img-fluid figure-img" data-ref-parent="fig-mlm-inter-simple" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-mlm-inter-simple-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(a) Vorhersage unter Modell 2
+</figcaption>
 </figure>
 </div>
 </div>
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-mlm-inter-simple" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-mlm-inter-simple-2" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-mlm-inter-simple-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="mlm_interactions_files/figure-html/fig-mlm-inter-simple-2.png" class="img-fluid figure-img" data-ref-parent="fig-mlm-inter-simple" width="672">
 </div>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;16.4: Vergleich der Modellvorhersagen für Modell 2 und Modell 3.</figcaption><p></p>
-</figure>
-</div>
-<p>In <a href="#fig-mlm-inter-simple-1">Abbildung&nbsp;<span>16.4 (a)</span></a> sehen wir, dass die vorhergesagten Werte <span class="math inline">\(\hat{y}_i\)</span> für verschiedene Körpermassen jeweils nur parallel verschoben sind. Da die Unterschiede zwischen den Körpermassen sich um jeweils <span class="math inline">\(2\)</span> Kg unterscheiden sind für einen gegebenen Wert der Armspannweite die Abstände zwischen den Linien konstant um den Faktor <span class="math inline">\(\beta_{\text{body mass}} \times 2\)</span>. D.h. egal welchen Wert die Armspannweite einnimmt, der Zusammenhang der Körpermasse mit der Wurfgeschwindigkeit bleibt gleich. Diese Art des Zusammenhangs zwischen einer Prädiktorvariable und der abhängigen Variable während die andere Variable konstant gehalten wird, werden als <em>einfache Steigungen</em> bezeichnet.</p>
-<p>Unter Modell 3 Dagegen sehen die einfachen Steigung vollkommen anders aus (siehe <a href="#fig-mlm-inter-simple-2">Abbildung&nbsp;<span>16.4 (b)</span></a>). Hier können wir sehen, dass die Unterschiede zwischen den verschiedenen Armspannweiten davon abhängen wie schwer ein Handballer ist. Während bei kleinen Armspannweiten die Unterschiede eher gering sind, werden die Unterschiede zwischen den Gewichtskategorien umso größer je größer die Armspannweite wird. Es handelt sich um einen Interkationseffekt. Wir sehen weiter, dass bei einer Armspannweite von <span class="math inline">\(-5\)</span> cm es sogar zum schneiden der einfachen Steigungen kommt und entsprechend die Anordnung der Wurfweiten in Abhängigkeit von der Körpermasse sich umkehrt.</p>
-<p>Ein Interaktionseffekt ist dabei symmetrisch und hängt nicht davon ab, welche Variable als <span class="math inline">\(x\)</span>-Variable in dem Graphen verwendet wird. In <a href="#fig-mlm-inter-simple-02">Abbildung&nbsp;<span>16.5</span></a> sind beide Möglichkeiten einmal nebeneinander dargestellt.</p>
-<div id="fig-mlm-inter-simple-02" class="cell quarto-layout-panel">
-<figure class="figure">
-<div class="quarto-layout-row quarto-layout-valign-top">
-<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
-<div id="fig-mlm-inter-simple-02-1" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="mlm_interactions_files/figure-html/fig-mlm-inter-simple-02-1.png" class="img-fluid figure-img" data-ref-parent="fig-mlm-inter-simple-02" width="672"></p>
-<p></p><figcaption class="figure-caption">(a) Vorhersage unter Modell 3 mit Körpermasse auf der <span class="math inline">\(x\)</span>-Achse</figcaption><p></p>
-</figure>
-</div>
-</div>
-<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
-<div id="fig-mlm-inter-simple-02-2" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="mlm_interactions_files/figure-html/fig-mlm-inter-simple-02-2.png" class="img-fluid figure-img" data-ref-parent="fig-mlm-inter-simple-02" width="672"></p>
-<p></p><figcaption class="figure-caption">(b) Vorhersage unter Modell 3 mit Armspannweite auf der <span class="math inline">\(x\)</span>-Achse</figcaption><p></p>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-mlm-inter-simple-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(b) Vorhersage unter Modell 3
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;16.5: Vergleich der Modellvorhersagen für Modell 2 und Modell 3.</figcaption><p></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mlm-inter-simple-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;16.4: Vergleich der Modellvorhersagen für Modell 2 und Modell 3.
+</figcaption>
+</figure>
+</div>
+<p>In <a href="#fig-mlm-inter-simple-1" class="quarto-xref">Abbildung&nbsp;<span>16.4 (a)</span></a> sehen wir, dass die vorhergesagten Werte <span class="math inline">\(\hat{y}_i\)</span> für verschiedene Körpermassen jeweils nur parallel verschoben sind. Da die Unterschiede zwischen den Körpermassen sich um jeweils <span class="math inline">\(2\)</span> Kg unterscheiden sind für einen gegebenen Wert der Armspannweite die Abstände zwischen den Linien konstant um den Faktor <span class="math inline">\(\beta_{\text{body mass}} \times 2\)</span>. D.h. egal welchen Wert die Armspannweite einnimmt, der Zusammenhang der Körpermasse mit der Wurfgeschwindigkeit bleibt gleich. Diese Art des Zusammenhangs zwischen einer Prädiktorvariable und der abhängigen Variable während die andere Variable konstant gehalten wird, werden als <em>einfache Steigungen</em> bezeichnet.</p>
+<p>Unter Modell 3 Dagegen sehen die einfachen Steigung vollkommen anders aus (siehe <a href="#fig-mlm-inter-simple-2" class="quarto-xref">Abbildung&nbsp;<span>16.4 (b)</span></a>). Hier können wir sehen, dass die Unterschiede zwischen den verschiedenen Armspannweiten davon abhängen wie schwer ein Handballer ist. Während bei kleinen Armspannweiten die Unterschiede eher gering sind, werden die Unterschiede zwischen den Gewichtskategorien umso größer je größer die Armspannweite wird. Es handelt sich um einen Interkationseffekt. Wir sehen weiter, dass bei einer Armspannweite von <span class="math inline">\(-5\)</span> cm es sogar zum schneiden der einfachen Steigungen kommt und entsprechend die Anordnung der Wurfweiten in Abhängigkeit von der Körpermasse sich umkehrt.</p>
+<p>Ein Interaktionseffekt ist dabei symmetrisch und hängt nicht davon ab, welche Variable als <span class="math inline">\(x\)</span>-Variable in dem Graphen verwendet wird. In <a href="#fig-mlm-inter-simple-02" class="quarto-xref">Abbildung&nbsp;<span>16.5</span></a> sind beide Möglichkeiten einmal nebeneinander dargestellt.</p>
+<div id="fig-mlm-inter-simple-02" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mlm-inter-simple-02-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-mlm-inter-simple-02" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-mlm-inter-simple-02-1" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-mlm-inter-simple-02-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="mlm_interactions_files/figure-html/fig-mlm-inter-simple-02-1.png" class="img-fluid figure-img" data-ref-parent="fig-mlm-inter-simple-02" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-mlm-inter-simple-02-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(a) Vorhersage unter Modell 3 mit Körpermasse auf der <span class="math inline">\(x\)</span>-Achse
+</figcaption>
+</figure>
+</div>
+</div>
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-mlm-inter-simple-02" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-mlm-inter-simple-02-2" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-mlm-inter-simple-02-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="mlm_interactions_files/figure-html/fig-mlm-inter-simple-02-2.png" class="img-fluid figure-img" data-ref-parent="fig-mlm-inter-simple-02" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-mlm-inter-simple-02-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(b) Vorhersage unter Modell 3 mit Armspannweite auf der <span class="math inline">\(x\)</span>-Achse
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mlm-inter-simple-02-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;16.5: Vergleich der Modellvorhersagen für Modell 2 und Modell 3.
+</figcaption>
 </figure>
 </div>
 <p>In beiden Fällen beobachten wir den Interaktionseffekt, wobei sich die einfachen Steigungen auf Grund der unterschiedlichen Varianz der Variablen unterscheidet bzw. von deren Einheiten abhängt.</p>
 </section>
 <section id="koeffizienten-im-interaktionsmodell-verstehen" class="level2" data-number="16.3">
 <h2 data-number="16.3" class="anchored" data-anchor-id="koeffizienten-im-interaktionsmodell-verstehen"><span class="header-section-number">16.3</span> Koeffizienten im Interaktionsmodell verstehen</h2>
-<p>Als nächstes Versuchen wir zu verstehen warum die Multiplikation im Model Sinn macht und was die Koeffizienten in <a href="#tbl-mlm-inter-handball-mod3">Tabelle&nbsp;<span>16.4</span></a> bedeuten. In <a href="#fig-mlm-inter-mod3-coefs-1">Abbildung&nbsp;<span>16.6</span></a> sind noch einmal die Steigungen für die Körpermasse in Abhängigkeit von der Armspannweite abgebildet.</p>
+<p>Als nächstes Versuchen wir zu verstehen warum die Multiplikation im Model Sinn macht und was die Koeffizienten in <a href="#tbl-mlm-inter-handball-mod3" class="quarto-xref">Tabelle&nbsp;<span>16.4</span></a> bedeuten. In <a href="#fig-mlm-inter-mod3-coefs-1" class="quarto-xref">Abbildung&nbsp;<span>16.6</span></a> sind noch einmal die Steigungen für die Körpermasse in Abhängigkeit von der Armspannweite abgebildet.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="fig-mlm-inter-mod3-coefs-1" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="mlm_interactions_files/figure-html/fig-mlm-inter-mod3-coefs-1-1.png" class="img-fluid figure-img" width="672"></p>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;16.6: Einfache Steigungen für die Körpermasse</figcaption><p></p>
+<div id="fig-mlm-inter-mod3-coefs-1" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mlm-inter-mod3-coefs-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="mlm_interactions_files/figure-html/fig-mlm-inter-mod3-coefs-1-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mlm-inter-mod3-coefs-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;16.6: Einfache Steigungen für die Körpermasse
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>Nochmal, wir sehen anhand des Graphen, dass der Zusammenhang zwischen der Wurfgeschwindigkeit und der Körpermasse von der Armspannweite abhängt. In <a href="#tbl-mlm-inter-mod3-coefs-1">Tabelle&nbsp;<span>16.6</span></a> sind die dazugehörenden Steigungskoeffizienten für die einfachen Steigungen abgebildet. <span class="math inline">\(\beta_0\)</span> ist der <span class="math inline">\(y\)</span>-Achsenabschnitt für die jeweiligen Armspannweiten und <span class="math inline">\(\beta_1\)</span> die jeweiligen Steigungen.</p>
-<div id="tbl-mlm-inter-mod3-coefs-1" class="cell tbl-parent quarto-layout-panel anchored">
-<div class="panel-caption table-caption">
-<p>Tabelle&nbsp;16.6: Einfache Steigungen und Modellkoeffizienten</p>
-</div>
-<div class="quarto-layout-row quarto-layout-valign-top">
-<div id="tbl-mlm-inter-mod3-coefs-1-1" class="quarto-layout-cell quarto-layout-cell-subref anchored" data-ref-parent="tbl-mlm-inter-mod3-coefs-1" style="flex-basis: 50.0%;justify-content: center;">
-<table class="table table-sm table-striped small">
-<caption>(a) Steigungskoeffizienten für die einfachen Steigungen.</caption>
+<p>Nochmal, wir sehen anhand des Graphen, dass der Zusammenhang zwischen der Wurfgeschwindigkeit und der Körpermasse von der Armspannweite abhängt. In <a href="#tbl-mlm-inter-mod3-coefs-1" class="quarto-xref">Tabelle&nbsp;<span>16.6</span></a> sind die dazugehörenden Steigungskoeffizienten für die einfachen Steigungen abgebildet. <span class="math inline">\(\beta_0\)</span> ist der <span class="math inline">\(y\)</span>-Achsenabschnitt für die jeweiligen Armspannweiten und <span class="math inline">\(\beta_1\)</span> die jeweiligen Steigungen.</p>
+<div id="tbl-mlm-inter-mod3-coefs-1" class="quarto-layout-panel anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mlm-inter-mod3-coefs-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabelle&nbsp;16.6: Einfache Steigungen und Modellkoeffizienten
+</figcaption>
+<div aria-describedby="tbl-mlm-inter-mod3-coefs-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="tbl-mlm-inter-mod3-coefs-1" style="flex-basis: 50.0%;justify-content: center;">
+<div id="tbl-mlm-inter-mod3-coefs-1-1" class="do-not-create-environment quarto-float anchored">
+<figure class="quarto-float quarto-subfloat-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-subfloat-caption quarto-subfloat-tbl" id="tbl-mlm-inter-mod3-coefs-1-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(a) Steigungskoeffizienten für die einfachen Steigungen.
+</figcaption>
+<div aria-describedby="tbl-mlm-inter-mod3-coefs-1-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table id="tbl-mlm-inter-mod3-coefs-1-1" class="do-not-create-environment table">
 <thead>
 <tr class="header">
 <th style="text-align: left;">Armspannweite (zentriert)</th>
@@ -898,9 +1010,17 @@ Y_{i} = \beta_0 + \beta_1 \times \textrm{bm}_i + \beta_2 \times \textrm{as}_i + 
 </tbody>
 </table>
 </div>
-<div id="tbl-mlm-inter-mod3-coefs-1-2" class="quarto-layout-cell quarto-layout-cell-subref anchored" data-ref-parent="tbl-mlm-inter-mod3-coefs-1" style="flex-basis: 50.0%;justify-content: center;">
-<table class="table table-sm table-striped small">
-<caption>(b) Modellkoeffizienten unter Modell 3</caption>
+</figure>
+</div>
+</div>
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="tbl-mlm-inter-mod3-coefs-1" style="flex-basis: 50.0%;justify-content: center;">
+<div id="tbl-mlm-inter-mod3-coefs-1-2" class="do-not-create-environment quarto-float anchored">
+<figure class="quarto-float quarto-subfloat-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-subfloat-caption quarto-subfloat-tbl" id="tbl-mlm-inter-mod3-coefs-1-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(b) Modellkoeffizienten unter Modell 3
+</figcaption>
+<div aria-describedby="tbl-mlm-inter-mod3-coefs-1-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table id="tbl-mlm-inter-mod3-coefs-1-2" class="do-not-create-environment table">
 <thead>
 <tr class="header">
 <th style="text-align: left;"></th>
@@ -927,19 +1047,24 @@ Y_{i} = \beta_0 + \beta_1 \times \textrm{bm}_i + \beta_2 \times \textrm{as}_i + 
 </tbody>
 </table>
 </div>
+</figure>
 </div>
 </div>
-<p>Fangen wir erst einmal einfach an und setzten die Körpermasse auf <span class="math inline">\(bm = 0\)</span>. D.h. in <a href="#fig-mlm-inter-mod3-coefs-1">Abbildung&nbsp;<span>16.6</span></a> bewegen wir uns auf der grünen Linie. Wenn ein Handballer auch eine durchschnittliche Armspannweite hat, also <span class="math inline">\(as = 0\)</span> dann wird eine Wurfgeschwindigkeit von <span class="math inline">\(v = 21.346\)</span> vorhergesagt. D.h. <span class="math inline">\(bm = 0\)</span> und <span class="math inline">\(as = 0\)</span> also genau der <span class="math inline">\(y\)</span>-Achsenabschnitt in Modell 3. Nehmen wir jetzt einen Handballer mit durschnittlicher Körpermasse aber einer Armspannweite von <span class="math inline">\(+10\)</span> cm also <span class="math inline">\(cm = 10\)</span> dann gehen wir in <a href="#fig-mlm-inter-mod3-coefs-1">Abbildung&nbsp;<span>16.6</span></a> entlang der grünen Linie nach oben. In Modellkoeffizienten gesprochen bedeutet dies:</p>
+</div>
+</div>
+</figure>
+</div>
+<p>Fangen wir erst einmal einfach an und setzten die Körpermasse auf <span class="math inline">\(bm = 0\)</span>. D.h. in <a href="#fig-mlm-inter-mod3-coefs-1" class="quarto-xref">Abbildung&nbsp;<span>16.6</span></a> bewegen wir uns auf der grünen Linie. Wenn ein Handballer auch eine durchschnittliche Armspannweite hat, also <span class="math inline">\(as = 0\)</span> dann wird eine Wurfgeschwindigkeit von <span class="math inline">\(v = 21.346\)</span> vorhergesagt. D.h. <span class="math inline">\(bm = 0\)</span> und <span class="math inline">\(as = 0\)</span> also genau der <span class="math inline">\(y\)</span>-Achsenabschnitt in Modell 3. Nehmen wir jetzt einen Handballer mit durschnittlicher Körpermasse aber einer Armspannweite von <span class="math inline">\(+10\)</span> cm also <span class="math inline">\(cm = 10\)</span> dann gehen wir in <a href="#fig-mlm-inter-mod3-coefs-1" class="quarto-xref">Abbildung&nbsp;<span>16.6</span></a> entlang der grünen Linie nach oben. In Modellkoeffizienten gesprochen bedeutet dies:</p>
 <p><span class="math display">\[\begin{align*}
 \hat{y} &amp;= 21.346 + 0.119 \cdot 0 + 0.083 \cdot 10 + 0.021 \cdot 0 \cdot 10 \\
 &amp;= 21.346 + 0.83 = 22.175
 \end{align*}\]</span></p>
-<p>Das ist bis auf ein paar Rundungsfehler der Steigungskoeffizient in <a href="#tbl-mlm-inter-mod3-coefs-1-1">Tabelle&nbsp;<span>16.6 (a)</span></a> unter <span class="math inline">\(\beta_0\)</span> und Armspannweite <span class="math inline">\(=10\)</span>. Das gleiche Wenn wir die Armspannweite um <span class="math inline">\(10\)</span> cm verkürzen.</p>
+<p>Das ist bis auf ein paar Rundungsfehler der Steigungskoeffizient in <a href="#tbl-mlm-inter-mod3-coefs-1-1" class="quarto-xref">Tabelle&nbsp;<span>16.6 (a)</span></a> unter <span class="math inline">\(\beta_0\)</span> und Armspannweite <span class="math inline">\(=10\)</span>. Das gleiche Wenn wir die Armspannweite um <span class="math inline">\(10\)</span> cm verkürzen.</p>
 <p><span class="math display">\[\begin{align*}
 \hat{y} &amp;= 21.346 + 0.119 \cdot 0 + 0.083 \cdot -10 + 0.021 \cdot 0 \cdot 10 \\
 &amp;= 21.346 - 0.83 = 20.516
 \end{align*}\]</span></p>
-<p>Schauen wir uns nun die Steigungskoeffizienten in <a href="#tbl-mlm-inter-mod3-coefs-1-1">Tabelle&nbsp;<span>16.6 (a)</span></a> an. Wenn wir einen Handballer mit einer Armspannweite von <span class="math inline">\(as = 0\)</span> nehmen, dann haben wir direkt den Koeffizienten in <a href="#tbl-mlm-inter-mod3-coefs-1-2">Tabelle&nbsp;<span>16.6 (b)</span></a>. Die Wurfgeschwindigkeit verändert sich somit mit der Körpermasse über den Koeffizienten <span class="math inline">\(\beta_{bm_c} = 0.119\)</span>. Denn eingesetzt in die Modellgleichung erhalten wir:</p>
+<p>Schauen wir uns nun die Steigungskoeffizienten in <a href="#tbl-mlm-inter-mod3-coefs-1-1" class="quarto-xref">Tabelle&nbsp;<span>16.6 (a)</span></a> an. Wenn wir einen Handballer mit einer Armspannweite von <span class="math inline">\(as = 0\)</span> nehmen, dann haben wir direkt den Koeffizienten in <a href="#tbl-mlm-inter-mod3-coefs-1-2" class="quarto-xref">Tabelle&nbsp;<span>16.6 (b)</span></a>. Die Wurfgeschwindigkeit verändert sich somit mit der Körpermasse über den Koeffizienten <span class="math inline">\(\beta_{bm_c} = 0.119\)</span>. Denn eingesetzt in die Modellgleichung erhalten wir:</p>
 <p><span class="math display">\[\begin{align*}
 \hat{y} &amp;= 21.346 + 0.119 \cdot bm_c + 0.083 \cdot 0 + 0.021 \cdot bm_c \cdot 0 \\
 &amp;= 21.346 + 0.119 \cdot bm_c
@@ -951,9 +1076,9 @@ Y_{i} = \beta_0 + \beta_1 \times \textrm{bm}_i + \beta_2 \times \textrm{as}_i + 
 &amp;= 22.175 + (0.119 + 0.21) \cdot bm_c \\
 &amp;= 22.175 + 0.329 \cdot bm_c
 \end{align*}\]</span></p>
-<p>D.h. wir erhalten, bis auf ein paar Rundungsfehler, die Steigungskoeffizienten der Geradengleichung in <a href="#tbl-mlm-inter-mod3-coefs-1-1">Tabelle&nbsp;<span>16.6 (a)</span></a>.</p>
+<p>D.h. wir erhalten, bis auf ein paar Rundungsfehler, die Steigungskoeffizienten der Geradengleichung in <a href="#tbl-mlm-inter-mod3-coefs-1-1" class="quarto-xref">Tabelle&nbsp;<span>16.6 (a)</span></a>.</p>
 <div id="exr-interaction-coeffs" class="theorem exercise">
-<p><span class="theorem-title"><strong>Übungsaufgabe 16.1 </strong></span>Versuche anhand der Koeffizienten in <a href="#tbl-mlm-inter-mod3-coefs-1-2">Tabelle&nbsp;<span>16.6 (b)</span></a> die einfache Steigungsgleichung für <span class="math inline">\(as_c = -10\)</span> zu erhalten.</p>
+<p><span class="theorem-title"><strong>Übungsaufgabe 16.1</strong></span> Versuche anhand der Koeffizienten in <a href="#tbl-mlm-inter-mod3-coefs-1-2" class="quarto-xref">Tabelle&nbsp;<span>16.6 (b)</span></a> die einfache Steigungsgleichung für <span class="math inline">\(as_c = -10\)</span> zu erhalten.</p>
 </div>
 <section id="zusammenfassung" class="level3" data-number="16.3.1">
 <h3 data-number="16.3.1" class="anchored" data-anchor-id="zusammenfassung"><span class="header-section-number">16.3.1</span> Zusammenfassung</h3>
@@ -971,85 +1096,125 @@ Y = b_0 + b_1 \cdot x_1 + b_2 \cdot x_2 + b_3 \cdot x_1 \cdot x_2 + \epsilon_i
 </section>
 <section id="vergleich-additives-modell-mit-dem-interaktionsmodell" class="level2" data-number="16.4">
 <h2 data-number="16.4" class="anchored" data-anchor-id="vergleich-additives-modell-mit-dem-interaktionsmodell"><span class="header-section-number">16.4</span> Vergleich additives Modell mit dem Interaktionsmodell</h2>
-<p>Schauen wir nun noch einmal an, wie sich die gefitteten Flächen der beiden Modell voneinander unterscheiden. In <a href="#fig-mlm-inter-resid-plane">Abbildung&nbsp;<span>16.7</span></a> sind die gefitten Flächen und die Residuen unter den beiden Modell abgebildet.</p>
-<div id="fig-mlm-inter-resid-plane" class="cell quarto-layout-panel">
-<figure class="figure">
-<div class="quarto-layout-row quarto-layout-valign-top">
-<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
-<div id="fig-mlm-inter-resid-plane-1" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="mlm_interactions_files/figure-html/fig-mlm-inter-resid-plane-1.png" class="img-fluid figure-img" data-ref-parent="fig-mlm-inter-resid-plane" width="672"></p>
-<p></p><figcaption class="figure-caption">(a) 3D Streudiagramm des Interaktionsmodells und gefittet Ebene unter Model 1</figcaption><p></p>
+<p>Schauen wir nun noch einmal an, wie sich die gefitteten Flächen der beiden Modell voneinander unterscheiden. In <a href="#fig-mlm-inter-resid-plane" class="quarto-xref">Abbildung&nbsp;<span>16.7</span></a> sind die gefitten Flächen und die Residuen unter den beiden Modell abgebildet.</p>
+<div id="fig-mlm-inter-resid-plane" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mlm-inter-resid-plane-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-mlm-inter-resid-plane" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-mlm-inter-resid-plane-1" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-mlm-inter-resid-plane-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="mlm_interactions_files/figure-html/fig-mlm-inter-resid-plane-1.png" class="img-fluid figure-img" data-ref-parent="fig-mlm-inter-resid-plane" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-mlm-inter-resid-plane-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(a) 3D Streudiagramm des Interaktionsmodells und gefittet Ebene unter Model 1
+</figcaption>
 </figure>
 </div>
 </div>
-<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
-<div id="fig-mlm-inter-resid-plane-2" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="mlm_interactions_files/figure-html/fig-mlm-inter-resid-plane-2.png" class="img-fluid figure-img" data-ref-parent="fig-mlm-inter-resid-plane" width="672"></p>
-<p></p><figcaption class="figure-caption">(b) 3D Streudiagramm des Interaktionsmodells und gefittet Fläche unter Model 2</figcaption><p></p>
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-mlm-inter-resid-plane" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-mlm-inter-resid-plane-2" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-mlm-inter-resid-plane-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="mlm_interactions_files/figure-html/fig-mlm-inter-resid-plane-2.png" class="img-fluid figure-img" data-ref-parent="fig-mlm-inter-resid-plane" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-mlm-inter-resid-plane-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(b) 3D Streudiagramm des Interaktionsmodells und gefittet Fläche unter Model 2
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;16.7: Vergleich der gefitteten Ebenen in den beiden Modellen.</figcaption><p></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mlm-inter-resid-plane-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;16.7: Vergleich der gefitteten Ebenen in den beiden Modellen.
+</figcaption>
 </figure>
 </div>
 <p>Die gefitte Oberfläche ist jetzt keine Ebene mehr, sondern die Hinzunahme des Interaktionseffekts hat dazu geführt, dass die Oberfläche jetzt eher einem Sattel ähnelt. D.h. durch die Interaktionseffekte können wir deutlich komplizierte Zusammenhänge zwischen den Prädiktorvariablen und der abhängigen Variable modellieren. Die Komplexität erhöht sich entsprechend mit der Zahl der Prädiktorvariablen und den möglichen Interaktion zwischen diesen.</p>
-<p>Zurückkommend auf unser Ausgangsbeispiel. Wie hat sich die Hinzunahme des Interaktionseffekts eigentlich auf den Modellfit ausgewirkt. Vergleichen wir die beiden Residuenplots dazu (siehe <a href="#fig-mlm-inter-resid-comparison">Abbildung&nbsp;<span>16.8</span></a>).</p>
-<div id="fig-mlm-inter-resid-comparison" class="cell quarto-layout-panel">
-<figure class="figure">
-<div class="quarto-layout-row quarto-layout-valign-top">
-<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
-<div id="fig-mlm-inter-resid-comparison-1" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="mlm_interactions_files/figure-html/fig-mlm-inter-resid-comparison-1.png" class="img-fluid figure-img" data-ref-parent="fig-mlm-inter-resid-comparison" width="672"></p>
-<p></p><figcaption class="figure-caption">(a) Residuen im additiven Modell</figcaption><p></p>
+<p>Zurückkommend auf unser Ausgangsbeispiel. Wie hat sich die Hinzunahme des Interaktionseffekts eigentlich auf den Modellfit ausgewirkt. Vergleichen wir die beiden Residuenplots dazu (siehe <a href="#fig-mlm-inter-resid-comparison" class="quarto-xref">Abbildung&nbsp;<span>16.8</span></a>).</p>
+<div id="fig-mlm-inter-resid-comparison" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mlm-inter-resid-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-mlm-inter-resid-comparison" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-mlm-inter-resid-comparison-1" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-mlm-inter-resid-comparison-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="mlm_interactions_files/figure-html/fig-mlm-inter-resid-comparison-1.png" class="img-fluid figure-img" data-ref-parent="fig-mlm-inter-resid-comparison" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-mlm-inter-resid-comparison-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(a) Residuen im additiven Modell
+</figcaption>
 </figure>
 </div>
 </div>
-<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
-<div id="fig-mlm-inter-resid-comparison-2" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="mlm_interactions_files/figure-html/fig-mlm-inter-resid-comparison-2.png" class="img-fluid figure-img" data-ref-parent="fig-mlm-inter-resid-comparison" width="672"></p>
-<p></p><figcaption class="figure-caption">(b) Residuen im Interaktionsmodell</figcaption><p></p>
-</figure>
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-mlm-inter-resid-comparison" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-mlm-inter-resid-comparison-2" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-mlm-inter-resid-comparison-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="mlm_interactions_files/figure-html/fig-mlm-inter-resid-comparison-2.png" class="img-fluid figure-img" data-ref-parent="fig-mlm-inter-resid-comparison" width="672">
 </div>
-</div>
-</div>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;16.8: Vergleich der Residuen zwischen Modell 2 und Modell 3.</figcaption><p></p>
-</figure>
-</div>
-<p>Wir sehen in <a href="#fig-mlm-inter-resid-comparison-2">Abbildung&nbsp;<span>16.8 (b)</span></a> das die Struktur, die wir im additiven Modell in <a href="#fig-mlm-inter-resid-comparison-1">Abbildung&nbsp;<span>16.8 (a)</span></a> in den Residuen beobachtet haben, nun nicht mehr vorhanden ist. Ähnlich verhält sich auch der Vergleich für die die qq-Plots der Residuen (siehe <a href="#fig-mlm-inter-qq-comparison">Abbildung&nbsp;<span>16.9</span></a>).</p>
-<div id="fig-mlm-inter-qq-comparison" class="cell quarto-layout-panel">
-<figure class="figure">
-<div class="quarto-layout-row quarto-layout-valign-top">
-<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
-<div id="fig-mlm-inter-qq-comparison-1" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="mlm_interactions_files/figure-html/fig-mlm-inter-qq-comparison-1.png" class="img-fluid figure-img" data-ref-parent="fig-mlm-inter-qq-comparison" width="672"></p>
-<p></p><figcaption class="figure-caption">(a) qq-Plot für das additive Modell</figcaption><p></p>
-</figure>
-</div>
-</div>
-<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
-<div id="fig-mlm-inter-qq-comparison-2" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="mlm_interactions_files/figure-html/fig-mlm-inter-qq-comparison-2.png" class="img-fluid figure-img" data-ref-parent="fig-mlm-inter-qq-comparison" width="672"></p>
-<p></p><figcaption class="figure-caption">(b) qq-Plot für das Interaktionsmodell</figcaption><p></p>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-mlm-inter-resid-comparison-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(b) Residuen im Interaktionsmodell
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;16.9: Vergleich der Residuen zwischen Modell 2 und Modell 3.</figcaption><p></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mlm-inter-resid-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;16.8: Vergleich der Residuen zwischen Modell 2 und Modell 3.
+</figcaption>
+</figure>
+</div>
+<p>Wir sehen in <a href="#fig-mlm-inter-resid-comparison-2" class="quarto-xref">Abbildung&nbsp;<span>16.8 (b)</span></a> das die Struktur, die wir im additiven Modell in <a href="#fig-mlm-inter-resid-comparison-1" class="quarto-xref">Abbildung&nbsp;<span>16.8 (a)</span></a> in den Residuen beobachtet haben, nun nicht mehr vorhanden ist. Ähnlich verhält sich auch der Vergleich für die die qq-Plots der Residuen (siehe <a href="#fig-mlm-inter-qq-comparison" class="quarto-xref">Abbildung&nbsp;<span>16.9</span></a>).</p>
+<div id="fig-mlm-inter-qq-comparison" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mlm-inter-qq-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-mlm-inter-qq-comparison" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-mlm-inter-qq-comparison-1" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-mlm-inter-qq-comparison-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="mlm_interactions_files/figure-html/fig-mlm-inter-qq-comparison-1.png" class="img-fluid figure-img" data-ref-parent="fig-mlm-inter-qq-comparison" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-mlm-inter-qq-comparison-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(a) qq-Plot für das additive Modell
+</figcaption>
+</figure>
+</div>
+</div>
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-mlm-inter-qq-comparison" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-mlm-inter-qq-comparison-2" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-mlm-inter-qq-comparison-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="mlm_interactions_files/figure-html/fig-mlm-inter-qq-comparison-2.png" class="img-fluid figure-img" data-ref-parent="fig-mlm-inter-qq-comparison" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-mlm-inter-qq-comparison-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(b) qq-Plot für das Interaktionsmodell
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mlm-inter-qq-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;16.9: Vergleich der Residuen zwischen Modell 2 und Modell 3.
+</figcaption>
 </figure>
 </div>
 <p>Schauen wir uns noch die verbleibenden Performanceparameter an.</p>
 <div class="cell">
+<div id="tbl-stats-int-model-performance" class="cell quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-stats-int-model-performance-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabelle&nbsp;16.7: Vergleich der Modellperformance zwischen Model 2 und Model 3
+</figcaption>
+<div aria-describedby="tbl-stats-int-model-performance-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div id="tbl-stats-int-model-performance" class="anchored">
-<table class="table table-sm table-striped small">
-<caption>Tabelle&nbsp;16.7: Vergleich der Modellperformance zwischen Model 2 und Model 3</caption>
+<table class="do-not-create-environment cell table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th style="text-align: left;">Name</th>
@@ -1081,6 +1246,8 @@ Y = b_0 + b_1 \cdot x_1 + b_2 \cdot x_2 + b_3 \cdot x_1 \cdot x_2 + \epsilon_i
 </table>
 </div>
 </div>
+</figure>
+</div>
 </div>
 <p>Insgesamt sind durch die Hinzunahme des Interaktionseffekt nicht nur die Standardfehler und der Residualfehler verringert worden, sondern das Modell fittet die Daten auch deutlich besser als das additive Modell. Dies ist natürlich nicht immer der Fall, sondern hängt eng mit den jeweiligen Daten zusammen.</p>
 </section>
@@ -1109,7 +1276,7 @@ y_i &amp;= \beta_0 + \beta_1 (x_{1i} - \bar{x}_1) + \beta_2 (x_{2i} - \bar{x}_2)
 <p><span class="citation" data-cites="kutner2005">Kutner u.&nbsp;a. (<a href="references.html#ref-kutner2005" role="doc-biblioref">2005, p.306–313</a>)</span></p>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
 <div id="ref-debanne2011" class="csl-entry" role="listitem">
 Debanne, Thierry, und Guillaume Laffaye. 2011. <span>„Predicting the throwing velocity of the ball in handball with anthropometric variables and isotonic tests“</span>. <em>Journal of Sports Sciences</em> 29 (7): 705–13.
 </div>
@@ -1199,10 +1366,9 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // clear code selection
     e.clearSelection();
   });
-  function tippyHover(el, contentFn) {
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -1212,8 +1378,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -1226,6 +1401,125 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
       return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
     });
   }
       let selectedAnnoteEl;
@@ -1269,6 +1563,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             }
             div.style.top = top - 2 + "px";
             div.style.height = height + 4 + "px";
+            div.style.left = 0;
             let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
             if (gutterDiv === null) {
               gutterDiv = window.document.createElement("div");
@@ -1294,6 +1589,32 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         });
         selectedAnnoteEl = undefined;
       };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
       // Attach click handler to the DT
       const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
       for (const annoteDlNode of annoteDls) {
@@ -1355,17 +1676,18 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./mlm_basics.html" class="pagination-link">
+      <a href="./mlm_basics.html" class="pagination-link" aria-label="Einführung">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Einführung</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./mlm_dummy_coding.html" class="pagination-link">
+      <a href="./mlm_dummy_coding.html" class="pagination-link" aria-label="Integration von nominalen Variablen">
         <span class="nav-page-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Integration von nominalen Variablen</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
 </div> <!-- /content -->
+
 
 
 

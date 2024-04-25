@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.450">
+<meta name="generator" content="quarto-1.4.550">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -22,7 +22,7 @@ ul.task-list li input[type="checkbox"] {
 }
 /* CSS for syntax highlighting */
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -58,6 +58,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 div.csl-bib-body { }
 div.csl-entry {
   clear: both;
+  margin-bottom: 0em;
 }
 .hanging-indent div.csl-entry {
   margin-left:2em;
@@ -100,7 +101,13 @@ div.csl-indent {
   "collapse-after": 3,
   "panel-placement": "start",
   "type": "textbox",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "Keine Treffer",
     "search-matching-documents-text": "Treffer",
@@ -109,6 +116,7 @@ div.csl-indent {
     "search-more-match-text": "weitere Treffer in diesem Dokument",
     "search-more-matches-text": "weitere Treffer in diesem Dokument",
     "search-clear-button-title": "Zurücksetzen",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Abbrechen",
     "search-submit-button-title": "Abschicken",
     "search-label": "Suchen"
@@ -125,6 +133,33 @@ div.csl-indent {
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
 </head>
 
 <body class="nav-sidebar floating">
@@ -133,12 +168,12 @@ div.csl-indent {
   <header id="quarto-header" class="headroom fixed-top">
   <nav class="quarto-secondary-nav">
     <div class="container-fluid d-flex">
-      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./mlm_title.html">Multiple Regression</a></li><li class="breadcrumb-item"><a href="./mlm_basics.html"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Einführung</span></a></li></ol></nav>
-      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
-      </a>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./mlm_title.html">Multiple Regression</a></li><li class="breadcrumb-item"><a href="./mlm_basics.html"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Einführung</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
         <i class="bi bi-search"></i>
       </button>
@@ -148,7 +183,7 @@ div.csl-indent {
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
       <a href="./">Skriptum - Fortgeschrittene Statistik</a> 
@@ -383,20 +418,8 @@ div.csl-indent {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ed_irbd.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Incomplete Randomized Block Design</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="./ed_split_plot.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Split-plot Design</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./ed_cross_over.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Cross-over Design</span></span></a>
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Split-plot Design</span></span></a>
   </div>
 </li>
       </ul>
@@ -410,7 +433,7 @@ div.csl-indent {
     </ul>
     </div>
 </nav>
-<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         <nav id="TOC" role="doc-toc" class="toc-active">
@@ -433,7 +456,7 @@ div.csl-indent {
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./mlm_title.html">Multiple Regression</a></li><li class="breadcrumb-item"><a href="./mlm_basics.html"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Einführung</span></a></li></ol></nav>
 <div class="quarto-title">
 <h1 class="title"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Einführung</span></h1>
 </div>
@@ -448,14 +471,20 @@ div.csl-indent {
   </div>
   
 
+
 </header>
 
-<p>In vielen Fällen in der Praxis liegt selten der einfache Fall vor, dass eine abhängige Variable mittels nur einer einzigen Prädiktorvariablen erklärt bzw. vorhergesagt werden soll. Sondern meisten sind mehrere Prädiktorvariablen an dem Prozess beteiligt der modelliert werden soll. Ein Beispiel aus der Literatur ist eine Untersuchung von <span class="citation" data-cites="debanne2011">Debanne und Laffaye (<a href="references.html#ref-debanne2011" role="doc-biblioref">2011</a>)</span> über den Zusammenhang zwischen der Wurfgeschwindigkeit in Abhängigkeit vom Körpergewicht und der Armspannweite im Handball. In <a href="#tbl-debanne-2011">Tabelle&nbsp;<span>15.1</span></a> ist ein Ausschnitt aus dem Datensatz abgebildet.</p>
+
+<p>In vielen Fällen in der Praxis liegt selten der einfache Fall vor, dass eine abhängige Variable mittels nur einer einzigen Prädiktorvariablen erklärt bzw. vorhergesagt werden soll. Sondern meisten sind mehrere Prädiktorvariablen an dem Prozess beteiligt der modelliert werden soll. Ein Beispiel aus der Literatur ist eine Untersuchung von <span class="citation" data-cites="debanne2011">Debanne und Laffaye (<a href="references.html#ref-debanne2011" role="doc-biblioref">2011</a>)</span> über den Zusammenhang zwischen der Wurfgeschwindigkeit in Abhängigkeit vom Körpergewicht und der Armspannweite im Handball. In <a href="#tbl-debanne-2011" class="quarto-xref">Tabelle&nbsp;<span>15.1</span></a> ist ein Ausschnitt aus dem Datensatz abgebildet.</p>
 <div class="cell">
+<div id="tbl-debanne-2011" class="cell quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-debanne-2011-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabelle&nbsp;15.1: Datenausschnitt: Wurfgeschwindigkeit, Körpermasse und Armspannweite bei professionellen Handballern (angelehnt an Debanne &amp; Laffaye, 2011).
+</figcaption>
+<div aria-describedby="tbl-debanne-2011-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div id="tbl-debanne-2011" class="anchored">
-<table class="table table-sm table-striped small">
-<caption>Tabelle&nbsp;15.1: Datenausschnitt: Wurfgeschwindigkeit, Körpermasse und Armspannweite bei professionellen Handballern (angelehnt an Debanne &amp; Laffaye, 2011).</caption>
+<table class="do-not-create-environment cell table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th style="text-align: right;">Velocity[m/s]</th>
@@ -492,6 +521,8 @@ div.csl-indent {
 </tbody>
 </table>
 </div>
+</div>
+</figure>
 </div>
 </div>
 <p>Im Prinzip könnte der isolierte Einfluss der beiden Prädiktorvariablen Körpermasse und Armspannweite auf die abhängige Variable die Wurfgeschwindigkeit einzeln untersucht werden. Allerdings ist oft von größerem Interesse zu untersuchen, wie sich die beiden Variablen zusammen verhalten und ob durch die Kombination der beiden Variablen ein besseres Modell erstellt werden kann. Aus dieser Problemstellung heraus ergibt sich die Notwendigkeit von der einfachen linearen Regression auf eine multiple multiple lineare Regression überzugehen. Formal geschieht dies einfach dadurch, dass die Formel der einfachen Regression mit dem Prädiktor <span class="math inline">\(X\)</span> um eine zweite oder mehr Variablen erweitert wird. Dementsprechend wird aus:</p>
@@ -552,48 +583,64 @@ y_i = \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \dots + \beta_K x_{Ki} + \epsi
 </div>
 <p>Rein formal haben wir jetzt schon den Übergang zur multiple Regression vollzogen. Die Frage die sich natürlich direkt anschließt bezieht sich nun auf die Bedeutung der Koeffizienten <span class="math inline">\(\beta_1, \ldots, \beta_k\)</span> und wie sich die weiteren Konzepte die wir vorher bei der einfachen Regression kennengelernt haben auf die multiple Regression übertragen.</p>
 <div id="exm-rowing-example-01" class="theorem example">
-<p><span class="theorem-title"><strong>Beispiel 15.1 </strong></span>In <span class="citation" data-cites="riechman2002">Riechman u.&nbsp;a. (<a href="references.html#ref-riechman2002" role="doc-biblioref">2002</a>)</span> wurde ein Modell erstellt um die Leistung beim 2000m Indoor-Rudern von 12 Wettkampfruderinnen anhand eines 30-Sekunden-Ruder-Sprints, der maximalen Sauerstoffaufnahme und der Ermüdung vorherzusagen. Die Autoren bestimmten das folgende Modell: <span class="math display">\[\begin{equation*}
+<p><span class="theorem-title"><strong>Beispiel 15.1</strong></span> In <span class="citation" data-cites="riechman2002">Riechman u.&nbsp;a. (<a href="references.html#ref-riechman2002" role="doc-biblioref">2002</a>)</span> wurde ein Modell erstellt um die Leistung beim 2000m Indoor-Rudern von 12 Wettkampfruderinnen anhand eines 30-Sekunden-Ruder-Sprints, der maximalen Sauerstoffaufnahme und der Ermüdung vorherzusagen. Die Autoren bestimmten das folgende Modell: <span class="math display">\[\begin{equation*}
 Zeit_{\text{2000m}} = 567.29-0.163\cdot\text{Power }-14.213\cdot \dot{V}0_{2\text{max}} + 0.738\cdot\text{Fatigue}
 \end{equation*}\]</span> Mit einem Standardfehler von <span class="math inline">\(\hat{\sigma} = 0.96\)</span>.</p>
 </div>
 <section id="bedeutung-der-koeffizienten-bei-der-multiplen-regression" class="level2" data-number="15.1">
 <h2 data-number="15.1" class="anchored" data-anchor-id="bedeutung-der-koeffizienten-bei-der-multiplen-regression"><span class="header-section-number">15.1</span> Bedeutung der Koeffizienten bei der multiplen Regression</h2>
-<p>Um die Bedeutung der Regressionskoeffzienten bei der multiple Regression besser zu verstehen ist es von Vorteil sich noch einmal die Bedeutung der Koeffizienten im einfachen Regressionsmodell zu vergegenwärtigen (siehe <a href="#fig-mlm-basics-simple">Abbildung&nbsp;<span>15.1</span></a>).</p>
+<p>Um die Bedeutung der Regressionskoeffzienten bei der multiple Regression besser zu verstehen ist es von Vorteil sich noch einmal die Bedeutung der Koeffizienten im einfachen Regressionsmodell zu vergegenwärtigen (siehe <a href="#fig-mlm-basics-simple" class="quarto-xref">Abbildung&nbsp;<span>15.1</span></a>).</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="fig-mlm-basics-simple" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="mlm_basics_files/figure-html/fig-mlm-basics-simple-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption class="figure-caption">Abbildung&nbsp;15.1: Beispiel für eine einfache Regression und der resultierenden Regressiongeraden</figcaption>
+<div id="fig-mlm-basics-simple" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mlm-basics-simple-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="mlm_basics_files/figure-html/fig-mlm-basics-simple-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mlm-basics-simple-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;15.1: Beispiel für eine einfache Regression und der resultierenden Regressiongeraden
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>Bei der einfachen Regression haben wir mittels der Methode der kleinsten Quadrate eine Regressiongerade durch die Punktwolke der Daten gelegt. Dabei haben wir die Regressionsgerade so gewählt, dass die senkrechten Abstände der beobachteten Punkte von der Regressionsgerade minimiert werden bzw. die Abstände zwischen denen auf der Gerade liegenden, vorhergesagten Werte <span class="math inline">\(\hat{y}_i\)</span> und den beobachteten Wert <span class="math inline">\(Y_i\)</span> (Residuen). Wenn wir nun den Übergang von einer Prädiktorvariablen zum nächstkomplizierteren Fall nehmen mit zwei Prädiktorvariablen <span class="math inline">\(X_1\)</span> und <span class="math inline">\(X_2\)</span>, dann wäre eine mögliche Darstellungsform der Daten eine Punktwolke im dreidimensionalen Raum (siehe <a href="#fig-mlm-basics-scatter-1">Abbildung&nbsp;<span>15.2 (a)</span></a>).</p>
-<div id="fig-mlm-basics-scatter" class="cell quarto-layout-panel">
-<figure class="figure">
-<div class="quarto-layout-row quarto-layout-valign-top">
-<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
-<div id="fig-mlm-basics-scatter-1" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="mlm_basics_files/figure-html/fig-mlm-basics-scatter-1.png" class="img-fluid figure-img" data-ref-parent="fig-mlm-basics-scatter" width="672"></p>
-<figcaption class="figure-caption">(a) 3D Punktwolke</figcaption>
+<p>Bei der einfachen Regression haben wir mittels der Methode der kleinsten Quadrate eine Regressiongerade durch die Punktwolke der Daten gelegt. Dabei haben wir die Regressionsgerade so gewählt, dass die senkrechten Abstände der beobachteten Punkte von der Regressionsgerade minimiert werden bzw. die Abstände zwischen denen auf der Gerade liegenden, vorhergesagten Werte <span class="math inline">\(\hat{y}_i\)</span> und den beobachteten Wert <span class="math inline">\(Y_i\)</span> (Residuen). Wenn wir nun den Übergang von einer Prädiktorvariablen zum nächstkomplizierteren Fall nehmen mit zwei Prädiktorvariablen <span class="math inline">\(X_1\)</span> und <span class="math inline">\(X_2\)</span>, dann wäre eine mögliche Darstellungsform der Daten eine Punktwolke im dreidimensionalen Raum (siehe <a href="#fig-mlm-basics-scatter-1" class="quarto-xref">Abbildung&nbsp;<span>15.2 (a)</span></a>).</p>
+<div id="fig-mlm-basics-scatter" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mlm-basics-scatter-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-mlm-basics-scatter" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-mlm-basics-scatter-1" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-mlm-basics-scatter-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="mlm_basics_files/figure-html/fig-mlm-basics-scatter-1.png" class="img-fluid figure-img" data-ref-parent="fig-mlm-basics-scatter" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-mlm-basics-scatter-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(a) 3D Punktwolke
+</figcaption>
 </figure>
 </div>
 </div>
-<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
-<div id="fig-mlm-basics-scatter-2" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="mlm_basics_files/figure-html/fig-mlm-basics-scatter-2.png" class="img-fluid figure-img" data-ref-parent="fig-mlm-basics-scatter" width="672"></p>
-<figcaption class="figure-caption">(b) 3D Punktwolke mit gefitteter Ebene</figcaption>
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-mlm-basics-scatter" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-mlm-basics-scatter-2" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-mlm-basics-scatter-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="mlm_basics_files/figure-html/fig-mlm-basics-scatter-2.png" class="img-fluid figure-img" data-ref-parent="fig-mlm-basics-scatter" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-mlm-basics-scatter-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(b) 3D Punktwolke mit gefitteter Ebene
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;15.2: Punktwolken bei der multiple Regression</figcaption><p></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mlm-basics-scatter-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;15.2: Punktwolken bei der multiple Regression
+</figcaption>
 </figure>
 </div>
-<p>Da jetzt eine einzelne Gerade nicht mehr in der Lage ist die Daten zu fitten, ist die nächste Möglichkeit eine Ebene in die Punktwolke zu legen (siehe <a href="#fig-mlm-basics-scatter-2">Abbildung&nbsp;<span>15.2 (b)</span></a>). Dies ermöglicht dann genau die gleiche Herangehensweise wie bei der einfachen linearen Regression anzuwenden. Als Zielgröße wird aus den möglichen Ebenen diejenigen gesucht deren vorhergesagten, auf der Ebene liegenden, Punkte <span class="math inline">\(\hat{y}_i\)</span> die geringsten, senkrechten Abstand zu den beobachteten Punkten <span class="math inline">\(y_i\)</span> haben (wieder Residuen). Anders, wir suchen diejenigen Ebene durch die Punktwolke deren Summe der quadrierten Residuen <span class="math inline">\(e_i = y_i - \hat{y}_i\)</span> minimal ist.</p>
+<p>Da jetzt eine einzelne Gerade nicht mehr in der Lage ist die Daten zu fitten, ist die nächste Möglichkeit eine Ebene in die Punktwolke zu legen (siehe <a href="#fig-mlm-basics-scatter-2" class="quarto-xref">Abbildung&nbsp;<span>15.2 (b)</span></a>). Dies ermöglicht dann genau die gleiche Herangehensweise wie bei der einfachen linearen Regression anzuwenden. Als Zielgröße wird aus den möglichen Ebenen diejenigen gesucht deren vorhergesagten, auf der Ebene liegenden, Punkte <span class="math inline">\(\hat{y}_i\)</span> die geringsten, senkrechten Abstand zu den beobachteten Punkten <span class="math inline">\(y_i\)</span> haben (wieder Residuen). Anders, wir suchen diejenigen Ebene durch die Punktwolke deren Summe der quadrierten Residuen <span class="math inline">\(e_i = y_i - \hat{y}_i\)</span> minimal ist.</p>
 <p>Diese Herangehensweise hat den Vorteil, dass sie zum einem die einfache lineare Regression als Spezialfall mit <span class="math inline">\(K=1\)</span> beinhaltet und sich beliebig erweitern lässt mit der Einschränkung, dass bei <span class="math inline">\(K&gt;2\)</span> die dreidimensionale Darstellung mittels einer Grafik nicht mehr möglich ist da nicht ausreichend Dimensionen dargestellt werden können. Das Prinzip der Minimierung der Abweichungen von <span class="math inline">\(\hat{y}_i\)</span> zu <span class="math inline">\(y\)</span> von einer Ebene bleibt aber weiter erhalten. D.h. alle Einsichten die wir im Rahmen der einfachen linearen Regression gelernt haben, lassen sich direkt übertragen.</p>
 <p>Zusammenfassend:</p>
 <ul>
@@ -624,40 +671,57 @@ y_i &amp;= \beta_0 + \beta_1 \cdot x_{1i} + \beta_2 \cdot x_{2i} + \epsilon_i \\
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">x2 =</span> <span class="fu">runif</span>(N, <span class="sc">-</span><span class="dv">2</span>, <span class="dv">2</span>),</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> beta_0 <span class="sc">+</span> beta_1<span class="sc">*</span>x1 <span class="sc">+</span> beta_2<span class="sc">*</span>x2 <span class="sc">+</span> <span class="fu">rnorm</span>(N, <span class="dv">0</span>, sigma)) <span class="co"># DGP</span></span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Wenn wir die Prädiktorvariblen <span class="math inline">\(x_1\)</span> und <span class="math inline">\(x_2\)</span> gegen <span class="math inline">\(y\)</span> jeweils in einem Streudiagramm abtragen erhalten wir die folgenden Abbildungen (siehe <a href="#fig-mlm-basics-example-01">Abbildung&nbsp;<span>15.3</span></a>).</p>
-<div id="fig-mlm-basics-example-01" class="cell quarto-layout-panel">
-<figure class="figure">
-<div class="quarto-layout-row quarto-layout-valign-top">
-<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
-<div id="fig-mlm-basics-example-01-1" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="mlm_basics_files/figure-html/fig-mlm-basics-example-01-1.png" class="img-fluid figure-img" data-ref-parent="fig-mlm-basics-example-01" width="672"></p>
-<figcaption class="figure-caption">(a) Streudiagramm <span class="math inline">\(y\)</span> gegen <span class="math inline">\(x_1\)</span></figcaption>
+<p>Wenn wir die Prädiktorvariblen <span class="math inline">\(x_1\)</span> und <span class="math inline">\(x_2\)</span> gegen <span class="math inline">\(y\)</span> jeweils in einem Streudiagramm abtragen erhalten wir die folgenden Abbildungen (siehe <a href="#fig-mlm-basics-example-01" class="quarto-xref">Abbildung&nbsp;<span>15.3</span></a>).</p>
+<div id="fig-mlm-basics-example-01" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mlm-basics-example-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-mlm-basics-example-01" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-mlm-basics-example-01-1" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-mlm-basics-example-01-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="mlm_basics_files/figure-html/fig-mlm-basics-example-01-1.png" class="img-fluid figure-img" data-ref-parent="fig-mlm-basics-example-01" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-mlm-basics-example-01-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(a) Streudiagramm <span class="math inline">\(y\)</span> gegen <span class="math inline">\(x_1\)</span>
+</figcaption>
 </figure>
 </div>
 </div>
-<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
-<div id="fig-mlm-basics-example-01-2" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="mlm_basics_files/figure-html/fig-mlm-basics-example-01-2.png" class="img-fluid figure-img" data-ref-parent="fig-mlm-basics-example-01" width="672"></p>
-<figcaption class="figure-caption">(b) Streudiagramm <span class="math inline">\(y\)</span> gegen <span class="math inline">\(x_2\)</span></figcaption>
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-mlm-basics-example-01" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-mlm-basics-example-01-2" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-mlm-basics-example-01-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="mlm_basics_files/figure-html/fig-mlm-basics-example-01-2.png" class="img-fluid figure-img" data-ref-parent="fig-mlm-basics-example-01" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-mlm-basics-example-01-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(b) Streudiagramm <span class="math inline">\(y\)</span> gegen <span class="math inline">\(x_2\)</span>
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;15.3: Streudiagramme der einfachen Zusammenhänge für das Beispiel.</figcaption><p></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mlm-basics-example-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;15.3: Streudiagramme der einfachen Zusammenhänge für das Beispiel.
+</figcaption>
 </figure>
 </div>
-<p>Der Zusammenhang zwischen <span class="math inline">\(x_1\)</span> und <span class="math inline">\(y\)</span> ist ziemlich klar (siehe <a href="#fig-mlm-basics-example-01-1">Abbildung&nbsp;<span>15.3 (a)</span></a>), während das Streudiagramm für <span class="math inline">\(x_2\)</span> gegen <span class="math inline">\(y\)</span> nicht ganz so eindeutig ist (siehe <a href="#fig-mlm-basics-example-01-2">Abbildung&nbsp;<span>15.3 (b)</span></a>). Fitten wir das Modell mittels <code>lm()</code> in <code>R</code>. Die beiden Variablen gehen dem DGP folgend additiv in das Modell ein. Daher benutzen wir in der Modellformulierung für <code>lm()</code> <code>y ~ x1 + x2</code> (Tip: Im Kapitel zur einfachen Regression ist ein kurzer Primer zur Modellformulierung).</p>
+<p>Der Zusammenhang zwischen <span class="math inline">\(x_1\)</span> und <span class="math inline">\(y\)</span> ist ziemlich klar (siehe <a href="#fig-mlm-basics-example-01-1" class="quarto-xref">Abbildung&nbsp;<span>15.3 (a)</span></a>), während das Streudiagramm für <span class="math inline">\(x_2\)</span> gegen <span class="math inline">\(y\)</span> nicht ganz so eindeutig ist (siehe <a href="#fig-mlm-basics-example-01-2" class="quarto-xref">Abbildung&nbsp;<span>15.3 (b)</span></a>). Fitten wir das Modell mittels <code>lm()</code> in <code>R</code>. Die beiden Variablen gehen dem DGP folgend additiv in das Modell ein. Daher benutzen wir in der Modellformulierung für <code>lm()</code> <code>y ~ x1 + x2</code> (Tip: Im Kapitel zur einfachen Regression ist ein kurzer Primer zur Modellformulierung).</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x1 <span class="sc">+</span> x2, df)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Wenn wir uns das gefittete Modell in <code>summary()</code> anschauen erhalten die folgenden Modellkoeffizienten <span class="math inline">\(\beta_0, \beta_1\)</span> und <span class="math inline">\(\beta_2\)</span>.</p>
 <div class="cell">
+<div id="tbl-mlm-basics-example-01" class="cell quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mlm-basics-example-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabelle&nbsp;15.2: Modellkoeffizienten für das Beispiel.
+</figcaption>
+<div aria-describedby="tbl-mlm-basics-example-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div id="tbl-mlm-basics-example-01" class="anchored">
-<table class="table table-sm table-striped small">
-<caption>Tabelle&nbsp;15.2: Modellkoeffizienten für das Beispiel.</caption>
+<table class="do-not-create-environment cell table table-sm table-striped small">
+<caption>Modellfit</caption>
 <thead>
 <tr class="header">
 <th style="text-align: left;"></th>
@@ -690,8 +754,10 @@ y_i &amp;= \beta_0 + \beta_1 \cdot x_{1i} + \beta_2 \cdot x_{2i} + \epsilon_i \\
 </table>
 </div>
 </div>
+</figure>
 </div>
-<p>In <a href="#tbl-mlm-basics-example-01">Tabelle&nbsp;<span>15.2</span></a> sehen wir, dass wir die Koeffizienten des DGP wieder sehr gut wiederherstellen können. Das sollte uns erst mal etwas beruhigen, da es zeigt, dass wir mit unserer multiplen Regression eigentlich ganz gut arbeiten können und das Modell in der Lage ist die <em>wahren</em> Modellparameter im Rahmen der Stichprobenunsicherheit abschätzen zu können.</p>
+</div>
+<p>In <a href="#tbl-mlm-basics-example-01" class="quarto-xref">Tabelle&nbsp;<span>15.2</span></a> sehen wir, dass wir die Koeffizienten des DGP wieder sehr gut wiederherstellen können. Das sollte uns erst mal etwas beruhigen, da es zeigt, dass wir mit unserer multiplen Regression eigentlich ganz gut arbeiten können und das Modell in der Lage ist die <em>wahren</em> Modellparameter im Rahmen der Stichprobenunsicherheit abschätzen zu können.</p>
 <p>Die Interpretation von <span class="math inline">\(\beta_1\)</span> ist gleich derjenigen bei der einfachen linearen Regression allerdings mit einer kleinen Erweiterung. Zwei Objekte die sich in <span class="math inline">\(x_1\)</span> um eine Einheit voneinander unterscheiden und den gleichen Wert in <span class="math inline">\(x_2\)</span> haben, unterscheiden sich in der abhängigen Variablen <span class="math inline">\(y\)</span> um den Steigungskoeffizienten <span class="math inline">\(\beta_1\)</span>. Die gleiche Interpretation mit den Rollen vertauscht trifft ebenfalls auf <span class="math inline">\(\beta_2\)</span> zu. Zwei Objekte die sich in <span class="math inline">\(x_2\)</span> um eine Einheit unterscheiden und den gleichen Wert für <span class="math inline">\(x_1\)</span> haben unterscheiden sich in <span class="math inline">\(y\)</span> um <span class="math inline">\(\beta_2\)</span>.</p>
 <p>Schauen wir uns nun an, wie die Koeffizienten zustanderkommen. Dazu machen wir erst einmal einen kleinen Umweg. Wir erstellen uns eine neue Prädiktorvariable <span class="math inline">\(x_1^*\)</span>. Wir erhalten <span class="math inline">\(x_1^*\)</span> indem wir eine Regression von <span class="math inline">\(x_1\)</span> auf <span class="math inline">\(x_2\)</span> berechnen. Also das Modell:</p>
 <p><span class="math display">\[\begin{equation*}
@@ -714,12 +780,17 @@ y_i = \beta_0 + \beta_1 x_{1i}^*
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>x1_star <span class="ot">&lt;-</span> <span class="fu">resid</span>(mod_x1_star)</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>mod_y_x1_star <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x1_star, df)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Schauen wir uns nun die Koeffizienten an (siehe <a href="#tbl-mlm-basics-example-02">Tabelle&nbsp;<span>15.3</span></a>)</p>
+<p>Schauen wir uns nun die Koeffizienten an (siehe <a href="#tbl-mlm-basics-example-02" class="quarto-xref">Tabelle&nbsp;<span>15.3</span></a>)</p>
 <div class="cell">
+<div id="tbl-mlm-basics-example-02" class="cell quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mlm-basics-example-02-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabelle&nbsp;15.3: Modellkoefizienten von <span class="math inline">\(y\)</span> gegen <span class="math inline">\(x_1^*\)</span>.
+</figcaption>
+<div aria-describedby="tbl-mlm-basics-example-02-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div id="tbl-mlm-basics-example-02" class="anchored">
-<table class="table table-sm table-striped small">
-<caption>Tabelle&nbsp;15.3: Modellkoefizienten von <span class="math inline">\(y\)</span> gegen <span class="math inline">\(x_1^*\)</span>.</caption>
+<table class="do-not-create-environment cell table table-sm table-striped small">
+<caption>Modellfit</caption>
 <thead>
 <tr class="header">
 <th style="text-align: left;"></th>
@@ -742,8 +813,10 @@ y_i = \beta_0 + \beta_1 x_{1i}^*
 </table>
 </div>
 </div>
+</figure>
 </div>
-<p>Der Steigungskoeffizient <span class="math inline">\(\beta_1\)</span> ist genau derjenige aus dem Modell mit beiden Variablen (siehe <a href="#tbl-mlm-basics-example-01">Tabelle&nbsp;<span>15.2</span></a>).</p>
+</div>
+<p>Der Steigungskoeffizient <span class="math inline">\(\beta_1\)</span> ist genau derjenige aus dem Modell mit beiden Variablen (siehe <a href="#tbl-mlm-basics-example-01" class="quarto-xref">Tabelle&nbsp;<span>15.2</span></a>).</p>
 <p>Wenig überraschend, wenn wir das gleiche Verfahren auf <span class="math inline">\(x_2\)</span> anwenden.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>mod_x2_star <span class="ot">&lt;-</span> <span class="fu">lm</span>(x2 <span class="sc">~</span> x1, df)</span>
@@ -762,11 +835,11 @@ y_i = \beta_0 + \beta_1 x_{1i}^*
 <li><span class="math inline">\(\hat{\beta}_2\)</span>: Wenn ich <span class="math inline">\(x_1\)</span> weiß, welche zusätzlichen Informationen bekomme ich durch <span class="math inline">\(x_2\)</span></li>
 </ul>
 <p>Bezogen auf die Werte der Steigungskoeffzienten <span class="math inline">\(\beta_i\)</span> ist die Bedeutung immer noch wie oben, wenn sich zwei Objekte auf der Variablen <span class="math inline">\(x_i\)</span> um eine Einheit voneinander unterscheiden und alle anderen Variablen den gleichen Wert haben, dann unterscheiden sich die erwarteten (vorhergesagten) Werte <span class="math inline">\(\hat{y}_i\)</span> laut des Modells um <span class="math inline">\(\beta_i\)</span>.</p>
-<p>Die Eigenschaft, dass die anderen Variablen <span class="math inline">\(x_j\)</span> konstant gehalten werden ist dabei auch das Problem wenn wir ein einfaches Streudiagramm <span class="math inline">\(y_i\)</span> gegen <span class="math inline">\(x_i\)</span> bei einer multiplen linearen Regression wie in <a href="#fig-mlm-basics-example-01">Abbildung&nbsp;<span>15.3</span></a> erstellen. In <a href="#fig-mlm-basics-example-01-1">Abbildung&nbsp;<span>15.3 (a)</span></a> können wir den Einfluss von <span class="math inline">\(x_1\)</span> sehr gut identifizieren, da der Steigungskoeffizient <span class="math inline">\(\beta_1\)</span> im Verhältnis zu <span class="math inline">\(\sigma\)</span> recht groß ist. Im Falle von <a href="#fig-mlm-basics-example-01-2">Abbildung&nbsp;<span>15.3 (b)</span></a> ist dies nicht der Fall. Ein Möglichkeit trotzdem mit Hilfe von einfachen Streudiagrammen den isolierten Zusammenhang der Prädiktorvariablen <span class="math inline">\(x_i\)</span> auf die abhängige <span class="math inline">\(y_i\)</span> zu untersuchen bieten added-variable plots.</p>
+<p>Die Eigenschaft, dass die anderen Variablen <span class="math inline">\(x_j\)</span> konstant gehalten werden ist dabei auch das Problem wenn wir ein einfaches Streudiagramm <span class="math inline">\(y_i\)</span> gegen <span class="math inline">\(x_i\)</span> bei einer multiplen linearen Regression wie in <a href="#fig-mlm-basics-example-01" class="quarto-xref">Abbildung&nbsp;<span>15.3</span></a> erstellen. In <a href="#fig-mlm-basics-example-01-1" class="quarto-xref">Abbildung&nbsp;<span>15.3 (a)</span></a> können wir den Einfluss von <span class="math inline">\(x_1\)</span> sehr gut identifizieren, da der Steigungskoeffizient <span class="math inline">\(\beta_1\)</span> im Verhältnis zu <span class="math inline">\(\sigma\)</span> recht groß ist. Im Falle von <a href="#fig-mlm-basics-example-01-2" class="quarto-xref">Abbildung&nbsp;<span>15.3 (b)</span></a> ist dies nicht der Fall. Ein Möglichkeit trotzdem mit Hilfe von einfachen Streudiagrammen den isolierten Zusammenhang der Prädiktorvariablen <span class="math inline">\(x_i\)</span> auf die abhängige <span class="math inline">\(y_i\)</span> zu untersuchen bieten added-variable plots.</p>
 </section>
 <section id="added-variable-plots" class="level2" data-number="15.2">
 <h2 data-number="15.2" class="anchored" data-anchor-id="added-variable-plots"><span class="header-section-number">15.2</span> Added-variable plots</h2>
-<p>Die Idee hinter added-variable plots basiert auf unserem Trick von eben mit den Residuen <span class="math inline">\(e_i\)</span>. Neben der Bereinigung von <span class="math inline">\(x_2\)</span> aus <span class="math inline">\(x_1\)</span>, die wir eben schon kennengelernt haben, rechnen wir zusätzlich auch noch den Einfluss von <span class="math inline">\(x_2\)</span> aus <span class="math inline">\(y\)</span> raus. Die beiden resultierenden Variablen stellen wir dann in einem Streudiagramm dar. In <code>R</code> können wir einen solchen Plot mittels des folgenden Ansatzes erstellen (siehe <a href="#fig-mlm-basics-avplot-01">Abbildung&nbsp;<span>15.4</span></a>).</p>
+<p>Die Idee hinter added-variable plots basiert auf unserem Trick von eben mit den Residuen <span class="math inline">\(e_i\)</span>. Neben der Bereinigung von <span class="math inline">\(x_2\)</span> aus <span class="math inline">\(x_1\)</span>, die wir eben schon kennengelernt haben, rechnen wir zusätzlich auch noch den Einfluss von <span class="math inline">\(x_2\)</span> aus <span class="math inline">\(y\)</span> raus. Die beiden resultierenden Variablen stellen wir dann in einem Streudiagramm dar. In <code>R</code> können wir einen solchen Plot mittels des folgenden Ansatzes erstellen (siehe <a href="#fig-mlm-basics-avplot-01" class="quarto-xref">Abbildung&nbsp;<span>15.4</span></a>).</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>y_star <span class="ot">&lt;-</span> <span class="fu">resid</span>(<span class="fu">lm</span>(y <span class="sc">~</span> x1, df))   <span class="co"># Bereinigugn von y um x1</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>x2_star <span class="ot">&lt;-</span> <span class="fu">resid</span>(<span class="fu">lm</span>(x2 <span class="sc">~</span> x1, df)) <span class="co"># Bereinigung von x2 um x1</span></span>
@@ -775,19 +848,27 @@ y_i = \beta_0 + \beta_1 x_{1i}^*
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">'x2 | x1'</span>, <span class="at">y =</span> <span class="st">'y | x1'</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-mlm-basics-avplot-01" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="mlm_basics_files/figure-html/fig-mlm-basics-avplot-01-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption class="figure-caption">Abbildung&nbsp;15.4: Zusammenhang zwischen <span class="math inline">\(y\)</span> und <span class="math inline">\(x_2\)</span> bereinigt um den Einfluß von <span class="math inline">\(x_1\)</span>.</figcaption>
+<div id="fig-mlm-basics-avplot-01" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mlm-basics-avplot-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="mlm_basics_files/figure-html/fig-mlm-basics-avplot-01-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mlm-basics-avplot-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;15.4: Zusammenhang zwischen <span class="math inline">\(y\)</span> und <span class="math inline">\(x_2\)</span> bereinigt um den Einfluß von <span class="math inline">\(x_1\)</span>.
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>Wir sehen jetzt viel deutlicher den Zusammenhang zwischen <span class="math inline">\(x_2\)</span> und <span class="math inline">\(y\)</span> als dies in <a href="#fig-mlm-basics-example-01-2">Abbildung&nbsp;<span>15.3 (b)</span></a> der Fall war. Im Paket <code>car</code> gibt es eine Funktion <code>avPlots()</code> mit der wir die added-variable plots auch direkt erstellen können.</p>
+<p>Wir sehen jetzt viel deutlicher den Zusammenhang zwischen <span class="math inline">\(x_2\)</span> und <span class="math inline">\(y\)</span> als dies in <a href="#fig-mlm-basics-example-01-2" class="quarto-xref">Abbildung&nbsp;<span>15.3 (b)</span></a> der Fall war. Im Paket <code>car</code> gibt es eine Funktion <code>avPlots()</code> mit der wir die added-variable plots auch direkt erstellen können.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">avPlots</span>(mod)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="mlm_basics_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="mlm_basics_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>Wenn eine multiple Regression mit mehr als zwei Prädiktorvariablen gerechnet wird, dann werden im added-variable plot jeweils alle <span class="math inline">\(K-1\)</span> Variablen aus <span class="math inline">\(x_i\)</span> und <span class="math inline">\(y\)</span> rausgerechnet. D.h. <span class="math inline">\(Y\)</span> und <span class="math inline">\(X_i\)</span> werden um den Einfluss aller, verbleibenden <span class="math inline">\(X_j, j \neq i\)</span> bereinigt.</p>
@@ -795,12 +876,17 @@ y_i = \beta_0 + \beta_1 x_{1i}^*
 </section>
 <section id="was-passiert-wenn-eine-prädiktorvariable-weggelassen-wird" class="level2" data-number="15.3">
 <h2 data-number="15.3" class="anchored" data-anchor-id="was-passiert-wenn-eine-prädiktorvariable-weggelassen-wird"><span class="header-section-number">15.3</span> Was passiert wenn eine Prädiktorvariable weggelassen wird?</h2>
-<p>In <a href="#tbl-mlm-basics-modelfit-01">Tabelle&nbsp;<span>15.4</span></a> sind noch mal die Koeffizienten aus dem Beispiel abgebildet.</p>
+<p>In <a href="#tbl-mlm-basics-modelfit-01" class="quarto-xref">Tabelle&nbsp;<span>15.4</span></a> sind noch mal die Koeffizienten aus dem Beispiel abgebildet.</p>
 <div class="cell">
+<div id="tbl-mlm-basics-modelfit-01" class="cell quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mlm-basics-modelfit-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabelle&nbsp;15.4: Koeffizienten im Beispielmodell.
+</figcaption>
+<div aria-describedby="tbl-mlm-basics-modelfit-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div id="tbl-mlm-basics-modelfit-01" class="anchored">
-<table class="table table-sm table-striped small">
-<caption>Tabelle&nbsp;15.4: Koeffizienten im Beispielmodell.</caption>
+<table class="do-not-create-environment cell table table-sm table-striped small">
+<caption>Modellfit</caption>
 <thead>
 <tr class="header">
 <th style="text-align: left;"></th>
@@ -827,6 +913,8 @@ y_i = \beta_0 + \beta_1 x_{1i}^*
 </tbody>
 </table>
 </div>
+</div>
+</figure>
 </div>
 </div>
 <p>Was passiert nun, wenn wir zwei Einzelmodelle als einfache lineare Regression fitten, jeweils mit nur einer Variablen? Wir schauen uns nur die Koeffizienten an. Einmal das Modell mit nur <span class="math inline">\(X_1\)</span>:</p>
@@ -860,12 +948,16 @@ y  0.969 0.289 1.000</code></pre>
 </section>
 <section id="was-passiert-wenn-prädiktoren-stark-miteinander-korrelieren" class="level2" data-number="15.4">
 <h2 data-number="15.4" class="anchored" data-anchor-id="was-passiert-wenn-prädiktoren-stark-miteinander-korrelieren"><span class="header-section-number">15.4</span> Was passiert wenn Prädiktoren stark miteinander korrelieren?</h2>
-<p>Schauen wir uns nun einen neuen Datensatz an <span class="citation" data-cites="kutner2005">(Beispiel aus <a href="references.html#ref-kutner2005" role="doc-biblioref">Kutner u.&nbsp;a. 2005</a>)</span>. Im Rahmen einer Untersuchung sind Körperfettmessungen durchgeführt an <span class="math inline">\(20\)</span> Personen durchgeführt worden. Neben einer Gesamtkörpermessung wurde auch der Körperfettanteil am Oberarm, Unterarm und am Oberschenkel bestimmt. In <a href="#tbl-mlm-basics-bodyfat-01">Tabelle&nbsp;<span>15.5</span></a> ist ein Ausschnitt der Daten angebildet.</p>
+<p>Schauen wir uns nun einen neuen Datensatz an <span class="citation" data-cites="kutner2005">(Beispiel aus <a href="references.html#ref-kutner2005" role="doc-biblioref">Kutner u.&nbsp;a. 2005</a>)</span>. Im Rahmen einer Untersuchung sind Körperfettmessungen durchgeführt an <span class="math inline">\(20\)</span> Personen durchgeführt worden. Neben einer Gesamtkörpermessung wurde auch der Körperfettanteil am Oberarm, Unterarm und am Oberschenkel bestimmt. In <a href="#tbl-mlm-basics-bodyfat-01" class="quarto-xref">Tabelle&nbsp;<span>15.5</span></a> ist ein Ausschnitt der Daten angebildet.</p>
 <div class="cell">
+<div id="tbl-mlm-basics-bodyfat-01" class="cell quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mlm-basics-bodyfat-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabelle&nbsp;15.5: Ausschnitt der Körperfettdaten [%]
+</figcaption>
+<div aria-describedby="tbl-mlm-basics-bodyfat-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div id="tbl-mlm-basics-bodyfat-01" class="anchored">
-<table class="table table-sm table-striped small">
-<caption>Tabelle&nbsp;15.5: Ausschnitt der Körperfettdaten [%]</caption>
+<table class="do-not-create-environment cell table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th style="text-align: right;">Oberarm</th>
@@ -915,19 +1007,25 @@ y  0.969 0.289 1.000</code></pre>
 </table>
 </div>
 </div>
+</figure>
+</div>
 </div>
 <p>Als Modell sollen der Gesamtkörperfettanteil mit Hilfe der drei Messungen bestimmt werden.</p>
 <p><span class="math display">\[\begin{equation}
 Y_{\text{Körperfettanteil}} = \beta_0 + \beta_1 \cdot X_{\text{Oberarm}} + \beta_2 \cdot X_{\text{Unterarm}} + \beta_3 \cdot X_{\text{Oberschenkel}} + \epsilon
 \end{equation}\]</span></p>
-<p>Schauen wir uns zunächst einmal an, wie stark die Werte miteinander korrelieren. Wir verwenden die Funktion <code>ggpairs()</code> aus dem <code>GGally</code> Paket. So erhalten wir mit wenig Aufwand eine übersichtliche Darstellung (siehe <a href="#fig-mlm-basics-bodyfat-01">Abbildung&nbsp;<span>15.5</span></a>).</p>
+<p>Schauen wir uns zunächst einmal an, wie stark die Werte miteinander korrelieren. Wir verwenden die Funktion <code>ggpairs()</code> aus dem <code>GGally</code> Paket. So erhalten wir mit wenig Aufwand eine übersichtliche Darstellung (siehe <a href="#fig-mlm-basics-bodyfat-01" class="quarto-xref">Abbildung&nbsp;<span>15.5</span></a>).</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>GGally<span class="sc">::</span><span class="fu">ggpairs</span>(bodyfat) </span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-mlm-basics-bodyfat-01" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="mlm_basics_files/figure-html/fig-mlm-basics-bodyfat-01-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption class="figure-caption">Abbildung&nbsp;15.5: Korrelationsmatrize der Körperfettdaten</figcaption>
+<div id="fig-mlm-basics-bodyfat-01" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mlm-basics-bodyfat-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="mlm_basics_files/figure-html/fig-mlm-basics-bodyfat-01-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mlm-basics-bodyfat-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;15.5: Korrelationsmatrize der Körperfettdaten
+</figcaption>
 </figure>
 </div>
 </div>
@@ -943,12 +1041,16 @@ Y_{\text{Körperfettanteil}} = \beta_0 + \beta_1 \cdot X_{\text{Oberarm}} + \bet
 <span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Ohne Triceps</span></span>
 <span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>mod_wo_triceps <span class="ot">&lt;-</span> <span class="fu">lm</span>(body_fat <span class="sc">~</span> thigh <span class="sc">+</span> midarm, bodyfat)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>In <a href="#tbl-mlm-basics-bodyfat-02">Tabelle&nbsp;<span>15.6</span></a> sind nur die Steigungskoeffizienten für die vier verschiedenen Modell abgebildet.</p>
+<p>In <a href="#tbl-mlm-basics-bodyfat-02" class="quarto-xref">Tabelle&nbsp;<span>15.6</span></a> sind nur die Steigungskoeffizienten für die vier verschiedenen Modell abgebildet.</p>
 <div class="cell">
+<div id="tbl-mlm-basics-bodyfat-02" class="cell quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mlm-basics-bodyfat-02-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabelle&nbsp;15.6: Koeffizienten der vier verschiedenen Modellen zu den Körperfettdaten.
+</figcaption>
+<div aria-describedby="tbl-mlm-basics-bodyfat-02-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div id="tbl-mlm-basics-bodyfat-02" class="anchored">
-<table class="table table-sm table-striped small">
-<caption>Tabelle&nbsp;15.6: Koeffizienten der vier verschiedenen Modellen zu den Körperfettdaten.</caption>
+<table class="do-not-create-environment cell table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th style="text-align: left;"></th>
@@ -986,13 +1088,15 @@ Y_{\text{Körperfettanteil}} = \beta_0 + \beta_1 \cdot X_{\text{Oberarm}} + \bet
 </table>
 </div>
 </div>
+</figure>
+</div>
 </div>
 <p>Wir sehen, dass hier die Koeffizienten sich sehr stark ändern in Abhängigkeit von welche anderen Variablen in dem Modell enthalten sind. Beispielsweise änder der Koeffizient für den Oberschenkel nicht nur seine Größe und auch sein Vorzeichen, je nachdem ob der Ober- oder der Unterarm oder beide im Modell enthalten sind. Wenn mehrer Variablen in einem Modell miteinander korrelieren, dann wird dies als Multikollinearität bezeichnet.</p>
 </section>
 <section id="multikollinearität" class="level2" data-number="15.5">
 <h2 data-number="15.5" class="anchored" data-anchor-id="multikollinearität"><span class="header-section-number">15.5</span> Multikollinearität</h2>
 <div id="def-multicollinearity" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 15.1 (Multikollinearität) </strong></span>Wenn in einem Modell Prädiktorvariablen miteinander korrelieren, dann wird dies als Multikollinearität bezeichnet.</p>
+<p><span class="theorem-title"><strong>Definition 15.1 (Multikollinearität)</strong></span> Wenn in einem Modell Prädiktorvariablen miteinander korrelieren, dann wird dies als Multikollinearität bezeichnet.</p>
 </div>
 <p>Multikollinearität hat verschiedene Einflüsse auf das Modell die sich vor allem hinsichtlich der Stabilität der Koeffizienten auswirken, wenn Prädiktorvariablen aus dem Modell herausgenommen werden bzw. dazugenommen werden. Dazu beeinflusst Multikollinearität auch die Größe der Standardfehler der geschätzten Koeffizienten <span class="math inline">\(\hat{\beta}_j\)</span>.</p>
 <p>Multikollinearität hat unter anderem die folgenden Effekte:</p>
@@ -1042,10 +1146,14 @@ Tipp
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>performance<span class="sc">::</span><span class="fu">check_collinearity</span>(mod_full)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
+<div id="tbl-mlm-basics-collin" class="cell quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mlm-basics-collin-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabelle&nbsp;15.7: Ausgabe von <code>check_collinearity()</code>
+</figcaption>
+<div aria-describedby="tbl-mlm-basics-collin-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div id="tbl-mlm-basics-collin" class="anchored">
-<table class="table table-sm table-striped small">
-<caption>Tabelle&nbsp;15.7: Ausgabe von <code>check_collinearity()</code></caption>
+<table class="do-not-create-environment cell table table-sm table-striped small">
 <colgroup>
 <col style="width: 8%">
 <col style="width: 9%">
@@ -1103,30 +1211,40 @@ Tipp
 </table>
 </div>
 </div>
+</figure>
 </div>
-<p>In <a href="#tbl-mlm-basics-collin">Tabelle&nbsp;<span>15.7</span></a> sehen wir, dass <code>check_collinearity()</code> auch noch Konfidenzintervalle und besagte Tolerance ausgibt. In jedem Fall, sehen wir, dass wenn wir die Daumenregel <span class="math inline">\(VIF &gt; 10\)</span> anwenden, wir hohe Multikollinearität in unserem Modell aufweisen, was auch die großen Veränderung in den Koeffizienten bei Hinzu- bzw. Entnahme der Prädiktorvariblen erkärt.</p>
+</div>
+<p>In <a href="#tbl-mlm-basics-collin" class="quarto-xref">Tabelle&nbsp;<span>15.7</span></a> sehen wir, dass <code>check_collinearity()</code> auch noch Konfidenzintervalle und besagte Tolerance ausgibt. In jedem Fall, sehen wir, dass wenn wir die Daumenregel <span class="math inline">\(VIF &gt; 10\)</span> anwenden, wir hohe Multikollinearität in unserem Modell aufweisen, was auch die großen Veränderung in den Koeffizienten bei Hinzu- bzw. Entnahme der Prädiktorvariblen erkärt.</p>
 </section>
 </section>
 <section id="verhältnis-der-prädiktorvariblen-x_j-untereinander" class="level2" data-number="15.6">
 <h2 data-number="15.6" class="anchored" data-anchor-id="verhältnis-der-prädiktorvariblen-x_j-untereinander"><span class="header-section-number">15.6</span> Verhältnis der Prädiktorvariblen <span class="math inline">\(x_j\)</span> untereinander</h2>
 <p>Insgesamt sind aus der operativen Seite durch den Übergang von der einfachen zur multiplen Regression keine großen Neuerungen hinzugekommen. Allerdings müssen jetzt, wir schon bezüglich der Multikollinearität gesehen haben, das Verhältnis der Prädiktorvariablen <span class="math inline">\(X_j\)</span> untereinander näher betrachtet werden. Das folgenden Beispiel ist <span class="citation" data-cites="mcelreath2016">McElreath (<a href="references.html#ref-mcelreath2016" role="doc-biblioref">2016</a>)</span> entnommen und zeigt, dass sich Variablen auch gegenseitig maskieren können und wiederum große Veränderungen in den Modellkoeffizienten auftreten können, wenn Variablen hinzugenommen bzw. weggelassen werden.</p>
-<p>Um den Effekt der Maskierung leichter nachvollziehen zu können erstellen wir uns wieder einen einfachen Datensatz mit zwei Prädiktorvariablen <span class="math inline">\(X_{pos}\)</span> und <span class="math inline">\(X_{neg}\)</span>. <span class="math inline">\(X_{pos}\)</span> ist positiv mit <span class="math inline">\(Y\)</span> korreliert, während <span class="math inline">\(X_{neg}\)</span> negativ mit <span class="math inline">\(Y\)</span> korreliert. Allerdings zeigen die beiden Variablen untereinander ebenfalls eine positive Korrelation. In <a href="#fig-mlm-basics-mask-01">Abbildung&nbsp;<span>15.6</span></a> ist die Korrelationsmatrize der drei Variablen abgebildet.</p>
+<p>Um den Effekt der Maskierung leichter nachvollziehen zu können erstellen wir uns wieder einen einfachen Datensatz mit zwei Prädiktorvariablen <span class="math inline">\(X_{pos}\)</span> und <span class="math inline">\(X_{neg}\)</span>. <span class="math inline">\(X_{pos}\)</span> ist positiv mit <span class="math inline">\(Y\)</span> korreliert, während <span class="math inline">\(X_{neg}\)</span> negativ mit <span class="math inline">\(Y\)</span> korreliert. Allerdings zeigen die beiden Variablen untereinander ebenfalls eine positive Korrelation. In <a href="#fig-mlm-basics-mask-01" class="quarto-xref">Abbildung&nbsp;<span>15.6</span></a> ist die Korrelationsmatrize der drei Variablen abgebildet.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="fig-mlm-basics-mask-01" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="mlm_basics_files/figure-html/fig-mlm-basics-mask-01-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption class="figure-caption">Abbildung&nbsp;15.6: x_pos maskiert den Einfluss von x_neg</figcaption>
+<div id="fig-mlm-basics-mask-01" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mlm-basics-mask-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="mlm_basics_files/figure-html/fig-mlm-basics-mask-01-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mlm-basics-mask-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;15.6: x_pos maskiert den Einfluss von x_neg
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>In <a href="#tbl-mlm-basics-mask-02">Tabelle&nbsp;<span>15.8</span></a> sind die verschiedenen Modellkoeffizienten für wenn jeweils nur eine der Variablen in das Modell eingeht bzw. wenn beide Variablen im Modell enthalten sind.</p>
+<p>In <a href="#tbl-mlm-basics-mask-02" class="quarto-xref">Tabelle&nbsp;<span>15.8</span></a> sind die verschiedenen Modellkoeffizienten für wenn jeweils nur eine der Variablen in das Modell eingeht bzw. wenn beide Variablen im Modell enthalten sind.</p>
 <div class="cell">
+<div id="tbl-mlm-basics-mask-02" class="cell quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mlm-basics-mask-02-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabelle&nbsp;15.8: Koeffizienten und Standardfehler der unterschiedlichen Modelle.
+</figcaption>
+<div aria-describedby="tbl-mlm-basics-mask-02-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div id="tbl-mlm-basics-mask-02" class="anchored">
-<table class="table table-sm table-striped small">
-<caption>Tabelle&nbsp;15.8: Koeffizienten und Standardfehler der unterschiedlichen Modelle.</caption>
+<table class="do-not-create-environment cell table table-sm table-striped small">
 <colgroup>
 <col style="width: 13%">
 <col style="width: 25%">
@@ -1164,6 +1282,8 @@ Tipp
 </table>
 </div>
 </div>
+</figure>
+</div>
 </div>
 <p>Wir können erkennen, dass die Größe der Koeffizienten wiederum stark davon abhängt welches Modell gefittet wird. Für das Modell mit nur dem positiven Prädiktor ist der Modellkoeffizient <span class="math inline">\(b_{pos}\)</span> auch nicht statistisch signifikant. Sondern erst wenn beide Variablen in dem Modell inkludiert sind ist der Koeffizient ebenfalls statistisch signifikant. Zusammenfassend ist es entsprechend wichtig dass bei der Modellierung theoretische Vorüberlegungen die relevanten Variablen identifizieren und nicht einfach nur hin und her probiert wird. Zumindest wenn es darum geht der größer der Koeffizienten auch inhaltliche Bedeutung zuzuweisen.</p>
 </section>
@@ -1172,7 +1292,7 @@ Tipp
 <p>Die folgenden Texte eignen sich gut um die Inhalte noch einmal zu vertiefen. <span class="citation" data-cites="pos_multiple_regression">Altman und Krzywinski (<a href="references.html#ref-pos_multiple_regression" role="doc-biblioref">2015</a>)</span> diskutiert noch mal eingehend was passiert wenn Variablen miteinander korrelieren und wie sich das auf die Schätzer für die Koeffizienten auswirkt. <span class="citation" data-cites="kutner2005">(<a href="references.html#ref-kutner2005" role="doc-biblioref">Kutner u.&nbsp;a. 2005, p.278–288</a>)</span> und <span class="citation" data-cites="fox2011">(<a href="references.html#ref-fox2011" role="doc-biblioref">Fox 2011, p.325–327</a>)</span> sind nochmal als Zusammenfassungen zu lesen.</p>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
 <div id="ref-pos_multiple_regression" class="csl-entry" role="listitem">
 Altman, Naomi, und Martin Krzywinski. 2015. <span>„Points of significance: Multiple linear regression“</span>. <em>Nature Methods</em> 12 (12): 1103–4.
 </div>
@@ -1274,10 +1394,9 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // clear code selection
     e.clearSelection();
   });
-  function tippyHover(el, contentFn) {
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -1287,8 +1406,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -1301,6 +1429,125 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
       return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
     });
   }
       let selectedAnnoteEl;
@@ -1344,6 +1591,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             }
             div.style.top = top - 2 + "px";
             div.style.height = height + 4 + "px";
+            div.style.left = 0;
             let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
             if (gutterDiv === null) {
               gutterDiv = window.document.createElement("div");
@@ -1369,6 +1617,32 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         });
         selectedAnnoteEl = undefined;
       };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
       // Attach click handler to the DT
       const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
       for (const annoteDlNode of annoteDls) {
@@ -1430,17 +1704,18 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./mlm_title.html" class="pagination-link">
+      <a href="./mlm_title.html" class="pagination-link" aria-label="Multiple Regression">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Multiple Regression</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./mlm_interactions.html" class="pagination-link">
+      <a href="./mlm_interactions.html" class="pagination-link" aria-label="Interaktionseffekte">
         <span class="nav-page-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Interaktionseffekte</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
 </div> <!-- /content -->
+
 
 
 

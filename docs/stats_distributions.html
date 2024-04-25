@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.326">
+<meta name="generator" content="quarto-1.4.550">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -22,7 +22,7 @@ ul.task-list li input[type="checkbox"] {
 }
 /* CSS for syntax highlighting */
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -81,7 +81,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   "collapse-after": 3,
   "panel-placement": "start",
   "type": "textbox",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "Keine Treffer",
     "search-matching-documents-text": "Treffer",
@@ -90,8 +96,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-more-match-text": "weitere Treffer in diesem Dokument",
     "search-more-matches-text": "weitere Treffer in diesem Dokument",
     "search-clear-button-title": "Zurücksetzen",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Abbrechen",
-    "search-submit-button-title": "Abschicken"
+    "search-submit-button-title": "Abschicken",
+    "search-label": "Suchen"
   }
 }</script>
 <script>
@@ -108,6 +116,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
 </head>
 
 <body class="nav-sidebar floating">
@@ -116,13 +151,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <header id="quarto-header" class="headroom fixed-top">
   <nav class="quarto-secondary-nav">
     <div class="container-fluid d-flex">
-      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./stats_title.html">Statistik</a></li><li class="breadcrumb-item"><a href="./stats_distributions.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Theoretische Verteilungen</span></a></li></ol></nav>
-      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
-      </a>
-      <button type="button" class="btn quarto-search-button" aria-label="Suchen" onclick="window.quartoOpenSearch();">
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./stats_title.html">Statistik</a></li><li class="breadcrumb-item"><a href="./stats_distributions.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Theoretische Verteilungen</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
         <i class="bi bi-search"></i>
       </button>
     </div>
@@ -131,7 +166,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
       <a href="./">Skriptum - Fortgeschrittene Statistik</a> 
@@ -366,20 +401,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ed_irbd.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Incomplete Randomized Block Design</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="./ed_split_plot.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Split-plot Design</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./ed_cross_over.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Cross-over Design</span></span></a>
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Split-plot Design</span></span></a>
   </div>
 </li>
       </ul>
@@ -393,7 +416,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </ul>
     </div>
 </nav>
-<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         <nav id="TOC" role="doc-toc" class="toc-active">
@@ -435,7 +458,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./stats_title.html">Statistik</a></li><li class="breadcrumb-item"><a href="./stats_distributions.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Theoretische Verteilungen</span></a></li></ol></nav>
 <div class="quarto-title">
 <h1 class="title"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Theoretische Verteilungen</span></h1>
 </div>
@@ -450,7 +473,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </div>
   
 
+
 </header>
+
 
 <p>Wie wir in den vorhergehenden Abschnitten gesehen haben, brauchen wir immer die Stichprobenverteilung um etwas über die beobachteten Daten ausssagen zu können. Im Lummerland-Beispiel haben wir die Stichprobenverteilung einfach direkt hergeleitet, da wir komplettes Wissen über die Population hatten. Dies hat uns ermöglicht alle möglichen zu beobachtenden Werte zu berechnen. Dieser Fall ist leider bei einem realen Experiment nicht gegeben, dann wenn wir die Population und den Effekt kennen, dann brauchen wir das Experiment gar nicht erst durchzuführen. Sondern wir wollen anhand unserer Stichprobe etwas über die Population aussagen. Wir benötigen aber nichts desto trotz die Stichprobenverteilung. Diese können wir herleiten, wenn wir in der Lage sind unserer Stichprobe mit einer uns bereits bekannten Verteilung zu verknüpfen. Die Verteilung ist dabei eine theoretische Verteilung und unsere Aufgabe ist zu zeigen, dass unsere Stichprobe die Voraussetzungen und Annahmen der theoretischen Verteilung erfüllt. Dazu setzen wir uns in diesem Abschnitt etwas eingehender mit dem Konzept der Verteilung auseinander und werden in diesem Zusammenhang verschiedene für uns relevanten theoretische Verteilungen kennenlernen.</p>
 <p>Gehen wir noch einmal zurück und fangen mit dem Graphen einer Verteilung an. Auf der x-Achse sind die verschiedenen, möglichen Werte der jeweiligen Statistik abgetragen. In unserem bisherigen Beispiel war das der Unterschiede <span class="math inline">\(D\)</span> zwischen der Kontroll- und der Treatmentgruppe. Auf der y-Achse ist die relative Häufigkeit abgetragen. In dem speziellen Fall war das auch sinnvoll, da wir nur eine endliche Anzahl von möglichen Unterschieden <span class="math inline">\(D\)</span> (ihr erinnert auch an die Zahl) vorliegen hatten. Was passiert aber wenn wir tatsächlich eine kontiuierliche Statistik haben, also eine Statistik die alle Werte innerhalb eines Intervalls einnehmen kann. Um den Fall zu verstehen fangen wir aber erst mal wieder mit einem einfachen Modell an.</p>
@@ -462,13 +487,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 P(\text{Kopf}) &amp;= \frac{1}{2} \\
 P(\text{Zahl}) &amp;= \frac{1}{2}
 \end{align}\]</span></p>
-<p>Tragen wir dies als Graphen in Form einer Wahrscheinlichkeitsverteilung ab, dann sieht das noch wenig interessant aus (siehe <a href="#fig-sts-sig-coin-toss-1">Abbildung&nbsp;<span>9.1</span></a>). Das Muster ist aber trotzdem wichtig, damit wir später wissen worauf wir hier eigentlich schauen. Auf der x-Achse haben wir die möglichen Ausgänge, Kopf oder Zahl, und auf der y-Achse haben wir die Wahrscheinlichkeit abgetragen.</p>
+<p>Tragen wir dies als Graphen in Form einer Wahrscheinlichkeitsverteilung ab, dann sieht das noch wenig interessant aus (siehe <a href="#fig-sts-sig-coin-toss-1" class="quarto-xref">Abbildung&nbsp;<span>9.1</span></a>). Das Muster ist aber trotzdem wichtig, damit wir später wissen worauf wir hier eigentlich schauen. Auf der x-Achse haben wir die möglichen Ausgänge, Kopf oder Zahl, und auf der y-Achse haben wir die Wahrscheinlichkeit abgetragen.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="fig-sts-sig-coin-toss-1" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="stats_distributions_files/figure-html/fig-sts-sig-coin-toss-1-1.png" class="img-fluid figure-img" width="672"></p>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;9.1: Wahrscheinlichkeitsverteilung des einmaligen Münzwurfes</figcaption><p></p>
+<div id="fig-sts-sig-coin-toss-1" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sts-sig-coin-toss-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="stats_distributions_files/figure-html/fig-sts-sig-coin-toss-1-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sts-sig-coin-toss-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;9.1: Wahrscheinlichkeitsverteilung des einmaligen Münzwurfes
+</figcaption>
 </figure>
 </div>
 </div>
@@ -476,12 +505,16 @@ P(\text{Zahl}) &amp;= \frac{1}{2}
 <p>Da sich mit einem Münzwurf aber nur wenig anfangen lässt, erhöhen wir die Komplexität etwas und schauen uns an, was passiert wenn wir zwei Münzwwürfe durchführen. Rein operational, wir werfen unsere Münze in die Luft, schreiben uns das Ergebnis auf, und wiederholen diesen Vorgang noch einmal. Was auch immer beim ersten Wurf passiert, hat keine Auswirkungen auf das Ergebnis des zweiten Wurfs. Wir könnten aber auch zwei Münzen nehmen und beide gleichzeitig in die Luft werfen. Das wäre das gleiche Experiment.</p>
 <p>Welche möglichen Ereignisse Ausgänge haben wir jetzt beim zweimaligen Münzwurf? Zunächst einmal haben wir jetzt nicht mehr nur einen einzelnen Ausgang sondern wir haben ein Ereignisstupel. Ein Tupel ist eine <strong>geordnete</strong> Liste mit Elementen, d.h. <span class="math inline">\((1,2) \neq (2,1)\)</span>.</p>
 <div id="def-tupel" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 9.1 (Tupel) </strong></span>Ein Tupel ist eine geordnete Liste von Elemente die nicht notwendigerweise Unterschiedlich sein müssen. Da die Liste geordnet ist, spielt die Reihenfolge der Elemente eine Rolle.</p>
+<p><span class="theorem-title"><strong>Definition 9.1 (Tupel)</strong></span> Ein Tupel ist eine geordnete Liste von Elemente die nicht notwendigerweise Unterschiedlich sein müssen. Da die Liste geordnet ist, spielt die Reihenfolge der Elemente eine Rolle.</p>
 </div>
-<p>Etwas motiviertes kritzeln auf einem Schmierblatt wird für den zweimaligen Münzwurf wahrscheinlich relativ schnell zu folgender Tabelle führen (siehe <a href="#tbl-sts-sig-coin-toss-2">Tabelle&nbsp;<span>9.1</span></a>).</p>
-<div id="tbl-sts-sig-coin-toss-2" class="anchored">
+<p>Etwas motiviertes kritzeln auf einem Schmierblatt wird für den zweimaligen Münzwurf wahrscheinlich relativ schnell zu folgender Tabelle führen (siehe <a href="#tbl-sts-sig-coin-toss-2" class="quarto-xref">Tabelle&nbsp;<span>9.1</span></a>).</p>
+<div id="tbl-sts-sig-coin-toss-2" class="quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-sts-sig-coin-toss-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabelle&nbsp;9.1: Mögliche Ausgänge bei einem zweimaligen Münzwurf
+</figcaption>
+<div aria-describedby="tbl-sts-sig-coin-toss-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="table">
-<caption>Tabelle&nbsp;9.1: Mögliche Ausgänge bei einem zweimaligen Münzwurf</caption>
 <thead>
 <tr class="header">
 <th>Ausgang 1. Wurf</th>
@@ -513,12 +546,15 @@ P(\text{Zahl}) &amp;= \frac{1}{2}
 </tbody>
 </table>
 </div>
+</figure>
+</div>
 <p>Jetzt können wir uns wieder fragen, was die Wahrscheinlichkeit <span class="math inline">\(P\)</span> für die jeweiligen Ereignisse, die Ereignistupel, ist. Eine direkte Herleitung ist wieder über die Symmetrie zu argumentieren. Es gibt vier verschiedene Ereignisse von denen keines in irgendeiner Weise bevorzugt ist. Daraus folgt das alle vier Ausgänge die gleiche Wahrscheinlichkeit haben. Damit folgt eine Wahrscheinlichkeit von <span class="math inline">\(P = \frac{1}{4}\)</span> für jedes der Ereignisse.</p>
-<p>Eine weitere Möglichkeit wäre mit den Wahrscheinlichkeiten aus dem einfachen Wurf an das Problem heran zu gehen. Wir betrachten die beiden Münzwürfe jetzt wieder sequentiell (siehe <a href="#fig-sts-sig-coin-toss-tree">Abbildung&nbsp;<span>9.2</span></a>). Im ersten Schritt können wir entweder Kopf oder Zahl beobachten. Beide Wahrscheinlichkeiten sind <span class="math inline">\(P = \frac{1}{2}\)</span>. Darauf folgend können wir wieder zwei verschiedene Ausgänge beobachten, eben Kopf oder Zahl, wieder mit der Wahrscheinlichkeit <span class="math inline">\(P = \frac{1}{2}\)</span>.</p>
-<div class="cell">
+<p>Eine weitere Möglichkeit wäre mit den Wahrscheinlichkeiten aus dem einfachen Wurf an das Problem heran zu gehen. Wir betrachten die beiden Münzwürfe jetzt wieder sequentiell (siehe <a href="#fig-sts-sig-coin-toss-tree" class="quarto-xref">Abbildung&nbsp;<span>9.2</span></a>). Im ersten Schritt können wir entweder Kopf oder Zahl beobachten. Beide Wahrscheinlichkeiten sind <span class="math inline">\(P = \frac{1}{2}\)</span>. Darauf folgend können wir wieder zwei verschiedene Ausgänge beobachten, eben Kopf oder Zahl, wieder mit der Wahrscheinlichkeit <span class="math inline">\(P = \frac{1}{2}\)</span>.</p>
+<div class="cell" data-layout-align="default">
 <div class="cell-output-display">
-<div id="fig-sts-sig-coin-toss-tree" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
+<div id="fig-sts-sig-coin-toss-tree" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sts-sig-coin-toss-tree-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div>
 <pre class="mermaid mermaid-js" data-label="fig-sts-sig-coin-toss-tree">flowchart TD
     A[Start] --&gt; B(Kopf)
@@ -529,7 +565,10 @@ P(\text{Zahl}) &amp;= \frac{1}{2}
     C --&gt; G(Zahl)
 </pre>
 </div>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;9.2: Auswahlmöglichkeiten beim sequentiellen zweimaligen Münzwurf</figcaption><p></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sts-sig-coin-toss-tree-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;9.2: Auswahlmöglichkeiten beim sequentiellen zweimaligen Münzwurf
+</figcaption>
 </figure>
 </div>
 </div>
@@ -544,24 +583,32 @@ P(\text{Ausgang}) = \frac{1}{2} \times \frac{1}{2} = \frac{1}{4}
 \tag{9.2}\]</span></span></p>
 <p>Das wir die Wahrscheinlichkeiten miteinander multiplizieren können, wenn die Ereignisse unabhängig sind ist tatsächlich die Definition von Unabhängigkeit in der umgekehrter Richtung.</p>
 <div id="def-independence" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 9.2 (Unabhängigkeit) </strong></span>Seien zwei Ereignisse <span class="math inline">\(E_1\)</span> und <span class="math inline">\(E_2\)</span> gegeben. Wenn die Wahrscheinlichkeit für das kombinierte Ereignis <span class="math inline">\(E_1 \cap E_2\)</span> mittels <span class="math inline">\(P(E_1 \cap E_2) = P(E_1)P(E_2)\)</span> berechnet wird, dann sind die beiden Ereignisse unabhängig voneinander. Umgangssprachlich gibt mir Kenntnis von Ereignis <span class="math inline">\(E_1\)</span> keine Information über das Ereignis <span class="math inline">\(E_2\)</span> bzw. genauso anders herum.</p>
+<p><span class="theorem-title"><strong>Definition 9.2 (Unabhängigkeit)</strong></span> Seien zwei Ereignisse <span class="math inline">\(E_1\)</span> und <span class="math inline">\(E_2\)</span> gegeben. Wenn die Wahrscheinlichkeit für das kombinierte Ereignis <span class="math inline">\(E_1 \cap E_2\)</span> mittels <span class="math inline">\(P(E_1 \cap E_2) = P(E_1)P(E_2)\)</span> berechnet wird, dann sind die beiden Ereignisse unabhängig voneinander. Umgangssprachlich gibt mir Kenntnis von Ereignis <span class="math inline">\(E_1\)</span> keine Information über das Ereignis <span class="math inline">\(E_2\)</span> bzw. genauso anders herum.</p>
 </div>
 <p>Angewandt auf den Münzwurf kommen wir wieder beim gleichen Ergebnis wie vorher an. Der Vorteil dieser Herangehensweise ist jedoch, dass wir damit eine einfache Möglichkeit gefunden haben das Ergebnis für mehr als zwei Würfe verallgemeinern zu können. Nehmen wir zum Beispiel den dreifachen Münzwurf. Die Wahrscheinlichkeit für die Folge KKZ kann direkt mittels <span class="math inline">\(P(\text{KKZ}) = \frac{1}{2}\times \frac{1}{2} \times \frac{1}{2} = \frac{1}{8}\)</span> berechnet werden.</p>
-<p>Bleiben wir aber erst noch mal kurz beim zweimaligen Münzwurf und schauen uns die Wahrscheinlichkeitsverteilung an. Hier stoßen wir nämlich auf ein Problem in der Darstellung. Wenn wir bei dem Muster aus <a href="#fig-sts-sig-coin-toss-1">Abbildung&nbsp;<span>9.1</span></a> bleiben wollen und auf der x-Achse die möglichen Ergnisse und auf der y-Achse die dazugehörende Wahrscheinlichkeit abtragen wollen, dann ist nicht ganz klar wie wir die Ergebnisse ordnen sollen. Eine mögliche Lösung ist in <a href="#fig-sts-sig-coin-toss-2a">Abbildung&nbsp;<span>9.3</span></a> zu sehen.</p>
+<p>Bleiben wir aber erst noch mal kurz beim zweimaligen Münzwurf und schauen uns die Wahrscheinlichkeitsverteilung an. Hier stoßen wir nämlich auf ein Problem in der Darstellung. Wenn wir bei dem Muster aus <a href="#fig-sts-sig-coin-toss-1" class="quarto-xref">Abbildung&nbsp;<span>9.1</span></a> bleiben wollen und auf der x-Achse die möglichen Ergnisse und auf der y-Achse die dazugehörende Wahrscheinlichkeit abtragen wollen, dann ist nicht ganz klar wie wir die Ergebnisse ordnen sollen. Eine mögliche Lösung ist in <a href="#fig-sts-sig-coin-toss-2a" class="quarto-xref">Abbildung&nbsp;<span>9.3</span></a> zu sehen.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="fig-sts-sig-coin-toss-2a" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="stats_distributions_files/figure-html/fig-sts-sig-coin-toss-2a-1.png" class="img-fluid figure-img" width="672"></p>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;9.3: Wahrscheinlichkeitsverteilung des zweimaligen Münzwurfes (K: Kopf, Z: Zahl)</figcaption><p></p>
+<div id="fig-sts-sig-coin-toss-2a" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sts-sig-coin-toss-2a-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="stats_distributions_files/figure-html/fig-sts-sig-coin-toss-2a-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sts-sig-coin-toss-2a-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;9.3: Wahrscheinlichkeitsverteilung des zweimaligen Münzwurfes (K: Kopf, Z: Zahl)
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>Dies ist natürlich nicht die einzige Möglichkeit wie wir die Ereignisse ordnen können sondern wahrscheinlich ist jede der 24 möglichen Anordnungen gleich sinnvoll. Als Alternative könnte wir aber auch nicht mehr die beiden einzelnen Ausgänge als Ereignisse wählen, sondern zum Beispiel nur noch die Anzahl der beobachteten Köpfe in unseren zwei Würfen zählen. Dies würde zu der folgenden Zuordnung führen (siehe <a href="#tbl-sts-sig-coin-toss-2a">Tabelle&nbsp;<span>9.2</span></a>).</p>
-<div id="tbl-sts-sig-coin-toss-2a" class="anchored">
+<p>Dies ist natürlich nicht die einzige Möglichkeit wie wir die Ereignisse ordnen können sondern wahrscheinlich ist jede der 24 möglichen Anordnungen gleich sinnvoll. Als Alternative könnte wir aber auch nicht mehr die beiden einzelnen Ausgänge als Ereignisse wählen, sondern zum Beispiel nur noch die Anzahl der beobachteten Köpfe in unseren zwei Würfen zählen. Dies würde zu der folgenden Zuordnung führen (siehe <a href="#tbl-sts-sig-coin-toss-2a" class="quarto-xref">Tabelle&nbsp;<span>9.2</span></a>).</p>
+<div id="tbl-sts-sig-coin-toss-2a" class="quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-sts-sig-coin-toss-2a-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabelle&nbsp;9.2: Zuordnung der Anzahl der Köpfe zu den Ereignissen beim zweimaligen Münzwurf
+</figcaption>
+<div aria-describedby="tbl-sts-sig-coin-toss-2a-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="table">
-<caption>Tabelle&nbsp;9.2: Zuordnung der Anzahl der Köpfe zu den Ereignissen beim zweimaligen Münzwurf</caption>
 <thead>
 <tr class="header">
 <th>Ereignisse</th>
@@ -588,28 +635,38 @@ P(\text{Ausgang}) = \frac{1}{2} \times \frac{1}{2} = \frac{1}{4}
 </tbody>
 </table>
 </div>
+</figure>
+</div>
 <p>Wir verlieren bei dieser Zuordnung die Information bei welchem Wurf die Zahl beobachtet wurde. In der Terminologie der Wahrscheinlichkeitstheorie wird die Anzahl der <em>Köpfe</em> als Zufallsvariable bezeichnet.</p>
 <div id="def-random-variable" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 9.3 (Zufallsvariable) </strong></span>Eine Zufallsvariable ist die Abbildung eines Zufallsereignisses auf eine Zahl. Formal, wenn wir mit <span class="math inline">\(\Omega\)</span> die Menge der möglichen Ausgänge eines Experiments bezeichnen, dann ist eine Zufallsvariable eine Funktion die jedem Element <span class="math inline">\(\omega \in \Omega\)</span> eine Zahl <span class="math inline">\(x \in \mathbb{R}\)</span> zuordnet (siehe <a href="#fig-sts-sig-random-variable">Abbildung&nbsp;<span>9.4</span></a>).</p>
-<div class="cell">
+<p><span class="theorem-title"><strong>Definition 9.3 (Zufallsvariable)</strong></span> Eine Zufallsvariable ist die Abbildung eines Zufallsereignisses auf eine Zahl. Formal, wenn wir mit <span class="math inline">\(\Omega\)</span> die Menge der möglichen Ausgänge eines Experiments bezeichnen, dann ist eine Zufallsvariable eine Funktion die jedem Element <span class="math inline">\(\omega \in \Omega\)</span> eine Zahl <span class="math inline">\(x \in \mathbb{R}\)</span> zuordnet (siehe <a href="#fig-sts-sig-random-variable" class="quarto-xref">Abbildung&nbsp;<span>9.4</span></a>).</p>
+<div class="cell" data-layout-align="default">
 <div class="cell-output-display">
-<div id="fig-sts-sig-random-variable" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
+<div id="fig-sts-sig-random-variable" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sts-sig-random-variable-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div>
 <pre class="mermaid mermaid-js" data-label="fig-sts-sig-random-variable">flowchart LR 
     A[Ereignis] --&gt; B(Zahl)
 </pre>
 </div>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;9.4: Abbildung des Ereignisses auf eine Zahl</figcaption><p></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sts-sig-random-variable-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;9.4: Abbildung des Ereignisses auf eine Zahl
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
 </div>
 <p>Wenn wir uns jetzt die Wahrscheinlichkeiten für unsere Zufallsvariable anschauen, dann sehen wir aber, dass wir nicht mehr vier verschiedene Ausgänge haben, sondern nur noch drei und das die Wahrscheinlichkeit für diese drei Ereignisse nicht alle gleich sind.</p>
-<div id="tbl-sts-sig-coin-toss-2b" class="anchored">
+<div id="tbl-sts-sig-coin-toss-2b" class="quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-sts-sig-coin-toss-2b-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabelle&nbsp;9.3: Wahrscheinlichkeitstabelle für Zufallsvariable “Anzahl der Köpfe beim zweimaligen Münzwurf”.
+</figcaption>
+<div aria-describedby="tbl-sts-sig-coin-toss-2b-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="table">
-<caption>Tabelle&nbsp;9.3: Wahrscheinlichkeitstabelle für Zufallsvariable “Anzahl der Köpfe beim zweimaligen Münzwurf”.</caption>
 <colgroup>
 <col style="width: 33%">
 <col style="width: 33%">
@@ -641,13 +698,19 @@ P(\text{Ausgang}) = \frac{1}{2} \times \frac{1}{2} = \frac{1}{4}
 </tbody>
 </table>
 </div>
-<p>Wahrscheinlichkeitsverteilung unserer Zufallsvariable als Graph abtragen ergibt <a href="#fig-sts-sig-coin-toss-2c">Abbildung&nbsp;<span>9.5</span></a>.</p>
+</figure>
+</div>
+<p>Wahrscheinlichkeitsverteilung unserer Zufallsvariable als Graph abtragen ergibt <a href="#fig-sts-sig-coin-toss-2c" class="quarto-xref">Abbildung&nbsp;<span>9.5</span></a>.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="fig-sts-sig-coin-toss-2c" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="stats_distributions_files/figure-html/fig-sts-sig-coin-toss-2c-1.png" class="img-fluid figure-img" width="672"></p>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;9.5: Wahrscheinlichkeitsverteilung für die Anzahl der Köpfe beim zweimaligen Münzwurf</figcaption><p></p>
+<div id="fig-sts-sig-coin-toss-2c" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sts-sig-coin-toss-2c-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="stats_distributions_files/figure-html/fig-sts-sig-coin-toss-2c-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sts-sig-coin-toss-2c-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;9.5: Wahrscheinlichkeitsverteilung für die Anzahl der Köpfe beim zweimaligen Münzwurf
+</figcaption>
 </figure>
 </div>
 </div>
@@ -657,9 +720,13 @@ P(\text{Ausgang}) = \frac{1}{2} \times \frac{1}{2} = \frac{1}{4}
 P(\text{0 Köpfe} \cup \text{1 Kopf} \cup \text{2 Köpfe}) = \frac{1}{4} + \frac{1}{2} + \frac{1}{4} = 1
 \]</span></p>
 <p>Damit haben wir den Fall zweier Münzwürfe abgefrühstückt. Gehen wir nun zum nächst komplizierteren Fall. Die Anzahl der Köpfe bei drei Münzwürfen. Welche Möglichkeiten gibt es hier? Nun bei drei Würfen kann entweder <span class="math inline">\(0, 1, 2\)</span> oder <span class="math inline">\(3\)</span> Kopf auftreten. Wenn wir die Wahrscheinlichkeiten für diese vier Ereignisse berechnen wollen, können wir aber nicht einfache <span class="math inline">\(\frac{1}{4}\)</span> für jedes Ereignis als Wahrscheinlichkeit ansetzen (Warum?). Schauen wir uns erst einmal wieder die möglichen Tupel, oder auch die Elemenarereignisse, den wir erinnern uns, dass die Anzahl der Köpfe eine Zufallsvariable ist. Also eine Abbildung der 3-fach Tupel auf eine der Zahlen <span class="math inline">\(\{0, 1, 2, 3\}\)</span>.</p>
-<div id="tbl-sts-sig-coin-toss-3" class="anchored">
+<div id="tbl-sts-sig-coin-toss-3" class="quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-sts-sig-coin-toss-3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabelle&nbsp;9.4: Abbildung der 3-fach Tupel auf die Anzahl Kopf beim dreifachen Münzwurf
+</figcaption>
+<div aria-describedby="tbl-sts-sig-coin-toss-3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="table">
-<caption>Tabelle&nbsp;9.4: Abbildung der 3-fach Tupel auf die Anzahl Kopf beim dreifachen Münzwurf</caption>
 <thead>
 <tr class="header">
 <th>Elementarereignis</th>
@@ -702,10 +769,16 @@ P(\text{0 Köpfe} \cup \text{1 Kopf} \cup \text{2 Köpfe}) = \frac{1}{4} + \frac
 </tbody>
 </table>
 </div>
-<p>Die Elementarereignisse in <a href="#tbl-sts-sig-coin-toss-3">Tabelle&nbsp;<span>9.4</span></a> sind wieder alle gleichwahrscheinlich, daher können wir einfach abzählen. Es gibt insgesamt <span class="math inline">\(8\)</span> mögliche Ausgänge. <span class="math inline">\(0\)</span>-mal oder <span class="math inline">\(3\)</span>-mal Kopf kommen jeweils einmal vor, <span class="math inline">\(3\)</span> Ausgänge haben jeweils <span class="math inline">\(1\)</span>-mal oder <span class="math inline">\(2\)</span>-mal Kopf. Daraus folgt für die Wahrscheinlichkeitsfunktion (siehe <a href="#tbl-sts-sig-coin-toss-3a">Tabelle&nbsp;<span>9.5</span></a>).</p>
-<div id="tbl-sts-sig-coin-toss-3a" class="anchored">
+</figure>
+</div>
+<p>Die Elementarereignisse in <a href="#tbl-sts-sig-coin-toss-3" class="quarto-xref">Tabelle&nbsp;<span>9.4</span></a> sind wieder alle gleichwahrscheinlich, daher können wir einfach abzählen. Es gibt insgesamt <span class="math inline">\(8\)</span> mögliche Ausgänge. <span class="math inline">\(0\)</span>-mal oder <span class="math inline">\(3\)</span>-mal Kopf kommen jeweils einmal vor, <span class="math inline">\(3\)</span> Ausgänge haben jeweils <span class="math inline">\(1\)</span>-mal oder <span class="math inline">\(2\)</span>-mal Kopf. Daraus folgt für die Wahrscheinlichkeitsfunktion (siehe <a href="#tbl-sts-sig-coin-toss-3a" class="quarto-xref">Tabelle&nbsp;<span>9.5</span></a>).</p>
+<div id="tbl-sts-sig-coin-toss-3a" class="quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-sts-sig-coin-toss-3a-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabelle&nbsp;9.5: Wahrscheinlichkeitsfuntion für den dreifachen Münzwurf
+</figcaption>
+<div aria-describedby="tbl-sts-sig-coin-toss-3a-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="table">
-<caption>Tabelle&nbsp;9.5: Wahrscheinlichkeitsfuntion für den dreifachen Münzwurf</caption>
 <thead>
 <tr class="header">
 <th>Anzahl Kopf</th>
@@ -732,21 +805,27 @@ P(\text{0 Köpfe} \cup \text{1 Kopf} \cup \text{2 Köpfe}) = \frac{1}{4} + \frac
 </tbody>
 </table>
 </div>
-<p>Das Ganze auch wieder als Graph (siehe <a href="#fig-sts-sig-coin-toss-3">Abbildung&nbsp;<span>9.6</span></a>)</p>
+</figure>
+</div>
+<p>Das Ganze auch wieder als Graph (siehe <a href="#fig-sts-sig-coin-toss-3" class="quarto-xref">Abbildung&nbsp;<span>9.6</span></a>)</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="fig-sts-sig-coin-toss-3" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="stats_distributions_files/figure-html/fig-sts-sig-coin-toss-3-1.png" class="img-fluid figure-img" width="672"></p>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;9.6: Wahrscheinlichkeitsverteilung für die Anzahl der Köpfe beim dreimaligen Münzwurf</figcaption><p></p>
+<div id="fig-sts-sig-coin-toss-3" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sts-sig-coin-toss-3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="stats_distributions_files/figure-html/fig-sts-sig-coin-toss-3-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sts-sig-coin-toss-3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;9.6: Wahrscheinlichkeitsverteilung für die Anzahl der Köpfe beim dreimaligen Münzwurf
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
 <p>Bleiben wir noch einmal kurz bei dem Beispiel und versuchen uns die Wahrscheinlichkeiten anders herzuleiten. Sollten wir zum Beispiel einmal in die Verlegenheit kommen und 20 Münzwürfe untersuchen wollen, dann wird die Tabelle relativ schnell unhandlich.</p>
 <p>Sei <span class="math inline">\(N\)</span> die Anzahl der Würfe die wir durchführen. Wenn wir <span class="math inline">\(N\)</span> kennen, wissen wir auch direkt welche möglichen Ausgänge bei dem Experiment möglich sind, nämlich alle Zahlen zwischen <span class="math inline">\(0\)</span> und <span class="math inline">\(N\)</span>. <span class="math inline">\(0\)</span> wenn wir kein Kopf in den <span class="math inline">\(N\)</span> Würfen beobachtet haben, und <span class="math inline">\(N\)</span> wenn wir nur Kopf geworfen haben. Dementsprechend sind alle Zahlen dazwischen auch möglich.</p>
-<p>Schauen wir uns jetzt noch mal den dreimaligen Münzwurf an. Wenn wir kein Kopf werfen in <span class="math inline">\(3\)</span> Würfen und betrachten die Würfe wieder sequentiell, dann haben wir <span class="math inline">\(\frac{1}{2}\)</span> für die erste Zahl, <span class="math inline">\(\frac{1}{2}\)</span> für die zweite Zahl und <span class="math inline">\(\frac{1}{2}\)</span> für die dritte Zahl. Also insgesamt <span class="math inline">\(P(1 \text{ Kopf}) = \frac{1}{2} \times \frac{1}{2}\times \frac{1}{2} = \frac{1}{8}\)</span>. Aber diese Wahrscheinlichkeit hat ja jedes Elementarereignis egal ob es (K,K,K) oder (K,Z,K) oder (Z,Z,K) usw. ist. Jetzt haben wir aber das Problem, das wir für <span class="math inline">\(1\times\)</span> oder <span class="math inline">\(2\times\)</span> Kopf nicht nur eine Möglichkeit vorhanden diese Anzahl an Kopf zu beobachten. In <a href="#tbl-sts-sig-coin-toss-3">Tabelle&nbsp;<span>9.4</span></a> haben wir bereits gezeigt, dass jeweils drei verschiedene Möglichkeiten, Kombination von Kopf und Zahl, möglich sind. D.h. wir haben ein Abzählproblem. Können wir irgendwie direkt bestimmen wie viele unterschiedliche Möglichkeiten es gibt?</p>
-<p>Schauen wir uns den Fall <span class="math inline">\(1\times\)</span> Kopf im 3-fach Tupel an. Auf wie viele Arten können wir 3-fach Tupel erzeugen mit nur einem Kopf. Kopf kann entweder an der ersten, der zweiten oder der dritten Stelle auftreten und die jeweils anderen Position im Tupel sind mit Zahl besetzt. Das hört sich aber ähnlich wie ein Problem an wie wie etwas was wir schon vorher einmal gehört haben. Als wir uns die Anzahl der möglichen Stichproben aus unserer kleinen Welt angeschaut haben. Dort hatten wir das Problem, das wir bestimmen wollten auf wie viele Möglichkeiten wir zwei Stichproben mit jeweils drei Personen aus 20 Personen ziehen können. Dabei sind wir auf den Binomialkoeffizienten gestoßen <a href="stats_basics.html#eq-binom-coef">Gleichung&nbsp;<span>1.3</span></a>.</p>
+<p>Schauen wir uns jetzt noch mal den dreimaligen Münzwurf an. Wenn wir kein Kopf werfen in <span class="math inline">\(3\)</span> Würfen und betrachten die Würfe wieder sequentiell, dann haben wir <span class="math inline">\(\frac{1}{2}\)</span> für die erste Zahl, <span class="math inline">\(\frac{1}{2}\)</span> für die zweite Zahl und <span class="math inline">\(\frac{1}{2}\)</span> für die dritte Zahl. Also insgesamt <span class="math inline">\(P(1 \text{ Kopf}) = \frac{1}{2} \times \frac{1}{2}\times \frac{1}{2} = \frac{1}{8}\)</span>. Aber diese Wahrscheinlichkeit hat ja jedes Elementarereignis egal ob es (K,K,K) oder (K,Z,K) oder (Z,Z,K) usw. ist. Jetzt haben wir aber das Problem, das wir für <span class="math inline">\(1\times\)</span> oder <span class="math inline">\(2\times\)</span> Kopf nicht nur eine Möglichkeit vorhanden diese Anzahl an Kopf zu beobachten. In <a href="#tbl-sts-sig-coin-toss-3" class="quarto-xref">Tabelle&nbsp;<span>9.4</span></a> haben wir bereits gezeigt, dass jeweils drei verschiedene Möglichkeiten, Kombination von Kopf und Zahl, möglich sind. D.h. wir haben ein Abzählproblem. Können wir irgendwie direkt bestimmen wie viele unterschiedliche Möglichkeiten es gibt?</p>
+<p>Schauen wir uns den Fall <span class="math inline">\(1\times\)</span> Kopf im 3-fach Tupel an. Auf wie viele Arten können wir 3-fach Tupel erzeugen mit nur einem Kopf. Kopf kann entweder an der ersten, der zweiten oder der dritten Stelle auftreten und die jeweils anderen Position im Tupel sind mit Zahl besetzt. Das hört sich aber ähnlich wie ein Problem an wie wie etwas was wir schon vorher einmal gehört haben. Als wir uns die Anzahl der möglichen Stichproben aus unserer kleinen Welt angeschaut haben. Dort hatten wir das Problem, das wir bestimmen wollten auf wie viele Möglichkeiten wir zwei Stichproben mit jeweils drei Personen aus 20 Personen ziehen können. Dabei sind wir auf den Binomialkoeffizienten gestoßen <a href="stats_basics.html#eq-binom-coef" class="quarto-xref">Gleichung&nbsp;<span>6.3</span></a>.</p>
 <p><span class="math display">\[
 \text{Anzahl} = \binom{n}{k} = \frac{n!}{k!(n-k)!}
 \]</span></p>
@@ -787,33 +866,45 @@ P(Y = y) = \binom{N}{y}p^y (1-p)^{N-y} = \binom{N}{y}p^y q^{N-y} \label{eq-binom
 \end{equation}\]</span></p>
 <p>Damit haben wir jetzt auch direkt unsere erste theoretische Verteilung kennengelernt, die in der Statistik eine zentrale Rolle spielt. Die Verteilung in Formel <span class="math inline">\(\eqref{eq-binom-distribution}\)</span> wird als die Binomialverteilung bezeichnet. Da die Formel <span class="math inline">\(\eqref{eq-binom-distribution}\)</span> von den Parametern <span class="math inline">\(p\)</span> und <span class="math inline">\(n\)</span> abhängt, wird die Binomialverteilung als eine Familie von Verteilungen bezeichnet.</p>
 <div id="def-binomial-distribution" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 9.4 (Binomialverteilung) </strong></span>Die Binomialverteilung beschreibt die Anzahl der <em>Erfolge</em> in einer Serie von <span class="math inline">\(N\)</span> unabhängigen Versuchen. Die Versuche können jeweils nur genau zwei mögliche Ausgänge haben (<em>Erfolg</em> oder <em>Misserfolg</em>). Die Binomialverteilung mit <span class="math inline">\(N\)</span> Versuchen und der Erfolgswahrscheinlichkeit <span class="math inline">\(p\)</span> und der Misserfolgswahrscheinlichkeit <span class="math inline">\(q = 1 - p\)</span> und den möglichen Ausgängen <span class="math inline">\(y = 0,1,\ldots,N\)</span> berechnet sich nach:</p>
+<p><span class="theorem-title"><strong>Definition 9.4 (Binomialverteilung)</strong></span> Die Binomialverteilung beschreibt die Anzahl der <em>Erfolge</em> in einer Serie von <span class="math inline">\(N\)</span> unabhängigen Versuchen. Die Versuche können jeweils nur genau zwei mögliche Ausgänge haben (<em>Erfolg</em> oder <em>Misserfolg</em>). Die Binomialverteilung mit <span class="math inline">\(N\)</span> Versuchen und der Erfolgswahrscheinlichkeit <span class="math inline">\(p\)</span> und der Misserfolgswahrscheinlichkeit <span class="math inline">\(q = 1 - p\)</span> und den möglichen Ausgängen <span class="math inline">\(y = 0,1,\ldots,N\)</span> berechnet sich nach:</p>
 <p><span class="math display">\[\begin{equation}
 P(Y = y) = \binom{N}{y}p^y (1-p)^{N-y} = \binom{N}{y}p^y q^{N-y}
 \end{equation}\]</span></p>
 <p>Die Binomialverteilung ist eine diskrete Verteilung da sie auf einer endlichen Anzahl möglichen Ausgängen definiert ist (nicht ganz korrekt aber ausreichend für uns). Die Binomialverteilung ist eine Familie von Verteilungen und spezielle Verteilungen werden mit dem Symbol <span class="math inline">\(B(N,p,y)\)</span> bezeichnet.</p>
 </div>
-<div id="fig-stats-sig-binom-dist-1" class="cell quarto-layout-panel">
-<figure class="figure">
-<div class="quarto-layout-row quarto-layout-valign-top">
-<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
-<div id="fig-stats-sig-binom-dist-1-1" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="stats_distributions_files/figure-html/fig-stats-sig-binom-dist-1-1.png" class="img-fluid figure-img" data-ref-parent="fig-stats-sig-binom-dist-1" width="672"></p>
-<p></p><figcaption class="figure-caption">(a) <span class="math inline">\(B(N = 10, p = 0.5)\)</span></figcaption><p></p>
+<div id="fig-stats-sig-binom-dist-1" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-stats-sig-binom-dist-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-stats-sig-binom-dist-1" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-stats-sig-binom-dist-1-1" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-stats-sig-binom-dist-1-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="stats_distributions_files/figure-html/fig-stats-sig-binom-dist-1-1.png" class="img-fluid figure-img" data-ref-parent="fig-stats-sig-binom-dist-1" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-stats-sig-binom-dist-1-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(a) <span class="math inline">\(B(N = 10, p = 0.5)\)</span>
+</figcaption>
 </figure>
 </div>
 </div>
-<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
-<div id="fig-stats-sig-binom-dist-1-2" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="stats_distributions_files/figure-html/fig-stats-sig-binom-dist-1-2.png" class="img-fluid figure-img" data-ref-parent="fig-stats-sig-binom-dist-1" width="672"></p>
-<p></p><figcaption class="figure-caption">(b) <span class="math inline">\(B(N = 7, p = 0.3)\)</span></figcaption><p></p>
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-stats-sig-binom-dist-1" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-stats-sig-binom-dist-1-2" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-stats-sig-binom-dist-1-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="stats_distributions_files/figure-html/fig-stats-sig-binom-dist-1-2.png" class="img-fluid figure-img" data-ref-parent="fig-stats-sig-binom-dist-1" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-stats-sig-binom-dist-1-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(b) <span class="math inline">\(B(N = 7, p = 0.3)\)</span>
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;9.7: Beispiel für verschiedene Binomialverteilungen</figcaption><p></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-stats-sig-binom-dist-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;9.7: Beispiel für verschiedene Binomialverteilungen
+</figcaption>
 </figure>
 </div>
 <p>Schauen wir uns aber noch mal ob wir mit den ganzen Symbolen wirklich unseren dreifachen Münzwurf zurückbekommen. Es gilt <span class="math inline">\(N = 3, p = \frac{1}{2}\)</span>. Daraus folgt das <span class="math inline">\(q = 1 - p = 1 - \frac{1}{2}=\frac{1}{2}\)</span>. Wenn wir uns noch an <span class="math inline">\(x^a x^b = x^{a+b}\)</span> aus der Schule erinnern folgt:</p>
@@ -825,37 +916,49 @@ P(Y = 3) &amp;= \binom{3}{0} \left(\frac{1}{2}\right)^{3}\left(\frac{1}{2}\right
 \end{align*}\]</span></p>
 <p>Tatsächlich können wir unser Ergebnis von oben wiedergewinnen. Die Funktion der Binomialverteilung (Formel <span class="math inline">\(\eqref{eq-binom-distribution}\)</span>) wird als Wahrscheinlichkeitsfuntion bezeichnet.</p>
 <div id="def-Wahrscheinlichkeitsfunktion" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 9.5 (Wahrscheinlichkeitsfunktion) </strong></span>Eine Wahrscheinlichkeitsfunktion ist eine mathematische Funktion, die die Wahrscheinlichkeiten für alle möglichen Ausgänge eines diskreten Zufallsexperiments angibt. Sie wird auch als diskrete Wahrscheinlichkeitsverteilung bezeichnet. Eine Wahrscheinlichkeitsfunktion ordnet jedem möglichen Ausgang <span class="math inline">\(x\)</span> eines Experiments eine Wahrscheinlichkeit <span class="math inline">\(P(X = x)\)</span> zu. Die Wahrscheinlichkeit liegt zwischen 0 und 1. Die Summe aller Wahrscheinlichkeiten für alle möglichen Ergebnisse muss gleich 1 sein. Eine Wahrscheinlichkeitsfunktion kann als Tabelle oder als Formel dargestellt werden</p>
+<p><span class="theorem-title"><strong>Definition 9.5 (Wahrscheinlichkeitsfunktion)</strong></span> Eine Wahrscheinlichkeitsfunktion ist eine mathematische Funktion, die die Wahrscheinlichkeiten für alle möglichen Ausgänge eines diskreten Zufallsexperiments angibt. Sie wird auch als diskrete Wahrscheinlichkeitsverteilung bezeichnet. Eine Wahrscheinlichkeitsfunktion ordnet jedem möglichen Ausgang <span class="math inline">\(x\)</span> eines Experiments eine Wahrscheinlichkeit <span class="math inline">\(P(X = x)\)</span> zu. Die Wahrscheinlichkeit liegt zwischen 0 und 1. Die Summe aller Wahrscheinlichkeiten für alle möglichen Ergebnisse muss gleich 1 sein. Eine Wahrscheinlichkeitsfunktion kann als Tabelle oder als Formel dargestellt werden</p>
 </div>
 <p>Für die Eigenschaften einer Verteilung gibt es einer weitere Darstellungsform, die Verteilungsfunktion.</p>
 <div id="def-Verteilungsfunktion" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 9.6 (Verteilungsfunktion) </strong></span>Die Verteilungsfunktion gibt die Wahrscheinlichkeit <span class="math inline">\(P\)</span> an, dass eine Zufallsvariable <span class="math inline">\(X\)</span> einen Wert kleiner oder gleich einem bestimmten Wert <span class="math inline">\(x\)</span> annimmt, formal <span class="math inline">\(P(X \leq x)\)</span>. Sie wird daher auch als kumulative Verteilungsfunktion bezeichnet.</p>
+<p><span class="theorem-title"><strong>Definition 9.6 (Verteilungsfunktion)</strong></span> Die Verteilungsfunktion gibt die Wahrscheinlichkeit <span class="math inline">\(P\)</span> an, dass eine Zufallsvariable <span class="math inline">\(X\)</span> einen Wert kleiner oder gleich einem bestimmten Wert <span class="math inline">\(x\)</span> annimmt, formal <span class="math inline">\(P(X \leq x)\)</span>. Sie wird daher auch als kumulative Verteilungsfunktion bezeichnet.</p>
 </div>
-<p>Um die Definition der Verteilungsfunktion leichter nachzuvollziehen schauen wir uns das Ganze graphisch an (siehe <a href="#fig-stats-sig-pbinom">Abbildung&nbsp;<span>9.8</span></a>).</p>
-<div id="fig-stats-sig-pbinom" class="cell quarto-layout-panel">
-<figure class="figure">
-<div class="quarto-layout-row quarto-layout-valign-top">
-<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
-<div id="fig-stats-sig-pbinom-1" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="stats_distributions_files/figure-html/fig-stats-sig-pbinom-1.png" class="img-fluid figure-img" data-ref-parent="fig-stats-sig-pbinom" width="672"></p>
-<p></p><figcaption class="figure-caption">(a) Wahrscheinlichkeitsfunktion <span class="math inline">\(P(X = x)\)</span></figcaption><p></p>
+<p>Um die Definition der Verteilungsfunktion leichter nachzuvollziehen schauen wir uns das Ganze graphisch an (siehe <a href="#fig-stats-sig-pbinom" class="quarto-xref">Abbildung&nbsp;<span>9.8</span></a>).</p>
+<div id="fig-stats-sig-pbinom" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-stats-sig-pbinom-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-stats-sig-pbinom" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-stats-sig-pbinom-1" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-stats-sig-pbinom-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="stats_distributions_files/figure-html/fig-stats-sig-pbinom-1.png" class="img-fluid figure-img" data-ref-parent="fig-stats-sig-pbinom" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-stats-sig-pbinom-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(a) Wahrscheinlichkeitsfunktion <span class="math inline">\(P(X = x)\)</span>
+</figcaption>
 </figure>
 </div>
 </div>
-<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
-<div id="fig-stats-sig-pbinom-2" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="stats_distributions_files/figure-html/fig-stats-sig-pbinom-2.png" class="img-fluid figure-img" data-ref-parent="fig-stats-sig-pbinom" width="672"></p>
-<p></p><figcaption class="figure-caption">(b) Verteilungsfunktion <span class="math inline">\(P(X \leq x)\)</span></figcaption><p></p>
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-stats-sig-pbinom" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-stats-sig-pbinom-2" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-stats-sig-pbinom-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="stats_distributions_files/figure-html/fig-stats-sig-pbinom-2.png" class="img-fluid figure-img" data-ref-parent="fig-stats-sig-pbinom" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-stats-sig-pbinom-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(b) Verteilungsfunktion <span class="math inline">\(P(X \leq x)\)</span>
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;9.8: Zusammenhang zwischen der Wahrscheinlichkeits- und der Verteilungsfunktion bei <span class="math inline">\(B(N = 10, p = 0.5)\)</span></figcaption><p></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-stats-sig-pbinom-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;9.8: Zusammenhang zwischen der Wahrscheinlichkeits- und der Verteilungsfunktion bei <span class="math inline">\(B(N = 10, p = 0.5)\)</span>
+</figcaption>
 </figure>
 </div>
-<p>Die Wahrscheinlichkeitsfunktion gibt, wie schon bekannt, die Wahrscheinlichkeit für eine bestimmtes Ereignis an. Zum Beispiel, die Wahrscheinlichkeit bei <span class="math inline">\(p = 0.5, n = 10, 5\times\)</span> Kopf zu sehen ist etwas unter <span class="math inline">\(0.25\)</span>. Wir könnten uns aber auch fragen, was die Wahrscheinlichkeit ist <span class="math inline">\(5\)</span> oder weniger Köpfe zu beobachten. Diese Wahrscheinlichkeit setzt sich zusammen aus aus den Ereignissen <span class="math inline">\(X = 0, X = 1, X = 2, X = 3, X = 4, X = 5\)</span> zusammen. Daraus werden die Wahrscheinlichkeiten <span class="math inline">\(P(X = 0) + P(X = 1) + P(X = 2) + P(X = 3) + P(X = 4) + P(X = 5)\)</span>. Genau diesen Wert gibt die Verteilungsfunktion (siehe <a href="#fig-stats-sig-pbinom-2">Abbildung&nbsp;<span>9.8 (b)</span></a>) an. Die Wahrscheinlichkeitsfunktion und Verteilungsfunktion sind eineindeutig ineinander überführbar. Von der Wahrscheinlichkeitsfunktion zur Verteilungsfunktion haben wir eben schon gezeigt. Die gegengesetzte Richtung erhalten wir mittels:</p>
+<p>Die Wahrscheinlichkeitsfunktion gibt, wie schon bekannt, die Wahrscheinlichkeit für eine bestimmtes Ereignis an. Zum Beispiel, die Wahrscheinlichkeit bei <span class="math inline">\(p = 0.5, n = 10, 5\times\)</span> Kopf zu sehen ist etwas unter <span class="math inline">\(0.25\)</span>. Wir könnten uns aber auch fragen, was die Wahrscheinlichkeit ist <span class="math inline">\(5\)</span> oder weniger Köpfe zu beobachten. Diese Wahrscheinlichkeit setzt sich zusammen aus aus den Ereignissen <span class="math inline">\(X = 0, X = 1, X = 2, X = 3, X = 4, X = 5\)</span> zusammen. Daraus werden die Wahrscheinlichkeiten <span class="math inline">\(P(X = 0) + P(X = 1) + P(X = 2) + P(X = 3) + P(X = 4) + P(X = 5)\)</span>. Genau diesen Wert gibt die Verteilungsfunktion (siehe <a href="#fig-stats-sig-pbinom-2" class="quarto-xref">Abbildung&nbsp;<span>9.8 (b)</span></a>) an. Die Wahrscheinlichkeitsfunktion und Verteilungsfunktion sind eineindeutig ineinander überführbar. Von der Wahrscheinlichkeitsfunktion zur Verteilungsfunktion haben wir eben schon gezeigt. Die gegengesetzte Richtung erhalten wir mittels:</p>
 <p><span class="math display">\[\begin{equation*}
 P(X = x) = P(X \leq x) - P(X \leq x-1)
 \end{equation*}\]</span></p>
@@ -863,44 +966,60 @@ P(X = x) = P(X \leq x) - P(X \leq x-1)
 <p>Für unser Ausgangsproblem ist jetzt aber mit der Verteilungsfunktion die Möglichkeit gegeben, das wir bestimmte Wahrscheinlichkeitsbereiche unserer Verteilung auszeichnen können. Denn die Wahrscheinlichkeitsfunktion liefert uns die Antwort auf die Frage, welchen Wertebereich wir für eine gegebene Verteilung eher nicht erwarten würden. Schauen wir uns zum Beispiel die Verteilung bei <span class="math inline">\(p = 0.5\)</span> und <span class="math inline">\(n = 30\)</span>.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="fig-stats-dist-dbinom30" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="stats_distributions_files/figure-html/fig-stats-dist-dbinom30-1.png" class="img-fluid figure-img" width="672"></p>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;9.9: Wahrscheinlichkeitsfunktion bei <span class="math inline">\(B(N = 30, p = 0.5)\)</span></figcaption><p></p>
+<div id="fig-stats-dist-dbinom30" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-stats-dist-dbinom30-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="stats_distributions_files/figure-html/fig-stats-dist-dbinom30-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-stats-dist-dbinom30-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;9.9: Wahrscheinlichkeitsfunktion bei <span class="math inline">\(B(N = 30, p = 0.5)\)</span>
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>In <a href="#fig-stats-dist-dbinom30">Abbildung&nbsp;<span>9.9</span></a> sehen wir, dass wir zum Beispiel recht überrascht wären, wenn wir bei einem Durchgang von <span class="math inline">\(30\)</span> Münzwürfen einen Wert von z.B. <span class="math inline">\(x = 29 \times\)</span> Kopf beobachten würden. Es ist nicht unmöglich, aber es wäre schon überraschend. Diesen Grad der Überraschung können wir als Kriterium nehmen, um zu entscheiden ob wir eine bestimmt Beobachtung dazu verwenden würden diese als Evidenz für oder gegen eine bestimmte Verteilungsannahme zu sehen.</p>
+<p>In <a href="#fig-stats-dist-dbinom30" class="quarto-xref">Abbildung&nbsp;<span>9.9</span></a> sehen wir, dass wir zum Beispiel recht überrascht wären, wenn wir bei einem Durchgang von <span class="math inline">\(30\)</span> Münzwürfen einen Wert von z.B. <span class="math inline">\(x = 29 \times\)</span> Kopf beobachten würden. Es ist nicht unmöglich, aber es wäre schon überraschend. Diesen Grad der Überraschung können wir als Kriterium nehmen, um zu entscheiden ob wir eine bestimmt Beobachtung dazu verwenden würden diese als Evidenz für oder gegen eine bestimmte Verteilungsannahme zu sehen.</p>
 <p>Setzen wir unser Kriterium z.B. bei 2% an. Die Entscheidung wird jetzt folgendermaßen getroffen. Wenn wir einen Wert beobachten der unter der Annahme einer fairen Münze die wir <span class="math inline">\(30\times\)</span> aus dem Bereich der Werte von <span class="math inline">\(\leq2\%\)</span> kommt. Dann sehen wir dies als Evidenz gegen die Annahme an.</p>
-<p>In diesem Zusammenhang wird später auch noch einmal die Umkehrfunktion der Verteilungsfunktion praktisch werden. Diese Funktion wird als die Quartilfunktion bezeichnet. Angewandt auf <a href="#fig-stats-sig-pbinom-2">Abbildung&nbsp;<span>9.8 (b)</span></a> sieht die Quartilfunktion wie folgt aus.</p>
-<div id="fig-stats-sig-qbinom" class="cell quarto-layout-panel">
-<figure class="figure">
-<div class="quarto-layout-row quarto-layout-valign-top">
-<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
-<div id="fig-stats-sig-qbinom-1" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="stats_distributions_files/figure-html/fig-stats-sig-qbinom-1.png" class="img-fluid figure-img" data-ref-parent="fig-stats-sig-qbinom" width="672"></p>
-<p></p><figcaption class="figure-caption">(a) Verteilungsfunktion <span class="math inline">\(P(X \leq x)\)</span></figcaption><p></p>
+<p>In diesem Zusammenhang wird später auch noch einmal die Umkehrfunktion der Verteilungsfunktion praktisch werden. Diese Funktion wird als die Quartilfunktion bezeichnet. Angewandt auf <a href="#fig-stats-sig-pbinom-2" class="quarto-xref">Abbildung&nbsp;<span>9.8 (b)</span></a> sieht die Quartilfunktion wie folgt aus.</p>
+<div id="fig-stats-sig-qbinom" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-stats-sig-qbinom-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-stats-sig-qbinom" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-stats-sig-qbinom-1" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-stats-sig-qbinom-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="stats_distributions_files/figure-html/fig-stats-sig-qbinom-1.png" class="img-fluid figure-img" data-ref-parent="fig-stats-sig-qbinom" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-stats-sig-qbinom-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(a) Verteilungsfunktion <span class="math inline">\(P(X \leq x)\)</span>
+</figcaption>
 </figure>
 </div>
 </div>
-<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
-<div id="fig-stats-sig-qbinom-2" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="stats_distributions_files/figure-html/fig-stats-sig-qbinom-2.png" class="img-fluid figure-img" data-ref-parent="fig-stats-sig-qbinom" width="672"></p>
-<p></p><figcaption class="figure-caption">(b) Quantilfunktion</figcaption><p></p>
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-stats-sig-qbinom" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-stats-sig-qbinom-2" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-stats-sig-qbinom-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="stats_distributions_files/figure-html/fig-stats-sig-qbinom-2.png" class="img-fluid figure-img" data-ref-parent="fig-stats-sig-qbinom" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-stats-sig-qbinom-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(b) Quantilfunktion
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;9.10: Zusammenhang zwischen der Verteilungs- und der Quantilfunktion bei <span class="math inline">\(B(N = 10, p = 0.5)\)</span></figcaption><p></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-stats-sig-qbinom-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;9.10: Zusammenhang zwischen der Verteilungs- und der Quantilfunktion bei <span class="math inline">\(B(N = 10, p = 0.5)\)</span>
+</figcaption>
 </figure>
 </div>
-<p>D.h. in <a href="#fig-stats-sig-qbinom-2">Abbildung&nbsp;<span>9.10 (b)</span></a> können wir auf der <span class="math inline">\(x\)</span>-Achse eine Quantile ablesen, also einen Wahrscheinlichkeit für <span class="math inline">\(P(X \leq x)\)</span> und auf der <span class="math inline">\(y\)</span>-Achse steht die dazugehörende Anzahl von Kopf. Der Graph hat eine etwas eigenwillige Form, der darauf zurück zu führen ist, dass wir aufgrund der Struktur des Experiment nur wenige mögliche Ausgänge <span class="math inline">\([0,1,\ldots,10]\)</span> haben.</p>
-<p>Konkret in der Anwendung, könnten wir zum Beispiel <span class="math inline">\(\alpha = 0.2\)</span> ansetzen. Dann würden wir links und rechts jeweils <span class="math inline">\(10\%\)</span> abschneiden und als kritische Bereiche ansehen. In <a href="#fig-stats-sig-qbinom-2">Abbildung&nbsp;<span>9.10 (b)</span></a> können wir dann ablesen, dass bei einem Ausgang von <span class="math inline">\(\leq 2\)</span> oder <span class="math inline">\(\geq 9\)</span> Köpfen wird <em>überrascht</em> sein würden.</p>
+<p>D.h. in <a href="#fig-stats-sig-qbinom-2" class="quarto-xref">Abbildung&nbsp;<span>9.10 (b)</span></a> können wir auf der <span class="math inline">\(x\)</span>-Achse eine Quantile ablesen, also einen Wahrscheinlichkeit für <span class="math inline">\(P(X \leq x)\)</span> und auf der <span class="math inline">\(y\)</span>-Achse steht die dazugehörende Anzahl von Kopf. Der Graph hat eine etwas eigenwillige Form, der darauf zurück zu führen ist, dass wir aufgrund der Struktur des Experiment nur wenige mögliche Ausgänge <span class="math inline">\([0,1,\ldots,10]\)</span> haben.</p>
+<p>Konkret in der Anwendung, könnten wir zum Beispiel <span class="math inline">\(\alpha = 0.2\)</span> ansetzen. Dann würden wir links und rechts jeweils <span class="math inline">\(10\%\)</span> abschneiden und als kritische Bereiche ansehen. In <a href="#fig-stats-sig-qbinom-2" class="quarto-xref">Abbildung&nbsp;<span>9.10 (b)</span></a> können wir dann ablesen, dass bei einem Ausgang von <span class="math inline">\(\leq 2\)</span> oder <span class="math inline">\(\geq 9\)</span> Köpfen wird <em>überrascht</em> sein würden.</p>
 <div id="def-quartilfunktion" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 9.7 (Quantilfunktion) </strong></span>Die Quantilfunktion ist die Umkehrfunktion der Verteilungsfunktion. Die Quantilfunktion gibt für eine gegeben Wahrscheinlichkeit den Wert der Zufahlsvariablen an.</p>
+<p><span class="theorem-title"><strong>Definition 9.7 (Quantilfunktion)</strong></span> Die Quantilfunktion ist die Umkehrfunktion der Verteilungsfunktion. Die Quantilfunktion gibt für eine gegeben Wahrscheinlichkeit den Wert der Zufahlsvariablen an.</p>
 </div>
 </section>
 <section id="übergang-von-diskreten-zur-kontinuierlichen-verteilungen" class="level2" data-number="9.2">
@@ -909,10 +1028,14 @@ P(X = x) = P(X \leq x) - P(X \leq x-1)
 <p>Ein grundlegender Unterschied besteht darin, dass wir keine Wahrscheinlichkeits- sondern eine Dichtefunktion haben. Der Unterschied rührt daher, dass wir unsere bisherige <em>informelle</em> Herleitung der Wahrscheinlichkeit bei einer kontinuierlichen Funktion nicht anwenden können. Schauen wir dazu kurz die folgende Normalverteilung an, die wir weiter unten noch mal im Detail betrachten.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="fig-stats-dist-cdist" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="stats_distributions_files/figure-html/fig-stats-dist-cdist-1.png" class="img-fluid figure-img" width="672"></p>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;9.11: Beispiel für die Dichtefunktion eine kontinuierlichen Verteilung.</figcaption><p></p>
+<div id="fig-stats-dist-cdist" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-stats-dist-cdist-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="stats_distributions_files/figure-html/fig-stats-dist-cdist-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-stats-dist-cdist-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;9.11: Beispiel für die Dichtefunktion eine kontinuierlichen Verteilung.
+</figcaption>
 </figure>
 </div>
 </div>
@@ -923,18 +1046,22 @@ P(X = 1) = \frac{1}{\infty} = 0
 \label{eq-p-cont-inf}
 \end{equation}\]</span></p>
 <p>D.h. die Wahrscheinlichkeit einen speziellen Wert zu bekommen ist <span class="math inline">\(=0\)</span>. Um diesen Unterschied zur Wahrscheinlichkeitsfunktion klarzustellen wird daher daher von Dichtefunktionen gesprochen. Eine saubere Definition erfordert etwas mehr mathematische Details als für unsere weitere Anwendung notwendig ist. Daher lassen wir das hier erst einmal so stehen.</p>
-<p>Wir wollen aber trotzdem in der Lage sein Wahrscheinlichkeiten zu bestimmen. Dies können, sobald wir nicht mehr von einzlenen Werten von Intervallen sprechen. z.B. was ist die Wahrscheinlichkeit unter der Dichtefunktion in <a href="#fig-stats-dist-cdist">Abbildung&nbsp;<span>9.11</span></a> einen Werte <span class="math inline">\(0 \leq x \leq 1\)</span> zu beobachten. Hier können wir wieder das Modell der diskreten Wahrscheinlichkeitsfunktion nehmen und summieren die Höhe aller Werte <span class="math inline">\(f(x)\)</span> zwischen <span class="math inline">\(0 \leq x \leq 1\)</span> auf (siehe <a href="#fig-stats-dist-cdist-02">Abbildung&nbsp;<span>9.12</span></a>).</p>
+<p>Wir wollen aber trotzdem in der Lage sein Wahrscheinlichkeiten zu bestimmen. Dies können, sobald wir nicht mehr von einzlenen Werten von Intervallen sprechen. z.B. was ist die Wahrscheinlichkeit unter der Dichtefunktion in <a href="#fig-stats-dist-cdist" class="quarto-xref">Abbildung&nbsp;<span>9.11</span></a> einen Werte <span class="math inline">\(0 \leq x \leq 1\)</span> zu beobachten. Hier können wir wieder das Modell der diskreten Wahrscheinlichkeitsfunktion nehmen und summieren die Höhe aller Werte <span class="math inline">\(f(x)\)</span> zwischen <span class="math inline">\(0 \leq x \leq 1\)</span> auf (siehe <a href="#fig-stats-dist-cdist-02" class="quarto-xref">Abbildung&nbsp;<span>9.12</span></a>).</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="fig-stats-dist-cdist-02" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="stats_distributions_files/figure-html/fig-stats-dist-cdist-02-1.png" class="img-fluid figure-img" width="672"></p>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;9.12: Beispiel für die Dichtefunktion eine kontinuierlichen Verteilung und Fläche der Werte <span class="math inline">\(0 \leq x \leq 1\)</span>.</figcaption><p></p>
+<div id="fig-stats-dist-cdist-02" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-stats-dist-cdist-02-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="stats_distributions_files/figure-html/fig-stats-dist-cdist-02-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-stats-dist-cdist-02-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;9.12: Beispiel für die Dichtefunktion eine kontinuierlichen Verteilung und Fläche der Werte <span class="math inline">\(0 \leq x \leq 1\)</span>.
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>Das erinnert uns natürlich zurück an die Schule und und die gelbe Fläche in <a href="#fig-stats-dist-cdist-02">Abbildung&nbsp;<span>9.12</span></a> unter der Kurve ist natürlich das Integral der Funktion über diesen Wertebereich. Formal folgt daher für die Wahrscheinlichkeit:</p>
+<p>Das erinnert uns natürlich zurück an die Schule und und die gelbe Fläche in <a href="#fig-stats-dist-cdist-02" class="quarto-xref">Abbildung&nbsp;<span>9.12</span></a> unter der Kurve ist natürlich das Integral der Funktion über diesen Wertebereich. Formal folgt daher für die Wahrscheinlichkeit:</p>
 <p><span class="math display">\[\begin{equation*}
 P(X = 0 \leq x \leq 1) = \int_{x=0}^1 f(x) dx
 \end{equation*}\]</span></p>
@@ -960,60 +1087,84 @@ P(X = 0 \leq x \leq 1) = \int_{x=0}^1 f(x) dx
 f(x|\mu,\sigma^2) = \frac{1}{\sqrt{2 \pi \sigma^2}}e^{\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)}
 \label{eq-normal-distribution}
 \end{equation}\]</span></p>
-<p>Die Normalverteilung ist wiederum eine Verteilungsfamilie mit den beiden Parametern <span class="math inline">\(\mu\)</span> und <span class="math inline">\(\sigma^2\)</span>. Sie ist eine symmetrische Verteilung und hat die uns schon oft begegnete Glockenform (siehe <a href="#fig-stats-dist-ndist">Abbildung&nbsp;<span>9.13</span></a>).</p>
+<p>Die Normalverteilung ist wiederum eine Verteilungsfamilie mit den beiden Parametern <span class="math inline">\(\mu\)</span> und <span class="math inline">\(\sigma^2\)</span>. Sie ist eine symmetrische Verteilung und hat die uns schon oft begegnete Glockenform (siehe <a href="#fig-stats-dist-ndist" class="quarto-xref">Abbildung&nbsp;<span>9.13</span></a>).</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="fig-stats-dist-ndist" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="stats_distributions_files/figure-html/fig-stats-dist-ndist-1.png" class="img-fluid figure-img" width="672"></p>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;9.13: Dichtefunktion der Normalverteilung mit den Parametern <span class="math inline">\(\mu = 0\)</span> und <span class="math inline">\(\sigma = 1\)</span>.</figcaption><p></p>
+<div id="fig-stats-dist-ndist" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-stats-dist-ndist-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="stats_distributions_files/figure-html/fig-stats-dist-ndist-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-stats-dist-ndist-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;9.13: Dichtefunktion der Normalverteilung mit den Parametern <span class="math inline">\(\mu = 0\)</span> und <span class="math inline">\(\sigma = 1\)</span>.
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>Der Wertebereich der Normalverteilung ist <span class="math inline">\(X \in [-\infty, \infty]\)</span>. Das Maximum liegt genau beim Erwartungswert <span class="math inline">\(\mu\)</span> der die Verteilung in die linken 50% und die rechten 50% unterteilt. D.h. der Median und Mittelwert sind bei der Normalverteilung gleich. Das Abfallen der Flanken wird über die Varianz <span class="math inline">\(\sigma^2\)</span> geregelt. Wird <span class="math inline">\(\sigma^2\)</span> größer, fallen die Flanken flacher ab, wird <span class="math inline">\(\sigma^2\)</span> kleiner, fallen die Flanken schneller ab (siehe <a href="#fig-stats-dist-ndist2">Abbildung&nbsp;<span>9.14</span></a>).</p>
-<div id="fig-stats-dist-ndist2" class="cell quarto-layout-panel">
-<figure class="figure">
-<div class="quarto-layout-row quarto-layout-valign-top">
-<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
-<div id="fig-stats-dist-ndist2-1" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="stats_distributions_files/figure-html/fig-stats-dist-ndist2-1.png" class="img-fluid figure-img" data-ref-parent="fig-stats-dist-ndist2" width="672"></p>
-<p></p><figcaption class="figure-caption">(a) <span class="math inline">\(\sigma^2 = 1\)</span></figcaption><p></p>
+<p>Der Wertebereich der Normalverteilung ist <span class="math inline">\(X \in [-\infty, \infty]\)</span>. Das Maximum liegt genau beim Erwartungswert <span class="math inline">\(\mu\)</span> der die Verteilung in die linken 50% und die rechten 50% unterteilt. D.h. der Median und Mittelwert sind bei der Normalverteilung gleich. Das Abfallen der Flanken wird über die Varianz <span class="math inline">\(\sigma^2\)</span> geregelt. Wird <span class="math inline">\(\sigma^2\)</span> größer, fallen die Flanken flacher ab, wird <span class="math inline">\(\sigma^2\)</span> kleiner, fallen die Flanken schneller ab (siehe <a href="#fig-stats-dist-ndist2" class="quarto-xref">Abbildung&nbsp;<span>9.14</span></a>).</p>
+<div id="fig-stats-dist-ndist2" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-stats-dist-ndist2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-stats-dist-ndist2" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-stats-dist-ndist2-1" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-stats-dist-ndist2-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="stats_distributions_files/figure-html/fig-stats-dist-ndist2-1.png" class="img-fluid figure-img" data-ref-parent="fig-stats-dist-ndist2" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-stats-dist-ndist2-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(a) <span class="math inline">\(\sigma^2 = 1\)</span>
+</figcaption>
 </figure>
 </div>
 </div>
-<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
-<div id="fig-stats-dist-ndist2-2" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="stats_distributions_files/figure-html/fig-stats-dist-ndist2-2.png" class="img-fluid figure-img" data-ref-parent="fig-stats-dist-ndist2" width="672"></p>
-<p></p><figcaption class="figure-caption">(b) <span class="math inline">\(\sigma^2 = 2\)</span></figcaption><p></p>
+<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-stats-dist-ndist2" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-stats-dist-ndist2-2" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-stats-dist-ndist2-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="stats_distributions_files/figure-html/fig-stats-dist-ndist2-2.png" class="img-fluid figure-img" data-ref-parent="fig-stats-dist-ndist2" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-stats-dist-ndist2-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(b) <span class="math inline">\(\sigma^2 = 2\)</span>
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;9.14: Veränderung der Dichtefunktion bei unterschiedlichen Varianzen <span class="math inline">\(\sigma^2\)</span></figcaption><p></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-stats-dist-ndist2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;9.14: Veränderung der Dichtefunktion bei unterschiedlichen Varianzen <span class="math inline">\(\sigma^2\)</span>
+</figcaption>
 </figure>
 </div>
-<p>In <a href="#fig-stats-dist-ndist">Abbildung&nbsp;<span>9.13</span></a> wird der Graph nicht als Wahrscheinlichkeitsfunktion wie bei der Binomialverteilung sondern als Dichtefunktion bezeichnet. Der Unterschied kommt daher, dass die Normalverteilung keine diskrete Verteilung sondern eine kontinuierliche Verteilung ist. Vereinfacht ausgedrückt, wenn wir unsere bisherige Herleitung von Wahrscheinlichkeiten nehmen, dann haben wir im Unterschied zur Binomialverteilung bei der Normalverteilung unendlich viele Ereignisse (=Werte) zur Verfügung. Alle werte zwischen <span class="math inline">\(-\infty\)</span> und <span class="math inline">\(\infty\)</span> sind möglich. Dementsprechend wenn wir die Wahrscheinlichkeit für einen einzelnen Wert nach <span class="math inline">\(\frac{1}{\text{Anzahl der Möglichkeiten}}\)</span> berechnen erhalten wir <span class="math inline">\(P(X) = \frac{1}{\infty} = 0\)</span>. Daher macht es im Fall einer kontinuierlichen Verteilung wenig Sinn von der Wahrscheinlichkeit für einen einzelnen Wert zu sprechen. Wahrscheinlichkeiten können in diesem Fall immer nur für bestimmte Bereiche berechnet werden.</p>
+<p>In <a href="#fig-stats-dist-ndist" class="quarto-xref">Abbildung&nbsp;<span>9.13</span></a> wird der Graph nicht als Wahrscheinlichkeitsfunktion wie bei der Binomialverteilung sondern als Dichtefunktion bezeichnet. Der Unterschied kommt daher, dass die Normalverteilung keine diskrete Verteilung sondern eine kontinuierliche Verteilung ist. Vereinfacht ausgedrückt, wenn wir unsere bisherige Herleitung von Wahrscheinlichkeiten nehmen, dann haben wir im Unterschied zur Binomialverteilung bei der Normalverteilung unendlich viele Ereignisse (=Werte) zur Verfügung. Alle werte zwischen <span class="math inline">\(-\infty\)</span> und <span class="math inline">\(\infty\)</span> sind möglich. Dementsprechend wenn wir die Wahrscheinlichkeit für einen einzelnen Wert nach <span class="math inline">\(\frac{1}{\text{Anzahl der Möglichkeiten}}\)</span> berechnen erhalten wir <span class="math inline">\(P(X) = \frac{1}{\infty} = 0\)</span>. Daher macht es im Fall einer kontinuierlichen Verteilung wenig Sinn von der Wahrscheinlichkeit für einen einzelnen Wert zu sprechen. Wahrscheinlichkeiten können in diesem Fall immer nur für bestimmte Bereiche berechnet werden.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="fig-stats-dist-ndist3" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="stats_distributions_files/figure-html/fig-stats-dist-ndist3-1.png" class="img-fluid figure-img" width="672"></p>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;9.15: Dichtefunktion der Normalverteilung und ein gelb ausgezeichneter Bereich</figcaption><p></p>
+<div id="fig-stats-dist-ndist3" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-stats-dist-ndist3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="stats_distributions_files/figure-html/fig-stats-dist-ndist3-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-stats-dist-ndist3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;9.15: Dichtefunktion der Normalverteilung und ein gelb ausgezeichneter Bereich
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>In <a href="#fig-stats-dist-ndist3">Abbildung&nbsp;<span>9.15</span></a> ist ein Bereich gelb ausgezeichnet. Für diesen Bereich kann nun die Wahrscheinlichkeit, die Fläche unter der Kurve, berechnet werden. Wenn wir Fläche unter der Kurve hören, dann wissen natürlich sofort das das Integral der Funktion gemeint ist. Daher berechnet sich die Wahrscheinlichkeitt für ein Intervall <span class="math inline">\([a,b]\)</span></p>
+<p>In <a href="#fig-stats-dist-ndist3" class="quarto-xref">Abbildung&nbsp;<span>9.15</span></a> ist ein Bereich gelb ausgezeichnet. Für diesen Bereich kann nun die Wahrscheinlichkeit, die Fläche unter der Kurve, berechnet werden. Wenn wir Fläche unter der Kurve hören, dann wissen natürlich sofort das das Integral der Funktion gemeint ist. Daher berechnet sich die Wahrscheinlichkeitt für ein Intervall <span class="math inline">\([a,b]\)</span></p>
 <p><span class="math display">\[\begin{equation*}
 P(a \leq X \leq b) = \int_{a}^b f(x|\mu,\sigma^2)dx
 \end{equation*}\]</span></p>
-<p>Die Standardabweichung <span class="math inline">\(\sigma\)</span> (Wurzel der Varianz) eignet sich , die Dichtfunktion in verschiedene Intervalle um <span class="math inline">\(\mu\)</span> herum mit bestimmten Wahrscheinlichkeiten zu unterteilen. Es gelten die folgenden Zuweisungen(siehe <a href="#tbl-stats-dist-sigma-int">Tabelle&nbsp;<span>9.6</span></a>):</p>
-<div id="tbl-stats-dist-sigma-int" class="anchored">
+<p>Die Standardabweichung <span class="math inline">\(\sigma\)</span> (Wurzel der Varianz) eignet sich , die Dichtfunktion in verschiedene Intervalle um <span class="math inline">\(\mu\)</span> herum mit bestimmten Wahrscheinlichkeiten zu unterteilen. Es gelten die folgenden Zuweisungen(siehe <a href="#tbl-stats-dist-sigma-int" class="quarto-xref">Tabelle&nbsp;<span>9.6</span></a>):</p>
+<div id="tbl-stats-dist-sigma-int" class="quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-stats-dist-sigma-int-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabelle&nbsp;9.6: Wahrscheinlichkeiten für verschiedene Intervalle um <span class="math inline">\(\mu\)</span> in Abhängigkeit von <span class="math inline">\(\sigma\)</span>
+</figcaption>
+<div aria-describedby="tbl-stats-dist-sigma-int-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="table">
-<caption>Tabelle&nbsp;9.6: Wahrscheinlichkeiten für verschiedene Intervalle um <span class="math inline">\(\mu\)</span> in Abhängigkeit von <span class="math inline">\(\sigma\)</span></caption>
 <thead>
 <tr class="header">
 <th><span class="math inline">\(x \in\)</span></th>
@@ -1036,18 +1187,24 @@ P(a \leq X \leq b) = \int_{a}^b f(x|\mu,\sigma^2)dx
 </tbody>
 </table>
 </div>
-<p>Übertragen auf den Dichtegraphen folgt (siehe <a href="#fig-stats-dist-sigma-int">Abbildung&nbsp;<span>9.16</span></a>):</p>
+</figure>
+</div>
+<p>Übertragen auf den Dichtegraphen folgt (siehe <a href="#fig-stats-dist-sigma-int" class="quarto-xref">Abbildung&nbsp;<span>9.16</span></a>):</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="fig-stats-dist-sigma-int" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="stats_distributions_files/figure-html/fig-stats-dist-sigma-int-1.png" class="img-fluid figure-img" width="672"></p>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;9.16: Dichtefunktion von <span class="math inline">\(\mathcal{N}(\mu,\sigma^2)\)</span></figcaption><p></p>
+<div id="fig-stats-dist-sigma-int" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-stats-dist-sigma-int-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="stats_distributions_files/figure-html/fig-stats-dist-sigma-int-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-stats-dist-sigma-int-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;9.16: Dichtefunktion von <span class="math inline">\(\mathcal{N}(\mu,\sigma^2)\)</span>
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>Wie in <a href="#tbl-stats-dist-sigma-int">Tabelle&nbsp;<span>9.6</span></a> zu sehen ist, hat der Bereich <span class="math inline">\([-2\sigma, 2\sigma]\)</span> eine Wahrscheinlichkeit von etwas über <span class="math inline">\(0.95\)</span>. Daher, wenn ich einen Bereich um den Erwartungswert <span class="math inline">\(\mu\)</span> auszeichnen möchte, der genau eine Wahrscheinlichkeit von <span class="math inline">\(0.95\)</span> hat, dann muss <span class="math inline">\(\sigma\)</span> mit einem kleineren Wert als <span class="math inline">\(2\)</span> multipliziert werden, nämlich <span class="math inline">\(1.96\)</span>. Das wird hier noch mal speziell erwähnt, da die Zahl <span class="math inline">\(1.96\)</span> später immer wieder auftaucht. Formal:</p>
+<p>Wie in <a href="#tbl-stats-dist-sigma-int" class="quarto-xref">Tabelle&nbsp;<span>9.6</span></a> zu sehen ist, hat der Bereich <span class="math inline">\([-2\sigma, 2\sigma]\)</span> eine Wahrscheinlichkeit von etwas über <span class="math inline">\(0.95\)</span>. Daher, wenn ich einen Bereich um den Erwartungswert <span class="math inline">\(\mu\)</span> auszeichnen möchte, der genau eine Wahrscheinlichkeit von <span class="math inline">\(0.95\)</span> hat, dann muss <span class="math inline">\(\sigma\)</span> mit einem kleineren Wert als <span class="math inline">\(2\)</span> multipliziert werden, nämlich <span class="math inline">\(1.96\)</span>. Das wird hier noch mal speziell erwähnt, da die Zahl <span class="math inline">\(1.96\)</span> später immer wieder auftaucht. Formal:</p>
 <p><span class="math display">\[P(x\in[\mu-1.96\sigma, \mu+1.96\sigma]) = 0.95\]</span></p>
 <p>Anders herum, wenn es darum geht ein Konfidenzintervall abzuschätzen, dann kann die Faustregel, Teststatistik <span class="math inline">\(\pm 2\times\)</span> Standardfehler angewendet werden.</p>
 <section id="die-standardnormalverteilung-phiz" class="level3" data-number="9.3.1">
@@ -1056,13 +1213,17 @@ P(a \leq X \leq b) = \int_{a}^b f(x|\mu,\sigma^2)dx
 <p><span class="math display">\[
 \Phi(z) = \mathcal{N}(\mu = 0, \sigma^2 = 1)
 \]</span></p>
-<p>Im Fall der Standardnormalverteilung nehmen <a href="#tbl-stats-dist-sigma-int">Tabelle&nbsp;<span>9.6</span></a> und <a href="#fig-stats-dist-sigma-int">Abbildung&nbsp;<span>9.16</span></a> besonders einfache Formen an da die Intervalle jeweils <span class="math inline">\([-1,1]\)</span>, <span class="math inline">\([-2,2]\)</span> und <span class="math inline">\([-3,3]\)</span> sind (siehe <a href="#fig-stats-dist-phi-int">Abbildung&nbsp;<span>9.17</span></a>).</p>
+<p>Im Fall der Standardnormalverteilung nehmen <a href="#tbl-stats-dist-sigma-int" class="quarto-xref">Tabelle&nbsp;<span>9.6</span></a> und <a href="#fig-stats-dist-sigma-int" class="quarto-xref">Abbildung&nbsp;<span>9.16</span></a> besonders einfache Formen an da die Intervalle jeweils <span class="math inline">\([-1,1]\)</span>, <span class="math inline">\([-2,2]\)</span> und <span class="math inline">\([-3,3]\)</span> sind (siehe <a href="#fig-stats-dist-phi-int" class="quarto-xref">Abbildung&nbsp;<span>9.17</span></a>).</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="fig-stats-dist-phi-int" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="stats_distributions_files/figure-html/fig-stats-dist-phi-int-1.png" class="img-fluid figure-img" width="672"></p>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;9.17: Dichtefunktion der Standardnormalverteilung <span class="math inline">\(\phi(x)\)</span> mit <span class="math inline">\(\mu=0\)</span> und <span class="math inline">\(\sigma^2=1\)</span></figcaption><p></p>
+<div id="fig-stats-dist-phi-int" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-stats-dist-phi-int-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="stats_distributions_files/figure-html/fig-stats-dist-phi-int-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-stats-dist-phi-int-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;9.17: Dichtefunktion der Standardnormalverteilung <span class="math inline">\(\phi(x)\)</span> mit <span class="math inline">\(\mu=0\)</span> und <span class="math inline">\(\sigma^2=1\)</span>
+</figcaption>
 </figure>
 </div>
 </div>
@@ -1095,13 +1256,17 @@ P(A \leq X \leq B) = P(\frac{A-\mu_x}{\sigma_x} \leq \frac{X-\mu_x}{\sigma_x} \l
 P(A \leq X \leq B) = P\left(A^* \leq \frac{X-\mu_x}{\sigma_x} = B^*\right)
 \end{equation*}\]</span></p>
 <p>Der Term in der Mitte folgt nun einer Standardnormalverteilung. Die Standardnormalverteilung ist symmetrisch um den Nullpunkt herum. Daher können wir die Quartilfunktion der Standardnormalverteilung verwenden und benötigen nur linke Grenze <span class="math inline">\(A^*\)</span> da die rechte Grenze den gleichen Wert <span class="math inline">\(\times (-1)\)</span> hat.</p>
-<p>Setzen wir nun unser <span class="math inline">\(p = 0.95\)</span>, d.h. wir suchen ein Intervall mit einer Wahrscheinlichkeit von 95%. In <a href="#fig-stats-dist-phi-01">Abbildung&nbsp;<span>9.18</span></a> haben wir links <span class="math inline">\(0.025\)</span> abgeschnitten um die Grenzen unter der Standardnormalverteilung zu ermitteln, da <span class="math inline">\(2 \times 0.025 = 0.05 = 1 - 0.95\)</span>.</p>
+<p>Setzen wir nun unser <span class="math inline">\(p = 0.95\)</span>, d.h. wir suchen ein Intervall mit einer Wahrscheinlichkeit von 95%. In <a href="#fig-stats-dist-phi-01" class="quarto-xref">Abbildung&nbsp;<span>9.18</span></a> haben wir links <span class="math inline">\(0.025\)</span> abgeschnitten um die Grenzen unter der Standardnormalverteilung zu ermitteln, da <span class="math inline">\(2 \times 0.025 = 0.05 = 1 - 0.95\)</span>.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="fig-stats-dist-phi-01" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="stats_distributions_files/figure-html/fig-stats-dist-phi-01-1.png" class="img-fluid figure-img" width="672"></p>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;9.18: Quartilfunktion der Standardnormalverteilung.</figcaption><p></p>
+<div id="fig-stats-dist-phi-01" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-stats-dist-phi-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="stats_distributions_files/figure-html/fig-stats-dist-phi-01-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-stats-dist-phi-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;9.18: Quartilfunktion der Standardnormalverteilung.
+</figcaption>
 </figure>
 </div>
 </div>
@@ -1119,8 +1284,8 @@ P\left(-1.96 \leq \frac{X-\mu_X}{\sigma} \leq 1.96\right) &amp;= P(-1.96\sigma \
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rnorm</span>(<span class="dv">10</span>, <span class="at">mean =</span> <span class="dv">2</span>, <span class="at">sd =</span> <span class="fl">1.25</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code> [1]  1.8589544  3.8166016  2.3931363  3.8689434  2.3974179  3.3202578
- [7]  3.2155915 -0.2644899  1.4341592  0.5384743</code></pre>
+<pre><code> [1]  0.56506433  3.05313510  0.08295408 -1.20672336  0.93869164  2.65440122
+ [7]  0.03190567  1.10074637  4.29571601  3.07512838</code></pre>
 </div>
 </div>
 </section>
@@ -1128,18 +1293,22 @@ P\left(-1.96 \leq \frac{X-\mu_X}{\sigma} \leq 1.96\right) &amp;= P(-1.96\sigma \
 <h3 data-number="9.3.4" class="anchored" data-anchor-id="zentraler-grenzwertsatz"><span class="header-section-number">9.3.4</span> Zentraler Grenzwertsatz</h3>
 <p>Die Normalverteilung spielt in der Wahrscheinlichkeitstheorie und der Statistik aus verschiedenen Gründen eine Spezialrolle. Ein Grund dafür ist der sogenannte Zentrale Grenzwertsatz, den wir hier nicht beweisen sondern nur kurz diskutieren.</p>
 <div id="prp-central-limit" class="theorem proposition">
-<p><span class="theorem-title"><strong>Aussage 9.1 (Zentraler Grenzwertsatz) </strong></span>Seien <span class="math inline">\(X_1, X_2, \ldots, X_n\)</span> n unabhängige, gleichverteilte Zufallsvariablen mit <span class="math inline">\(E[X_i]=\mu\)</span> und <span class="math inline">\(Var[X_i]=\sigma^2\)</span> endlich. <span class="math display">\[
+<p><span class="theorem-title"><strong>Aussage 9.1 (Zentraler Grenzwertsatz)</strong></span> Seien <span class="math inline">\(X_1, X_2, \ldots, X_n\)</span> n unabhängige, gleichverteilte Zufallsvariablen mit <span class="math inline">\(E[X_i]=\mu\)</span> und <span class="math inline">\(Var[X_i]=\sigma^2\)</span> endlich. <span class="math display">\[
 \lim_{n\to\infty}\frac{\bar{x} - \mu}{\frac{\sigma}{\sqrt{n}}}\ \rightarrow\ \mathcal{N}(\mu=0,\sigma^2=1)
 \]</span></p>
 </div>
 <p>In Worten besagt der Zentrale Grenzwertsatz, dass egal welche Ursprungsform die Verteilung einer Zufallsvariablen <span class="math inline">\(X\)</span> hat, wenn die Stichprobengröße gegen unendlich geht, die konvergiert die Differenz des Stichprobenmittelwerts und des Mittelwert der Verteilung geteilt durch den Stichprobenstandardfehler gegen die Standardnormalverteilung. Grenzwertsätz sind manchmal etwas schwierig zu interpretieren, da hier noch keine Aussage gemacht wird, wie groß die Stichprobe sein muss, damit diese Abschätzung valide ist. In der Praxis wird oft ab einer <em>gefühlt</em> großen Stichproben diese Abschätzung als zulässig angesehen.</p>
-<p>In <a href="#fig-stats-dist-cltsim">Abbildung&nbsp;<span>9.19</span></a> sind die Verteilungen drei Simulationen von binomialverteilten Zufallsstichproben der Größe <span class="math inline">\(n = \{5, 30, 50\}\)</span> abgebildet. Jede Simulation ist <span class="math inline">\(400\)</span> durchgeführt worden.</p>
+<p>In <a href="#fig-stats-dist-cltsim" class="quarto-xref">Abbildung&nbsp;<span>9.19</span></a> sind die Verteilungen drei Simulationen von binomialverteilten Zufallsstichproben der Größe <span class="math inline">\(n = \{5, 30, 50\}\)</span> abgebildet. Jede Simulation ist <span class="math inline">\(400\)</span> durchgeführt worden.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="fig-stats-dist-cltsim" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="stats_distributions_files/figure-html/fig-stats-dist-cltsim-1.png" class="img-fluid figure-img" width="672"></p>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;9.19: Simulation von derVerteilung von Mittelwerten aus binomialverteilten Zufallsstichproben mit <span class="math inline">\(n = \{5, 30, 50\}\)</span> und der Standardnormalverteilung.</figcaption><p></p>
+<div id="fig-stats-dist-cltsim" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-stats-dist-cltsim-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="stats_distributions_files/figure-html/fig-stats-dist-cltsim-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-stats-dist-cltsim-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;9.19: Simulation von derVerteilung von Mittelwerten aus binomialverteilten Zufallsstichproben mit <span class="math inline">\(n = \{5, 30, 50\}\)</span> und der Standardnormalverteilung.
+</figcaption>
 </figure>
 </div>
 </div>
@@ -1149,24 +1318,32 @@ P\left(-1.96 \leq \frac{X-\mu_X}{\sigma} \leq 1.96\right) &amp;= P(-1.96\sigma \
 </section>
 <section id="chi2-verteilung" class="level2" data-number="9.4">
 <h2 data-number="9.4" class="anchored" data-anchor-id="chi2-verteilung"><span class="header-section-number">9.4</span> <span class="math inline">\(\chi^2\)</span>-Verteilung</h2>
-<p>Als Nächstes lernen wir die <span class="math inline">\(\chi^2\)</span>-Verteilung kennen. Die <span class="math inline">\(\chi^2\)</span>-Verteilung hat Gegensatz zur Normalverteilung einen rein positiven Definitionsbereich. D.h. die <span class="math inline">\(chi^2\)</span>-Verteilung ist nur auf positiven Werten definiert bzw. hat eine Dichte <span class="math inline">\(&gt;0\)</span>. Die <span class="math inline">\(\chi^2\)</span>-Verteilung wird über einen Parameter den Freiheitsgrade <span class="math inline">\(df\)</span> parameterisiert. D.h. wie auch die Normalverteilung handelt es sich bei der <span class="math inline">\(\chi^2\)</span>-Verteilung um eine Familien von Verteilungen. In <a href="#fig-stats-dist-chisq">Abbildung&nbsp;<span>9.20</span></a> sind verschiedene <span class="math inline">\(\chi^2\)</span>-Verteilungen für die Freiheitsgrade <span class="math inline">\(df = \{1,3,5\}\)</span> abgebildet.</p>
+<p>Als Nächstes lernen wir die <span class="math inline">\(\chi^2\)</span>-Verteilung kennen. Die <span class="math inline">\(\chi^2\)</span>-Verteilung hat Gegensatz zur Normalverteilung einen rein positiven Definitionsbereich. D.h. die <span class="math inline">\(chi^2\)</span>-Verteilung ist nur auf positiven Werten definiert bzw. hat eine Dichte <span class="math inline">\(&gt;0\)</span>. Die <span class="math inline">\(\chi^2\)</span>-Verteilung wird über einen Parameter den Freiheitsgrade <span class="math inline">\(df\)</span> parameterisiert. D.h. wie auch die Normalverteilung handelt es sich bei der <span class="math inline">\(\chi^2\)</span>-Verteilung um eine Familien von Verteilungen. In <a href="#fig-stats-dist-chisq" class="quarto-xref">Abbildung&nbsp;<span>9.20</span></a> sind verschiedene <span class="math inline">\(\chi^2\)</span>-Verteilungen für die Freiheitsgrade <span class="math inline">\(df = \{1,3,5\}\)</span> abgebildet.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="fig-stats-dist-chisq" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="stats_distributions_files/figure-html/fig-stats-dist-chisq-1.png" class="img-fluid figure-img" width="672"></p>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;9.20: Beispiele für verschiedene Dichtefunktion der <span class="math inline">\(\chi^2\)</span>-Verteilung.</figcaption><p></p>
+<div id="fig-stats-dist-chisq" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-stats-dist-chisq-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="stats_distributions_files/figure-html/fig-stats-dist-chisq-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-stats-dist-chisq-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;9.20: Beispiele für verschiedene Dichtefunktion der <span class="math inline">\(\chi^2\)</span>-Verteilung.
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>Wie wir in <a href="#fig-stats-dist-chisq">Abbildung&nbsp;<span>9.20</span></a> erkennen können, ändert die <span class="math inline">\(\chi^2\)</span>-Verteilung in Abhängigkeit von den Freiheitsgraden ihre Form relativ stark. Mit zunehmenden Freiheitsgeraden, ähnelt die Form allerdings immer mehr derjenigen einer Normalverteilung. In <a href="#fig-stats-dist-chisqnorm">Abbildung&nbsp;<span>9.21</span></a> sind einer <span class="math inline">\(\chi^2\)</span>-Verteilung mit <span class="math inline">\(df = 30\)</span> und einer Normalverteilung mit <span class="math inline">\(\mu = 30, \sigma^2 = 60\)</span> abgebildet.</p>
+<p>Wie wir in <a href="#fig-stats-dist-chisq" class="quarto-xref">Abbildung&nbsp;<span>9.20</span></a> erkennen können, ändert die <span class="math inline">\(\chi^2\)</span>-Verteilung in Abhängigkeit von den Freiheitsgraden ihre Form relativ stark. Mit zunehmenden Freiheitsgeraden, ähnelt die Form allerdings immer mehr derjenigen einer Normalverteilung. In <a href="#fig-stats-dist-chisqnorm" class="quarto-xref">Abbildung&nbsp;<span>9.21</span></a> sind einer <span class="math inline">\(\chi^2\)</span>-Verteilung mit <span class="math inline">\(df = 30\)</span> und einer Normalverteilung mit <span class="math inline">\(\mu = 30, \sigma^2 = 60\)</span> abgebildet.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="fig-stats-dist-chisqnorm" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="stats_distributions_files/figure-html/fig-stats-dist-chisqnorm-1.png" class="img-fluid figure-img" width="672"></p>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;9.21: Vergleich der Dichten für einer <span class="math inline">\(\chi^2\)</span>-Verteilung mit <span class="math inline">\(df = 30\)</span> und einer Normalverteilung mit <span class="math inline">\(\mu=30, \sigma^2=60\)</span></figcaption><p></p>
+<div id="fig-stats-dist-chisqnorm" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-stats-dist-chisqnorm-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="stats_distributions_files/figure-html/fig-stats-dist-chisqnorm-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-stats-dist-chisqnorm-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;9.21: Vergleich der Dichten für einer <span class="math inline">\(\chi^2\)</span>-Verteilung mit <span class="math inline">\(df = 30\)</span> und einer Normalverteilung mit <span class="math inline">\(\mu=30, \sigma^2=60\)</span>
+</figcaption>
 </figure>
 </div>
 </div>
@@ -1183,21 +1360,25 @@ Q = \sum_{i=1}^n X_i^2 \sim \chi^2(n \text{ Freiheitsgraden})
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rchisq</span>(<span class="dv">10</span>, <span class="dv">10</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code> [1]  7.744124  4.530067 12.655517  7.359253 16.817356  9.390289  8.775786
- [8] 17.124577 15.128831 14.269244</code></pre>
+<pre><code> [1] 14.662496  7.165745 11.581345  5.747175  8.461522 13.871258  8.414153
+ [8]  7.469172 17.842097 10.376363</code></pre>
 </div>
 </div>
 </section>
 </section>
 <section id="t-verteilung" class="level2" data-number="9.5">
 <h2 data-number="9.5" class="anchored" data-anchor-id="t-verteilung"><span class="header-section-number">9.5</span> t-Verteilung</h2>
-<p>Die t-Verteilung ist in ihrem Aussehen der Normalverteilung sehr ähnlich. Bei der t-Verteilung handelt sich ebenfalls um eine symmetrische Verteilung, die allerdings immer den Erwartungswert <span class="math inline">\(E[X] = 0\)</span>. Die Form der t-Verteilung wird über einen Parameter, die Freiheitsgrade <span class="math inline">\(df\)</span>, bestimmt. Die Freiheitsgrade beeinflussen dabei wie stark die Flanken der Verteilung abfallen. In <a href="#fig-stats-dist-t-dist-01">Abbildung&nbsp;<span>9.22</span></a> sind die t-Verteilungen mit den Freiheitsgraden <span class="math inline">\(df = \{1, 3, 10\}\)</span> abgebildet.</p>
+<p>Die t-Verteilung ist in ihrem Aussehen der Normalverteilung sehr ähnlich. Bei der t-Verteilung handelt sich ebenfalls um eine symmetrische Verteilung, die allerdings immer den Erwartungswert <span class="math inline">\(E[X] = 0\)</span>. Die Form der t-Verteilung wird über einen Parameter, die Freiheitsgrade <span class="math inline">\(df\)</span>, bestimmt. Die Freiheitsgrade beeinflussen dabei wie stark die Flanken der Verteilung abfallen. In <a href="#fig-stats-dist-t-dist-01" class="quarto-xref">Abbildung&nbsp;<span>9.22</span></a> sind die t-Verteilungen mit den Freiheitsgraden <span class="math inline">\(df = \{1, 3, 10\}\)</span> abgebildet.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="fig-stats-dist-t-dist-01" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="stats_distributions_files/figure-html/fig-stats-dist-t-dist-01-1.png" class="img-fluid figure-img" width="672"></p>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;9.22: Beispiel für verschiedene Dichtefunktionen der t-Verteilung</figcaption><p></p>
+<div id="fig-stats-dist-t-dist-01" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-stats-dist-t-dist-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="stats_distributions_files/figure-html/fig-stats-dist-t-dist-01-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-stats-dist-t-dist-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;9.22: Beispiel für verschiedene Dichtefunktionen der t-Verteilung
+</figcaption>
 </figure>
 </div>
 </div>
@@ -1207,13 +1388,17 @@ Q = \sum_{i=1}^n X_i^2 \sim \chi^2(n \text{ Freiheitsgraden})
 <p><span class="math display">\[\begin{equation*}
 t_{df} = \frac{Z}{\sqrt{\chi^2/df}}
 \end{equation*}\]</span></p>
-<p>In <a href="#fig-stats-dist-tnorm">Abbildung&nbsp;<span>9.23</span></a> sind eine Standarnormalverteilung <span class="math inline">\(\Phi(x)\)</span> und eine t-Verteilung mit <span class="math inline">\(df = 3\)</span> abgebildet.</p>
+<p>In <a href="#fig-stats-dist-tnorm" class="quarto-xref">Abbildung&nbsp;<span>9.23</span></a> sind eine Standarnormalverteilung <span class="math inline">\(\Phi(x)\)</span> und eine t-Verteilung mit <span class="math inline">\(df = 3\)</span> abgebildet.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="fig-stats-dist-tnorm" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="stats_distributions_files/figure-html/fig-stats-dist-tnorm-1.png" class="img-fluid figure-img" width="672"></p>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;9.23: Vergleich der Standardnormalverteilung (rot) mit einer t-Verteilung mit <span class="math inline">\(df = 3\)</span> (grün).</figcaption><p></p>
+<div id="fig-stats-dist-tnorm" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-stats-dist-tnorm-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="stats_distributions_files/figure-html/fig-stats-dist-tnorm-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-stats-dist-tnorm-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;9.23: Vergleich der Standardnormalverteilung (rot) mit einer t-Verteilung mit <span class="math inline">\(df = 3\)</span> (grün).
+</figcaption>
 </figure>
 </div>
 </div>
@@ -1225,8 +1410,8 @@ t_{df} = \frac{Z}{\sqrt{\chi^2/df}}
 <div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rt</span>(<span class="dv">10</span>, <span class="dv">10</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code> [1]  0.03435776  0.49926336 -0.33808019  0.52819284  0.73246518  0.02931251
- [7] -0.54405728 -1.09929290  0.47448512 -1.44731639</code></pre>
+<pre><code> [1] -0.9805323 -0.1674551 -1.6162988  0.3852886  2.5751224 -0.2665605
+ [7] -1.1278031  0.5653708  2.5432973  0.5246432</code></pre>
 </div>
 </div>
 </section>
@@ -1236,15 +1421,19 @@ t_{df} = \frac{Z}{\sqrt{\chi^2/df}}
 <p>Eine weitere Verteilung die uns oft begegnen wird, ist die F-Verteilung. Ähnlich wie die <span class="math inline">\(\chi^2\)</span>-Verteilung, hat die <span class="math inline">\(F\)</span>-Verteilung auch nur einen positiven Definitionsbereich. Die Familie der <span class="math inline">\(F\)</span>-Verteilungen ist mittels zweier Parameter spezifiziert <span class="math inline">\(F(m,n)\)</span>. Diese werden als ebenfalls als Freiheitsgrade <span class="math inline">\(m = df_1\)</span> und <span class="math inline">\(n = df_2\)</span> bezeichnet.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="fig-stats-dist-fdistex" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="stats_distributions_files/figure-html/fig-stats-dist-fdistex-1.png" class="img-fluid figure-img" width="672"></p>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;9.24: Beispiele für verschiedene Dichtefunktion der F-Verteilung.</figcaption><p></p>
+<div id="fig-stats-dist-fdistex" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-stats-dist-fdistex-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="stats_distributions_files/figure-html/fig-stats-dist-fdistex-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-stats-dist-fdistex-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;9.24: Beispiele für verschiedene Dichtefunktion der F-Verteilung.
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>Wie wir in <a href="#fig-stats-dist-fdistex">Abbildung&nbsp;<span>9.24</span></a> sehen, ändert sich die Form der <span class="math inline">\(F\)</span>-Verteilung relativ stark in Abhängigkeit von den Freiheitsgraden. Formal berechnet sich die F-Verteilung als das Verhältnis zweier <span class="math inline">\(\chi^2\)</span>-Verteilungen mit Freiheitsgraden <span class="math inline">\(\text{df}_1\)</span> und <span class="math inline">\(\text{df}_2\)</span>.</p>
+<p>Wie wir in <a href="#fig-stats-dist-fdistex" class="quarto-xref">Abbildung&nbsp;<span>9.24</span></a> sehen, ändert sich die Form der <span class="math inline">\(F\)</span>-Verteilung relativ stark in Abhängigkeit von den Freiheitsgraden. Formal berechnet sich die F-Verteilung als das Verhältnis zweier <span class="math inline">\(\chi^2\)</span>-Verteilungen mit Freiheitsgraden <span class="math inline">\(\text{df}_1\)</span> und <span class="math inline">\(\text{df}_2\)</span>.</p>
 <p><span class="math display">\[\begin{equation*}
 F_{df_1,df_2} = \frac{\chi_{df_1}^2/df_1}{\chi_{df_2}^2/df_2}
 \end{equation*}\]</span></p>
@@ -1279,7 +1468,7 @@ X \sim t_{df} \Rightarrow X^2 \sim F(1,df)
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="stats_distributions_files/figure-html/stats-dist-uniform-dist-1.png" class="img-fluid figure-img" width="672"></p>
-<p></p><figcaption class="figure-caption">Dichtefunktion einer Gleichverteilung mit <span class="math inline">\(a = 1\)</span> und <span class="math inline">\(b = 3\)</span>.</figcaption><p></p>
+<figcaption>Dichtefunktion einer Gleichverteilung mit <span class="math inline">\(a = 1\)</span> und <span class="math inline">\(b = 3\)</span>.</figcaption>
 </figure>
 </div>
 </div>
@@ -1291,11 +1480,12 @@ X \sim t_{df} \Rightarrow X^2 \sim F(1,df)
 </section>
 <section id="zusammenfassung" class="level2" data-number="9.8">
 <h2 data-number="9.8" class="anchored" data-anchor-id="zusammenfassung"><span class="header-section-number">9.8</span> Zusammenfassung</h2>
-<p>Insgesamt gehen alle Verteilungen mit denen wir uns beschäftigen auf die Normalverteilung zurück. Das betont noch einmal die zentrale Rolle der Normalverteilung in der Statistik (siehe <a href="#fig-stats-dist-distributions">Abbildung&nbsp;<span>9.25</span></a>).</p>
-<div class="cell">
+<p>Insgesamt gehen alle Verteilungen mit denen wir uns beschäftigen auf die Normalverteilung zurück. Das betont noch einmal die zentrale Rolle der Normalverteilung in der Statistik (siehe <a href="#fig-stats-dist-distributions" class="quarto-xref">Abbildung&nbsp;<span>9.25</span></a>).</p>
+<div class="cell" data-layout-align="default">
 <div class="cell-output-display">
-<div id="fig-stats-dist-distributions" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
+<div id="fig-stats-dist-distributions" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-stats-dist-distributions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div>
 <pre class="mermaid mermaid-js" data-label="fig-stats-dist-distributions">erDiagram
     Normalverteilung {
@@ -1325,7 +1515,10 @@ X \sim t_{df} \Rightarrow X^2 \sim F(1,df)
    
 </pre>
 </div>
-<p></p><figcaption class="figure-caption">Abbildung&nbsp;9.25: Zusammenhang der verschiedenen Verteilungen</figcaption><p></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-stats-dist-distributions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;9.25: Zusammenhang der verschiedenen Verteilungen
+</figcaption>
 </figure>
 </div>
 </div>
@@ -1415,10 +1608,9 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // clear code selection
     e.clearSelection();
   });
-  function tippyHover(el, contentFn) {
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -1428,8 +1620,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -1442,6 +1643,125 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
       return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
     });
   }
       let selectedAnnoteEl;
@@ -1485,6 +1805,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             }
             div.style.top = top - 2 + "px";
             div.style.height = height + 4 + "px";
+            div.style.left = 0;
             let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
             if (gutterDiv === null) {
               gutterDiv = window.document.createElement("div");
@@ -1510,6 +1831,32 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         });
         selectedAnnoteEl = undefined;
       };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
       // Attach click handler to the DT
       const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
       for (const annoteDlNode of annoteDls) {
@@ -1571,17 +1918,18 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./stats_estimation.html" class="pagination-link">
+      <a href="./stats_estimation.html" class="pagination-link" aria-label="Parameterschätzung">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Parameterschätzung</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./stats_hypotheses.html" class="pagination-link">
+      <a href="./stats_hypotheses.html" class="pagination-link" aria-label="Hypothesen testen">
         <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Hypothesen testen</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
 </div> <!-- /content -->
+
 
 
 
