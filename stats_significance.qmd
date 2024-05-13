@@ -378,7 +378,7 @@ Diese Referenzverteilung können wir nun verwenden um eine Entscheidung bezügli
 ::: {#def-standarderror}
 ## Standardfehler \index{Standardfehler}
 
-Die theoretische Streuung einer berechneten Statistik wird als Standardfehler bezeichnet und mit dem Symbol $\sigma_e$ gekennzeichnet. Wird dieser Wert anhand der Stichprobe abgeschätzt, dann hat der Standardfehler das Symbol $s_e$.
+Die theoretische Streuung einer berechneten Statistik, also deren Standardabweichung, wird als Standardfehler bezeichnet und mit dem Symbol $\sigma_e$ gekennzeichnet. Wird dieser Wert anhand der Stichprobe abgeschätzt, dann hat der Standardfehler das Symbol $s_e$.
 :::
 
 ## Statistisch *signifikanter* Wert
@@ -714,15 +714,89 @@ ggplot(dat_k9, aes(x,y,fill=hypo, ymin=0, ymax=y)) +
   labs(x = 'Differenzen[N]', y = 'relative Häufigkeiten') 
 ```
 
-Hier sehen wir, dass die Position der Verteilungen gleich geblieben ist. Dies sollte nicht weiter verwundern, da immer noch die beiden Hypothesen $H_0: \Delta = 0$N und $H_1: \Delta = 500$N miteinander vergleichen werden. Aber durch die Erhöhung der Stichprobengröße ist die Streuung der $D$s unter beiden Hypothesen kleiner geworden. Dies führt dazu, dass die Verteilungen steiler sind und sich dementsprechend weniger stark überlappen. Die Streuung der Statistik wird als Standardfehler bezeichnet.
+Hier sehen wir, dass die Position der Verteilungen gleich geblieben ist. Dies sollte nicht weiter verwundern, da immer noch die beiden Hypothesen $H_0: \Delta = 0$N und $H_1: \Delta = 500$N miteinander vergleichen werden. Aber durch die Erhöhung der Stichprobengröße ist die Streuung der $D$s unter beiden Hypothesen kleiner geworden. Dies führt dazu, dass die Verteilungen steiler sind und sich dementsprechend weniger stark überlappen. Die Streuung der Statistik wird wie schon oben als Standardfehler bezeichnet.
 
-::: {#def-standard-error}
-## Standardfehler 
+Der Standardfehler ist **nicht** gleich der Standardabweichung in der Population bzw. der Stichprobe (siehe @fig-stats-sig-standard-error-deriv).
 
-Die Standardabweichung der Stichprobenverteilung der beobachteten Statistik wird als Standardfehler $s_e$ bezeichnet
-:::
+```{r}
+#| label: fig-stats-sig-standard-error-deriv
+#| fig-cap: "Zusammenhang zwischen den Parametern der Population, der Stichprobe und dem Standardfehler"
 
-Der Standardfehler ist nicht gleich der Standardabweichung in der Population bzw. der Stichprobe. Es gilt beispielsweise für den Standardfehler des Mittelwerts.
+df <- tibble(x = c(0, 1), y = c(0,1))
+df_n1 <- tibble(
+  x = seq(0,.6,length.out=100),
+  y = 0.1*dnorm(x, 0.3, 0.12)
+)
+df_n2 <- tibble(
+  x = seq(1.6, 2., length.out=100),
+  y = 0.04*dnorm(x, 1.8, 0.05)
+)
+df_sample <- tibble(
+    y = 0,
+    x = runif(13, 0.8, 1.2) 
+)
+
+ggplot(df, aes(x,y)) +
+  ggforce::geom_circle(data = tibble(x = 1, y = 0.9, r = 0.05),
+             aes(x0 = x, y0 = y, r = r), fill='light blue') + 
+  geom_curve(data = tibble(
+    x = .3, y = .7, xend = .95, yend=.95
+  ),
+  aes(x, y, xend=xend, yend=yend), curvature=-.5,
+  arrow = arrow(length=unit(.1, 'inches'), type='closed')) +
+  ggforce::geom_circle(data = tibble(x = 0.3, y = 0.7, r = 0.3),
+             aes(x0 = x, y0 = y, r = r), fill='light blue') +
+  geom_point(data = df_sample) +
+  geom_point(x = mean(df_sample$x), y = 0, color='red', size=2) +
+  geom_segment(data = tibble(
+    x = 1.6, xend = 2,
+    y = seq(.6, 1, length.out=10),
+    yend = y
+  ), aes(x=x, y=y, xend=xend, yend=yend), linetype='dotted') +
+  geom_point(data = tibble(
+    x = runif(10, 1.7, 1.9),
+    y = seq(.6, 1, length.out=10)
+  ), color='red') +
+  geom_segment(data = tibble(x=.3, y=0, yend=.35), aes(x,y,xend=x,yend=yend), color='red',
+               linetype = 'dashed') +
+  geom_segment(data = tibble(x=.15,xend=.45,y=.15), aes(x,y,xend=xend,yend=y), color='green',
+               linetype='dashed',
+               arrow = arrow(length=unit(.1, 'inches'), type='closed', ends='both')) +
+  geom_segment(data = tibble(x=1.8, y=0, yend=.35), aes(x,y,xend=x,yend=yend), color='red',
+               linetype = 'dashed') +
+  geom_segment(data = tibble(x=1.75,xend=1.85,y=.15), aes(x,y,xend=xend,yend=y), color='green',
+               linetype='dashed',
+               arrow = arrow(length=unit(.1, 'inches'), type='closed', ends='both')) +
+  geom_line(data = df_n1) + 
+  geom_line(data = df_n2) + 
+  geom_curve(data = tibble(x=1, y=0.64, xend=mean(df_sample$x), yend=0.05),
+             aes(x,y,xend=xend,yend=yend), curvature = -0.1,
+             arrow = arrow(length=unit(.1, 'inches'), type='closed')) +
+  geom_curve(data = tibble(x=mean(df_sample$x), y=0.05, xend=1.55, yend=1),
+             aes(x,y,xend=xend,yend=yend), curvature = -0.2,
+             arrow = arrow(length=unit(.1, 'inches'), type='closed'),
+             linetype = 'dotted') +
+  geom_curve(data = tibble(x=.95, y=0.85, xend=0.95, yend=.75),
+             aes(x,y,xend=xend,yend=yend), curvature = 0.3,
+             arrow = arrow(length=unit(.08, 'inches'), type='closed')) +  
+  annotate("text", x = 0.3, y = 0.7,
+           label=expression(paste('\U03BC, ',sigma)), size=5) +
+  annotate("text", x = 1, y = 0.7,
+           label=expression(paste(bar(x),', s')), size=5) +
+  annotate("text",
+           x = c(0.3, 1,  1.8, 1.8, 1,.3),
+           y = c(1.1, 1.1, 1.1,-.1,-.1,-.1),
+           label= c("Population","Stichprobe","Mehrere Stichproben",
+                    "Stichprobenverteilung", "Daten", "Verteilung")) +
+  annotate("text", x = 1.8, y = .4,
+           label=expression(paste("Standarfehler ",s[e])), size=5) +
+  scale_x_continuous(limits = c(0,2.3)) +
+  scale_y_continuous(limits = c(-0.1,1.2)) +
+  coord_equal() + theme_void()
+```
+
+
+Es gilt beispielsweise für den Standardfehler des Mittelwerts.
 
 | Population | Stichprobe |
 | --- | --- | 

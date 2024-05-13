@@ -582,7 +582,7 @@ lew <- tibble::tibble(
   ta = sample(10, N, replace=T),
   gender = sample(0:1, N, replace=T),
   perf = rnorm(N, 30, 3) + 2 * ta + 10*gender + 2*ta*gender,
-  gender_f = factor(gender, levels = c(0,1), labels=c('f','m'))
+  gender_f = factor(gender, levels = c(0,1), labels=c('m','f'))
 )
 ggplot(lew, aes(ta, perf, color = gender_f)) +
   geom_point(size=2) +
@@ -629,7 +629,68 @@ ggplot(lew, aes(ta, perf, color = gender_f)) +
   geom_line(data = new_lew, aes(y = y_hat)) +
   labs(x = 'Trainingsalter', y = 'Performance') +
   scale_color_discrete('Gender') 
+# für später
+ta_cen <- 6
 ```
+
+Interpretieren wir noch einmal die Regressionskoeffizienten mit Hilfe des Graphen. Dazu zentrieren wir zunächst einmal die Altersvariable um den Wert $ta = `r ta_cen`$ und fitten das Modell mittels der zentrierten Variable. 
+
+```{r}
+#| echo: true
+
+lew <- lew |> mutate(ta_c = ta - ta_cen)
+mod_c <- lm(perf ~ gender_f * ta_c, lew)
+
+```
+
+In @tbl-mlm-dummy-combi-03 sind die neuen Koeffizienten zu sehen. Sie unterscheiden sich nur für $\beta_0$ und $\beta_1$ zu den Koeffizienten von @tbl-mlm-dummy-combi-02 (Warum?).
+
+```{r}
+#| label: tbl-mlm-dummy-combi-03
+#| tbl-cap: "Modellfit für das Interaktionsmodell mit dem zentrierten Trainingsalter (`ta_c`) und Gender."
+
+beta_s <- round(coef(mod_c), 2)
+
+broom::tidy(mod_c)[,1:2] |> 
+    add_column(coef = paste0("$\\beta_", 0:3, "$"), .before=1)|> 
+  knitr::kable(
+    booktabs = TRUE,
+    digits = 3,
+    escape=F
+  )
+```
+
+Was bedeuten nun die einzelnen Koeffizienten noch einmal genau? Die Referenzgruppe sind die Datenpunkte der männlichen Gruppe. Daher ist der y-Achsenabschnitt $\beta_0 = `r beta_s[1]`$ die Performance einer durchschnittlichen, männlichen Versuchsperson mit einem Trainingsalter von `ta`$= 6$. Der zweite Koeffizient $\beta_1 = `r beta_s[2]`$ kodiert hier den Unterschied zwischen einer männlichen und einer weiblichen Versuchsperson jeweils mit einem Trainingsalter von `ta`$=6$. Der Steigungskoeffizient $\beta_2 = `r beta_s[3]`$ dagegen, kodiert den Unterschied zwischen zwei männlichen Versuchspersonen, die sich um ein Trainingsjahr `ta` voneinander unterscheiden. Der letzte Koeffiziente $\beta_3 = `r beta_s[4]`$, der Interaktionskoeffizient kodiert nun den Unterschied in den Steigungen zwischen den männlichen und den weiblichen Versuchspersonen. Um den Unterschied zwischen zwei weiblichen Versuchsperson zu erhalten, die sich um ein Trainingsjahr `ta` voneinander Unterscheiden, müssen daher $\beta_2$ und $\beta_3$ miteinander addiert werden $`r round(sum(beta_s[3:4]), 3)`$. 
+
+```{r}
+#| label: fig-mlm-dummy-combi-05 
+#| fig-cap: "Leistungsentwicklung in Abhängigkeit vom Alter und Gender und die Modellkoeffizienten im zentrierten Modell."
+
+ggplot(lew, aes(ta, perf)) +
+  geom_point(aes(color = gender_f)) +
+  geom_line(data = new_lew, aes(y = y_hat, color=gender_f)) +
+  labs(x = 'Trainingsalter', y = 'Performance') +
+  geom_segment(data = tibble(ta = 6, perf = 0),
+    aes(xend=ta, yend=beta_s[1]),
+    arrow=arrow(length=unit(.1,'inches'), type='closed')) +
+  geom_segment(data = tibble(ta = 6, perf = beta_s[1]),
+    aes(xend=ta, yend=beta_s[1] + beta_s[2]),
+    arrow=arrow(length=unit(.1,'inches'), type='closed')) +
+  geom_segment(data = tibble(ta = 6, perf = beta_s[1]),
+    aes(xend=ta+1, yend=sum(beta_s[c(1,3)])),
+    arrow=arrow(length=unit(.1,'inches'), type='closed')) +
+  geom_segment(data = tibble(ta = 6, perf = sum(beta_s[1:2])),
+    aes(xend=ta+1, yend=sum(beta_s)),
+    arrow=arrow(length=unit(.1,'inches'), type='closed')) +
+  geom_label(data = tibble(ta=c(5.7,5.7,6.5,6.5), perf=c(25,56,48,74),
+                           labels=c(expression(beta[0]),expression(beta[1]),
+                                    expression(beta[2]), expression(beta[2]+beta[3]))),
+    aes(label = labels), parse=T) +
+  scale_x_continuous("Trainingsalter", breaks=1:10) +
+  scale_y_continuous('Gender', limits = c(0,90))
+```
+
+In @fig-mlm-dummy-combi-05 sind die einzelnen Modellkoeffizienten aus @tbl-mlm-dummy-combi-02 in der Grafik miteingefügt. Die Interpretation der Werte sollte damit klarer werden.
 
 ## Zusammenfassung
 

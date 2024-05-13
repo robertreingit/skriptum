@@ -1390,7 +1390,7 @@ Tabelle&nbsp;17.9: Modellfit für das Interaktionsmodell mit Trainingsalter und 
 <td style="text-align: right;">0</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">gender_fm</td>
+<td style="text-align: left;">gender_ff</td>
 <td style="text-align: right;">8.575</td>
 <td style="text-align: right;">2.010</td>
 <td style="text-align: right;">4.266</td>
@@ -1404,7 +1404,7 @@ Tabelle&nbsp;17.9: Modellfit für das Interaktionsmodell mit Trainingsalter und 
 <td style="text-align: right;">0</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">gender_fm:ta</td>
+<td style="text-align: left;">gender_ff:ta</td>
 <td style="text-align: right;">2.362</td>
 <td style="text-align: right;">0.290</td>
 <td style="text-align: right;">8.139</td>
@@ -1432,6 +1432,72 @@ Abbildung&nbsp;17.9: Leistungsentwicklung in Abhängigkeit vom Alter und Gender
 </div>
 </div>
 </div>
+<p>Interpretieren wir noch einmal die Regressionskoeffizienten mit Hilfe des Graphen. Dazu zentrieren wir zunächst einmal die Altersvariable um den Wert <span class="math inline">\(ta = 6\)</span> und fitten das Modell mittels der zentrierten Variable.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>lew <span class="ot">&lt;-</span> lew <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">ta_c =</span> ta <span class="sc">-</span> ta_cen)</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>mod_c <span class="ot">&lt;-</span> <span class="fu">lm</span>(perf <span class="sc">~</span> gender_f <span class="sc">*</span> ta_c, lew)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>In <a href="#tbl-mlm-dummy-combi-03" class="quarto-xref">Tabelle&nbsp;<span>17.10</span></a> sind die neuen Koeffizienten zu sehen. Sie unterscheiden sich nur für <span class="math inline">\(\beta_0\)</span> und <span class="math inline">\(\beta_1\)</span> zu den Koeffizienten von <a href="#tbl-mlm-dummy-combi-02" class="quarto-xref">Tabelle&nbsp;<span>17.9</span></a> (Warum?).</p>
+<div class="cell">
+<div id="tbl-mlm-dummy-combi-03" class="cell quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mlm-dummy-combi-03-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabelle&nbsp;17.10: Modellfit für das Interaktionsmodell mit dem zentrierten Trainingsalter (<code>ta_c</code>) und Gender.
+</figcaption>
+<div aria-describedby="tbl-mlm-dummy-combi-03-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="do-not-create-environment cell table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">coef</th>
+<th style="text-align: left;">term</th>
+<th style="text-align: right;">estimate</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\beta_0\)</span></td>
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">41.934</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(\beta_1\)</span></td>
+<td style="text-align: left;">gender_ff</td>
+<td style="text-align: right;">22.750</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\beta_2\)</span></td>
+<td style="text-align: left;">ta_c</td>
+<td style="text-align: right;">1.763</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(\beta_3\)</span></td>
+<td style="text-align: left;">gender_ff:ta_c</td>
+<td style="text-align: right;">2.362</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>Was bedeuten nun die einzelnen Koeffizienten noch einmal genau? Die Referenzgruppe sind die Datenpunkte der männlichen Gruppe. Daher ist der y-Achsenabschnitt <span class="math inline">\(\beta_0 = 41.93\)</span> die Performance einer durchschnittlichen, männlichen Versuchsperson mit einem Trainingsalter von <code>ta</code><span class="math inline">\(= 6\)</span>. Der zweite Koeffizient <span class="math inline">\(\beta_1 = 22.75\)</span> kodiert hier den Unterschied zwischen einer männlichen und einer weiblichen Versuchsperson jeweils mit einem Trainingsalter von <code>ta</code><span class="math inline">\(=6\)</span>. Der Steigungskoeffizient <span class="math inline">\(\beta_2 = 1.76\)</span> dagegen, kodiert den Unterschied zwischen zwei männlichen Versuchspersonen, die sich um ein Trainingsjahr <code>ta</code> voneinander unterscheiden. Der letzte Koeffiziente <span class="math inline">\(\beta_3 = 2.36\)</span>, der Interaktionskoeffizient kodiert nun den Unterschied in den Steigungen zwischen den männlichen und den weiblichen Versuchspersonen. Um den Unterschied zwischen zwei weiblichen Versuchsperson zu erhalten, die sich um ein Trainingsjahr <code>ta</code> voneinander Unterscheiden, müssen daher <span class="math inline">\(\beta_2\)</span> und <span class="math inline">\(\beta_3\)</span> miteinander addiert werden <span class="math inline">\(4.12\)</span>.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-mlm-dummy-combi-05" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mlm-dummy-combi-05-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="mlm_dummy_coding_files/figure-html/fig-mlm-dummy-combi-05-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mlm-dummy-combi-05-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;17.10: Leistungsentwicklung in Abhängigkeit vom Alter und Gender und die Modellkoeffizienten im zentrierten Modell.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>In <a href="#fig-mlm-dummy-combi-05" class="quarto-xref">Abbildung&nbsp;<span>17.10</span></a> sind die einzelnen Modellkoeffizienten aus <a href="#tbl-mlm-dummy-combi-02" class="quarto-xref">Tabelle&nbsp;<span>17.9</span></a> in der Grafik miteingefügt. Die Interpretation der Werte sollte damit klarer werden.</p>
 </section>
 <section id="zusammenfassung" class="level2" data-number="17.7">
 <h2 data-number="17.7" class="anchored" data-anchor-id="zusammenfassung"><span class="header-section-number">17.7</span> Zusammenfassung</h2>
