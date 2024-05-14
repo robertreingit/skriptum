@@ -433,6 +433,73 @@ df_w |> pivot_longer(c(pre, post), names_to = "time", values_to = "cmj")
 
 Zusammenfassend ist das hier nur eine schnelle Übersicht über die möglichen Befehle gewesen. Um die ins und outs der Funktionen zu verstehen, ist natürlich mehr Übung notwendig. Meistens hilft es aber schon zu wissen welche der Funktionen ungefähr helfen könnte um dann zusammen mit der Dokumentation eine Lösung zu finden. Eine exzellente Quelle für eine umfassendere Auseinandersetzung mit dem `tidyverse` ist das Buch *R for Data Science* von @wickham2023 das ihr auch kostenlos in der aktuellsten Form [online](https://r4ds.had.co.nz) findet.
 
+### Joins
+
+Manchmal möchten wir Informationen aus mehreren Tabellen zusammenfügen. Sei zum Beispiel der folgende Fall gegeben. Wir haben in einer Tabelle `anthro` anthropometrische Merkmale unserer Probanden und in einer Tabelle `df_exp` die Experimentaldaten.
+
+```{r}
+anthro <- tibble(pid = paste0('P',1:2), BMI = c(18,25), height=c(170,180))
+anthro
+df_exp <- tibble(pid = paste0('P', 1:3), speed = 11:13)
+df_exp
+```
+
+Um Daten aus verschiedenen Tabellen zusammen zu fügen gibt es eine Familie von Funktion die unter `join` zusammengefasst sind (`left_join()`, `right_join()`, `full_join()`). Die Unterschied bestehen darin was mit Daten gemacht wird die in einer der Tabelle fehlen. Wir fokussieren uns hier auf `left_join()`, wenn das Prinzip allerdings verstanden wurde, dann ist die Herleitung der beiden anderen Varianten einfach (siehe Dokumentation dazu).
+
+Um die Tabellen zusammen zu fügen, brauchen wir eine Variable die die einzelnen Fälle indiziert und in beiden Tabellen vorhanden ist. Oben haben wir dazu die Variable `pid` definiert. Damit können wir den join einfach durchführen
+
+```{r}
+df_exp |> left_join(anthro, by = 'pid')
+```
+
+Wir erhalten eine Tabelle bei der für jede Zeile aus der *linken* Tabelle `df_exp` die `pid` entsprechende Zeile aus `anthro` hinzugefügt wurde. Wenn der entsprechende Wert aus der *rechten* Tabelle fehlt, dann werden entsprechend fehlende Werte `NA` eingesetzt.
+
+Manchmal kommt es vor, dass die Namen der Indexvariable in den beiden Tabellen unterschiedlich sind.  Mit der Funktion `join_by(x == y)` kann die Zusammenfügung trotzdem durchgeführt werden. 
+
+```{r}
+anthro_2 <- tibble(id = paste0('P',1:2), BMI = c(18,25))
+df_exp |> left_join(anthro_2, by=join_by(pid == id))
+```
+
+
+### Spezialthemen
+
+#### `rowid_to_column()` und `row_number()`
+
+Manchmal ist es von Vorteil wenn eine Variable vorhanden ist, die die Zeilen eindeutige identiziert. Eine einfache Lösung ist die Funktion `rowid_to_column()` mit der ein fortlaufender Zähler an der ersten Stelle eingefügt wird.
+
+```{r}
+#| echo: true
+
+df |> rowid_to_column(var = "rid")
+```
+
+Eine weitere Möglichkeit ist über die Funktion `row_number()` innerhalb von `mutate()`
+
+```{r}
+#| echo: true
+
+df |> mutate(rid = row_number(), .before=1)
+```
+
+Dieser Ansatz hat auch noch den Vorteil, das wir eine eindeutige ID nach einem beliebigen Muster erstellen können. Würde zum Beispiel ein identifier für Probanden fehlen.
+
+```{r}
+#| echo: true
+
+df |> mutate(pid = paste0('Proband_', row_number()), .before=1)
+```
+
+#### `pull()`
+
+Manchmal möchte ich die Werte einer Variablen aus der Tabelle extrahieren. Dies kann mit dem Befehl `pull()` dirchgeführt werden. Möchte ich zum Beispiel nur die Einträge für das Alter extrahieren kann ich den folgenden Befehl benutzen:
+
+```{r}
+df |> pull(age)
+```
+
+Wir erhalten in diesem Fall einen Vektor mit den Einträgen.
+
 ## Daten in `R` visualisieren mit `ggplot2`
 
 `ggplot2` ist eine spezielles package das Funktionen bereitstellt um Grafiken zu erstellen. `ggplot2` verfolgt einen ganz speziellen Ansatz um Grafiken zu beschreiben indem eine spezielle Sprache, eine sogenannten domänenspezifische Sprache, verwendet wird. Das hört sich im ersten Moment komplizierter an als es ist. Wie wir gleich sehen werden werden Grafiken erstellen indem verschiedene Ebenen übereinander gelegt werden. In der Syntax von `ggplot2` erfolgt dieses übereinanderlegen mittels des `+` operator im Zusammenhang mit speziellen Funktionen. Die Hauptidee besteht allerdings darin, das einzelne Variablen auf verschiedene Skalen in einer Grafik abgebildet werden und dann mittels geometrischer Elemente, sogenannte `geom`s, dargestellt werden.
