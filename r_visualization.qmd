@@ -1,0 +1,540 @@
+# Visualisierung in `R` mit `ggplot2` - Eine Einführung
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+source('_common.R')
+```
+
+```{r}
+library(tibble)
+library(ggplot2)
+```
+
+
+`ggplot2` ist eine spezielles package das Funktionen bereitstellt um Grafiken zu erstellen. `ggplot2` verfolgt einen ganz speziellen Ansatz um Grafiken zu beschreiben indem eine spezielle Sprache, eine sogenannten domänenspezifische Sprache, verwendet wird. Das hört sich im ersten Moment komplizierter an als es ist. Wie wir gleich sehen werden werden Grafiken erstellen indem verschiedene Ebenen übereinander gelegt werden. In der Syntax von `ggplot2` erfolgt dieses übereinanderlegen mittels des `+` operator im Zusammenhang mit speziellen Funktionen. Die Hauptidee besteht allerdings darin, das einzelne Variablen auf verschiedene Skalen in einer Grafik abgebildet werden und dann mittels geometrischer Elemente, sogenannte `geom`s, dargestellt werden.
+
+`ggplot2` arbeitet damit mit einem zweidimensionalen Modell und ist daher nicht für 3D-Darstellungen geeignet. Starten wir mit einem einfachen Datensatz und schauen uns an wie wir mit `ggplot2` damit arbeiten würden.
+
+```{r}
+#| echo: true
+
+df <- tibble(
+  dv = 1:8,
+  iv = 11:18,
+  group = rep(c('a','b'), 4),
+  team = rep(c('Nuggets','Lakers'), each=4)
+)
+```
+
+```{r}
+knitr::kable(df,
+             booktabs = TRUE,
+             linesep = '')
+```
+
+Als Grundgerüst brauchen wir immer die `ggplot()` Funktion, der wir als erstes Element das `tibble()` übergeben.
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-ggplot-01
+#| fig-label: "Die einfachstmögliche Grafik."
+
+ggplot(df)
+```
+
+In @fig-r-basics-ggplot-01 ist erst mal nichts beeindruckend passiert, außer das wir eine leere, graue Ebene erstellt haben. Definieren wir unsere erste Abbildung indem wir `ggplot` sagen, dass die Variable `iv` auf die $x$-Achse abbilden wollen.
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-ggplot-02
+#| fig-label: "Die einfachstmögliche Grafik."
+
+ggplot(df, mapping = aes(x = iv))
+```
+
+Die Grafik ist marginal interessanter geworden (siehe @fig-r-basics-ggplot-02). Allerdings haben wir jetzt eine vollständige $x$-Achse mit Beschriftung und Einheiten. Im Code haben wir dazu an das Argument `mapping` ein `aes()` Funktion übergeben, der wir wiederum das Argument `x` mit dem Namen der Variable belegt haben, das wir auf die $x$-Achse abbilden wollen. Wenn ihr euch die Hilfe für `?ggplot()` anschaut, dann seht ihr, das das zweite Argument sowieso `mapping` ist, daher können wir uns die Argumentenbezeichnung auch schenken. Wenn es in `aes()` ein `x` gibt, dann wird es wohl auch ein `y` geben. Bilden wir daher die Variable `dv` aus `df` auf die $y$-Achse ab.
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-ggplot-03
+#| fig-label: "Die einfachstmögliche Grafik."
+
+ggplot(df, aes(x = iv, y = dv))
+```
+
+In @fig-r-basics-ggplot-03 ist jetzt die zweite Achse erstellt worden. Nur sehen wir noch keine Daten. Wenn wir uns `?aes` anschauen, dann sehen wir das `x` und `y` sowieso Argumente 1 und 2 für `aes()` sind, daher können wir uns die Bezeichnung wieder sparen. Aber noch mal zurück zu den Abbildungen. Es gibt nicht nur die beiden Achsen, sondern auch zum Beispiel die Größe oder Farbe von Objekte. Diese werden aber erst interessant wenn wir Ebenen mit geometrische Objekte auf definieren.
+
+### `geom_point()`
+
+Fangen mit dem einfachsten geometrischen Objekt an, dem Punkt bzw. den Punkten. Punkte sind mindestens durch ihre $x$ und $y$-Position, die Größe und die Farbe gekennzeichnet. Schauen wir uns zunächst einmal nur die Position an, und lassen die Farbe und die Größe auf den voreingestellten Werten.
+
+```{r}
+#| echo: true
+#| fig-cap: "Ein Streudiagramm"
+#| label: fig-r-basics-scatterplot
+
+ggplot(df, aes(x = dv, y = iv)) +
+  geom_point()
+```
+
+In @fig-r-basics-scatterplot haben wir ein einfaches Streudiagramm der Daten erstellt. Schauen wir uns den Code etwas genauer an. Wir haben eine Funktion `geom_point()` verwendet und diese mittels eines `+` an `ggplot()` angehängt. Der erste Teil des Namens `geom` zeigt an, das es sich um ein geometrische Objekt handelt. Im Folgenden werden wir verschiedene Funktionen sehen, die alle mit dem Kürzel `geom` beginnen und entsprechend unterschiedliche Formen haben. Für jedes `geom` erstellt `ggplot()` eine eigene Ebene. Eine mentales Template könnte eine Folie wie früher bei den Overhead-Projektoren sein. `ggplot()` nimmt sich eine leere Folie, legt diese auf die Grafikfolie mit den Achsen und malt die Punkte an die entsprechende Stelle auf die leere Folie.
+
+Wie vorhin schon erwähnt führt der folgende kürzere Code zum gleichen Ergebnis.
+
+```{r}
+#| echo: true
+#| eval: false
+
+ggplot(df, aes(dv, iv)) +
+  geom_point()
+```
+
+Diese Schreibweise wird uns im Folgenden immer wieder begegnen. Wenn ihr euch die Hilfe für `geom_point()` anseht, dann stellt ihr fest, dass `geom_point()` tatsächlich eine ganz normale Wald-und-Wiesen Funktion ist. Das erste Argument an `geom_point()` ist ebenfalls `mapping`. Daher können wir das Streudiagramm auch folgendermaßen erstellen.
+
+```{r}
+#| echo: true
+
+ggplot(df) +
+  geom_point(aes(dv, iv))
+```
+
+Der Unterschied zwischen dem Argument `mapping` in `ggplot()` und in `geom_point()` besteht darin, dass die Abbildung im ersten Falle für alle `geom`s gilt die weiter angehängt werden, während im zweiten Fall, `mapping` in `geom_point()` die Abbildung nur für `geom_point()` gilt. Wenn wir gleich mehrere `geom` aneinanderreihen wird der Unterschied klarer.
+
+Schauen wir uns als nächste zwei verschiedene Arten an, die Größe für die Punkte zu bestimmen. Hier gibt es auch wieder zwei Fälle zu unterscheiden. Einmal die Größe innerhalb von `aes()` zu bestimmen oder als Argument zu `geom_point()`. Im ersten Fall können wir dynamisch anhand der zugewiesenen Abbildungsvariable die Größe verändern, während im zweiten eine Größe für alle Punkte zugewiesen wird. Innerhalb von `aes()` können wir den Namen der Variable nehmen, während dies in `geom_point()` nicht möglich ist, hier müssen wir eine Zahl übergeben.
+
+```{r}
+#| echo: true
+#| layout-ncol: 2
+#| label: fig-r-basics-scattersize
+#| fig-cap: Definition der Punktgröße auf zwei Arten
+#| fig-height: 4
+#| fig-subcap:
+#|   - "Definition in `aes()`"
+#|   - "Definition in `geom_point()`"
+
+ggplot(df, aes(dv,iv, size=dv)) +
+geom_point()
+ggplot(df, aes(dv, iv)) +
+geom_point(size=4)
+```
+
+In @fig-r-basics-scattersize-1 sehen wir, dass die Größe der Punkte variiert und `ggplot()` auch noch eine Legende der Größen angefügt hat. In @fig-r-basics-scattersize-2 haben alle Punkte die gleiche Größe.
+
+Das gleiche Prinzip können wir auch auf die Farbe der Punkte anwenden.
+
+```{r}
+#| echo: true
+#| layout-ncol: 2
+#| label: fig-r-basics-scattercol
+#| fig-cap: Definition der Punktfarbe auf zwei Arten
+#| fig-height: 4
+#| fig-subcap:
+#|   - "Definition in `aes()`"
+#|   - "Definition in `geom_point()`"
+
+ggplot(df, aes(dv,iv, color = team)) +
+geom_point()
+ggplot(df, aes(dv, iv)) +
+geom_point(color = 'red')
+```
+
+Wenn die Farbe in `aes()` definiert wird, erhalten wir eine Legende und die Farbe wird anhand der Variable bestimmt (siehe @fig-r-basics-scattercol-1), während bei der Definition als Argument zu `geom_point()` alle Punkte die gleiche Farbe bekommen (siehe @fig-r-basics-scattercol-2).
+
+Natürlich können wir auch gleichzeitig die Farbei und die Größe bestimmen.
+
+```{r}
+#| echo: true
+#| layout-ncol: 2
+#| label: fig-r-basics-scattercolsize
+#| fig-cap: Definition der Punktfarbe und Punktgröße auf zwei Arten
+#| fig-height: 4
+#| fig-subcap:
+#|   - "Definition in `aes()`"
+#|   - "Definition in `geom_point()`"
+
+ggplot(df, aes(dv,iv, size = dv, color = team)) +
+geom_point()
+ggplot(df, aes(dv, iv)) +
+geom_point(size = 4, color = 'red')
+```
+
+### `geom_line()`
+
+Schauen wir uns als nächstes `geom_line()` an. Wie der Name vermuten lässt, können wir mit diesem `geom` Linien erstellen. Linen werden zwischen aufeinanderfolgenden Punkten die eine $(x,y)$-Position haben gezogen. Daher sind die gleichen Abbildungen wie bei den Punkten möglich.
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-line-01
+#| fig-cap: "Linendiagramm"
+
+ggplot(df, aes(iv,dv)) +
+  geom_line()
+```
+
+Wenn wir zwei unterschiedlichen Linien für die Teams erstellen wollen, dann können wir das zum Beispiel über die Farbe steuern.
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-line-02
+#| fig-cap: "Liniendiagramm unterteilt nach Team"
+
+ggplot(df, aes(iv, dv, color = team)) +
+  geom_line()
+```
+
+Jetzt fehlt in @fig-r-basics-line-02 das Verbindungsstück zwischen den beiden Punkten das in @fig-r-basics-line-01 noch vorhanden war, da `ggplot()` den Datensatz in zwei Teildatensätze unterteilt.
+
+Wie oben schon angedeutet können wir mehrere `geom` miteinander kombinieren.
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-line-03
+#| fig-cap: "Ein kombiniertes Linien und Streudiagramm"
+
+ggplot(df, aes(iv, dv)) +
+  geom_line() +
+  geom_point()
+```
+
+Die Reihenfolge spielt dabei eine Rolle, `geom`s die später dazugefügt werden, liegen oberhalb von `geom`s die früher definiert wurden.
+
+```{r}
+#| echo: true
+#| layout-ncol: 2
+#| label: fig-r-basics-line-04
+#| fig-cap: Einfluss der Reihenfolge von `geom`s 
+#| fig-height: 4
+#| fig-subcap:
+#|   - "`geom_point()  vor `geom_line()`"
+#|   - "`geom_line()  vor `geom_point()`"
+
+ggplot(df, aes(iv, dv)) +
+  geom_point(color = 'red', size = 4) +
+  geom_line()
+ggplot(df, aes(iv, dv)) +
+  geom_line() + 
+  geom_point(color = 'red', size = 4) 
+```
+
+In @fig-r-basics-line-04-1 sehen wir, dass die Linien die Punkte durchschneiden, da sie oberhalb liegen, während in @fig-r-basics-line-04-2 die Linien hinter den Punkten liegen.
+
+Vielleicht ist es euch schon aufgefallen, das wir in den letzten beiden Beispielen den Mechanismus verwendet haben, dass die Abbilung in `ggplot()` definiert wurden und dann für bei beide `geom`s `geom_point()` und `geom_line()` angewendet wurden. Wenn wir die Abbildung nur ein `geom_point()` definiert hätten, dann würde `geom_point()` meckern, das es nicht weiß wo es die Punkte hinsetzen soll.
+
+```{r}
+#| echo: true
+#| error: true
+
+ggplot(df)  +
+  geom_line(aes(iv, dv)) + 
+  geom_point() 
+```
+
+Nachdem wir jetzt schon die Grundprinzipien kennengelernt haben, schauen wir uns die nächsten `geom`s etwas kürze an.
+
+### `geom_boxplot()`
+
+Der Boxplot als eine praktische Art der Visualisierung sollte natürlich auch nicht fehlen und hat daher auch ein eigenes `geom` spendiert bekommen. Hier ist zu beachten, dass die Abbildung auf die $x$-Achse üblichweise nicht numerisch sondern entweder nominal oder ordinal ist. In der Praxis können auch Zeichenketten verwendet werden, die dann als Faktor interpretiert werden.
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-boxplot
+#| fig-cap: "Ein Boxplot mit `geom_boxplot()`."
+
+ggplot(df, aes(team, dv)) +
+  geom_boxplot()
+```
+
+Wir können wieder mehrere Abbildungen kombinieren und zum Beispiel getrennte Boxplots für die Teams und die Gruppen erstellen.
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-boxplot-2
+#| fig-cap: "Getrennte Boxplots nach Team und Gruppe."
+
+ggplot(df, aes(team, dv, fill=group)) +
+  geom_boxplot()
+```
+
+### `geom_col()`
+
+Die nächste Art von Visualisierung sind Säulendiagramme. Hier müssen wir allerdings etwas Vorarbeit leisten. Bei Säulendiagrammen wird in den meisten Fällen der Mittelwert dargestellt. Daher müssen wir den Mittelwert zunächste berechnen.
+
+```{r}
+#| echo: true
+
+df_team <- df |> 
+  group_by(team) |> 
+  summarize(m = mean(dv), sd = sd(dv))
+```
+
+```{r}
+df_team |> knitr::kable(booktabs=TRUE, digits = 2)
+```
+
+Wir haben gleich auch noch die Standardabweichungen berechnet, da wir die gleich benötigen werden. Säulendiagramme können mit `geom_col()` erstellt werden. Wie bei `geom_boxplot()` sollte die $x$-Skala nominal sein.
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-col-01
+#| fig-cap: "Ein Säulendiagramm mit `geom_col()`."
+
+ggplot(df_team, aes(team, m)) +
+  geom_col()
+```
+
+So weit so gut, aber keine Darstellung des Mittelwerts ohne eine Darstellung der Streuung. Dazu benötigen wir allerdings ein weiteres `geom`.
+
+### `geom_errorbar()`
+
+Um die Streuung in einem Säulendiagramm darzustellen, verwenden wir `geom_errorbar()`. Hier kommen endlich einmal zwei neue Abbildungen ins Spiel. `ymin` bestimmt das untere Ende des Fehlerbalkens, während `ymax` das obere Ende bestimmt. D.h. die Fehlerbalken sind müssen nicht unbedingt in beide Richtungen gleich lang sein.
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-col-02
+#| fig-cap: "Ein Säulendiagram mit `geom_col()`."
+
+ggplot(df_team, aes(team, m)) +
+  geom_col() +
+  geom_errorbar(aes(ymin = m - sd, ymax = m + sd))
+```
+
+In @fig-r-basics-col-02 können wir nun die Fehlerbalken sehen, aber schön sehen sie noch nicht besonders aus. Mit dem Argument `width` können wir spezifieren wie breit die Hüte sein sollen, während `linewidth` die Linienbreite spezifiziert. Passen wir auch gleich noch die Farbe etwas an.
+
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-col-03
+#| fig-cap: "Ein Säulendiagram mit `geom_col()`."
+
+ggplot(df_team, aes(team, m)) +
+  geom_col() +
+  geom_errorbar(aes(ymin = m - sd, ymax = m + sd), width = 0.3, color = 'red',
+                linewidth = 1.5)
+```
+
+Ein Problem das mit `geom_errorbar()` immer wieder auftaucht entsteht wenn es mehrere Werte für jeden $x$-Wert gibt. In der Standardeinstellung werden die Werte aufeinander gesetzt (stacked). Erstellen wir uns erst einmal einen passenden Datensatz.
+
+```{r}
+#| echo: true
+
+df_tg <- df |> group_by(team, group) |> summarize(m = mean(dv), sd = sd(dv))
+```
+```{r}
+df_tg |> knitr::kable(booktabs=T, digits = 3, linesep = '')
+```
+
+Schauen wir uns erst einmal nur die Säulen an.
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-col-04
+
+ggplot(df_tg, aes(team, m, fill = group)) +
+  geom_col()
+```
+
+In @fig-r-basics-col-04 sind die Mehrfachwerte aufeinandergestapelt. Dies ist in den seltensten Fällen die Darstellungsart die wir wirklich wollen. Wir können die Säulen nebeneinander setzen indem wir das Argument `position` in `geom_col()` verwenden.
+
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-col-05
+#| fig-label: "Gruppierte Säulen"
+
+ggplot(df_tg, aes(team, m, fill = group)) +
+  geom_col(position = 'dodge')
+```
+
+@fig-r-basics-col-05 sind schon besser aus. Es entsteht nun ein Problem wenn wir die Fehlerbalken dazufügen.
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-col-06
+#| fig-label: "Gruppierte Säulen mit Fehlerbalken"
+
+ggplot(df_tg, aes(team, m, fill = group)) +
+  geom_col(position = 'dodge') +
+  geom_errorbar(aes(ymin = m - sd, ymax = m + sd))
+```
+
+Die Fehlerbalken in @fig-r-basics-col-06 sind beide in der Mitte des $x$-Wertes plaziert. Mit `dodge`
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-col-07
+#| fig-label: "Gruppierte Säulen mit Fehlerbalken"
+
+ggplot(df_tg, aes(team, m, fill = group)) +
+  geom_col(position = 'dodge') +
+  geom_errorbar(aes(ymin = m - sd, ymax = m + sd), position = 'dodge')
+```
+
+Passt es jetzt wieder (siehe @fig-r-basics-col-07). Allerdings nur solange wie nicht die Breite verändern.
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-col-08
+#| fig-label: "Gruppierte Säulen mit falsch verschobenen Fehlerbalken"
+
+ggplot(df_tg, aes(team, m, fill = group)) +
+  geom_col(position = 'dodge') +
+  geom_errorbar(aes(ymin = m - sd, ymax = m + sd), position = 'dodge', width=.7)
+```
+
+Was jetzt passiert, `ggplot()` berechnet die Breite des `geom`s und verschiebt es entsprechend der Breite nach links oder rechts, so dass keine Überlappung besteht. Die einfachste Lösung besteht darin die Position der Fehlerbalken der Funktion `position_dodge()` direkt anzugeben.
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-col-09
+#| fig-label: "Gruppierte Säulen mit korrekten Fehlerbalken"
+
+ggplot(df_tg, aes(team, m, fill = group)) +
+  geom_col(position = 'dodge') +
+  geom_errorbar(aes(ymin = m - sd, ymax = m + sd),
+                position = position_dodge(width = .9), 
+                width=.7)
+```
+
+Warum das in @fig-r-basics-col-09 funktioniert erscheint zunächst etwas undurchsichtig. Es hat was damit zu tun, dass die Säulen in `geom_col()` standardmäßig eine Breite von `0.9` in den Einheiten des Graphen haben. Entsprechend werden die Säulen um diesen Wert gegeneinander verschoben. Mit der Funktion `position_dodge()` sorgen wir dafür, dass die Fehlerbalken ebenfalls um diesen Wert verschoben werden und nicht um deren eigene Breite. Würden wir die Breite der Säulen selbst spezifieren, dann würde die Fehlerbalken wieder nicht an der richtigen Position sitzen (siehe @fig-r-basics-col-10).
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-col-10
+#| fig-label: "Gruppierte Säulen mit korrekten Fehlerbalken"
+
+ggplot(df_tg, aes(team, m, fill = group)) +
+  geom_col(position = 'dodge', width = 0.5) +
+  geom_errorbar(aes(ymin = m - sd, ymax = m + sd),
+                position = position_dodge(width = .9), 
+                width=.7)
+```
+
+### `geom_histogram()`
+
+Schauen wir uns letztes `geom` nun noch `geom_histogram()` an. Mit `geom_histogram()` können wir ein Histogramm der Daten erstellen. Wir generieren uns dazu aber erst noch einen neuen Datensatz, da `df` für ein Histogram etwas unterbesetzt ist.
+
+```{r}
+#| echo: true
+
+df_hi <- tibble(x = rnorm(100))
+```
+
+In `df_hi` haben wir jetzt eine Zufallsstichprobe aus $N = 100$ Datenpunkte aus der $\mathcal{N}(0,1)$ gezogen. Erstellen wir nun mit Hilfe von `geom_histogram()` das dazugehörende Histogram (siehe @fig-r-viz-hist-01).
+
+```{r}
+#| fig-cap: "Beispiel für ein Histogram mit `geom_histogram()`"
+#| label: fig-r-viz-hist-01
+#| echo: true
+
+ggplot(df_hi, aes(x)) + 
+  geom_histogram()
+```
+
+`geom_histogram()` verwendet standardmäßig $30$ Intervalle, daher kann mit dem Parameter `bins` die Anzahl der Intervallunterteilungen spezifiziert werden, während mit `binwidth` die Breite der Intervalle angegeben werden kann (siehe @fig-r-viz-hist-02).
+
+```{r}
+#| fig-cap: "Beispiel für ein Histogram mit Angabe der Anzahl der verwendeten Intervalle" 
+#| label: fig-r-viz-hist-02
+#| echo: true
+
+ggplot(df_hi, aes(x)) + 
+  geom_histogram(bins = 20)
+```
+
+Standardmäßig gibt `geom_histogram()` auf der $y$-Achse die Anzahl der Datenpunkte in dem jeweiligen Intervall an. Möchten wir lieber die relative Häufigkeit haben, also die Anzahl/Gesamtanzahl, dann müssen wir auf die berechneten Werte der `geom_histogram()` zugrundeliegenden `stat_`-Funktion zurückgreifen. Hinter den Kullissen sendet `geom_histogram()` die Daten an eine `stat_bin()`-Funktion. Diese Funktion berechnet die Intervalle und die Anzahl der Punkte in den Intervallen und gibt diese wieder zurück. Gleichzeitig wird auch noch die relative Häufigkeit als Variable `density` zurückgegeben. Um auf `density` zugreifen zu können muss eine spezielle Funktion `after_stat()` verwendet und in `aes()` zugewiesen werden (siehe @fig-r-viz-hist-03).
+
+```{r}
+#| fig-cap: "Beispiel für ein Histogram der relativen Häufigkeiten" 
+#| label: fig-r-viz-hist-03
+#| echo: true
+
+ggplot(df_hi, aes(x)) + 
+  geom_histogram(aes(y = after_stat(density)), bins = 20)
+```
+
+### `facet_grid()` und `facet_wrap()`
+
+Als nächstes kommen zwei der praktischsten Funktion in `ggplot2` überhaupt. Mit `facet_grid()` können wir ein Raster an Grafiken erstellen. Hier zwei einfache Beispiel für ein horizontales und eine vertikales Raster.
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-facet-01
+#| layout-ncol: 2
+#| fig-cap: "Zwei einfacher Beispiel für Grafikraster."
+#| fig-subcap:
+#|   - "Horizontales Raster"
+#|   - "Vertikales Raster"
+
+ggplot(df, aes(iv, dv)) +
+  geom_point() +
+  facet_grid(~team)
+ggplot(df, aes(iv, dv)) +
+  geom_point() +
+  facet_grid(team~.)
+```
+
+Das Raster wir in `facet_grid()` mittels einer Formel mit der `~` spezifiziert. Nach dem Muster `Vertikal~Horizontal`. Wenn wir ein vertikales Raster erstellen möchten müssen wir einen Punkt `.` in die Formel aus Syntaxgründen einfügen. Natürlich können wir auch beide gleichzeitig verwenden. Was bei unseren Datensatz nicht wirklich spannend aussieht, da wir zu wenig Daten dafür haben (siehe @fig-r-basics-facet-02).
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-facet-02
+#| fig-cap: "Eine vollständige Rastergrafik"
+
+ggplot(df, aes(iv, dv)) +
+  geom_line() +
+  geom_point() +
+  facet_grid(group ~ team)
+```
+
+Mit `facet_wrap()` kann ein ähnliche Effekt erreicht werden, nur das die Untergrafiken von links oben nach rechts unten aufgebaut werden und vor allem nützlich sind wenn wir viele Gruppen auf einmal anschauen wollen.
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-facet-03
+#| fig-cap: "Ein Beispiel für facet_wrap()"
+#| fig-height: 5
+ 
+df_fw <- tibble(id = paste0('P',1:10), Wert = 1:10, x = 1)
+ggplot(df_fw, aes(x,Wert)) +
+  geom_point(size=2) +
+  facet_wrap(~id)
+```
+
+### `labs()` und `lims()`
+
+Wenn wir die Achsenbeschriftungen ändern wollen können wir dafür die Funktion `labs()` benutzen, während `lims()` die minimalen (maximalen) Werte der Achsen bestimmt.
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-labs
+#| fig-cap: "Beschriftungen und Achsenwerte mit `labs()` und `lims()` bestimmen."
+
+ggplot(df, aes(iv, dv)) +
+  geom_point() +
+  labs(x = 'Die unabhängige Variable', y = 'Die abhängige Variable') +
+  lims(x = c(0,30), y = c(-5,20))
+```
+
+Wenn ihr mehr Kontrolle über die Achsen benötigt gibt es die Funktionen `scale_x_continuous()` für eine kontinuierliche Variable auf der $x$-Achse und `scale_x_discrete()` für nominale Variablen (bzw. die gleichen Funktion mit `y` anstatt `x` für die $y$-Achse). Mit diesen Funktionen kann das Aussehen der Achsen vollständig angepasst werden.
+
+### `theme()` 
+
+Als letzten Punkt noch die Funktion `theme()` mit der alle möglichen Formatierungseinstellung von `ggplot` angesprochen und individuell angepasst werden können. Hier als einfachstes Beispiel die Schriftgröße gleichmäßig für alle Textkomponenten in der Grafik anpassen.
+
+```{r}
+#| echo: true
+#| label: fig-r-basics-theme
+#| fig-cap: "Textgrößen mit `theme()` anpassen."
+
+ggplot(df, aes(iv,dv)) +
+  geom_point() +
+  theme(text = element_text(size = 24))
+```
+
+Wenn ihr mit `theme()` arbeiten wollt/müsst, schaut euch wie immer die umfangreiche [Dokumentation](https://ggplot2.tidyverse.org/reference/theme.html) an.
+
+### Weiterführendes
+
+Insgesamt haben wir wieder nur die Oberfläche von `ggplot` gekratzt. Allerdings sollte ihr mit diesen wenigen `geom`s schon eine Großzahl eurer Anwendungsfälle abbilden können. Im Netz gibt es eine Reihe von sehr guten freien Quellen um sich eingehender mit `ggplot` auseinander zu setzen. Das [Buch](https://r-graphics.org/) von @chang2018 gibt schnelle Lösungen für konkrete Probleme. @healy2018 gibt mehr Hilfestellungen zur effektiven Visualisierung mit [ggplot](https://socviz.co/), während @wickham2009 das definitive Nachschlagewerk vom Haupprogrammier von [ggplot2](https://ggplot2-book.org/) ist. Bei Problemen ist auch wie gesagt die extrem gute [Dokumentation](https://ggplot2.tidyverse.org/) zu konsultieren. Dazu kommen mittlerweile auch eine Reihe von Zusatzbibliotheken um praktisch jede erdenkliche Art von Visualisierung zu erstellen. Ein Paket das ihr auch auf jeden Fall anschauen solltes ist [`patchwork`](https://patchwork.data-imaginist.com/index.html).
