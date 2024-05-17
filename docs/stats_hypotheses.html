@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.326">
+<meta name="generator" content="quarto-1.4.550">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Skriptum - Fortgeschrittene Statistik - 10&nbsp; Hypothesen testen</title>
+<title>Skriptum - Fortgeschrittene Statistik - 11&nbsp; Hypothesen testen</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -24,6 +24,7 @@ ul.task-list li input[type="checkbox"] {
 div.csl-bib-body { }
 div.csl-entry {
   clear: both;
+  margin-bottom: 0em;
 }
 .hanging-indent div.csl-entry {
   margin-left:2em;
@@ -66,7 +67,13 @@ div.csl-indent {
   "collapse-after": 3,
   "panel-placement": "start",
   "type": "textbox",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "Keine Treffer",
     "search-matching-documents-text": "Treffer",
@@ -75,8 +82,10 @@ div.csl-indent {
     "search-more-match-text": "weitere Treffer in diesem Dokument",
     "search-more-matches-text": "weitere Treffer in diesem Dokument",
     "search-clear-button-title": "Zurücksetzen",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Abbrechen",
-    "search-submit-button-title": "Abschicken"
+    "search-submit-button-title": "Abschicken",
+    "search-label": "Suchen"
   }
 }</script>
 <script>
@@ -90,6 +99,33 @@ div.csl-indent {
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
 </head>
 
 <body class="nav-sidebar floating">
@@ -98,13 +134,13 @@ div.csl-indent {
   <header id="quarto-header" class="headroom fixed-top">
   <nav class="quarto-secondary-nav">
     <div class="container-fluid d-flex">
-      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./stats_title.html">Statistik</a></li><li class="breadcrumb-item"><a href="./stats_hypotheses.html"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Hypothesen testen</span></a></li></ol></nav>
-      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
-      </a>
-      <button type="button" class="btn quarto-search-button" aria-label="Suchen" onclick="window.quartoOpenSearch();">
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./stats_title.html">Statistik</a></li><li class="breadcrumb-item"><a href="./stats_hypotheses.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Hypothesen testen</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
         <i class="bi bi-search"></i>
       </button>
     </div>
@@ -113,7 +149,7 @@ div.csl-indent {
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
       <a href="./">Skriptum - Fortgeschrittene Statistik</a> 
@@ -167,8 +203,14 @@ div.csl-indent {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./r_visualization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Visualisierung in <code>R</code> mit <code>ggplot2</code> - Eine Einführung</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./r_literate_programming.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Literate programming in <code>R</code></span></span></a>
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Literate programming in <code>R</code></span></span></a>
   </div>
 </li>
       </ul>
@@ -185,31 +227,31 @@ div.csl-indent {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./stats_basics.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Eine kleine Welt der Unsicherheit</span></span></a>
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Eine kleine Welt der Unsicherheit</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./stats_significance.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Statistische Signifikanz, p-Wert und Power</span></span></a>
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Statistische Signifikanz, p-Wert und Power</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./stats_estimation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Parameterschätzung</span></span></a>
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Parameterschätzung</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./stats_distributions.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Theoretische Verteilungen</span></span></a>
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Theoretische Verteilungen</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./stats_hypotheses.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Hypothesen testen</span></span></a>
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Hypothesen testen</span></span></a>
   </div>
 </li>
       </ul>
@@ -226,25 +268,25 @@ div.csl-indent {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./slm_basics.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Einführung</span></span></a>
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Einführung</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./slm_inference.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Inferenz</span></span></a>
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Inferenz</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./slm_model_fit.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Modellfit</span></span></a>
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Modellfit</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./slm_prediction.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Vorhersage</span></span></a>
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Vorhersage</span></span></a>
   </div>
 </li>
       </ul>
@@ -261,25 +303,25 @@ div.csl-indent {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./mlm_basics.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Einführung</span></span></a>
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Einführung</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./mlm_interactions.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Interaktionseffekte</span></span></a>
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Interaktionseffekte</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./mlm_dummy_coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Integration von nominalen Variablen</span></span></a>
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Integration von nominalen Variablen</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./mlm_hierarchies.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Modellhierarchien</span></span></a>
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Modellhierarchien</span></span></a>
   </div>
 </li>
       </ul>
@@ -296,7 +338,7 @@ div.csl-indent {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./lm_basics.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Synthese</span></span></a>
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Synthese</span></span></a>
   </div>
 </li>
       </ul>
@@ -313,55 +355,43 @@ div.csl-indent {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./ed_basics.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Einführung</span></span></a>
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Einführung</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./ed_crd.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Completely Randomized Design</span></span></a>
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Completely Randomized Design</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./ed_linear_contrasts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Lineare Kontraste</span></span></a>
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Lineare Kontraste</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./ed_crfd.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Completely Randomized Factorial Design</span></span></a>
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Completely Randomized Factorial Design</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./ed_ancova.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">ANCOVA</span></span></a>
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">ANCOVA</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./ed_crbd.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Completely Randomized Block Design</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./ed_irbd.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Incomplete Randomized Block Design</span></span></a>
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Completely Randomized Block Design</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./ed_split_plot.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Split-plot Design</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./ed_cross_over.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Cross-over Design</span></span></a>
   </div>
 </li>
       </ul>
@@ -375,32 +405,32 @@ div.csl-indent {
     </ul>
     </div>
 </nav>
-<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">Inhaltsverzeichnis</h2>
    
   <ul>
-  <li><a href="#der-erwartungswert-mu-einer-zufallsvariable" id="toc-der-erwartungswert-mu-einer-zufallsvariable" class="nav-link active" data-scroll-target="#der-erwartungswert-mu-einer-zufallsvariable"><span class="header-section-number">10.1</span> Der Erwartungswert <span class="math inline">\(\mu\)</span> einer Zufallsvariable</a>
+  <li><a href="#der-erwartungswert-mu-einer-zufallsvariable" id="toc-der-erwartungswert-mu-einer-zufallsvariable" class="nav-link active" data-scroll-target="#der-erwartungswert-mu-einer-zufallsvariable"><span class="header-section-number">11.1</span> Der Erwartungswert <span class="math inline">\(\mu\)</span> einer Zufallsvariable</a>
   <ul class="collapse">
-  <li><a href="#erwarungswert-mu" id="toc-erwarungswert-mu" class="nav-link" data-scroll-target="#erwarungswert-mu"><span class="header-section-number">10.1.1</span> Erwarungswert <span class="math inline">\(\mu\)</span></a></li>
+  <li><a href="#erwarungswert-mu" id="toc-erwarungswert-mu" class="nav-link" data-scroll-target="#erwarungswert-mu"><span class="header-section-number">11.1.1</span> Erwarungswert <span class="math inline">\(\mu\)</span></a></li>
   <li><a href="#beispiele" id="toc-beispiele" class="nav-link" data-scroll-target="#beispiele">Beispiele</a></li>
   </ul></li>
-  <li><a href="#die-varianz-sigma2-einer-zufallsvariablen" id="toc-die-varianz-sigma2-einer-zufallsvariablen" class="nav-link" data-scroll-target="#die-varianz-sigma2-einer-zufallsvariablen"><span class="header-section-number">10.2</span> Die Varianz <span class="math inline">\(\sigma^2\)</span> einer Zufallsvariablen</a>
+  <li><a href="#die-varianz-sigma2-einer-zufallsvariablen" id="toc-die-varianz-sigma2-einer-zufallsvariablen" class="nav-link" data-scroll-target="#die-varianz-sigma2-einer-zufallsvariablen"><span class="header-section-number">11.2</span> Die Varianz <span class="math inline">\(\sigma^2\)</span> einer Zufallsvariablen</a>
   <ul class="collapse">
-  <li><a href="#varianz-sigma2" id="toc-varianz-sigma2" class="nav-link" data-scroll-target="#varianz-sigma2"><span class="header-section-number">10.2.1</span> Varianz <span class="math inline">\(\sigma^2\)</span></a></li>
+  <li><a href="#varianz-sigma2" id="toc-varianz-sigma2" class="nav-link" data-scroll-target="#varianz-sigma2"><span class="header-section-number">11.2.1</span> Varianz <span class="math inline">\(\sigma^2\)</span></a></li>
   </ul></li>
-  <li><a href="#schätzer" id="toc-schätzer" class="nav-link" data-scroll-target="#schätzer"><span class="header-section-number">10.3</span> Schätzer</a>
+  <li><a href="#schätzer" id="toc-schätzer" class="nav-link" data-scroll-target="#schätzer"><span class="header-section-number">11.3</span> Schätzer</a>
   <ul class="collapse">
-  <li><a href="#schätzer-1" id="toc-schätzer-1" class="nav-link" data-scroll-target="#schätzer-1"><span class="header-section-number">10.3.1</span> Schätzer</a></li>
-  <li><a href="#bias" id="toc-bias" class="nav-link" data-scroll-target="#bias"><span class="header-section-number">10.3.2</span> Bias</a></li>
+  <li><a href="#schätzer-1" id="toc-schätzer-1" class="nav-link" data-scroll-target="#schätzer-1"><span class="header-section-number">11.3.1</span> Schätzer</a></li>
+  <li><a href="#bias" id="toc-bias" class="nav-link" data-scroll-target="#bias"><span class="header-section-number">11.3.2</span> Bias</a></li>
   </ul></li>
-  <li><a href="#hypothesentestungszoo" id="toc-hypothesentestungszoo" class="nav-link" data-scroll-target="#hypothesentestungszoo"><span class="header-section-number">10.4</span> Hypothesentestungszoo</a>
+  <li><a href="#hypothesentestungszoo" id="toc-hypothesentestungszoo" class="nav-link" data-scroll-target="#hypothesentestungszoo"><span class="header-section-number">11.4</span> Hypothesentestungszoo</a>
   <ul class="collapse">
-  <li><a href="#der-t-test" id="toc-der-t-test" class="nav-link" data-scroll-target="#der-t-test"><span class="header-section-number">10.4.1</span> Der t-Test</a></li>
-  <li><a href="#chi2-test-der-varianz" id="toc-chi2-test-der-varianz" class="nav-link" data-scroll-target="#chi2-test-der-varianz"><span class="header-section-number">10.4.2</span> <span class="math inline">\(\chi^2\)</span>-Test der Varianz</a></li>
-  <li><a href="#f-test-von-varianzverhältnissen" id="toc-f-test-von-varianzverhältnissen" class="nav-link" data-scroll-target="#f-test-von-varianzverhältnissen"><span class="header-section-number">10.4.3</span> F-Test von Varianzverhältnissen</a></li>
+  <li><a href="#der-t-test" id="toc-der-t-test" class="nav-link" data-scroll-target="#der-t-test"><span class="header-section-number">11.4.1</span> Der t-Test</a></li>
+  <li><a href="#chi2-test-der-varianz" id="toc-chi2-test-der-varianz" class="nav-link" data-scroll-target="#chi2-test-der-varianz"><span class="header-section-number">11.4.2</span> <span class="math inline">\(\chi^2\)</span>-Test der Varianz</a></li>
+  <li><a href="#f-test-von-varianzverhältnissen" id="toc-f-test-von-varianzverhältnissen" class="nav-link" data-scroll-target="#f-test-von-varianzverhältnissen"><span class="header-section-number">11.4.3</span> F-Test von Varianzverhältnissen</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -408,9 +438,9 @@ div.csl-indent {
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./stats_title.html">Statistik</a></li><li class="breadcrumb-item"><a href="./stats_hypotheses.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Hypothesen testen</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Hypothesen testen</span></h1>
+<h1 class="title"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Hypothesen testen</span></h1>
 </div>
 
 
@@ -423,14 +453,16 @@ div.csl-indent {
   </div>
   
 
+
 </header>
 
+
 <p>Im Folgenden setzen wir uns mit verschiedenen Konzepten der Statistik etwas eingehender auseinander. Im weiteren Verlauf des Skripts werden wir auf die hergeleiteten Eigenschaften immer wieder zurückgreifen.</p>
-<section id="der-erwartungswert-mu-einer-zufallsvariable" class="level2" data-number="10.1">
-<h2 data-number="10.1" class="anchored" data-anchor-id="der-erwartungswert-mu-einer-zufallsvariable"><span class="header-section-number">10.1</span> Der Erwartungswert <span class="math inline">\(\mu\)</span> einer Zufallsvariable</h2>
+<section id="der-erwartungswert-mu-einer-zufallsvariable" class="level2" data-number="11.1">
+<h2 data-number="11.1" class="anchored" data-anchor-id="der-erwartungswert-mu-einer-zufallsvariable"><span class="header-section-number">11.1</span> Der Erwartungswert <span class="math inline">\(\mu\)</span> einer Zufallsvariable</h2>
 <p>Für eine diskrete Zufallsvariable <span class="math inline">\(X\)</span> auf einer endlichen Menge <span class="math inline">\(\{x_i, i = 1, \ldots, n\}\)</span> mit <span class="math inline">\(n\)</span> Elementen ist der Erwartungswert definiert mit:</p>
-<section id="erwarungswert-mu" class="level3 def-erwartungswert" data-number="10.1.1">
-<h3 data-number="10.1.1" class="anchored" data-anchor-id="erwarungswert-mu"><span class="header-section-number">10.1.1</span> Erwarungswert <span class="math inline">\(\mu\)</span></h3>
+<section id="erwarungswert-mu" class="level3 def-erwartungswert" data-number="11.1.1">
+<h3 data-number="11.1.1" class="anchored" data-anchor-id="erwarungswert-mu"><span class="header-section-number">11.1.1</span> Erwarungswert <span class="math inline">\(\mu\)</span></h3>
 <p><span class="math display">\[\begin{equation}
 E[X] = \sum_{i=1}^n x_i P(x_i)
 \label{eq-stats-hypo-expected-01}
@@ -468,10 +500,14 @@ E[X] = \int_{x=-\infty}^\infty x f(x) dx
 <p>Das Integral geht über den gesamten Definitionsbereich von <span class="math inline">\(X\)</span> und die Wahrscheinlichkeitsfunktion wird durch die Dichtefunktion <span class="math inline">\(f(x)\)</span> ersetzt. Die Linearität bleibt für alle uns interessierenden Fälle erhalten (keine Panik, es werden im Weiteren keine Integrale berechnet).</p>
 <section id="beispiele" class="level3 unnumbered">
 <h3 class="unnumbered anchored" data-anchor-id="beispiele">Beispiele</h3>
-<p>Nehmen wir zur Veranschaulichung ein einfaches Beispiel mit einer Zufallsvariable <span class="math inline">\(X\)</span> die nur vier verschiedene Werte annehmen kann, die die folgenden Wahrscheinlichkeiten haben (siehe <a href="#tbl-stats-hypo-px">Tabelle&nbsp;<span>10.1</span></a>):</p>
-<div id="tbl-stats-hypo-px" class="anchored">
+<p>Nehmen wir zur Veranschaulichung ein einfaches Beispiel mit einer Zufallsvariable <span class="math inline">\(X\)</span> die nur vier verschiedene Werte annehmen kann, die die folgenden Wahrscheinlichkeiten haben (siehe <a href="#tbl-stats-hypo-px" class="quarto-xref">Tabelle&nbsp;<span>11.1</span></a>):</p>
+<div id="tbl-stats-hypo-px" class="quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-stats-hypo-px-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabelle&nbsp;11.1: Verteilung der Zufallsvariablen <span class="math inline">\(X\)</span>
+</figcaption>
+<div aria-describedby="tbl-stats-hypo-px-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="table">
-<caption>Tabelle&nbsp;10.1: Verteilung der Zufallsvariablen <span class="math inline">\(X\)</span></caption>
 <thead>
 <tr class="header">
 <th>x</th>
@@ -492,15 +528,21 @@ E[X] = \int_{x=-\infty}^\infty x f(x) dx
 </tbody>
 </table>
 </div>
+</figure>
+</div>
 <p>Anwendung von Formel <span class="math inline">\(\eqref{eq-stats-hypo-expected-01}\)</span> führt zu der Berechnung des Erwartungswerts <span class="math inline">\(E[X]\)</span> mittels:</p>
 <p><span class="math display">\[
 E[X] = \sum_{i=1}^4 x_i P(x_i) = 0 \cdot \frac{1}{8}  + 1 \cdot \frac{5}{8} + 2\cdot \frac{1}{8} + 3\cdot \frac{1}{8} = 1.75
 \]</span></p>
 <p>Hier kann auch eine interessante Eigenschaft des Erwartungswerts beobachtet werden, nämlich das der berechnete Wert gar nicht in der Menge der möglichen Werte der Zufallsvariablen vorkommen muss. In der Ereignismenge von <span class="math inline">\(X\)</span> sind nur ganzzahlige Werte.</p>
-<p>Haben wir eine zweite Zufallsvariable <span class="math inline">\(Y\)</span> mit der Verteilung (siehe <a href="#tbl-stats-hypo-py">Tabelle&nbsp;<span>10.2</span></a>)</p>
-<div id="tbl-stats-hypo-py" class="anchored">
+<p>Haben wir eine zweite Zufallsvariable <span class="math inline">\(Y\)</span> mit der Verteilung (siehe <a href="#tbl-stats-hypo-py" class="quarto-xref">Tabelle&nbsp;<span>11.2</span></a>)</p>
+<div id="tbl-stats-hypo-py" class="quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-stats-hypo-py-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabelle&nbsp;11.2: Verteilung der Zufallsvariablen <span class="math inline">\(X\)</span>
+</figcaption>
+<div aria-describedby="tbl-stats-hypo-py-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="table">
-<caption>Tabelle&nbsp;10.2: Verteilung der Zufallsvariablen <span class="math inline">\(X\)</span></caption>
 <thead>
 <tr class="header">
 <th>y</th>
@@ -521,6 +563,8 @@ E[X] = \sum_{i=1}^4 x_i P(x_i) = 0 \cdot \frac{1}{8}  + 1 \cdot \frac{5}{8} + 2\
 </tbody>
 </table>
 </div>
+</figure>
+</div>
 <p>Mit Formel <span class="math inline">\(\eqref{eq-stats-hypo-expected-01}\)</span> folgt wiederum:</p>
 <p><span class="math display">\[
 E[Y] = \sum_{i=1}^4 y_i P(y_i) = 0 \cdot \frac{2}{8} + 1 \cdot \frac{2}{8} + 2 \cdot \frac{1}{8} + 3 \cdot \frac{3}{8} = 1.625
@@ -533,10 +577,14 @@ E[Z] = E[X + Y] = E[X] + E[Y] = 1.25 + 1.625 = 2.875
 <p><span class="math display">\[
 E[Z] = E[aX] = aE[X] = 2 \cdot 1.25 = 2.5
 \]</span></p>
-<p>Ein ganz anderes Beispiel, welches noch mal den Begriff Erwartungswert veranschaulicht, bezieht sich auf ein Glückspiel mit dem Namen Chuck-a-Luck. Das Beispiel ist <span class="citation" data-cites="gross2019">Gross, Harris, und Riehl (<a href="references.html#ref-gross2019" role="doc-biblioref">2019</a>)</span> entnommen. Chucia-Luck wird mit einem Einsatz von 1 € gespielt. Es werden drei Würfel geworfen und die folgende Regeln bestimmen den Gewinn (siehe <a href="#tbl-chuck-a-luck">Tabelle&nbsp;<span>10.3</span></a>).</p>
-<div id="tbl-chuck-a-luck" class="anchored">
+<p>Ein ganz anderes Beispiel, welches noch mal den Begriff Erwartungswert veranschaulicht, bezieht sich auf ein Glückspiel mit dem Namen Chuck-a-Luck. Das Beispiel ist <span class="citation" data-cites="gross2019">Gross, Harris, und Riehl (<a href="references.html#ref-gross2019" role="doc-biblioref">2019</a>)</span> entnommen. Chucia-Luck wird mit einem Einsatz von 1 € gespielt. Es werden drei Würfel geworfen und die folgende Regeln bestimmen den Gewinn (siehe <a href="#tbl-chuck-a-luck" class="quarto-xref">Tabelle&nbsp;<span>11.3</span></a>).</p>
+<div id="tbl-chuck-a-luck" class="quarto-float anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-chuck-a-luck-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabelle&nbsp;11.3: Gewinnauschüttung bei Chuck-a-Luck
+</figcaption>
+<div aria-describedby="tbl-chuck-a-luck-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="table">
-<caption>Tabelle&nbsp;10.3: Gewinnauschüttung bei Chuck-a-Luck</caption>
 <thead>
 <tr class="header">
 <th>Ausgang</th>
@@ -558,6 +606,8 @@ E[Z] = E[aX] = aE[X] = 2 \cdot 1.25 = 2.5
 </tr>
 </tbody>
 </table>
+</div>
+</figure>
 </div>
 <p>Die Frage die sich nun stellt, ist ob dieses Spiel fair ist bzw. lohnt es sich einen 1 € Einsatz zu setzen? Diese Frage kann mit dem Erwartungswert beantwortet werden. Um den Erwartungswert zu berechnen benötigen wir allerdings zunächst die Wahrscheinlichkeiten für die verschiedenen Ausgänge.</p>
 <p>Die Wahrscheinlichkeit keine <span class="math inline">\(6\)</span> zu werfen ist für jeden Würfel einzeln <span class="math inline">\(\frac{5}{6}\)</span>, dementsprechend, da die Würfel unabhängig voneinander sind, kann diese Wahrscheinlichkeit dreimal miteinander multipliziert werden.</p>
@@ -586,11 +636,11 @@ E[\bar{X}] = E\left[\frac{1}{n}\sum_{i=1}^n X_i\right] = \frac{1}{n}E\left[\sum_
 <p>D.h. der Erwartungswert des Mittelwerts ist tatsächlich auch der Erwartungswert <span class="math inline">\(\mu\)</span> der Verteilung.</p>
 </section>
 </section>
-<section id="die-varianz-sigma2-einer-zufallsvariablen" class="level2" data-number="10.2">
-<h2 data-number="10.2" class="anchored" data-anchor-id="die-varianz-sigma2-einer-zufallsvariablen"><span class="header-section-number">10.2</span> Die Varianz <span class="math inline">\(\sigma^2\)</span> einer Zufallsvariablen</h2>
+<section id="die-varianz-sigma2-einer-zufallsvariablen" class="level2" data-number="11.2">
+<h2 data-number="11.2" class="anchored" data-anchor-id="die-varianz-sigma2-einer-zufallsvariablen"><span class="header-section-number">11.2</span> Die Varianz <span class="math inline">\(\sigma^2\)</span> einer Zufallsvariablen</h2>
 <p>Die Varianz <span class="math inline">\(\sigma^2\)</span> beschreibt die Streuung der Zufallsvariablen <span class="math inline">\(X\)</span>.</p>
-<section id="varianz-sigma2" class="level3 def-varianz" data-number="10.2.1">
-<h3 data-number="10.2.1" class="anchored" data-anchor-id="varianz-sigma2"><span class="header-section-number">10.2.1</span> Varianz <span class="math inline">\(\sigma^2\)</span></h3>
+<section id="varianz-sigma2" class="level3 def-varianz" data-number="11.2.1">
+<h3 data-number="11.2.1" class="anchored" data-anchor-id="varianz-sigma2"><span class="header-section-number">11.2.1</span> Varianz <span class="math inline">\(\sigma^2\)</span></h3>
 <p><span class="math display">\[\begin{equation}
 Var(X) = \sigma^2 = E[(X-E[X])^2] = E[(X - \mu)^2]
 \label{eq-def-variance}
@@ -625,13 +675,13 @@ Var\left(\sum_{i=1}^n a_i X_i\right) = \sum_{i=1}^n a_i^2 Var(X_i)
 \label{eq-stats-hypo-sum-var}
 \end{equation}\]</span></p>
 <div id="exm-ed-hypo-var-sum" class="theorem example">
-<p><span class="theorem-title"><strong>Beispiel 10.1 </strong></span>Für zwei unabhängige Zufallsvariablen <span class="math inline">\(X\)</span> und <span class="math inline">\(Y\)</span> gilt:</p>
+<p><span class="theorem-title"><strong>Beispiel 11.1</strong></span> Für zwei unabhängige Zufallsvariablen <span class="math inline">\(X\)</span> und <span class="math inline">\(Y\)</span> gilt:</p>
 <p><span class="math display">\[\begin{equation*}
 Var(X + Y) = Var(X) + Var(Y)
 \end{equation*}\]</span></p>
 </div>
 <div id="exm-ed-hypo-var-diff" class="theorem example">
-<p><span class="theorem-title"><strong>Beispiel 10.2 </strong></span>Eine überraschende Eigenschaft aus den Rechenregeln für die Varianz ist, dass die Varianz der Differenz zweier unabhängigen Variablen gleich der Varianz ist, wenn die beiden Variablen addiert werden.</p>
+<p><span class="theorem-title"><strong>Beispiel 11.2</strong></span> Eine überraschende Eigenschaft aus den Rechenregeln für die Varianz ist, dass die Varianz der Differenz zweier unabhängigen Variablen gleich der Varianz ist, wenn die beiden Variablen addiert werden.</p>
 <p><span class="math display">\[\begin{equation}
 \begin{split}
 Var(X - Y) &amp;= Var( 1\cdot X + (-1)\cdot Y) \\
@@ -644,7 +694,7 @@ Var(X - Y) &amp;= Var( 1\cdot X + (-1)\cdot Y) \\
 <p>Das Ergebnis in Formel <span class="math inline">\(\eqref{eq-stats-hypo-vardiff}\)</span> wird uns später wieder begegnen, wenn wir uns mit experimentellen Designs beschäftigen und in diesem Zusammenhang den Unterschied zwischen Gruppenmittelwerten berechnen wollen.</p>
 </div>
 <div id="exm-ed-hypo-mean-se" class="theorem example">
-<p><span class="theorem-title"><strong>Beispiel 10.3 </strong></span>Mit den obigen Regeln können wir auch die Varianz des Mittelwerts <span class="math inline">\(\bar{X}\)</span> bestimmen. Die Variablen <span class="math inline">\(X_i, i = 1,\ldots,n\)</span> seien wieder unabhängig voneinander und stammen aus der gleichen Verteilung mit <span class="math inline">\(Var(X_i) = \sigma^2\)</span>.</p>
+<p><span class="theorem-title"><strong>Beispiel 11.3</strong></span> Mit den obigen Regeln können wir auch die Varianz des Mittelwerts <span class="math inline">\(\bar{X}\)</span> bestimmen. Die Variablen <span class="math inline">\(X_i, i = 1,\ldots,n\)</span> seien wieder unabhängig voneinander und stammen aus der gleichen Verteilung mit <span class="math inline">\(Var(X_i) = \sigma^2\)</span>.</p>
 <p><span class="math display">\[\begin{equation}
 \begin{split}
 Var(\bar{X}) &amp;= Var\left(\frac{1}{n}\sum_{i=1}^n X_i\right) \\
@@ -662,11 +712,11 @@ Var(\bar{X}) &amp;= Var\left(\frac{1}{n}\sum_{i=1}^n X_i\right) \\
 Var(X) = \int_{-\infty}^{\infty}(X-\mu)^2 f(x) dx
 \end{equation}\]</span></p>
 </section>
-<section id="schätzer" class="level2" data-number="10.3">
-<h2 data-number="10.3" class="anchored" data-anchor-id="schätzer"><span class="header-section-number">10.3</span> Schätzer</h2>
+<section id="schätzer" class="level2" data-number="11.3">
+<h2 data-number="11.3" class="anchored" data-anchor-id="schätzer"><span class="header-section-number">11.3</span> Schätzer</h2>
 <p>Schätzer sind uns bereits in verschiedenen Varianten begegnet. Als ein Schätzer wird eine Funktion bezeichnet mit deren Hilfe anhand einer Stichprobe ein Wert, ein Schätzwert, berechnet wird, der ermöglicht Rückschlüsse über unbekannte Parameter <span class="math inline">\(\phi\)</span> in der Population zu erhalten. D.h wir haben zum Beispiel eine Population mit den Parametern <span class="math inline">\(\mu\)</span> und <span class="math inline">\(\sigma^2\)</span> und wollen anhand der beobachteten Werte der Stichprobe aussagen über diese beiden Parameter machen. Dazu benutzen wir Schätzer.</p>
-<section id="schätzer-1" class="level3 def-schaetzer" data-number="10.3.1">
-<h3 data-number="10.3.1" class="anchored" data-anchor-id="schätzer-1"><span class="header-section-number">10.3.1</span> Schätzer</h3>
+<section id="schätzer-1" class="level3 def-schaetzer" data-number="11.3.1">
+<h3 data-number="11.3.1" class="anchored" data-anchor-id="schätzer-1"><span class="header-section-number">11.3.1</span> Schätzer</h3>
 <p>Ein Schätzer oder eine Schätzfunktion ist eine Statistik auf einer Stichprobe die dazu verwendet wird Information über unbekannte Parameter einer Population zu erhalten. Ein Schätzer <span class="math inline">\(t\)</span> für den Parameter <span class="math inline">\(\theta\)</span> (belieber Parameter) aus der Population wird oft mit einem Hut gekennzeichnet <span class="math inline">\(t = \hat{\theta}\)</span>. Da <span class="math inline">\(t\)</span> mittels der Stichprobe <span class="math inline">\(X_i, i = 1, \ldots, n\)</span> ermittelt wird, kann manchmal auch die Schreibweise <span class="math inline">\(t = h(X_1, \ldots, X_n)\)</span> verwendet werden. <span class="math inline">\(h()\)</span> ist dabei eine Funktion (z.B. Mittelwert) auf der Stichprobe.</p>
 </section>
 <p>Beispielsweise ist der Mittelwert einer Stichprobe <span class="math inline">\(\bar{x}\)</span> ein Schätzer für den Mittelwert <span class="math inline">\(\mu\)</span> in der Population. Die Standardabweichung <span class="math inline">\(s\)</span> der Stichprobe ist ein Schätzer für die Standardabweichung <span class="math inline">\(\sigma\)</span> in der Population <span class="math inline">\(s = \hat{\sigma}\)</span>.</p>
@@ -694,8 +744,8 @@ E[s^2] = E\left[\frac{\sum_{i=1}^n (x_i - \bar{x})^2}{n-1}\right] = \sigma^2
 E\left[\frac{\sum_{i=1}^n (x_i - \bar{x})^2}{n}\right] = \frac{1}{n}E\left[\sum_{i=1}^n (x_i - \bar{x})^2\right] = \frac{n-1}{n}\sigma^2
 \end{equation*}\]</span></p>
 <p>Würden wir durch <span class="math inline">\(n\)</span> teilen, dann würden wir die Varianz unterschätzen, da <span class="math inline">\(\frac{n-1}{n}&lt;1\)</span> gilt. Der Schätzer weist in diesem Fall einen bias (systematischen Fehler) auf.</p>
-<section id="bias" class="level3 def-bias" data-number="10.3.2">
-<h3 data-number="10.3.2" class="anchored" data-anchor-id="bias"><span class="header-section-number">10.3.2</span> Bias</h3>
+<section id="bias" class="level3 def-bias" data-number="11.3.2">
+<h3 data-number="11.3.2" class="anchored" data-anchor-id="bias"><span class="header-section-number">11.3.2</span> Bias</h3>
 <p>Der Bias ist definiert als die Abweichung zwischen dem Erwartungswert <span class="math inline">\(\hat{\theta}_{t}\)</span> des Schätzers <span class="math inline">\(t\)</span> vom wahren Wert <span class="math inline">\(\theta\)</span> in der Population.</p>
 <p><span class="math display">\[\begin{equation}
 \text{bias}(\hat{\theta}_t) = E[\hat{\theta}_t - \theta]
@@ -703,19 +753,19 @@ E\left[\frac{\sum_{i=1}^n (x_i - \bar{x})^2}{n}\right] = \frac{1}{n}E\left[\sum_
 </section>
 <p>Zusammenfassend, benötigen wir erwartungstreue Schätzer um die Verknüpfung zwischen unserer Stichprobe und den Parametern einer theoretischen Stichprobenverteilung zu bilden.</p>
 </section>
-<section id="hypothesentestungszoo" class="level2" data-number="10.4">
-<h2 data-number="10.4" class="anchored" data-anchor-id="hypothesentestungszoo"><span class="header-section-number">10.4</span> Hypothesentestungszoo</h2>
+<section id="hypothesentestungszoo" class="level2" data-number="11.4">
+<h2 data-number="11.4" class="anchored" data-anchor-id="hypothesentestungszoo"><span class="header-section-number">11.4</span> Hypothesentestungszoo</h2>
 <p>Es folgt noch eine kurze Übersicht über verschiedenen Teststatistiken die uns immer wieder begegnen wird.</p>
-<section id="der-t-test" class="level3" data-number="10.4.1">
-<h3 data-number="10.4.1" class="anchored" data-anchor-id="der-t-test"><span class="header-section-number">10.4.1</span> Der t-Test</h3>
+<section id="der-t-test" class="level3" data-number="11.4.1">
+<h3 data-number="11.4.1" class="anchored" data-anchor-id="der-t-test"><span class="header-section-number">11.4.1</span> Der t-Test</h3>
 <p>Wir hatten bereits gesehen, das das Verhältnis einer standardnormalverteilten Variable zu einer <span class="math inline">\(\chi^2\)</span>-verteilten Variable folgt einer <span class="math inline">\(t\)</span>-Verteilung. In vielen Fällen wird diese Eigenschaft verwendet, wenn ein Unterschied <span class="math inline">\(\hat{\Delta}\)</span> beispielsweise zwischen zwei Mittelwerten <span class="math inline">\(\bar{x} - \bar{y}\)</span> durch eine Streuung <span class="math inline">\(\hat{s}_e(\hat{\delta})\)</span> geteilt wird.</p>
 <p><span class="math display">\[\begin{equation*}
 T = \frac{\hat{\Delta}}{\hat{s}_e(\hat{\delta})} \sim t\text{-Verteilung}
 \end{equation*}\]</span></p>
 <p>Zum Beispiel bei dem t-Test der uns in unserer ersten Statistikvorlesung begegnet ist, wurde der Unterschied zwischen zwei Gruppenmittelwerten durch den Standardfehler der Differenz geteilt.</p>
 </section>
-<section id="chi2-test-der-varianz" class="level3" data-number="10.4.2">
-<h3 data-number="10.4.2" class="anchored" data-anchor-id="chi2-test-der-varianz"><span class="header-section-number">10.4.2</span> <span class="math inline">\(\chi^2\)</span>-Test der Varianz</h3>
+<section id="chi2-test-der-varianz" class="level3" data-number="11.4.2">
+<h3 data-number="11.4.2" class="anchored" data-anchor-id="chi2-test-der-varianz"><span class="header-section-number">11.4.2</span> <span class="math inline">\(\chi^2\)</span>-Test der Varianz</h3>
 <p>Die <span class="math inline">\(\chi^2\)</span>-Verteilung taucht öfters im Zusammenhang mit Schätzern von Varianzen auf. Beispielsweise lässt sich zeigen, das bei <span class="math inline">\(n\)</span> unabhängige, standardnormalverteilte Variabnel <span class="math inline">\(X_i, i = 1, \ldots, n\)</span> die Summer der quadrierten Abweichungen vom Mittelwert, also <span class="math inline">\(\sum_{i=1}^n(Y_i - \bar{Y})^2\)</span> einer <span class="math inline">\(\chi^2\)</span>-Verteilung mit <span class="math inline">\(n-1\)</span> Freiheitsgraden folgt.</p>
 <p>Sei <span class="math inline">\(\hat{\sigma}^2\)</span> ein Schätzer für die Varianz aus einer Stichprobe und es soll überprüft werden, ob diese Varianz einer vorgegebenen Varianz <span class="math inline">\(\sigma_0\)</span> folgt, also <span class="math inline">\(H_0: \sigma^2 = \sigma_0^2\)</span> die Nullhypothese ist. Dann lässt sich eine Teststatistik <span class="math inline">\(T\)</span> über die folgende Formel konstruieren:</p>
 <p><span class="math display">\[\begin{equation*}
@@ -723,8 +773,8 @@ T = d \frac{\hat{\sigma}^2}{\sigma_0^2} \sim \chi^2 \quad d = \text{ Freiheitsgr
 \end{equation*}\]</span></p>
 <p><span class="math inline">\(H_0\)</span> wird dann abgelehnt, wenn <span class="math inline">\(T &gt; q_{\chi^2,\text{df}=d,1-\alpha}\)</span> (einseitig) gilt.</p>
 </section>
-<section id="f-test-von-varianzverhältnissen" class="level3" data-number="10.4.3">
-<h3 data-number="10.4.3" class="anchored" data-anchor-id="f-test-von-varianzverhältnissen"><span class="header-section-number">10.4.3</span> F-Test von Varianzverhältnissen</h3>
+<section id="f-test-von-varianzverhältnissen" class="level3" data-number="11.4.3">
+<h3 data-number="11.4.3" class="anchored" data-anchor-id="f-test-von-varianzverhältnissen"><span class="header-section-number">11.4.3</span> F-Test von Varianzverhältnissen</h3>
 <p>Sei eine Stichproben aus normalverteilten, unabhängigen Variablen gegeben und die Varianz <span class="math inline">\(\sigma_A^2\)</span> und <span class="math inline">\(\sigma_B^2\)</span> mittels zweier Schätzer <span class="math inline">\(\hat{\sigma}_A^2\)</span> und <span class="math inline">\(\hat{\sigma}_B^2\)</span> bestimmt worden. Dann kann eine Teststatisk <span class="math inline">\(T\)</span> konstruiert werden um die die Gleichheit der beiden Varianzen zu überprüfen. Formal <span class="math inline">\(H_0: \sigma_A^2 = \sigma_B^2 \Leftrightarrow \frac{\sigma_A}{\sigma_B} = 1\)</span>.</p>
 <p><span class="math display">\[
 T = \frac{\hat{\sigma}^2_A}{\hat{\sigma}^2_B} \sim F(df_A, df_B)
@@ -733,7 +783,7 @@ T = \frac{\hat{\sigma}^2_A}{\hat{\sigma}^2_B} \sim F(df_A, df_B)
 <p>Zusammenfassend ist wie schon bei der Auflistung der theoretischen Verteilung ist es zunächst einmal das Wichtigste zur Kenntnis zu nehmen, dass es diese unterschiedlichen Tests gibt. Deren Herleitung ist natürlich mit den gegebenen Informationen nicht nachvollziehbar und maximal undurchsichtig. Die Liste ist daher mehr im Sinne einer Mustererkennungsaufgabe für später zu interpretieren, dass wenn die Tests im weitern Verlauf in konkreten Zusammenhängen auftauchen ein Wiedererkennungswert ersteht. Letztendlich ist das anzuwendende Prinzip immer das Gleiche, Teststatistik <span class="math inline">\(\rightarrow\)</span> theoretische Verteilung <span class="math inline">\(\rightarrow\)</span> kritischer Wert unter der <span class="math inline">\(H_0\)</span> über die Quantile <span class="math inline">\(\alpha\)</span> <span class="math inline">\(\rightarrow\)</span> Testentscheidung und Unsicherheit bestimmen. Was sich ändert sind die Tests und deren Parameter.</p>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
 <div id="ref-gross2019" class="csl-entry" role="listitem">
 Gross, Benedict, Joe Harris, und Emily Riehl. 2019. <em>Fat Chance: Probability from 0 to 1</em>. Cambridge University Press.
 </div>
@@ -821,10 +871,9 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // clear code selection
     e.clearSelection();
   });
-  function tippyHover(el, contentFn) {
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -834,8 +883,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -848,6 +906,125 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
       return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
     });
   }
       let selectedAnnoteEl;
@@ -891,6 +1068,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             }
             div.style.top = top - 2 + "px";
             div.style.height = height + 4 + "px";
+            div.style.left = 0;
             let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
             if (gutterDiv === null) {
               gutterDiv = window.document.createElement("div");
@@ -916,6 +1094,32 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         });
         selectedAnnoteEl = undefined;
       };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
       // Attach click handler to the DT
       const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
       for (const annoteDlNode of annoteDls) {
@@ -977,17 +1181,18 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./stats_distributions.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Theoretische Verteilungen</span></span>
+      <a href="./stats_distributions.html" class="pagination-link" aria-label="Theoretische Verteilungen">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Theoretische Verteilungen</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./slm_title.html" class="pagination-link">
+      <a href="./slm_title.html" class="pagination-link" aria-label="Das einfache Regressionmodell">
         <span class="nav-page-text">Das einfache Regressionmodell</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
 </div> <!-- /content -->
+
 
 
 

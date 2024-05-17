@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.450">
+<meta name="generator" content="quarto-1.4.550">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -22,7 +22,7 @@ ul.task-list li input[type="checkbox"] {
 }
 /* CSS for syntax highlighting */
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -83,7 +83,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   "collapse-after": 3,
   "panel-placement": "start",
   "type": "textbox",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "Keine Treffer",
     "search-matching-documents-text": "Treffer",
@@ -92,6 +98,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-more-match-text": "weitere Treffer in diesem Dokument",
     "search-more-matches-text": "weitere Treffer in diesem Dokument",
     "search-clear-button-title": "Zurücksetzen",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Abbrechen",
     "search-submit-button-title": "Abschicken",
     "search-label": "Suchen"
@@ -111,6 +118,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
 </head>
 
 <body class="nav-sidebar floating">
@@ -119,12 +153,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <header id="quarto-header" class="headroom fixed-top">
   <nav class="quarto-secondary-nav">
     <div class="container-fluid d-flex">
-      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./r_startup.html">Eine Schnelleinführung in R</a></li><li class="breadcrumb-item"><a href="./r_kickoff.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">`R` Kickoff</span></a></li></ol></nav>
-      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
-      </a>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./r_startup.html">Eine Schnelleinführung in R</a></li><li class="breadcrumb-item"><a href="./r_kickoff.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title"><code>R</code> Kickoff</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
         <i class="bi bi-search"></i>
       </button>
@@ -134,7 +168,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
       <a href="./">Skriptum - Fortgeschrittene Statistik</a> 
@@ -188,8 +222,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./r_visualization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Visualisierung in <code>R</code> mit <code>ggplot2</code> - Eine Einführung</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./r_literate_programming.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Literate programming in <code>R</code></span></span></a>
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Literate programming in <code>R</code></span></span></a>
   </div>
 </li>
       </ul>
@@ -206,31 +246,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./stats_basics.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Eine kleine Welt der Unsicherheit</span></span></a>
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Eine kleine Welt der Unsicherheit</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./stats_significance.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Statistische Signifikanz, p-Wert und Power</span></span></a>
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Statistische Signifikanz, p-Wert und Power</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./stats_estimation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Parameterschätzung</span></span></a>
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Parameterschätzung</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./stats_distributions.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Theoretische Verteilungen</span></span></a>
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Theoretische Verteilungen</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./stats_hypotheses.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Hypothesen testen</span></span></a>
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Hypothesen testen</span></span></a>
   </div>
 </li>
       </ul>
@@ -247,25 +287,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./slm_basics.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Einführung</span></span></a>
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Einführung</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./slm_inference.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Inferenz</span></span></a>
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Inferenz</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./slm_model_fit.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Modellfit</span></span></a>
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Modellfit</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./slm_prediction.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Vorhersage</span></span></a>
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Vorhersage</span></span></a>
   </div>
 </li>
       </ul>
@@ -282,25 +322,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./mlm_basics.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Einführung</span></span></a>
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Einführung</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./mlm_interactions.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Interaktionseffekte</span></span></a>
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Interaktionseffekte</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./mlm_dummy_coding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Integration von nominalen Variablen</span></span></a>
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Integration von nominalen Variablen</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./mlm_hierarchies.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Modellhierarchien</span></span></a>
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Modellhierarchien</span></span></a>
   </div>
 </li>
       </ul>
@@ -317,7 +357,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./lm_basics.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Synthese</span></span></a>
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Synthese</span></span></a>
   </div>
 </li>
       </ul>
@@ -334,55 +374,43 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./ed_basics.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Einführung</span></span></a>
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Einführung</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./ed_crd.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Completely Randomized Design</span></span></a>
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Completely Randomized Design</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./ed_linear_contrasts.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Lineare Kontraste</span></span></a>
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Lineare Kontraste</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./ed_crfd.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Completely Randomized Factorial Design</span></span></a>
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Completely Randomized Factorial Design</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./ed_ancova.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">ANCOVA</span></span></a>
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">ANCOVA</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./ed_crbd.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Completely Randomized Block Design</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./ed_irbd.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Incomplete Randomized Block Design</span></span></a>
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Completely Randomized Block Design</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./ed_split_plot.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Split-plot Design</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./ed_cross_over.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Cross-over Design</span></span></a>
   </div>
 </li>
       </ul>
@@ -396,7 +424,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </ul>
     </div>
 </nav>
-<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         <nav id="TOC" role="doc-toc" class="toc-active">
@@ -426,7 +454,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./r_startup.html">Eine Schnelleinführung in R</a></li><li class="breadcrumb-item"><a href="./r_kickoff.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title"><code>R</code> Kickoff</span></a></li></ol></nav>
 <div class="quarto-title">
 <h1 class="title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title"><code>R</code> Kickoff</span></h1>
 </div>
@@ -441,9 +469,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </div>
   
 
+
 </header>
 
-<p>Wie bereits angedeutet, der Umgang mit <code>R</code> besteht vor allem in der Benutzung von bestimmten Befehlen. Die Befehle, auch Anweisungen genannt, werden <code>R</code> auf der Kommandozeile übergeben, <code>R</code> liest die Anweisungen ein und führt entsprechende Operationen durch. Im einfachsten Fall, kann <code>R</code> beispielsweise als ein überproportionierter Taschenrechner verwendet werden. In R-Studio ist die Kommandozeile üblicherweise unten-links zu sehen und signalisiert durch das Prompt <code>&gt;</code> die Bereitschaft an Befehle anzunehmen. Beispielsweise führt auf der <code>R</code> Kommandozeile der folgende Befehl <code>2 + 2</code> gefolgt von einem <kbd>ENTER</kbd> zu folgender Ausgabe:</p>
+
+<p>Wie bereits angedeutet, der Umgang mit <code>R</code> besteht vor allem in der Benutzung von bestimmten Befehlen. Die Befehle, auch Anweisungen genannt, werden <code>R</code> auf der Kommandozeile übergeben, <code>R</code> liest die Anweisungen ein und führt entsprechende Operationen durch. Im einfachsten Fall, kann <code>R</code> beispielsweise als ein überproportionierter Taschenrechner verwendet werden. In R-Studio ist die Kommandozeile üblicherweise unten-links zu sehen und signalisiert durch das Prompt <code>&gt;</code> die Bereitschaft an Befehle anzunehmen. Beispielsweise führt auf der <code>R</code> Kommandozeile der folgende Befehl <code>2 + 2</code> gefolgt von einem <kbd aria-hidden="true">ENTER</kbd><span class="visually-hidden">ENTER</span> zu folgender Ausgabe:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="dv">2</span> <span class="sc">+</span> <span class="dv">2</span></span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -458,8 +488,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre><code>[1] 9</code></pre>
 </div>
 </div>
-<p>In R-Studio gibt es einen short-cut um in die Kommandozeile zu springen <kbd>STRG+2</kbd>.</p>
-<p>In der Kommandozeile in <code>R</code> ist es nach der Ausführung eines Befehlt nicht möglich mit dem Cursor wieder nach oben zu gehen und bei einer fehlerhaften Eingabe diese zu berichten. Sondern der komplette Befehl muss noch einmal eingegeben werden. Allerdings merkt sich R-Studio die Befehlt und mit den Pfeiltasten <kbd>UP</kbd> und <kbd>DOWN</kbd> können diese wieder aufgerufen werden und entsprechend angepasst werden.</p>
+<p>In R-Studio gibt es einen short-cut um in die Kommandozeile zu springen <kbd aria-hidden="true">STRG+2</kbd><span class="visually-hidden">STRG+2</span>.</p>
+<p>In der Kommandozeile in <code>R</code> ist es nach der Ausführung eines Befehlt nicht möglich mit dem Cursor wieder nach oben zu gehen und bei einer fehlerhaften Eingabe diese zu berichten. Sondern der komplette Befehl muss noch einmal eingegeben werden. Allerdings merkt sich R-Studio die Befehlt und mit den Pfeiltasten <kbd aria-hidden="true">UP</kbd><span class="visually-hidden">UP</span> und <kbd aria-hidden="true">DOWN</kbd><span class="visually-hidden">DOWN</span> können diese wieder aufgerufen werden und entsprechend angepasst werden.</p>
 <p>Die Anweisungen <code>2 + 2</code> oder <code>3 * 3</code> werden allgemein als <strong>Ausdrücke</strong> bezeichnet. Wir könnten die Beispiele jetzt mit den üblichen Grundrechenarten <code>+-/*</code> weiterführen, aber es würde nichts Neues dazukommen. Daher schauen wir uns jetzt an, wie wir komplexere, mehrstufige Berechnungen durchführen können. Dazu schauen wir uns ein zentrales Konzept von Programmiersprachen an: Variablen.</p>
 <section id="variablen-in-r" class="level2" data-number="2.1">
 <h2 data-number="2.1" class="anchored" data-anchor-id="variablen-in-r"><span class="header-section-number">2.1</span> Variablen in <code>R</code></h2>
@@ -680,7 +710,7 @@ Hinweis
 </div>
 <p>Integer Werte werden in <code>R</code> mit einem angehängtem <code>L</code> spezifiziert. Wir kein <code>L</code> angehängt geht <code>R</code> per default bei Zahlen immer von einer Dezimalzahl aus.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> ganz_zahl <span class="ot">&lt;-</span> 12345L</span>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> ganz_zahl <span class="ot">&lt;-</span> <span class="dv">12345</span>L</span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> ganz_zahl</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 12345</code></pre>
@@ -693,7 +723,7 @@ Hinweis
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "double"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">typeof</span>(12345L)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">typeof</span>(<span class="dv">12345</span>L)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "integer"</code></pre>
 </div>
@@ -783,15 +813,17 @@ Tipp
 </section>
 <section id="logische-boolean-werte" class="level3" data-number="2.3.3">
 <h3 data-number="2.3.3" class="anchored" data-anchor-id="logische-boolean-werte"><span class="header-section-number">2.3.3</span> Logische (Boolean) Werte</h3>
-<p>Der nächste Datentyp sind sogenannte logische Werte oder Wahrheitswerte. Logische Werte können nur einen von zwei Werten annehmen, entweder WAHR oder FALSCH. Logische Ausdrücke kennt ihr wahrscheinlich aus der Schule in Form von Wahrheitstabellen bei denen boolesche Werte entweder mit <strong>und</strong> <span class="math inline">\(\cap\)</span> oder <strong>oder</strong> <span class="math inline">\(\cup\)</span> verknüpft werden (siehe <a href="#tbl-r-kickoff-bool">Tabelle&nbsp;<span>2.1</span></a>).</p>
-<div id="tbl-r-kickoff-bool" class="tbl-parent quarto-layout-panel anchored">
-<div class="panel-caption table-caption">
-<p>Tabelle&nbsp;2.1: Verknüpfung von Wahrheitswerten mit und (<span class="math inline">\(\cap\)</span>) bzw. oder (<span class="math inline">\(\cup\)</span>).</p>
-</div>
-<div class="quarto-layout-row quarto-layout-valign-top">
-<div id="tbl-r-kickoff-bool-1" class="quarto-layout-cell quarto-layout-cell-subref anchored" data-ref-parent="tbl-r-kickoff-bool" style="flex-basis: 50.0%;justify-content: center;">
+<p>Der nächste Datentyp sind sogenannte logische Werte oder Wahrheitswerte. Logische Werte können nur einen von zwei Werten annehmen, entweder WAHR oder FALSCH. Logische Ausdrücke kennt ihr wahrscheinlich aus der Schule in Form von Wahrheitstabellen bei denen boolesche Werte entweder mit <strong>und</strong> <span class="math inline">\(\cap\)</span> oder <strong>oder</strong> <span class="math inline">\(\cup\)</span> verknüpft werden (siehe <a href="#tbl-r-kickoff-bool" class="quarto-xref">Tabelle&nbsp;<span>2.1</span></a>).</p>
+<div id="tbl-r-kickoff-bool" class="quarto-layout-panel anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-r-kickoff-bool-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabelle&nbsp;2.1: Verknüpfung von Wahrheitswerten mit und (<span class="math inline">\(\cap\)</span>) bzw. oder (<span class="math inline">\(\cup\)</span>).
+</figcaption>
+<div aria-describedby="tbl-r-kickoff-bool-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
 <table class="table">
-<caption>(a) Verknüpfung mit <span class="math inline">\(\cap\)</span></caption>
+<caption>Verknüpfung mit <span class="math inline">\(\cap\)</span></caption>
 <thead>
 <tr class="header">
 <th style="text-align: left;"><span class="math inline">\(\cap\)</span></th>
@@ -813,9 +845,9 @@ Tipp
 </tbody>
 </table>
 </div>
-<div id="tbl-r-kickoff-bool-2" class="quarto-layout-cell quarto-layout-cell-subref anchored" data-ref-parent="tbl-r-kickoff-bool" style="flex-basis: 50.0%;justify-content: center;">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
 <table class="table">
-<caption>(b) Verknüpfung mit <span class="math inline">\(\cup\)</span></caption>
+<caption>Verknüpfung mit <span class="math inline">\(\cup\)</span></caption>
 <thead>
 <tr class="header">
 <th style="text-align: left;"><span class="math inline">\(\cup\)</span></th>
@@ -838,6 +870,8 @@ Tipp
 </table>
 </div>
 </div>
+</div>
+</figure>
 </div>
 <p>In <code>R</code> werden die beiden Werte mit <code>TRUE</code> und <code>FALSE</code> oder in der abgekürzten Form <code>T</code> und <code>F</code> dargestellt.</p>
 <div class="cell">
@@ -1091,7 +1125,7 @@ v_1 = \begin{pmatrix}3\\7\\8\end{pmatrix}
 </div>
 </div>
 <p>Per default werden Vektoren in <code>R</code> nicht als Spaltenvektoren wie in der Mathematik angesehen. Das kann manchmal ebenfalls zu Problemen in Rechnungen führen, wenn Formeln eins-zu-eins in <code>R</code> übertragen werden und die Formel von der üblichen Algebra bei Vektoren und Matrizen ausgeht. Dies sollte daher im Hinterkopf behalten werden.</p>
-<p>Wenn das Skalarprodukt <span class="math inline">\(v_x v_y = \sum_{i=1}^nv_{xi}v_{yi}\)</span> zweier Vektoren berechnet werden soll, dann muss ein spezieller Matrizenmultiplikator benutzt werden <code>%*%</code>. In unserem Beispiel mit <span class="math inline">\(v_3\)</span> und <span class="math inline">\(v_4\)</span></p>
+<p>Wenn das Skalarprodukt <span class="math inline">\(v_x  v_y = \sum_{i=1}^nv_{xi}v_{yi}\)</span> zweier Vektoren berechnet werden soll, dann muss ein spezieller Matrizenmultiplikator benutzt werden <code>%*%</code>. In unserem Beispiel mit <span class="math inline">\(v_3\)</span> und <span class="math inline">\(v_4\)</span></p>
 <p><span class="math display">\[\begin{equation*}
 v_3 \cdot v_4 = 1\cdot4 + 2\cdot5 + 3\cdot6 = 32
 \end{equation*}\]</span></p>
@@ -1122,15 +1156,15 @@ v_3 \cdot v_4 = 1\cdot4 + 2\cdot5 + 3\cdot6 = 32
 <dl class="code-annotation-container-grid">
 <dt data-target-cell="annotated-cell-69" data-target-annotation="1">1</dt>
 <dd>
-<span data-code-lines="1" data-code-cell="annotated-cell-69" data-code-annotation="1">Erstelle eine Sequenz von 1 bis 10 in Intervallen der Größe 2</span>
+<span data-code-cell="annotated-cell-69" data-code-lines="1" data-code-annotation="1">Erstelle eine Sequenz von 1 bis 10 in Intervallen der Größe 2</span>
 </dd>
 <dt data-target-cell="annotated-cell-69" data-target-annotation="2">2</dt>
 <dd>
-<span data-code-lines="2" data-code-cell="annotated-cell-69" data-code-annotation="2">Erstelle eines Sequenz von 0 bis 0 in Intervallen der Größe <span class="math inline">\(0.25\)</span></span>
+<span data-code-cell="annotated-cell-69" data-code-lines="2" data-code-annotation="2">Erstelle eines Sequenz von 0 bis 0 in Intervallen der Größe <span class="math inline">\(0.25\)</span></span>
 </dd>
 <dt data-target-cell="annotated-cell-69" data-target-annotation="3">3</dt>
 <dd>
-<span data-code-lines="3" data-code-cell="annotated-cell-69" data-code-annotation="3">Erstelle eiene Sequenz von 0 bis <span class="math inline">\(2\pi\)</span> die die Länge 10 hat.</span>
+<span data-code-cell="annotated-cell-69" data-code-lines="3" data-code-annotation="3">Erstelle eiene Sequenz von 0 bis <span class="math inline">\(2\pi\)</span> die die Länge 10 hat.</span>
 </dd>
 </dl>
 </div>
@@ -1150,15 +1184,15 @@ v_3 \cdot v_4 = 1\cdot4 + 2\cdot5 + 3\cdot6 = 32
 <dl class="code-annotation-container-grid">
 <dt data-target-cell="annotated-cell-70" data-target-annotation="1">1</dt>
 <dd>
-<span data-code-lines="1" data-code-cell="annotated-cell-70" data-code-annotation="1">Wiederhole die Zahl 3 fünfmal.</span>
+<span data-code-cell="annotated-cell-70" data-code-lines="1" data-code-annotation="1">Wiederhole die Zahl 3 fünfmal.</span>
 </dd>
 <dt data-target-cell="annotated-cell-70" data-target-annotation="2">2</dt>
 <dd>
-<span data-code-lines="2" data-code-cell="annotated-cell-70" data-code-annotation="2">Wiederhole den Vektor <span class="math inline">\((1,2)\)</span> dreimal.</span>
+<span data-code-cell="annotated-cell-70" data-code-lines="2" data-code-annotation="2">Wiederhole den Vektor <span class="math inline">\((1,2)\)</span> dreimal.</span>
 </dd>
 <dt data-target-cell="annotated-cell-70" data-target-annotation="3">3</dt>
 <dd>
-<span data-code-lines="3" data-code-cell="annotated-cell-70" data-code-annotation="3">Wiederhole jedes Element des Vektor <span class="math inline">\((1,2)\)</span> dreimal.</span>
+<span data-code-cell="annotated-cell-70" data-code-lines="3" data-code-annotation="3">Wiederhole jedes Element des Vektor <span class="math inline">\((1,2)\)</span> dreimal.</span>
 </dd>
 </dl>
 </div>
@@ -1538,15 +1572,15 @@ a_{n1} &amp; \ldots &amp; a_{mn}
 <dl class="code-annotation-container-grid">
 <dt data-target-cell="annotated-cell-105" data-target-annotation="1">1</dt>
 <dd>
-<span data-code-lines="1" data-code-cell="annotated-cell-105" data-code-annotation="1">Eine Matrize <span class="math inline">\(F\)</span> mit vier Zeilen und drei Spalten die nur Einsen als Einträge hat wird erstellt.</span>
+<span data-code-cell="annotated-cell-105" data-code-lines="1" data-code-annotation="1">Eine Matrize <span class="math inline">\(F\)</span> mit vier Zeilen und drei Spalten die nur Einsen als Einträge hat wird erstellt.</span>
 </dd>
 <dt data-target-cell="annotated-cell-105" data-target-annotation="2">2</dt>
 <dd>
-<span data-code-lines="3" data-code-cell="annotated-cell-105" data-code-annotation="2">Die Summenfunktion wird entlang der ersten Dimension (Zeilen) auf <span class="math inline">\(F\)</span> angewendet.</span>
+<span data-code-cell="annotated-cell-105" data-code-lines="3" data-code-annotation="2">Die Summenfunktion wird entlang der ersten Dimension (Zeilen) auf <span class="math inline">\(F\)</span> angewendet.</span>
 </dd>
 <dt data-target-cell="annotated-cell-105" data-target-annotation="3">3</dt>
 <dd>
-<span data-code-lines="4" data-code-cell="annotated-cell-105" data-code-annotation="3">Die Summenfunktion wird entlang der zweiten Dimension (Spalten) auf <span class="math inline">\(F\)</span> angewendet.</span>
+<span data-code-cell="annotated-cell-105" data-code-lines="4" data-code-annotation="3">Die Summenfunktion wird entlang der zweiten Dimension (Spalten) auf <span class="math inline">\(F\)</span> angewendet.</span>
 </dd>
 </dl>
 </div>
@@ -1745,11 +1779,12 @@ $ wert   &lt;int&gt; 21, 22, 23, 24, 25, 26, 27, 28, 29, 30</code></pre>
 </section>
 <section id="zusammenfassung" class="level3" data-number="2.3.7">
 <h3 data-number="2.3.7" class="anchored" data-anchor-id="zusammenfassung"><span class="header-section-number">2.3.7</span> Zusammenfassung</h3>
-<p>Damit haben wir auch schon die wichtigsten Datentypen in <code>R</code> kennengelernt. In <a href="#fig-r-kickoff-dependencies">Abbildung&nbsp;<span>2.1</span></a> sind die verschiedenen Datentypen und deren Abhängigkeiten noch einmal abgebildet.</p>
-<div class="cell">
+<p>Damit haben wir auch schon die wichtigsten Datentypen in <code>R</code> kennengelernt. In <a href="#fig-r-kickoff-dependencies" class="quarto-xref">Abbildung&nbsp;<span>2.1</span></a> sind die verschiedenen Datentypen und deren Abhängigkeiten noch einmal abgebildet.</p>
+<div class="cell" data-layout-align="default">
 <div class="cell-output-display">
-<div id="fig-r-kickoff-dependencies" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
+<div id="fig-r-kickoff-dependencies" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-r-kickoff-dependencies-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div>
 <pre class="mermaid mermaid-js" data-label="fig-r-kickoff-dependencies">flowchart TD
     A[Dataframe] --&gt; B[Vektor]
@@ -1759,7 +1794,10 @@ $ wert   &lt;int&gt; 21, 22, 23, 24, 25, 26, 27, 28, 29, 30</code></pre>
     B --&gt; E(Logisch)
 </pre>
 </div>
-<figcaption class="figure-caption">Abbildung&nbsp;2.1: Hierarchie der Datentypen.</figcaption>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-r-kickoff-dependencies-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;2.1: Hierarchie der Datentypen.
+</figcaption>
 </figure>
 </div>
 </div>
@@ -1850,10 +1888,9 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // clear code selection
     e.clearSelection();
   });
-  function tippyHover(el, contentFn) {
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -1863,8 +1900,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -1877,6 +1923,125 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
       return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
     });
   }
       let selectedAnnoteEl;
@@ -1920,6 +2085,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             }
             div.style.top = top - 2 + "px";
             div.style.height = height + 4 + "px";
+            div.style.left = 0;
             let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
             if (gutterDiv === null) {
               gutterDiv = window.document.createElement("div");
@@ -1945,6 +2111,32 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         });
         selectedAnnoteEl = undefined;
       };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
       // Attach click handler to the DT
       const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
       for (const annoteDlNode of annoteDls) {
@@ -2006,17 +2198,18 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./r_intro.html" class="pagination-link">
+      <a href="./r_intro.html" class="pagination-link" aria-label="Eine Übersicht über `R`">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Eine Übersicht über <code>R</code></span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./r_flowcontrol.html" class="pagination-link">
+      <a href="./r_flowcontrol.html" class="pagination-link" aria-label="Ablaufkontrolle">
         <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Ablaufkontrolle</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
 </div> <!-- /content -->
+
 
 
 
