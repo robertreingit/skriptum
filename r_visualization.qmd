@@ -1,4 +1,4 @@
-# Visualisierung mit `ggplot2`
+# Datenvisualisierung mit `ggplot2`
 
 ```{r}
 #| echo: false
@@ -288,7 +288,7 @@ So weit so gut, aber keine Darstellung des Mittelwerts ohne eine Darstellung der
 
 ### `geom_errorbar()`
 
-Um die Streuung in einem Säulendiagramm darzustellen, verwenden wir `geom_errorbar()`. Hier kommen endlich einmal zwei neue Abbildungen ins Spiel. `ymin` bestimmt das untere Ende des Fehlerbalkens, während `ymax` das obere Ende bestimmt. D.h. die Fehlerbalken sind müssen nicht unbedingt in beide Richtungen gleich lang sein.
+Um die Streuung in einem Säulendiagramm darzustellen, verwenden wir `geom_errorbar()`. Hier kommen endlich einmal zwei neue Abbildungen ins Spiel. `ymin` bestimmt das untere Ende des Fehlerbalkens, während `ymax` das obere Ende bestimmt. D.h. die Fehlerbalken müssen nicht unbedingt in beide Richtungen gleich lang sein.
 
 ```{r}
 #| echo: true
@@ -300,8 +300,7 @@ ggplot(df_team, aes(team, m)) +
   geom_errorbar(aes(ymin = m - sd, ymax = m + sd))
 ```
 
-In @fig-r-basics-col-02 können wir nun die Fehlerbalken sehen, aber schön sehen sie noch nicht besonders aus. Mit dem Argument `width` können wir spezifieren wie breit die Hüte sein sollen, während `linewidth` die Linienbreite spezifiziert. Passen wir auch gleich noch die Farbe etwas an.
-
+In @fig-r-basics-col-02 können wir nun die Fehlerbalken sehen. Allerdings sehen die Fehlerbalken noch nicht besonders schön aus, da sie relativ breit sind. Mit dem Argument `width` können wir spezifieren wie breit die Hüte sein sollen. Mit dem Parameter `linewidth` können wir zusätzlich noch die Linienbreite bestimmen. Passen wir auch gleich noch die Farbe etwas an.
 
 ```{r}
 #| echo: true
@@ -310,16 +309,18 @@ In @fig-r-basics-col-02 können wir nun die Fehlerbalken sehen, aber schön sehe
 
 ggplot(df_team, aes(team, m)) +
   geom_col() +
-  geom_errorbar(aes(ymin = m - sd, ymax = m + sd), width = 0.3, color = 'red',
+  geom_errorbar(aes(ymin = m - sd, ymax = m + sd),
+                width = 0.3,
+                color = 'red',
                 linewidth = 1.5)
 ```
 
-Ein Problem das mit `geom_errorbar()` immer wieder auftaucht entsteht wenn es mehrere Werte für jeden $x$-Wert gibt. In der Standardeinstellung werden die Werte aufeinander gesetzt (stacked). Erstellen wir uns erst einmal einen passenden Datensatz.
+Ein Problem mit den Fehlerbalken mit `geom_errorbar()` entsteht wenn es mehrere Werte für jeden $x$-Wert gibt. In der Standardeinstellung werden die Werte aufeinander gesetzt (stacked). Erstellen wir uns erst einmal einen passenden Datensatz.
 
 ```{r}
 #| echo: true
 
-df_tg <- df |> group_by(team, group) |> summarize(m = mean(dv), sd = sd(dv))
+df_tg <- df |> group_by(team, group) |> summarize(dv_bar = mean(dv), dv_sd = sd(dv))
 ```
 ```{r}
 df_tg |> knitr::kable(booktabs=T, digits = 3, linesep = '')
@@ -331,85 +332,100 @@ Schauen wir uns erst einmal nur die Säulen an.
 #| echo: true
 #| label: fig-r-basics-col-04
 
-ggplot(df_tg, aes(team, m, fill = group)) +
+ggplot(df_tg, aes(team, dv_bar, fill = group)) +
   geom_col()
 ```
 
-In @fig-r-basics-col-04 sind die Mehrfachwerte aufeinandergestapelt. Dies ist in den seltensten Fällen die Darstellungsart die wir wirklich wollen. Wir können die Säulen nebeneinander setzen indem wir das Argument `position` in `geom_col()` verwenden.
-
+In @fig-r-basics-col-04 sind die Mehrfachwerte aufeinandergestapelt. Dies ist in den seltensten Fällen die Darstellungsart die wir wirklich wollen, sondern in den meisten Fällen wollen wir die Säulen nebeneinander angezeigt bekommen. Wir können dies erreichen indem wir das Argument `position` mit dem Argument `"dodge"` in `geom_col()` verwenden.
 
 ```{r}
 #| echo: true
 #| label: fig-r-basics-col-05
 #| fig-label: "Gruppierte Säulen"
 
-ggplot(df_tg, aes(team, m, fill = group)) +
+ggplot(df_tg, aes(team, dv_bar, fill = group)) +
   geom_col(position = 'dodge')
 ```
 
-@fig-r-basics-col-05 sind schon besser aus. Es entsteht nun ein Problem wenn wir die Fehlerbalken dazufügen.
+@fig-r-basics-col-05 sind schon besser aus. Die Säulen sind nebeneinander dargestellt jeweils für einen $x$-Wert. Es entsteht nun allerdings ein Problem wenn wir die Fehlerbalken dazufügen.
 
 ```{r}
 #| echo: true
 #| label: fig-r-basics-col-06
 #| fig-label: "Gruppierte Säulen mit Fehlerbalken"
 
-ggplot(df_tg, aes(team, m, fill = group)) +
+ggplot(df_tg, aes(team, dv_bar, fill = group)) +
   geom_col(position = 'dodge') +
-  geom_errorbar(aes(ymin = m - sd, ymax = m + sd))
+  geom_errorbar(aes(ymin = dv_bar - dv_sd, ymax = dv_bar + dv_sd))
 ```
 
-Die Fehlerbalken in @fig-r-basics-col-06 sind beide in der Mitte des $x$-Wertes plaziert. Mit `dodge`
+Die Fehlerbalken in @fig-r-basics-col-06 sind beide in der Mitte der $x$-Werte plaziert und nicht zusammen mit den Säulen verrückt. Um die Fehlerbalken ebenfalls zu verrücken müssen wir in `geom_errorbar()` ebenfalls den Parameter `position` mit dem Argument `"dodge"` verwenden.
 
 ```{r}
 #| echo: true
 #| label: fig-r-basics-col-07
 #| fig-label: "Gruppierte Säulen mit Fehlerbalken"
 
-ggplot(df_tg, aes(team, m, fill = group)) +
+ggplot(df_tg, aes(team, dv_bar, fill = group)) +
   geom_col(position = 'dodge') +
-  geom_errorbar(aes(ymin = m - sd, ymax = m + sd), position = 'dodge')
+  geom_errorbar(aes(ymin = dv_bar - dv_sd, ymax = dv_bar + dv_sd),
+                position = 'dodge')
 ```
 
-Passt es jetzt wieder (siehe @fig-r-basics-col-07). Allerdings nur solange wie nicht die Breite verändern.
+@fig-r-basics-col-07 kommt schon wieder dem näher was wir uns vorgestellt haben. Allerdings nur solange wie die Breite mit `width` nicht verändern.
 
 ```{r}
 #| echo: true
 #| label: fig-r-basics-col-08
 #| fig-label: "Gruppierte Säulen mit falsch verschobenen Fehlerbalken"
 
-ggplot(df_tg, aes(team, m, fill = group)) +
+ggplot(df_tg, aes(team, dv_bar, fill = group)) +
   geom_col(position = 'dodge') +
-  geom_errorbar(aes(ymin = m - sd, ymax = m + sd), position = 'dodge', width=.7)
+  geom_errorbar(aes(ymin = dv_bar - dv_sd, ymax = dv_bar + dv_sd),
+                position = 'dodge',
+                width=.7)
 ```
 
-Was jetzt passiert, `ggplot()` berechnet die Breite des `geom`s und verschiebt es entsprechend der Breite nach links oder rechts, so dass keine Überlappung besteht. Die einfachste Lösung besteht darin die Position der Fehlerbalken der Funktion `position_dodge()` direkt anzugeben.
+Wie lässt sich @fig-r-basics-col-08 erklären. `ggplot()` berechnet zunächst die Breite des `geom`s. In diesem Fall haben wir die Breite für die Fehlerbalken selbst angegeben mit `width = .7`. D.h. Die Fehlerbalken haben die Breite $0.7$ graphische Einheiten. Durch den Parameter `"dodge"` an `position` werden die Fehlerbalkennebeneinander dargestellt und entsprechend der Breite gegeneinander verschoben, so dass keine Überlappung zustandekommt. Die Säulen gegen die die Fehlerbalken zentrierte werden sollen sind aber breiter. Standardmäßig weist `ggplot()` denen eine Breite von $0.9$ graphischen Einheiten zu. Dies bietet dann auch schon die Lösung. `geom_errorbar()` muss die Information bekommen, dass die Fehlerbalken weiter gegeneinander verschoben werden sollen. Dazu gibt es die Funktion `position_dodge()` mit dem Argument `width`. Dies kann verwendet werden um die Verschiebung um einen anderen Faktor als die Breite des `geom`s durchzuführen. Für das vorliegende Problem verwenden wir daher `position_dodge(width = .9)`.
 
 ```{r}
 #| echo: true
 #| label: fig-r-basics-col-09
 #| fig-label: "Gruppierte Säulen mit korrekten Fehlerbalken"
 
-ggplot(df_tg, aes(team, m, fill = group)) +
+ggplot(df_tg, aes(team, dv_bar, fill = group)) +
   geom_col(position = 'dodge') +
-  geom_errorbar(aes(ymin = m - sd, ymax = m + sd),
+  geom_errorbar(aes(ymin = dv_bar - dv_sd, ymax = dv_bar + dv_sd),
                 position = position_dodge(width = .9), 
                 width=.7)
 ```
 
-Warum das in @fig-r-basics-col-09 funktioniert erscheint zunächst etwas undurchsichtig. Es hat was damit zu tun, dass die Säulen in `geom_col()` standardmäßig eine Breite von `0.9` in den Einheiten des Graphen haben. Entsprechend werden die Säulen um diesen Wert gegeneinander verschoben. Mit der Funktion `position_dodge()` sorgen wir dafür, dass die Fehlerbalken ebenfalls um diesen Wert verschoben werden und nicht um deren eigene Breite. Würden wir die Breite der Säulen selbst spezifieren, dann würde die Fehlerbalken wieder nicht an der richtigen Position sitzen (siehe @fig-r-basics-col-10).
+Würden wir die Breite der Säulen selbst spezifieren, dann würden die Fehlerbalken wieder nicht an der richtigen Position sitzen da die Verschiebung gegeneinander zu groß ist (siehe @fig-r-basics-col-10).
 
 ```{r}
 #| echo: true
 #| label: fig-r-basics-col-10
 #| fig-label: "Gruppierte Säulen mit korrekten Fehlerbalken"
 
-ggplot(df_tg, aes(team, m, fill = group)) +
+ggplot(df_tg, aes(team, dv_bar, fill = group)) +
   geom_col(position = 'dodge', width = 0.5) +
-  geom_errorbar(aes(ymin = m - sd, ymax = m + sd),
+  geom_errorbar(aes(ymin = dv_bar - dv_sd, ymax = dv_bar + dv_sd),
                 position = position_dodge(width = .9), 
                 width=.7)
 ```
+
+::: {.callout-tip}
+Praktische Varianten von `geom_errorbar()` für Streu- oder Liniendiagramme sind `geom_pointrange()` und `geom_linerange()`.
+
+```{r}
+#| echo: true
+
+ggplot(df, aes(iv, dv)) +
+  geom_point() + 
+  geom_linerange(aes(ymin=dv-1, ymax=dv+1))
+```
+
+:::
 
 ### `geom_histogram()`
 
