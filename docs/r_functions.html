@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Skriptum - Fortgeschrittene Statistik - Eine Einführung in die Programmiersprache R</title>
+<title>Skriptum - Fortgeschrittene Statistik - 4&nbsp; Eigene Funktionen in R</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -30,8 +64,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./r_intro.html" rel="next">
-<link href="./index.html" rel="prev">
+<link href="./r_tidyverse.html" rel="next">
+<link href="./r_flowcontrol.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -76,6 +110,35 @@ ul.task-list li input[type="checkbox"] {
   };
 </script>
 
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -88,7 +151,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./r_startup.html">Eine Einführung in die Programmiersprache <code>R</code></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./r_startup.html">Eine Einführung in die Programmiersprache <code>R</code></a></li><li class="breadcrumb-item"><a href="./r_functions.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Eigene Funktionen in <code>R</code></span></a></li></ol></nav>
         <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -121,7 +184,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="./r_startup.html" class="sidebar-item-text sidebar-link active">
+            <a href="./r_startup.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Eine Einführung in die Programmiersprache `R`</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Abschnitt umschalten">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -137,7 +200,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./r_vars_types.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title"><code>R</code></span></span></a>
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Variablen und Datentypen in <code>R</code></span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -148,7 +211,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./r_functions.html" class="sidebar-item-text sidebar-link">
+  <a href="./r_functions.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Eigene Funktionen in <code>R</code></span></span></a>
   </div>
 </li>
@@ -365,14 +428,22 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Inhaltsverzeichnis</h2>
+   
+  <ul>
+  <li><a href="#funktionen-anwenden" id="toc-funktionen-anwenden" class="nav-link active" data-scroll-target="#funktionen-anwenden"><span class="header-section-number">4.1</span> Funktionen anwenden</a></li>
+  <li><a href="#eigene-funktionen-schreiben" id="toc-eigene-funktionen-schreiben" class="nav-link" data-scroll-target="#eigene-funktionen-schreiben"><span class="header-section-number">4.2</span> Eigene Funktionen schreiben</a></li>
+  <li><a href="#funktionen-in-r-paketen" id="toc-funktionen-in-r-paketen" class="nav-link" data-scroll-target="#funktionen-in-r-paketen"><span class="header-section-number">4.3</span> Funktionen in <code>R</code>-Paketen</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./r_startup.html">Eine Einführung in die Programmiersprache <code>R</code></a></li><li class="breadcrumb-item"><a href="./r_functions.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Eigene Funktionen in <code>R</code></span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Eine Einführung in die Programmiersprache <code>R</code></h1>
+<h1 class="title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Eigene Funktionen in <code>R</code></span></h1>
 </div>
 
 
@@ -389,8 +460,129 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<p>Eine zentrale Tätigkeit im Umgang mit jeder Programmiersprache ist das schreiben von eigenen Funktionen. Es ist zwar möglich relativ weit zu kommen ohne eigene Funktionen zu schreiben aber es ergeben sich um Umgang mit Daten immer wieder Situationen in denen immer wieder die gleichen Schritte durchgeführt werden. Dies führt dann oft zu copy-and-paste von Anweisungen. In solchen Fällen ist es oft hilfreich in der Lage zu sein eigene Funktionen schreiben zu können. Funktionen bieten hierdurch die Möglichkeit den eigenen Code in verschiedene logische Einheiten zu strukturieren und dadurch leichter lesbar und robuster zu machen. Letztendlich beruht der große Erfolg von <code>R</code> darauf durch eigene Funktionen die Funktionalität von <code>R</code> ständig erweitern zu können. Daher ist ein zumindest rudimentäres Verständnis der Semantik von Funktionen in <code>R</code> enorm hilfreich.</p>
+<p>Ein erstes, hilfreiches mentales Template für Funktionen in Programmiersprachen sind Funktionen wie wir sie in der Mathematik kennengelernt haben.</p>
+<p><span class="math display">\[\begin{equation*}
+y = f(x)
+\end{equation*}\]</span></p>
+<p>Wir haben eine Funktion <span class="math inline">\(f()\)</span>, dieser Funktion <span class="math inline">\(f()\)</span> übergeben wir ein Argument (auch Parameter genannt) <span class="math inline">\(x\)</span>. Die Funktion <span class="math inline">\(f()\)</span> macht dann etwas mit diesem Parameter und gibt einen Rückgabewert zurück, den wir einer neuen Variable <span class="math inline">\(y\)</span> zuweisen. Sei zum Beispiel die folgenden Funktion definiert.</p>
+<p><span class="math display">\[\begin{equation*}
+f(x) = x^2
+\end{equation*}\]</span></p>
+<p>D.h. der Funktion <span class="math inline">\(f()\)</span> wird der Parameter <span class="math inline">\(x\)</span> übergeben. Dieser Wert wird anschließend quadriert und das Ergebnis der Berechnung wird zurück gegeben.</p>
+<p>In <code>R</code> werden Funktionen nach dem Muster <name>(<par1>,<par2>,…,<park>) aufgerufen (die Zeichen &lt;&gt; stehen für einen beliebigen Bezeichner). D.h. sobald ein rundes Klammerpaar auf einen Bezeichner folgt, geht <code>R</code> davon aus, dass die Anwenderin eine Funktion aufrufen möchte. Über <par1>,<par2>,…,<park> können der Funktion durch Komma getrennte Parameter übergeben werden. Die Anzahl der Parameter hängt dabei von der Definition der Funktion ab. In der Mathematik wäre ein Beispiel eine Funktion mit zwei Argumenten.</park></par2></par1></park></par2></par1></name></p>
+<p><span class="math display">\[\begin{equation*}
+f(x,y) = x^2 + y^2
+\end{equation*}\]</span></p>
+<section id="funktionen-anwenden" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="funktionen-anwenden"><span class="header-section-number">4.1</span> Funktionen anwenden</h2>
+<p>Ein einfaches Beispiel ist die Anwendung der Wurzelfunktion auf einen numerischen Wert. In <code>R</code> gibt es schon eine vordefinierte Funktion mit dem Bezeichner <code>sqrt()</code>, welche die Wurzel des übergebenen Parameters berechnet.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> y <span class="ot">&lt;-</span> <span class="dv">9</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">sqrt</span>(y)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3</code></pre>
+</div>
+</div>
+<p>Im Beispiel wird zunächst dem Wert <span class="math inline">\(9\)</span> der Bezeichner <code>y</code> zugewiesen. Dieser wird dann an die Wurzelfunktion <code>sqrt()</code> übergeben.</p>
+<p>Ein etwas näher an der Anwendung liegendes Beispiel wäre beispielsweise die Berechnung des Mittelwerts oder die Summe der Datenreihe <span class="math inline">\((3, 5, 7)\)</span> sein. In <code>R</code> wird eine solche geordnete Reihe von Zahlen als Vektor repräsentiert. Um einen solchen Vektor zu erstellen wird wiederum eine Funktion <code>c()</code> (für concatenation) verwendet.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> z <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">7</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Mit dieser Anweisung hat <code>R</code> einen Vektor mit den drei Einträgen erstellt. Wir können jetzt den Mittelwert <span class="math inline">\(\bar{z} = \frac{1}{3}\sum_{i=1}^3z_i\)</span> mittels der Funktion <code>mean()</code> berechnen.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">mean</span>(z)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 5</code></pre>
+</div>
+</div>
+<p>Vielleicht interessiert uns jetzt nicht der Mittelwert sondern die Summe <span class="math inline">\(\bar{z} = \sum_{i=1}^3z_i\)</span>. Dafür können wir die <code>sum()</code> Funktion verwenden.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">sum</span>(z)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 15</code></pre>
+</div>
+</div>
+<p>Dies sind jetzt nur einige wenige Beispiele und einer der Skills im Umgang mit <code>R</code> besteht darin die Namen der Funktion sich zu merken. Dies kann am schnellesten durch den täglichen Umgang mit <code>R</code> erlernt werden. Am Besten ab heute.</p>
+</section>
+<section id="eigene-funktionen-schreiben" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="eigene-funktionen-schreiben"><span class="header-section-number">4.2</span> Eigene Funktionen schreiben</h2>
+<p>Im folgenden wird nur kurz examplarisch das Schreiben eigener Funktionen gezeigt, da damit deutlich tiefer in die Programmierung mit <code>R</code> eingestiegen werden muss, als dass zum jetzigen Zeitpunkt notwendig ist.</p>
+<p>Wollen wir zum Beispiel eine Funktion schreiben die den gewichteten Mittelwert aus zwei Werten berechnet mit den Gewichten <span class="math inline">\((\frac{1}{3},\frac{2}{3})\)</span>:</p>
+<p><span class="math display">\[\begin{equation*}
+f(x,y) = \frac{1}{3}x + \frac{2}{3}y
+\end{equation*}\]</span></p>
+<p>Dann könnten wir das in <code>R</code> wie folgt ausdrücken.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> mein_gewichteter_mittelwert <span class="ot">&lt;-</span> <span class="cf">function</span>(x,y) { </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   x<span class="sc">/</span><span class="dv">3</span> <span class="sc">+</span> <span class="dv">2</span><span class="sc">*</span>y<span class="sc">/</span><span class="dv">3</span> </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Um eine eigene Funktion zu defineren, muss das <em>Schlüsselworts</em> <code>function()</code> verwendet werden. Wenn <code>R</code> den Ausdruck <code>function</code> sieht, dann interpretiert es den Ausdruck als Definition einer neuen Funktion. Auf das Schlüsselwort folgen runde Klammern <code>()</code> die die benötigten Parameter der Funktion umschließen. Im Beispiel werden zwei Parameter definiert <span class="math inline">\(x\)</span> und <span class="math inline">\(y\)</span>. Die Namen der Parameter sind dabei vollkommen willkürlich und müssen lediglich zu späteren Ausdruck in der Funktion passen. Es folgen dann zwei geschweifte Klammern <code>{}</code> die den sogenannten Funktionskörper definieren. Im Funktionskörper ist die Funktionalität der Funktion hinterlegt. Konkret stehen hier die Ausdrücke mit derer die Funktion ihren Ergebniswert berechnen kann. Um die Funktion aufrufbar zu machen, braucht sie wieder einen Bezeichner. Dieser wird mittels des Zuweisungsoperators <code>&lt;-</code> definiert. In R-Studio sollte in der <strong>Environment</strong> nach dem Ausführen der Anweisung nun ein Eintrag mit dem Namen <code>mein_gewichteter_mittelwert</code> stehen. Der Name ist wiederum vollkommen willkürlich und es <code>R</code> kontrolliert nicht ob mein Bezeichner semantisch dem entspricht was die Funktion berechnet.</p>
+<p>Nachdem ich die Funktion definiert habe, kann ich sie wie jeder andere Funktion aufrufen. Bei Aufrufen der Funktion werden die Parameter entsprechend der übergegebenen Werte in den Klammern im Funktionskörper ersetzt. Und <code>R</code> führt die Anweisungen im Funktionskörper aus. Der Rückgabewert der Funktion ist die letzte Anweisung des Funktionskörpers. Im vorliegenden Beispiel, da es nur eine Anweisung gibt, wird dieser Wert zurück gegeben.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">mein_gewichteter_mittelwert</span>(<span class="dv">3</span>,<span class="dv">6</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 5</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Hinweis
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Was die letzte Anweisung für den Rückgabewert bedeutet ist etwas einfacher zu sehen, wenn wir die Funktion etwas kompliziert schreiben.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> mein_gewichteter_mittelwert_2 <span class="ot">&lt;-</span> <span class="cf">function</span>(x,y) { </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   a <span class="ot">&lt;-</span> x<span class="sc">/</span><span class="dv">3</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   b <span class="ot">&lt;-</span> <span class="dv">2</span><span class="sc">*</span>y<span class="sc">/</span><span class="dv">3</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   a <span class="sc">+</span> b</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">mein_gewichteter_mittelwert_2</span>(<span class="dv">3</span>,<span class="dv">6</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 5</code></pre>
+</div>
+</div>
+<p>Hier haben wir mit <code>a</code> und <code>b</code> zunächst zwei Zwischenberechnung durchgeführt und dann in der letzten Anweisung das Ergebnis für den Rückgabewert berechnet.</p>
+</div>
+</div>
+<p>Wer tiefer in die Programmierung von Funktion in <code>R</code> einsteigen möchte, sollte sich <a href="https://r4ds.hadley.nz/functions.html">R4DS</a> und <a href="https://adv-r.hadley.nz/functions.html">Advanced R</a> anschauen.</p>
+</section>
+<section id="funktionen-in-r-paketen" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="funktionen-in-r-paketen"><span class="header-section-number">4.3</span> Funktionen in <code>R</code>-Paketen</h2>
+<p>Sollte sich der Fall ergeben, dass keine geeignete Funktion mit <code>R</code> mitgeliefert wird, dann können Zusatzfunktionen mittels sogenannter Pakete installiert werden. Ein Paket kann dabei als eine Sammlung von Funktionen und Anweisungen angesehen werden mit deren Hilfe die Funktionalität von <code>R</code> erweitert werden kann. Daher wird zunächst Information darüber benötigt, in welchem Paket die gewünschte Funktionalität vorhanden ist. Hierfür reicht meistens eine kurze Suche mittels Google aus.</p>
+<p>Ist das Paket nun bekannt, dann sind zwei Schritte zunächst durchzuführen. Wobei der 1. Schritt nur beim ersten Mal durchgeführt werden muss. Zunächst muss das benötigte Paket in der lokalen, d.h. derjenigen auf dem Rechner laufenden, <code>R</code>-Umgebung installiert werden, wenn es noch nicht bereits vorher installiert wurde (in R-Studio: Reiter unten-links <strong>Packages</strong>).</p>
+<p>Ein Paket kann mittels des Befehlt <code>install.packages()</code> installiert werden. Der Name des Paket muss in Gänsefüßchen an die Funktion übergeben werden. Wollen wir beispielsweise das Paket <code>performance</code> installieren, führen wir den folgenden Befehl aus.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">install.packages</span>(<span class="st">"performance"</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>R</code> kontaktiert im Hintergrund den CRAN-Server und lädt das Paket sowie benötigte Abhängigkeiten automatisch herunter. Wenn alles gut läuft, dann ist das Paket nun in der lokalen Umgebung <em>installiert</em>. Die Funktionalität des Paket steht jedoch noch nicht direkt zur Verfügung! Sondern, das Paket muss mit einem weiteren Befehl in die derzeit aktive Arbeitsumgebung geladen werden.</p>
+<p>Um das Paket in die aktive Arbeitsumgebung zu laden wird gibt es zwei Befehle in <code>R</code>, <code>library()</code> und <code>require()</code>. Bei <code>require()</code> überprüft <code>R</code> zunächst ob das Paket schon geladen wurde, während bei <code>library()</code> das Paket einfach geladen wird. Um die Funktionalität von <code>performance</code> jetzt in der aktiven Session zu nutzen, kann dementsprechend <code>library()</code> benutzt werden.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">library</span>(performance)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Dieser zweite Schritt des Paket laden, muss jedes mal nach einen Neustart von <code>R</code> wieder durchgeführt werden. Zusatzpakete werden durch <code>R</code> beim Start nicht automatisch geladen.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tipp
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Neue Pakete müssen nur beim ersten Mal neu installiert werden. Danach immer nur noch entweder mit <code>library()</code> oder <code>require()</code> geladen werden.</p>
+</div>
+</div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -782,13 +974,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./index.html" class="pagination-link" aria-label="Vorwort">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Vorwort</span>
+      <a href="./r_flowcontrol.html" class="pagination-link" aria-label="Ablaufkontrolle">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Ablaufkontrolle</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./r_intro.html" class="pagination-link" aria-label="Eine Übersicht über `R`">
-        <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Eine Übersicht über <code>R</code></span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./r_tidyverse.html" class="pagination-link" aria-label="Einfache Datenbearbeitung in `R`">
+        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Einfache Datenbearbeitung in <code>R</code></span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
