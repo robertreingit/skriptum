@@ -1,22 +1,22 @@
 # Literate programming in `R`
 
-Literate programming ist eine Methode, um Programmcode und Dokumentation in einer natürlichen Sprache miteinander zu verbinden. Dabei wird der Programmiercode in kleine, verständliche Einheiten (sogenannte Chunks) unterteilt, die mit Kommentaren und Erklärungen versehen werden. Diese Einheiten werden dann in einer logischen Reihenfolge angeordnet, die dem Leser den Zweck und die Funktionsweise des Programms vermittelt. Literate programming fördert die Wiederverwendbarkeit, Lesbarkeit und Wartbarkeit von Code. Dies bietet darüber hinaus auch die Möglichkeit dynamische Dokumente aus `R` heraus zu generieren bei denen Daten, deren Verarbeitung und die Dokumentation und Interpretation in einer Einheit integriert sind. Letztendlich entsteht so die Möglichkeit auch direkt fertig formatierte Publikationen aus `R` heraus zu generieren.
+Beim Literate programming wird Programmcode und Dokumentation miteinander kombiniert, dabei entsteht ein Dokument das eine Mischung Code und Dokumentation ist. Der Programmiercode wird in kleine, verständliche Einheiten (sogenannte Chunks) unterteilt, diese Chunks werden mit Kommentaren und Erklärungen versehen. Diese Einheiten werden dann in einer logischen Reihenfolge angeordnet, die dem Leser den Zweck und die Funktionsweise des Programms vermittelt. Dadurch fördert Literate programming die Wiederverwendbarkeit, Lesbarkeit und Wartbarkeit von Code. Im Rahmen von Datenanalysen entsteht so ein dynamisches Dokument das alle Analyseschritte durchführt und auch gleichzeitig diese Dokumentiert bzw. beschreibt. Dies kann direkt aus `R` heraus generiert werden. Dies führt dazu, dass Daten, deren Verarbeitung und die Dokumentation und Interpretation in einer Einheit integriert sind. Letztendlich entsteht so die Möglichkeit auch direkt fertig formatierte Publikationen aus `R` heraus zu generieren.
 
-In `R` gibt es derzeit drei, eigentlich zweieinhalb, verschiedene Methoden um literatue programming durchzuführen. Das klassische RSweave-Format, dass auf der Integration von `R`-Code und *LaTex* beruht, das modernere RMarkdown bei dem `R`-Code und Markdown-Syntax miteinander verbunden werden und die überarbeitete Version von RMarkdown genannt Quarto-Dokumenten, bei denen ebenfalls `R`-Code mit Markdown integriert wird und mittels einer YAML-Syntax gesteuert wird. Wir werden uns mit der neuesten Variante, den Quarto-Dokumenten beschäftigen.
+In `R` gibt es derzeit drei, eigentlich zweieinhalb, verschiedene Methoden um Literatue Programming durchzuführen. Das klassische RSweave-Format, dass auf der Integration von `R`-Code und *LaTex* beruht, das modernere RMarkdown bei dem `R`-Code und Markdown-Syntax miteinander verbunden werden und die überarbeitete Version von RMarkdown genannt Quarto. Bei Quarto wird wie bei RMarkdown `R`-Code mit Markdown integriert und mittels spezieller Angaben in einem Header in der sogenannten YAML-Syntax gesteuert. Im Rahmen des Skripts beschäftigen wir uns nur mit Quarto. 
 
-Bei Quarto handelt es sich um ein Open-Source System für wissenschaftliche und technische Veröffentlichungen. Mittels Quarto eine ganze Reihe von unterschiedlichen Dokumenten erstellt werden von Zeitschriftenartikel, über Bücher bis zu kompletten Webseiten. Tatsächlich ist auch das vorliegende Skriptum ebenfalls mit Quarto erstellt.
+Allgemein handelt es sich bei Quarto um ein Open-Source System für wissenschaftliche und technische Veröffentlichungen welches Literate Programming implementiert. Mittels Quarto können eine ganze Reihe von unterschiedlichen Dokumenten erstellt werden von wissenschaftlichen Zeitschriftenartikel bis zu kompletten Bücher und Webseiten. Tatsächlich ist das vorliegende Skriptum ebenfalls mit Quarto erstellt worden.
 
 ## `R` Projekte
 
 Bevor wir mit Quarto anfangen, lernen wir kurz noch `R`-Projekte kennen, da diese eine deutliche Vereinfachung des Arbeitsprozesses mit `R` ermöglichen.
 
-Wenn ihr eine Datenanalyse durchführt, ist es von großem Vorteil wenn alle für die Analyse notwendigen Informationen wie Daten, Ergebnisse, Zwischenrechnungen usw. irgendwo zusammen liegen. Am einfachsten in einem Verzeichnisordner den ihr mit Unterordnern weiter strukturiert. So kann sicher gestellt werden, dass wenn ihr zu einem späteren Zeitpunkt zu eurem Projekt wieder zurückkehrt ihr dort weitermachen könnt wo ihr vorher aufgehört hat. In `R` gibt es einen Prozess der diese Arbeitsweise stärker formalisiert. Dazu könnt ihr in RStudio ein **project** erstellen.
+Wenn eine Datenanalyse durchführt wird, ist es von großem Vorteil wenn alle für die Analyse notwendigen Informationen wie Daten, Ergebnisse, Zwischenrechnungen usw. an einem gemeinsamen Ort abgespeichert sind. Eine einfache Lösung bietet eine dedizierter Verzeichnisordner der mit Unterordnern so strukturiert ist, dass die Projektdateien systematisch organisiert sind und am Besten bestimmten (möglicherweise eigenen) Konvention folgt. So kann sicher gestellt werden, dass wenn Analysen zu späteren Zeitpunkten wieder durchgeführt werden nahtlos an den letzten Stand angeknüpft werden kann. In RStudio ist speziell zu diesem Zweck ein Prozess erstellt worden der diesen Ansatz formalisiert. RStudio bietet dazu die Möglichkeit ein **Project** zu erstellen. Unter (File/New Project) kann dazu ein Projekt erstellt werden.
 
-Sobald ihr ein Projekt mit RStudio erstellt habt, d.h. einen Namen für das Projekt und ein Verzeichnis, das Wurzelverzeichnis,  gewählt hat, springt `R` in das Wurzelverzeichnis und macht dieses zum Arbeitsverzeichnis. Im Wurzelverzeichnis könnt ihr weitere Unterverzeichniss wie zum Beispiel *data*, *specs* oder was auch immer ihr benötigt erstellen. In RStudio könnt ihr das Projekt öffnen oder schließen, je nachdem was ihr gerade machen wollt. Bei Öffnen sprint `R` immer ins Wurzelverzeichnis.
+Sobald ein Projekt in RStudio erstellt wurde, d.h. ein Namen vergeben wurde und ein Verzeichnis, das Wurzelverzeichnis,  ausgewählt wurde wo das Projekt auf dem Computer hinterlegt ist, springt `R` in dieses Wurzelverzeichnis und macht das Verzeichnis zum Arbeitsverzeichnis. Da das Wurzelverzeichnis nichts von Standardverzeichnissen auf dem Computer unterscheidet können weitere Unterverzeichniss wie zum Beispiel *data*, *specs*, *analysis* oder was auch immer benötigt wird beliebig erstellen werden. Das Projekt kann in RStudio geöffnet oder geschlossen werden. Beim Öffnen springt `R` immer automatisch in das Wurzelverzeichnis und stellt so sicher, dass alle relativen Pfade zu Dateien korrekt aufgelöst werden können.
 
-Eine Regel solltet ihr im Umgang mit Projekten beachten. Wann immer ihr auf eine Datei zugreifen wollt, dann solltet ihr relative Pfadangabe verwenden. Also, anstatt `D:/studium/master/data/studie_01.txt`, wenn euer Projektverzeichnis master ist, einfach `/data/studie_01.txt`. Wenn ihr relative Pfade benutzt, hat dies nämlich den Vorteil, dass ihr euer Projekt problemlos zwischen Rechnern transferieren (migrieren) könnt. Die relativen Pfade stellen sicher, dass die Position von Dateien immer in Relation zum Wurzelverzeichnis des Projekt lokalisiert werden.
+Eine Regel sollte im Umgang mit Projekten beachtet werden. Wann immer auf eine Datei zugriffen wird, dann sollten relative Pfadangabe verwendet werden. Also, anstatt `D:/studium/master/data/studie_01.txt`, Pfade in der Form  `/data/studie_01.txt`. Durch die Verwendung von relativen Pfade, können Projekte problemlos zwischen Rechnern transferieren (migriert) werden. Die relativen Pfade stellen sicher, dass die Position von Dateien immer in Relation zum Wurzelverzeichnis des Projekt lokalisiert werden.
 
-Wenn ihr ein Projekt in RStudio neu erstellt, dann generiert RStudio eine Konfigurationsdatei mit der Endung `.Rproj` in der noch weitere Einstellungen gespeichert werden. Ihr könnt die Projekteinstellungen über den Menupunkt (Tools/Project Options) anpassen.
+Wenn ein Projekt in RStudio neu erstellt wird, dann generiert RStudio eine Konfigurationsdatei mit der Endung `.Rproj` in der noch weitere Einstellungen gespeichert werden. Diese können über die Projekteinstellungen über den Menupunkt (Tools/Project Options) anpassen.
 
 ## Quarto-Dokumente
 
@@ -26,22 +26,22 @@ Bei Quarto-Dokumenten handelt es sich um Dateien mit der Endung `.qmd`, die glei
 
 Soll zum Beispiel eine Wort fett gedruckt werden, dann wird das Wort mit zwei `**` eingeschlossen. In @tbl-markdown-text-formatting sind ein paar Beispiel angezeigt.
 
-+-----------------------------------------+-----------------------------------------+
-| Markdown Syntax                         | Formatierung                            |
-+=========================================+=========================================+
-|                                         | *kursiv*, **fett**, ***fett kursiv***   |
-| `*kursiv*, **fett**, ***fett kursiv***` |                                         |
-+-----------------------------------------+-----------------------------------------+
-|                                         | hochgestellt^2^ / tiefgestellt~2~       |
-| `hochgestellt^2^ / tiefgestellt~2~`     |                                         |
-+-----------------------------------------+-----------------------------------------+
-|                                         | ~~durchgestrichen~~                     |
-| `~~durchgestrichen~~`                   |                                         |
-+-----------------------------------------+-----------------------------------------+
++-----------------------+----------------------+
+| Markdown Syntax       | Formatierung         |
++=======================+======================+
+|                       | *kursiv*, **fett**,  |
+| `*kursiv*, **fett**,  |                      |
++-----------------------+----------------------+
+|                       | hoch^2^ , tief~2~    | 
+| `hoch^2^ , tief~2~`   |                      |                       
++-----------------------+----------------------+
+|                       | ~~durchgestrichen~~  |
+| `~~durchgestrichen~~` |                      |
++-----------------------+----------------------+
 
 : Beispiele für Textformatierung mit Markdown {#tbl-markdown-text-formatting}
 
-D.h. die Formatierung von Text wird mit solchen relativ einfach sich zu merkenden Sonderzeichen durchgeführt. So können beispielsweise Listen mittels der folgenden Formatierung definiert werden (siehe @tbl-markdown-lists).
+D.h. mittels Markdown wird die Formatierung von Text mit relativ einfach Sonderzeichen durchgeführt. So können beispielsweise Listen mittels der folgenden Formatierung definiert werden (siehe @tbl-markdown-lists).
 
 +-----------------------------------+-----------------------------------+
 | Markdown Syntax                   | Formatierung                      |
@@ -63,19 +63,19 @@ D.h. die Formatierung von Text wird mit solchen relativ einfach sich zu merkende
 
 : Beispiele für Listenformatierungen mit Markdown {#tbl-markdown-lists}
 
-Quarto bietet alle nur erdenklichen Formatierungsmöglichkeiten und Feinheiten um die gewünschten Formatierungen einzustellen. Daher wird im Rahmen dieses Skript nicht weiter darauf eingegangen werden. Da Quarto zudem ein noch relativ neues Projekt ist kommen immer wieder neue Features dazu. Daher ist die sehr gute Dokumentation von [Quarto](https://quarto.org/docs/guide/) immer die erste Adresse für alle Fragen.
+Markdown im Zusammenspiel mit Quarto bietet alle nur erdenklichen Formatierungsmöglichkeiten und Feinheiten um die gewünschten Formatierungen einzustellen. Da die verschiedenen Begriffe den Umfang des Skripts deutlich sprengen würden wird hier darauf verzichtet den gesamten Umfang von Quarto und Markdown zu beschreiben. Da Quarto zudem ein noch relativ neues Projekt ist kommen immer wieder neue Features dazu. Daher sollte die sehr gute Dokumentation von [Quarto](https://quarto.org/docs/guide/) immer die erste Adresse für alle Fragen sein. Der große Vorteil von Quarto + Markdown besteht letztendlich darin, dass alle Dokumente nichts weiteres als Textdateien sind und letztendlich nicht einmal nur mit RStudio bearbeitet werden müssen sondern mittels jedes beliebigen Texteditor erstellt und verändert werden können.
 
 ### `R`-Code in Quarto-Dokumenten
 
-`R` Code der ausgeführt werden soll wird in ein Quarto-Dokument mittels sogenannter Chunks (auch Code blocks genannt) integriert.
+D `R`-Code in Quarto-Dokumente integriert ist, schaun wir uns noch kurz die Erstellen von Chunks (auch Code blocks genannt) an.
 
-Solche Codeblöcke werden ebenfalls mittels spezieller Formatierungszeichen ausgezeichnet. Der Anfang eines Codeblocks wird mit drei backticks (SHIFT+´) gefolgt von `{r}` eingeleitet. Das Endes des Codeblock wird mittels dreier backticks abgeschlossen. ```` ```{r} R Code````). Diese Codeblöcke werden während des rendern, also des Formatierens des Quarto-Dokuments, intern mit `R` ausgeführt. 
+Von `R` auszuführende Codeblöcke werden ebenfalls mittels spezieller Formatierungszeichen ausgezeichnet. Der Anfang eines Codeblocks wird mit drei backticks (SHIFT+´) gefolgt von `{r}` eingeleitet. Das Endes des Codeblock wird mittels dreier backticks abgeschlossen. ```` ```{r} R Code````). Diese Codeblöcke werden während des rendern, also des Formatierens des Quarto-Dokuments, intern durch `R` ausgeführt. 
 
 ::: {.callout-tip}
 In R-Studio ist der short-cut {{< kbd win=STRG+SHIFT+i >}} definiert um einen Codeblock an der aktuellen Cursorposition einzufügen.
 :::
 
-Ein Beispiel für einen einfachen Codeblock sind dann wie folgt aus:
+Ein Beispiel für einen einfachen Codeblock sieht dann wie folgt aus:
 
 ```` markdown
 ```{{r}}
@@ -148,5 +148,4 @@ Die Daten zur Analyse befinden sich jetzt in der Variablen `bfp_clean`.
 ...
 ````
 
-Zu Beginn des Quarto-Dokuments findet sich ein Abschnitt der mit ```` --- ```` abgegrenzt ist. Dies ist der sogenannte YAML-Header. YAML ist ebenfalls eine einfache Auszeichnungssprache (**yet** **a**nother **m**arkup **l**anguage). Im Header werden verschiedene Formatierungseinstellung für das Quarto-Dokument definiert. Hier können zum Beispiel auch weitere Dokumente wie Zitationsbibliotheken und Zitationsstyle eingebunden werden, da Quarte Referenzen und Zitationen innerhalb der Dokumente unterstützt. Wie bereits erwähnt ist das Quarto-System sehr umfangreich und kann hier leider nicht weiter besprochen werden.
-
+Zu Beginn des Quarto-Dokuments findet sich ein Abschnitt der mit ```` --- ```` abgegrenzt ist. Dies ist der sogenannte YAML-Header. YAML ist ebenfalls eine einfache Auszeichnungssprache (**yet** **a**nother **m**arkup **l**anguage). Im Header werden verschiedene Formatierungseinstellung für das Quarto-Dokument definiert. Hier können zum Beispiel auch weitere Dokumente wie Zitationsbibliotheken und Zitationsstyle eingebunden werden, da Quarto die Integration von Referenzen und Zitationen innerhalb der Dokumente vollständig unterstützt. Wie bereits erwähnt ist das Quarto-System sehr umfangreich und kann hier leider nicht weiter besprochen werden.
