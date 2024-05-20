@@ -19,44 +19,77 @@ my_tbl <- function(df, header, caption='', ...) {
 }
 ```
 
-In den vorhergehenden Kapiteln zu CRD bzw. CRFD haben wir uns angeschaut, wie wir den Einfluss einer oder mehrerer nominaler, unabhängiger Variablen auf eine abhängige Variable modellieren können. In diesem Zusammenhang haben wir uns auch mit der Varianzzerlegung auseinandergesetzt und immer wieder gesehen, dass diese Zerlegung auch als der Vergleich von verschiedenen Modellen miteinander betrachtet werden kann. Im Rahmen der ANCOVA führen wir jetzt wieder eine kontinuierliche Variable in unser Modell ein, wie wir das schon im Rahmen der multiplen linearen Regression getan haben. Die zusätzlich kontinuierliche Variable spielt dabei die Rolle einer Kontrollvariable die Varianz von $Y$ erklärt aber wir gar nicht primär an dem Effekt dieser Variable interessiert sind. Beispielsweise in einer Untersuchung zu Trainingseffekten wissen wir, das das Alter der Teilnehmerinnen und Teilnehmer eine Rolle auf den Trainingseffekt hat. Daher macht es Sinn für den Effekt des Alters zu kontrollieren. Trotzdem interessieren wir uns primär für den Effekt des Trainings. Die Variable Alter wird in diesem Fall als Kovariate bezeichnet, wodurch sich auch die Namensgebung ANCOVA als Abkürzung für Analysis of Covariance herleitet. Welche Variablen die Rolle der primären Variablen und der Kovariaten spielen ist dabei von der konkreten Untersuchung abhängig und es kann genauso vorkommen, dass eine nominale Variable die Rolle der Kovariaten spielt und eine kontinuierliche Variable die Primärvariable ist.
+In den vorhergehenden Kapiteln zu CRD bzw. CRFD haben wir uns angeschaut, wie wir den Einfluss einer oder mehrerer nominaler, unabhängiger Variablen auf eine abhängige Variable modellieren können. In diesem Zusammenhang haben wir uns auch mit der Varianzzerlegung auseinandergesetzt und immer wieder gesehen, dass diese Zerlegung auch als der Vergleich von verschiedenen Modellen miteinander betrachtet werden kann. Im Rahmen der ANCOVA führen wir jetzt wieder eine kontinuierliche Variable in unser Modell ein, wie wir das schon im Rahmen der multiplen linearen Regression getan haben. Diese zusätzliche, kontinuierliche Variable spielt dabei die Rolle einer Kontrollvariablen. Mit Hilfe dieser Kontrollvariable soll ebenfalls Varianz von $Y$ erklärt werden. Der Effekt der Kontrollvariablen auf $Y$ ist allerdings nicht das Primärinteresse der Untersuchung sondern dient nur die Präzision des Modells zu erhöhen. Letztendlich führt dies dazu, dass auch die Power der Untersuchung erhöht wird.
 
-## Problem
+Ein Beispiel könnte eine Untersuchung zu Trainingseffekten sein. Aus der Literatur wissen wir bereits, das das Alter der Teilnehmerinnen und Teilnehmer eine Rolle auf den Trainingseffekt hat. Daher macht es Sinn für den Effekt des Alters im Rahmen der Modells zu kontrollieren. Das primäre Interessiere der Untersuchung liegt auf dem Effekt des Trainings. Die Variable Alter wird in diesem Fall als Kovariate bezeichnet, wodurch sich auch die Namensgebung ANCOVA als Abkürzung für Analysis of Covariance herleitet. Welche Variablen die Rolle der primären Variablen und der Kovariaten spielen ist dabei von der konkreten Untersuchung abhängig. Es kann genauso vorkommen, dass eine nominale Variable die Rolle der Kovariaten spielt und eine kontinuierliche Variable die Primärvariable der Untersuchung ist.
 
+Konzeptionell wird durch die Integration einer Kovariaten Information über Unterschiede zwischen den beiden Gruppen die vor der Beobachtungsphase bestehen in das Modell mit einbezogen. D.h. trotzdem wir die Beobachtungseinheiten randomisiert in beispielsweise zwei Gruppen unterteilt haben, wissen wir, das das Alter einen Effekt auf die abhängige Variable hat. Bei einer perfekten, randomisierten Zuweisung sollte das Alter eigentlich keinen mehr Einfluss haben, da beide Gruppen die gleiche Altersstruktur haben sollten. Trotzdem sind wir in der Lage die Einbeziehung zusätzliche Varianz aufzuklären und können so den Effekt der Primärvariablen hoffentlich besser isolieren. Oft kann zum Beispiel der Startwert der abhängigen Variable als Kovariate verwendet werden. Die Kovariate ist dann auf der gleichen Skala wie die Zielvariable.
 
-## Nuisance factor, concomitant variables, covariate
+::: {#exm-ancova-01}
+In @fien2019 wurde unter anderem der Einfluss einer Trainingsintervention auf die Gehgeschwindigkeit in einem zweiarmigen Untersuchungsdesign untersucht. Als Zielvariable wurde die Gehgeschwindigkeit nach der Interventionsphase verwendet. Um die bestehenden Unterschiede zwischen den Teilnehmerinnen und Teilnehmer vor der Untersuchung mit einzubeziehen, wurde die Gehgeschwindigkeit vor der Intervention als Kovariate verwendet.
+:::
+
+::: {#def-covariate}
+## Kovariate
+
+Eine Kovariate\index{Kovariate} ist eine Variable, die verwendet wird, um den Einfluss auf die abhängige Variable zu kontrollieren um genauere Schätzungen der Beziehungen zwischen den primären unabhängigen Variablen und der abhängigen Variable zu erhalten. 
+
+Alternativ werden in der Literatur auch die Begriffe Störvariable (engl. nuisance factor) oder concomitant variable (engl.) verwendet. Wenn die Kovariate auf der gleichen Skala wie die Primärvariable ist, wird sie auch als commensurate (engl.) bezeichnet.
+:::
+
+Beginnen wir mit einem einfachen konzeptionellen Modell (siehe @fig-ed-ancova-01).
 
 ```{r}
-#| fig-cap: "Zusammenhang einer abhängigen Variable mit einer Kovariate"
+#| fig-cap: "Zusammenhang einer abhängigen Variable mit einer Kovariate und einer nominalen Variable (treatment)"
+#| label: fig-ed-ancova-01
 
 dat_0 <- tibble(
   x = c(-1,1),
   A = 3*x,
   B = 3*x + 1
-) |> tidyr::pivot_longer(-x)
-ggplot(dat_0, aes(x, value, color=name)) +
-  geom_line(size=2) +
-  scale_x_continuous("Covariate", labels = NULL) +
+) |> tidyr::pivot_longer(-x, values_to='y')
+ggplot(dat_0, aes(x, y, color=name)) +
+  geom_line(linewidth=2) +
+  scale_x_continuous("Kovariate", labels = NULL) +
   scale_y_continuous("DV", labels = NULL) +
   scale_color_discrete("Treatment") 
 ```
 
-## Terminologie{.t}
+@fig-ed-ancova-01 zeigt den Zusammenhang zwischen zwei Gruppen $A$ und $B$ und einer abhängigen Variablen DV sowie den Zusammenhang einer Kovariate ($x$-Achse) mit DV. Zwischen der Kovariaten und der DV besteht ein positiver Zusammenhang und der Effekt von Treatment $A$ ist kleiner als derjenige von Treatment $B$. Der Effekt der Kovariaten ist dabei in beiden Gruppen gleich und es besteht keine Interaktion zwischen der Kovariaten und den Gruppen. Dies führt dazu, dass die beiden Geraden parallel zueinander sind. Letztendlich haben wir dieses Modell schon bei der Besprechung der Intergration von nominalen Variablen in das multiple Regressionsmodell behandelt.
 
-- commensurate covariates
-  - Variablen auf der gleichen Skala wie die DV
-- Unterscheidung zwischen
-  - Kovariate für das Untersuchungsdesign
-  - Kovariate für die Analyse der Daten
-
-\vspace{1cm}
-
-*Wie würden sich die Gruppen unterscheiden, wenn sie die gleichen Werte in der Kovariate hätten?*
-
-## Probleme
+Wenn wir die beiden Gruppen miteinander vergleich sind mehrer unterschiedliche Vergleiche möglich. Nehmen wir zum Beispiel einen Datenpunkt $P1$ aus Gruppe $A$. Dann können wir den $P1$ mit mehreren verschiedenen Datenpunkten aus Gruppe $B$ vergleichen. In @fig-ed-ancova-02 sind drei mögliche Vergleiche eingezeichnet.
 
 ```{r}
-#| fig.cap="Probleme durch die Kovariate"
+#| fig-cap: "Verschiedene Vergleiche der beiden Gruppen miteinander"
+#| label: fig-ed-ancova-02
+
+df_pts <- tibble(x = rep(0,3), xend = c(-.5,0,.5),
+                 y = rep(0,3), yend = c(-.5,1,2.5))
+ggplot(dat_0, aes(x, y, color=name)) +
+  geom_line(linewidth=2) +
+  geom_point(data = df_pts, aes(x=xend, y=yend), color = 'red', size=3) +
+  scale_x_continuous("Kovariate", labels = NULL) +
+  scale_y_continuous("DV", labels = NULL) +
+  scale_color_discrete("Treatment") +
+  annotate("segment", x = rep(0,3),
+            y = rep(0,3), 
+            xend = c(-.5,0,.5),
+            yend = c(-.5,1,2.5),
+            arrow = arrow(length=unit(.08, 'inch'), ends = 'both',
+                          type='closed')) +
+  annotate("label", x = 0, y = 0, label = 'P1')
+
+```
+
+Letztendlich erscheint aber nur einer der Vergleiche sinnvoll, nämlich der Vergleich wenn die beiden Gruppenwerte den gleichen Wert in der Kovariate haben. Wäre zum Beispiel die Kovariate das Alter, dann würde ein Vergleich von zwei Personen die sich im Alter unterscheiden wenig sinnvoll da nicht klar ist ob der Unterschied in der abhängigen Variable auf den Unterschied im Alter oder auf den Unterschied im Treatment zurück zu führen ist. Genau dieses Problem wird mit Hilfe der ANCOVA gelöst und die ANCOVA liefert eine Antwort auf die Frage:
+
+*Wie unterschieden sich die Gruppen voneinander, wenn sie die gleichen Werte in der Kovariate hätten?*
+
+Schauen wir uns ein weiteres Beispiel an. In @fig-ed-ancova-03 sind diesmal Datenpunkte eingezeichnet und scheinbar ist bei der Zuweisung der Teilnehmerinnen und Teilnehmer etwas grundsätzlich schief gelaufen.
+
+```{r}
+#| fig-cap: "Probleme durch die Kovariate"
+#| label: fig-ed-ancova-03
 
 set.seed(1)
 slope <- 0.2
@@ -67,39 +100,101 @@ dat_1 <- tibble(
   trt_f = factor(trt, labels=c('A','B')),
   y = slope * x + trt + rnorm(16, 0, sd=1),
 )
+p1 <- ggplot(dat_1, aes(x, y, color=trt_f)) +
+  geom_point(size=3) +
+  geom_abline(slope = slope, linetype='dashed') +
+  geom_abline(slope = slope, intercept = trt, linetype='dashed') +
+  scale_x_continuous("Kovariate", labels = NULL) +
+  scale_y_continuous("DV", labels = NULL) +
+  scale_color_discrete("Treatment") 
+p1
+```
+
+Die Personen in Gruppe $B$ haben alle einen kleineren Wert in der Kovariate als die Personen in Gruppe $A$. Gleichzeitig hat die Kovariate aber einen positiven Einfluss auf die DV. Hätte wir keine Information über die Kovariate und würden die beiden Gruppenmittelwerte miteinander vergleichen, dann würden wir wahrscheinlich keinen Unterschied zwischen den beiden Gruppen finden (siehe @fig-ed-ancova-04). 
+
+```{r}
+#| fig-cap: "Mittelwerte der Gruppen (schwarze Punkte) mit unterschiedlichen Kovariaten"
+#| label: fig-ed-ancova-04
+
+dat_1_bar <- dat_1 |> group_by(trt_f) |>
+    summarize(y = mean(y), x = mean(x))
+p1 + 
+  geom_point(data = dat_1_bar, color='black', size=4)
+```
+
+Um die beiden Gruppen miteinander vergleichen zu können müssten wir die Unterschiede in den Mittelwerten der Kovariaten korrigieren um die Gruppen zu vergleichen wenn sie die gleiche Verteilung in der Kovariaten hätten.
+
+```{r}
+#| fig-cap: "Vergleich der Gruppen bei koorigierten Kovariaten"
+#| label: fig-ed-ancova-05
+
 ggplot(dat_1, aes(x, y, color=trt_f)) +
   geom_point(size=3) +
   geom_abline(slope = slope, linetype='dashed') +
   geom_abline(slope = slope, intercept = trt, linetype='dashed') +
-  scale_x_continuous("Covariate", labels = NULL) +
-  scale_y_continuous("DV", labels = NULL) +
-  scale_color_discrete("Treatment") 
+  scale_x_continuous("Kovariate", labels = NULL) +
+  scale_y_continuous("DV", labels = NULL, limits = c(0,25)) +
+  scale_color_discrete("Treatment") +
+  geom_point(data = dat_1 |> group_by(trt_f) |>
+    summarize(y = mean(y), x = mean(x)), color='black', size=4) +
+  annotate(geom = 'segment', x = dat_1_bar$x[1], xend = dat_1_bar$x[1],
+          y = dat_1_bar$y[1], yend = dat_1_bar$y[1]+7,
+          arrow = arrow(type = 'closed', length=unit(.15,'inch'))) +
+  annotate(geom = 'segment', x = dat_1_bar$x[2], xend = dat_1_bar$x[2],
+          y = dat_1_bar$y[2], yend = dat_1_bar$y[2]-7,
+          arrow = arrow(type = 'closed', length=unit(.15,'inch')))
 ```
 
+In @fig-ed-ancova-05 sind die eigentlich sinnvollen Vergleiche angezeigt. Dabei wird auch noch einmal klar, dass in diesem Modell sobald wir für die Werte der Kovariaten kontrolliert haben, die Position des Vergleichs unerheblich ist, da wir von einem Modell ausgehen, bei dem der Effekt der Kovariaten in beiden Gruppen gleich ist. Dies führt zu den parallelen Linien.
 
-## Modell
+## Modell der ANCOVA
 
-### Parallel line model
+Übertragen wir die Beispiele in eine Modellformulierung. Letztendlich können wir, wie schon angemerkt, das uns schon bekannte Modell aus der multiple linearen Regression anwenden.
 
-$$
-Y_{it} = \mu + \tau_i + \beta x_{it} + \epsilon_{it} \quad \epsilon_{it} \sim \mathcal{N}(0,\sigma^2)
-$$
+\begin{equation}
+Y_{it} = \mu + \tau_i + \beta x_{it} + \epsilon_{it} \quad \epsilon_{it} \sim \mathcal{N}(0,\sigma^2), i = 1,\ldots,K
+\label{eq-ed-ancova-model}
+\end{equation}
 
-### Centered model
+In Model \eqref{eq-ed-ancova-model} kommt dementsprechend nichts Neues dazu, sondern unser standard lineares Modell. Der einzige Unterschied besteht in der Terminologie, während wir vorher $\alpha_i$ für die nominale Variable verwendet haben, wird der nominale Faktor im ANCOVA-Modell $\tau_i$ bezeichnet. Das sind aber nur Unterschied in den Buchstaben die leider auch nicht konsequent in der Literatur verwendet werden.
 
-$$
+Um die spätere Interpretation der Koeffizienten zu vereinfachen, wird auch oft ein in der Kovariaten zentriertes Modell verwendet. Dies hat jedoch keine Auswirkung auf das Ergebnis.
+
+\begin{equation}
 Y_{it} = \mu^* + \tau_i + \beta (x_{it} - \bar{x}_{..}) + \epsilon_{it}
-$$
+\label{eq-ed-ancova-model-c}
+\end{equation}
 
-## Voraussetzungen
+Entsprechend ergeben sich auch keine unbekannten Voraussetzungen:
 
-- Experimental units sind randomisiert in die Gruppen eingeteilt worden
+- Experimental units sind randomisiert den $K$ Gruppen zugewiesen worden
 - Varianz $\sigma^2$ ist konstant über Gruppen und Werte der Kovariate
 - Die Kovariate und das Treatment sind statistisch unabhängig voneinander
 
-## Beispiel^[nach @maxwell2004]
+Der der ANCOVA zugrundeliegende Test beruht dann wie immer auf einen  Modellvergleich eines vollen Modell (Model \eqref{eq-ed-ancova-model}) mit einem reduzierten Modell. Das reduzierte Modell beinhaltet dann nur die Kovariate, da wir den Unterschied in Bezug auf den Effekt der Primärvariable überprüfen wollen.
+
+\begin{align*}
+y_{ij} &= \mu + \tau_{j} + \beta X_{ij} + \epsilon_{ij} \quad \text{full} \\
+y_{ij} &= \mu + \beta X_{ij} + \epsilon_{ij} \quad \text{reduced}
+\end{align*}
+
+Das Ergebnis der Analyse wird oft auch in Form einer Varianz-Tabelle dargestellt (siehe @tbl-ed-ancova-ssq).
+
+| Term | $df$ | $SSQ$ | $MSQ$ | F |
+| --- | --- | --- | --- | --- |
+| $T|\beta$ | $K-1$ | $ss(T|\beta)$ | $\frac{ss(T|\beta)}{K-1}$ | $\frac{ms(T|\beta)}{msE}$ |
+| $\beta|T$ | $1$ | $ss(\beta|T)$ | $\frac{ss(\beta|T)}{1}$ | $\frac{ms(\beta|T)}{msE}$ |
+| Error | $N-K-1$ | $ssE$ | $msE$ |  |
+
+: Varianztabelle der ANCOVA {#tbl-ed-ancova-ssq} 
+
+Die Schreibweise $T|\beta$ bzw. $\beta|T$ bedeutet dabei nachdem der Effekt der Variable vor dem $|$ nachdem für die Variable nach $|$ kontrolliert wurde. Wir werden gleich noch sehen, was dies im einzelnen bedeutet. Schauen wir uns ein Beispiel an. 
+
+In @tbl-ed-ancova-max-01 ist ein Beispieldatensatz nach @maxwell2004 tabellelarisch abgebildet.
 
 ```{r}
+#| tbl-cap: "Ein einfacher ANCOVA-Datensatz"
+#| label: tbl-ed-ancova-max-01
 bw <- tibble(
   id = paste0('S', 1:6),
   group = rep(c('TRT','CON'), each=3),
@@ -107,24 +202,14 @@ bw <- tibble(
   y = c(4,9,8,12,11,16)
 )
 bw |> knitr::kable(
-  col.names=c('ID','Gruppe','X','Y'),
+  col.names=c('ID','Gruppe','x','y'),
   caption="Beispieldaten",
   linesep = "",
   booktabs = TRUE
 )
 ```
 
-## Modellvergleich
-
-### Volles Modell
-$$
-y_{ij} = \mu + \tau_{j} + \beta X_{ij} + \epsilon_{ij}
-$$
-
-### Reduziertes Modell
-$$
-y_{ij} = \mu + \beta X_{ij} + \epsilon_{ij}
-$$
+Wir haben zwei Gruppen (TRT und Kontroll) mit jeweils $N = 3$ die auf einer Kovariate $x$ gemessen wurden.
 
 
 ## Berechnung und statistischer Test
@@ -482,6 +567,9 @@ bdi_em <- emmeans(mod_bdi, ~Condition)
 pairs(bdi_em, infer=T)
 ```
 
+- Unterscheidung zwischen
+  - Kovariate für das Untersuchungsdesign
+  - Kovariate für die Analyse der Daten
 
 ## Zum Nachlesen
 
