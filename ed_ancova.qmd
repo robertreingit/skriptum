@@ -178,6 +178,20 @@ y_{ij} &= \mu + \tau_{j} + \beta X_{ij} + \epsilon_{ij} \quad \text{full} \\
 y_{ij} &= \mu + \beta X_{ij} + \epsilon_{ij} \quad \text{reduced}
 \end{align*}
 
+Die $H_0$ für den Treatmenteffekt ist:
+
+\begin{equation*}
+H_0: \tau_1 = \tau_2 = \cdots = tau_K = 0
+\end{equation*}
+
+Der Unterschied zwischen den Treatmentstufen wird dabei für den Wert $\bar{x}_{..}$, als den Mittelwert der Kovariate über alle Gruppenhinweg bestimmt.
+
+Die $H_0$ für die Kovariate ist:
+
+\begin{equation*}
+H_0: \beta = 0
+\end{*equation}
+
 Das Ergebnis der Analyse wird oft auch in Form einer Varianz-Tabelle dargestellt (siehe @tbl-ed-ancova-ssq).
 
 | Term | $df$ | $SSQ$ | $MSQ$ | F |
@@ -188,9 +202,9 @@ Das Ergebnis der Analyse wird oft auch in Form einer Varianz-Tabelle dargestellt
 
 : Varianztabelle der ANCOVA {#tbl-ed-ancova-ssq} 
 
-Die Schreibweise $T|\beta$ bzw. $\beta|T$ bedeutet dabei nachdem der Effekt der Variable vor dem $|$ nachdem für die Variable nach $|$ kontrolliert wurde. Wir werden gleich noch sehen, was dies im einzelnen bedeutet. Schauen wir uns ein Beispiel an. 
+Die Schreibweise $T|\beta$ bezeichnet den Effekt des Treatments nachdem für die Kovariate kontrolliert wurde während $\beta|T$ den Effekt der Kovariate nachdem für das Treatment kontrolliert wurde beschreibt. 
 
-In @tbl-ed-ancova-max-01 ist ein Beispieldatensatz nach @maxwell2004 tabellelarisch abgebildet.
+Schauen wir uns dies in einem Spielzeugbeispiel an. In @tbl-ed-ancova-max-01 ist ein Beispieldatensatz aus @maxwell2004 tabellelarisch abgebildet.
 
 ```{r}
 #| tbl-cap: "Ein einfacher ANCOVA-Datensatz"
@@ -211,9 +225,11 @@ bw |> knitr::kable(
 
 Wir haben zwei Gruppen (TRT und Kontroll) mit jeweils $N = 3$ die auf einer Kovariate $x$ gemessen wurden.
 
-
 ## Berechnung und statistischer Test
-```{r, eval=F, echo=T}
+```{r}
+#| eval: false
+#| echo: true
+
 mod_0 <- lm(y ~ x, bw)
 mod_1 <- lm(y ~ x + group, bw)
 anova(mod_0, mod_1)
@@ -229,7 +245,10 @@ broom::tidy(anova(mod_0, mod_1)) |>
 ```
 
 ## Oder auch mit `aov()`
-```{r, eval=F, echo=T}
+```{r}
+#| eval: false
+#| echo: true
+
 mod_aov <- aov(y ~ x + group, bw)
 summary(mod_aov)
 ```
@@ -244,7 +263,10 @@ broom::tidy(mod_aov) |>
 
 ## Aber...???
 
-```{r, echo=T, eval=F}
+```{r}
+#| echo: true
+#| eval: false
+
 mod_aov <- aov(y ~ group, bw)
 summary(mod_aov)
 ```
@@ -261,8 +283,8 @@ broom::tidy(mod_aov) |>
 :::: columns
 ::: column
 ```{r}
-#| fig.cap="ANOVA-Modell",
-#| fig.height=4
+#| fig-cap: "ANOVA-Modell"
+#| fig-height: 4
 
 ggplot(bw, aes(x, y)) +
   geom_point(aes(pch=group), size=4) +
@@ -272,8 +294,8 @@ ggplot(bw, aes(x, y)) +
 :::
 ::: column
 ```{r}
-#| fig.cap="ANCOVA-Modell",
-#| fig.height=4
+#| fig-cap: "ANCOVA-Modell"
+#| fig-height: 4
 
 ggplot(bw, aes(x,y,color=group)) +
   geom_point(size=4) +
@@ -290,7 +312,9 @@ $$
 E[\bar{Y}_{i.}] = \mu + \tau_i + \beta\bar{x}_{..})
 $$
 
-```{r, echo=T}
+```{r}
+#| echo: true
+
 x_new <- tibble(x = mean(bw$x), group=c('TRT','CON'))
 y_bar_j <- predict(mod_1, newdata = x_new)
 y_bar_j
@@ -299,7 +323,8 @@ y_bar_j
 ## Adjusted means im Beispiel
 
 ```{r}
-#| fig.cap="Korrigierte Mittelwerte der Gruppen bei $\\bar{x}$."
+#| fig-cap: "Korrigierte Mittelwerte der Gruppen bei $\\bar{x}$."
+
 mod_slopes <- tibble(
   x = rep(coef(mod_1)[2],2),
   y = c(coef(mod_1)[1] + c(0, coef(mod_1)[3])),
@@ -315,7 +340,9 @@ ggplot(bw, aes(x,y,shape=group)) +
 
 ## ... oder Adjusted means mit `emmeans()`
 
-```{r, echo=T}
+```{r}
+#| echo: true
+
 y_bar_j2 <- emmeans::emmeans(mod_1, ~group)
 y_bar_j2
 ```
@@ -326,8 +353,8 @@ y_bar_j2
 :::: columns
 ::: column
 ```{r}
-#| fig.height=4,
-#| fig.cap="Effekt verkleinert sich"
+#| fig-height: 4
+#| fig-cap: "Effekt verkleinert sich"
  
 gg_adjust <- function(y_1=1) {
 df_g <- tibble(
@@ -369,8 +396,8 @@ gg_adjust()
 :::
 ::: column
 ```{r}
-#| fig.height=4,
-#| fig.cap="Effekt vergrößert sich"
+#| fig-height: 4
+#| fig-cap: "Effekt vergrößert sich"
 
 gg_adjust(3.5)
 ```
@@ -448,7 +475,7 @@ pwr::pwr.anova.test(k=2, f=0.47, sig.level=0.05, power=0.8)$n
 ## Was passiert wenn die Kovariate interagiert
 
 ```{r}
-#| fig.cap="Beispiel für einen Interaktionseffekt zwischen der Treatmentvariablen und der Kovariate"
+#| fig-cap: "Beispiel für einen Interaktionseffekt zwischen der Treatmentvariablen und der Kovariate"
  
 
 n <- 60
