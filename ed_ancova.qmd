@@ -190,7 +190,7 @@ Die $H_0$ für die Kovariate ist:
 
 \begin{equation*}
 H_0: \beta = 0
-\end{*equation}
+\end{equation*}
 
 Das Ergebnis der Analyse wird oft auch in Form einer Varianz-Tabelle dargestellt (siehe @tbl-ed-ancova-ssq).
 
@@ -215,7 +215,7 @@ bw <- tibble(
   x = c(1,2,3,3,4,5),
   y = c(4,9,8,12,11,16)
 )
-bw |> knitr::kable(
+bw |> kable(
   col.names=c('ID','Gruppe','x','y'),
   caption="Beispieldaten",
   linesep = "",
@@ -223,17 +223,9 @@ bw |> knitr::kable(
 )
 ```
 
-Wir haben zwei Gruppen (TRT und Kontroll) mit jeweils $N = 3$ die auf einer Kovariate $x$ gemessen wurden.
+Wir haben zwei Gruppen (TRT und CON) mit jeweils $N = 3$ mit einer Kovariate $x$.
 
-## Berechnung und statistischer Test
-```{r}
-#| eval: false
-#| echo: true
-
-mod_0 <- lm(y ~ x, bw)
-mod_1 <- lm(y ~ x + group, bw)
-anova(mod_0, mod_1)
-```
+Ein Vergleich des vollen und des reduzierten Modells führt zu folgendem Ergebnis:
 
 ```{r}
 mod_0 <- lm(y ~ x, bw)
@@ -244,69 +236,61 @@ broom::tidy(anova(mod_0, mod_1)) |>
                digits=3)
 ```
 
-## Oder auch mit `aov()`
-```{r}
-#| eval: false
-#| echo: true
+Oder die Varianztabelle (siehe @tbl-ed-ancova-ex-01):
 
-mod_aov <- aov(y ~ x + group, bw)
-summary(mod_aov)
+```{r}
+#| label: tbl-ed-ancova-ex-01
+#| tbl-cap: "Varianztabelle"
+
+car::Anova(mod_1) |> broom::tidy() |>
+  dplyr::mutate(MSQ = sumsq/df, .before=4) |> 
+  kable(booktabs = TRUE,
+  digits = 3,
+  col.names = c("Term", "SSQ","df","MSQ","F","p-Wert"))
 ```
 
+D.h. im Beispiel ist kein statistisch signifikanter Effekt des Treatment zu finden. Aber was passiert wenn wir den Treatmenteffekt gegen ein auf den $y$-Achsenabschnitt reduziertes Modell testen?
+
 ```{r}
-mod_aov <- aov(y ~ x + group, bw)
-broom::tidy(mod_aov) |>
-  knitr::kable(booktabs=T,
-               caption="ANOVA-Tabelle",
-               digits=3)
+#| label: tbl-ed-ancova-mod00
+#| tbl-cap: "Modellvergleich von $y_i = \\beta_0 + \\epsilon_i$ gegen $y_i = \\beta_0 + \\tau_i + \\epsilon_i$" 
+
+mod_0a <- lm(y ~ 1, bw)
+mod_1a <- lm(y ~ group, bw)
+anova(mod_0a, mod_1a) |> broom::tidy() |> 
+  kable(
+    booktabs = TRUE,
+    digits = 4)
 ```
 
-## Aber...???
+Wie kann das denn sein? Schauen wir uns dazu eine graphische Darstellung der Daten an (siehe @fig-ed-ancova-mod01).
 
 ```{r}
-#| echo: true
-#| eval: false
-
-mod_aov <- aov(y ~ group, bw)
-summary(mod_aov)
-```
-```{r}
-mod_aov <- aov(y ~ group, bw)
-broom::tidy(mod_aov) |> 
-  knitr::kable(booktabs=T,
-               caption="ANOVA-Tabelle",
-               digits=4)
-```
-
-## Grafik
-
-:::: columns
-::: column
-```{r}
-#| fig-cap: "ANOVA-Modell"
-#| fig-height: 4
+#| fig-cap: "Streudiagramm der Rohdaten"
+#| label: fig-ed-ancova-mod01
 
 ggplot(bw, aes(x, y)) +
   geom_point(aes(pch=group), size=4) +
-  scale_shape_discrete('Gruppe') 
+  scale_shape_discrete('Gruppe') +
+  scale_x_continuous("Kovariate x")
 ```
 
-:::
-::: column
+In @fig-ed-ancova-mod01 können wir sehen, dass die beiden Gruppen sich deutlich in der Kovariate $x$ unterscheiden. Was dazu führt, dass die Mittelwerte der beiden Gruppen auch entsprechend unterschiedlich ist. Dadurch führt ein Test für den Unterschied zwischen den beiden Gruppen dazu, dass es zu einem statistisch signifikanten Ergebnis für das Treatment führt. Wird allerdings zunächst für die Kovariate kontrolliert (siehe @fig-ed-ancova-mod02).
+
 ```{r}
-#| fig-cap: "ANCOVA-Modell"
-#| fig-height: 4
+#| fig-cap: "Streudiagramm der Rohdaten mit den Geraden aus dem ANCOVA-Modell"
+#| label: fig-ed-ancova-mod02
 
 ggplot(bw, aes(x,y,color=group)) +
   geom_point(size=4) +
   geom_smooth(method='lm', se=F) +
-  scale_color_discrete("Gruppe") 
+  scale_color_discrete("Gruppe") +
+  scale_x_continuous("Kovariate x")
 ```
 
-:::
-::::
+In @fig-ed-ancova-mod02 sehen wir, dass wenn die beiden parallen Geraden für die Kovariate auf Basis des ANCOVA-Modells eingefügt werden, dann ist der Unterschied zwischen den beiden Gruppen deutlich geringer.
 
-## Adjusted means $\bar{Y}_l'$
+Adjusted means $\bar{Y}_l'$
 
 $$
 E[\bar{Y}_{i.}] = \mu + \tau_i + \beta\bar{x}_{..})
@@ -320,7 +304,7 @@ y_bar_j <- predict(mod_1, newdata = x_new)
 y_bar_j
 ```
 
-## Adjusted means im Beispiel
+Adjusted means im Beispiel
 
 ```{r}
 #| fig-cap: "Korrigierte Mittelwerte der Gruppen bei $\\bar{x}$."
@@ -338,7 +322,7 @@ ggplot(bw, aes(x,y,shape=group)) +
   scale_shape_discrete("Gruppe") 
 ```
 
-## ... oder Adjusted means mit `emmeans()`
+ ... oder Adjusted means mit `emmeans()`
 
 ```{r}
 #| echo: true
@@ -404,8 +388,9 @@ gg_adjust(3.5)
 :::
 ::::
 
+## ANCOVA in `R`
 
-## Effect size $\omega^2$
+## ANCOVA Effect size $\omega^2$
 
 ### overall
 $$
