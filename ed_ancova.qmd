@@ -57,7 +57,7 @@ ggplot(dat_0, aes(x, y, color=name)) +
 
 @fig-ed-ancova-01 zeigt den Zusammenhang zwischen zwei Gruppen $A$ und $B$ und einer abhängigen Variablen DV sowie den Zusammenhang einer Kovariate ($x$-Achse) mit DV. Zwischen der Kovariaten und der DV besteht ein positiver Zusammenhang und der Effekt von Treatment $A$ ist kleiner als derjenige von Treatment $B$. Der Effekt der Kovariaten ist dabei in beiden Gruppen gleich und es besteht keine Interaktion zwischen der Kovariaten und den Gruppen. Dies führt dazu, dass die beiden Geraden parallel zueinander sind. Letztendlich haben wir dieses Modell schon bei der Besprechung der Intergration von nominalen Variablen in das multiple Regressionsmodell behandelt.
 
-Wenn wir die beiden Gruppen miteinander vergleich sind mehrer unterschiedliche Vergleiche möglich. Nehmen wir zum Beispiel einen Datenpunkt $P1$ aus Gruppe $A$. Dann können wir den $P1$ mit mehreren verschiedenen Datenpunkten aus Gruppe $B$ vergleichen. In @fig-ed-ancova-02 sind drei mögliche Vergleiche eingezeichnet.
+Wenn wir die beiden Gruppen miteinander vergleichen sind mehrere unterschiedliche Vergleiche möglich. Nehmen wir zum Beispiel einen Datenpunkt $P1$ aus Gruppe $A$. Dann können wir den $P1$ mit mehreren verschiedenen Datenpunkten aus Gruppe $B$ vergleichen. In @fig-ed-ancova-02 sind drei mögliche Vergleiche eingezeichnet.
 
 ```{r}
 #| fig-cap: "Verschiedene Vergleiche der beiden Gruppen miteinander"
@@ -81,7 +81,7 @@ ggplot(dat_0, aes(x, y, color=name)) +
 
 ```
 
-Letztendlich erscheint aber nur einer der Vergleiche sinnvoll, nämlich der Vergleich wenn die beiden Gruppenwerte den gleichen Wert in der Kovariate haben. Wäre zum Beispiel die Kovariate das Alter, dann würde ein Vergleich von zwei Personen die sich im Alter unterscheiden wenig sinnvoll da nicht klar ist ob der Unterschied in der abhängigen Variable auf den Unterschied im Alter oder auf den Unterschied im Treatment zurück zu führen ist. Genau dieses Problem wird mit Hilfe der ANCOVA gelöst und die ANCOVA liefert eine Antwort auf die Frage:
+Letztendlich erscheint aber nur einer der Vergleiche sinnvoll, nämlich der Vergleich wenn die beiden Gruppenwerte den gleichen Wert in der Kovariate haben. Wäre zum Beispiel die Kovariate das Alter, dann würde ein Vergleich von zwei Personen die sich im Alter unterscheiden wenig sinnvoll da nicht klar ist ob ein beobachteter Unterschied zwischen den beiden Personen in der abhängigen Variable auf den Unterschied im Alter oder auf den Unterschied im Treatment zurück zu führen ist. Genau dieses Problem wird mit Hilfe der ANCOVA gelöst. Die ANCOVA liefert daher eine Antwort auf die Frage:
 
 *Wie unterschieden sich die Gruppen voneinander, wenn sie die gleichen Werte in der Kovariate hätten?*
 
@@ -122,7 +122,7 @@ p1 +
   geom_point(data = dat_1_bar, color='black', size=4)
 ```
 
-Um die beiden Gruppen miteinander vergleichen zu können müssten wir die Unterschiede in den Mittelwerten der Kovariaten korrigieren um die Gruppen zu vergleichen wenn sie die gleiche Verteilung in der Kovariaten hätten.
+Um die beiden Gruppen miteinander vergleichen zu können, müssen wir die Unterschiede in den Mittelwerten der Kovariaten korrigieren um die Gruppen miteinander vergleichbar zu machen. D.h. wie würden die Unterschied aussehen, wenn beide Gruppen die gleiche Verteilung in der Kovariaten hätten.
 
 ```{r}
 #| fig-cap: "Vergleich der Gruppen bei koorigierten Kovariaten"
@@ -147,31 +147,39 @@ ggplot(dat_1, aes(x, y, color=trt_f)) +
 
 In @fig-ed-ancova-05 sind die eigentlich sinnvollen Vergleiche angezeigt. Dabei wird auch noch einmal klar, dass in diesem Modell sobald wir für die Werte der Kovariaten kontrolliert haben, die Position des Vergleichs unerheblich ist, da wir von einem Modell ausgehen, bei dem der Effekt der Kovariaten in beiden Gruppen gleich ist. Dies führt zu den parallelen Linien.
 
-## Modell der ANCOVA
+## Das Modell
 
-Übertragen wir die Beispiele in eine Modellformulierung. Letztendlich können wir, wie schon angemerkt, das uns schon bekannte Modell aus der multiple linearen Regression anwenden.
+Übertragen wir die Beispiele nun wieder in eine Modellformulierung. Letztendlich können wir, wie bereits angemerkt, das uns schon bekannte Modell aus der multiple linearen Regression anwenden.
 
 \begin{equation}
 Y_{it} = \mu + \tau_i + \beta x_{it} + \epsilon_{it} \quad \epsilon_{it} \sim \mathcal{N}(0,\sigma^2), i = 1,\ldots,K
 \label{eq-ed-ancova-model}
 \end{equation}
 
-In Model \eqref{eq-ed-ancova-model} kommt dementsprechend nichts Neues dazu, sondern unser standard lineares Modell. Der einzige Unterschied besteht in der Terminologie, während wir vorher $\alpha_i$ für die nominale Variable verwendet haben, wird der nominale Faktor im ANCOVA-Modell $\tau_i$ bezeichnet. Das sind aber nur Unterschied in den Buchstaben die leider auch nicht konsequent in der Literatur verwendet werden.
+In Model \eqref{eq-ed-ancova-model} kommt dementsprechend nichts Neues dazu, sondern unser bekanntes lineares Modell. Der einzige Unterschied besteht in der Terminologie, während wir vorher $\alpha_i$ für die nominale Variable verwendet haben, wird der nominale Faktor im ANCOVA-Modell $\tau_i$ bezeichnet. Das sind aber nur Unterschiede in den Buchstaben die leider auch in der Literatur unterschiedlich verwendet werden.
 
 Um die spätere Interpretation der Koeffizienten zu vereinfachen, wird auch oft ein in der Kovariaten zentriertes Modell verwendet. Dies hat jedoch keine Auswirkung auf das Ergebnis.
 
 \begin{equation}
-Y_{it} = \mu^* + \tau_i + \beta (x_{it} - \bar{x}_{..}) + \epsilon_{it}
+Y_{it} = \mu + \tau_i + \beta (x_{it} - \bar{x}_{..}) + \epsilon_{it}
 \label{eq-ed-ancova-model-c}
 \end{equation}
 
-Entsprechend ergeben sich auch keine unbekannten Voraussetzungen:
+Ein interessante Interpretation der ANCOVA erhalten wir, wenn wir in Formel \eqref{eq-ed-ancova-model-c} auf beiden Seiten $\mu + \tau_i$ abziehen (siehe [@casella2008, p.65]).
+
+\begin{equation*}
+Y_{it} - \beta (x_{it} - \bar{x}_{..}) = \mu + \tau_i + \epsilon_{it}
+\end{equation*}
+
+Auf der linken Seite stehen die Residuen einer Regression, die Differenz der beobachteten Werte von denen mittels der Regression auf die Kovariate vorhergesagten Werten. Auf der rechten Seite haben wir das Modell der CRD. D.h. durch die ANCOVA werden die beobachteten Werte korrigiert und dadurch deren Varianz reduziert. 
+
+Da es sich bei der ANCOVA aber insgesamt wieder nur um eine Variante des linearen Modell handelt, ergeben sich entsprechend auch keine unbekannten Voraussetzungen:
 
 - Experimental units sind randomisiert den $K$ Gruppen zugewiesen worden
 - Varianz $\sigma^2$ ist konstant über Gruppen und Werte der Kovariate
 - Die Kovariate und das Treatment sind statistisch unabhängig voneinander
 
-Der der ANCOVA zugrundeliegende Test beruht dann wie immer auf einen  Modellvergleich eines vollen Modell (Model \eqref{eq-ed-ancova-model}) mit einem reduzierten Modell. Das reduzierte Modell beinhaltet dann nur die Kovariate, da wir den Unterschied in Bezug auf den Effekt der Primärvariable überprüfen wollen.
+Der letzte Punkte, die Unabhängigkeit zwischen dem Treatment und der Kovariate ist wichtig. Dies bedeutet, dass der Einfluss der Kovariaten sind nicht im Zusammenhang mit dem Treatment verändert. Der der ANCOVA zugrundeliegende Test beruht dann wie immer auf einen  Modellvergleich eines vollen Modell (Model \eqref{eq-ed-ancova-model}) mit einem reduzierten Modell. Das reduzierte Modell beinhaltet dann nur die Kovariate, da wir den Unterschied in Bezug auf den Effekt der Primärvariable überprüfen wollen.
 
 \begin{align*}
 y_{ij} &= \mu + \tau_{j} + \beta X_{ij} + \epsilon_{ij} \quad \text{full} \\
@@ -202,9 +210,9 @@ Das Ergebnis der Analyse wird oft auch in Form einer Varianz-Tabelle dargestellt
 
 : Varianztabelle der ANCOVA {#tbl-ed-ancova-ssq} 
 
-Die Schreibweise $T|\beta$ bezeichnet den Effekt des Treatments nachdem für die Kovariate kontrolliert wurde während $\beta|T$ den Effekt der Kovariate nachdem für das Treatment kontrolliert wurde beschreibt. 
+Die Schreibweise $T|\beta$ bezeichnet den Effekt des Treatments nachdem für die Kovariate kontrolliert wurde während $\beta|T$ den Effekt der Kovariate nachdem für das Treatment kontrolliert wurde beschreibt. Hier tritt eine Besonderheit, die Summe der Quadratsummen addiert sich nicht zur totalen Varianz von $Y$. Dies kommt dadurch zustande das nicht die Hierarchie vom einfachsten zum vollen Modell aufsummiert werden, sondern Vergleiche zwischen dem vollen Modell und jeweils einem Modell bei dem die andere Variable bereits vorhanden ist. Diese Quadratsummen werden als sogenannte Type-II Quadratsummen bezeichnet und verlieren die additive Eigenschaft. Im Spezialfall wenn beide Gruppen den gleichen Mittelwert in der Kovariaten $X$ haben, sind die Quadratsummen dann doch wieder additive. Die beiden Effekt Treatment und Kovariate sind dann orthogonal zueinander.
 
-Schauen wir uns dies in einem Spielzeugbeispiel an. In @tbl-ed-ancova-max-01 ist ein Beispieldatensatz aus @maxwell2004 tabellelarisch abgebildet.
+Schauen wir uns die Analyse in einem Spielzeugbeispiel an. In @tbl-ed-ancova-max-01 ist ein Beispieldatensatz aus @maxwell2004 abgebildet.
 
 ```{r}
 #| tbl-cap: "Ein einfacher ANCOVA-Datensatz"
@@ -228,15 +236,17 @@ Wir haben zwei Gruppen (TRT und CON) mit jeweils $N = 3$ mit einer Kovariate $x$
 Ein Vergleich des vollen und des reduzierten Modells führt zu folgendem Ergebnis:
 
 ```{r}
+#| tbl-cap: "Vergleich full vs. reduced model."
+#| label: tbl-ed-ancova-toy-1
+
 mod_0 <- lm(y ~ x, bw)
 mod_1 <- lm(y ~ x + group, bw)
 broom::tidy(anova(mod_0, mod_1)) |>
   knitr::kable(booktabs=T,
-               caption="Vergleich full vs. reduced model.",
                digits=3)
 ```
 
-Oder die Varianztabelle (siehe @tbl-ed-ancova-ex-01):
+Wie wir @tbl-ed-ancova-toy-1 sehen können finden wir keinen statistisch signifikanten Effekt für das Treatment nachdem wir für die Kovariate $X$ kontrolliert haben. Dargestellt als Varianztabelle erhalten wir die folgende Dokumentation (siehe @tbl-ed-ancova-ex-01):
 
 ```{r}
 #| label: tbl-ed-ancova-ex-01
@@ -249,7 +259,18 @@ car::Anova(mod_1) |> broom::tidy() |>
   col.names = c("Term", "SSQ","df","MSQ","F","p-Wert"))
 ```
 
-D.h. im Beispiel ist kein statistisch signifikanter Effekt des Treatment zu finden. Aber was passiert wenn wir den Treatmenteffekt gegen ein auf den $y$-Achsenabschnitt reduziertes Modell testen?
+Hier finden wir ebenfalls keinen statisch signifikaten Effekt für beide Variablen, die Wert für die Treatmentvariable sinnd in beiden Tabellen auch gleich. Schauen wir uns die Summe der Quadratsummen an.
+
+```{r}
+ssq <- car::Anova(mod_1) |> broom::tidy() |> dplyr::pull(sumsq)
+```
+$$
+SSQ_x + SSQ_{\text{group}} + SSE = `r paste(ssq, collapse="+")` = `r sum(ssq)`
+$$
+
+Aber die totale Quadratsumme von $y$ ist $SST = `r var(bw$y)*5`$. D.h. die Summer der Quadratsummen addiert sich nicht zu $SST$.
+
+Schauen wir aber rein interessehalber an, was passiert wenn wir den Treatmenteffekt gegen ein auf den $y$-Achsenabschnitt reduziertes Modell testen. Wir ignorieren die Information aus der Kovariate.
 
 ```{r}
 #| label: tbl-ed-ancova-mod00
@@ -263,7 +284,7 @@ anova(mod_0a, mod_1a) |> broom::tidy() |>
     digits = 4)
 ```
 
-Wie kann das denn sein? Schauen wir uns dazu eine graphische Darstellung der Daten an (siehe @fig-ed-ancova-mod01).
+In @tbl-ed-ancova-mod00 haben wir nun einen statistisch signifikanten Effekt gefunden. Wie kann das denn sein? Schauen wir uns dazu eine graphische Darstellung der Daten an (siehe @fig-ed-ancova-mod01).
 
 ```{r}
 #| fig-cap: "Streudiagramm der Rohdaten"
@@ -275,7 +296,7 @@ ggplot(bw, aes(x, y)) +
   scale_x_continuous("Kovariate x")
 ```
 
-In @fig-ed-ancova-mod01 können wir sehen, dass die beiden Gruppen sich deutlich in der Kovariate $x$ unterscheiden. Was dazu führt, dass die Mittelwerte der beiden Gruppen auch entsprechend unterschiedlich ist. Dadurch führt ein Test für den Unterschied zwischen den beiden Gruppen dazu, dass es zu einem statistisch signifikanten Ergebnis für das Treatment führt. Wird allerdings zunächst für die Kovariate kontrolliert (siehe @fig-ed-ancova-mod02).
+In @fig-ed-ancova-mod01 können wir sehen, dass die beiden Gruppen sich deutlich in der Kovariate $x$ voneinander unterscheiden. Dies führt dazu, dass die Mittelwerte der beiden Gruppen auch entsprechend unterschiedlich voneinander sind. Dadurch führt ein Test für den Unterschied zwischen den beiden Gruppen dazu, dass es zu einem statistisch signifikanten Ergebnis für das Treatment kommt. Letztendlich wird dieser Unterschied nur durch die Kovariate verursacht. Wird für die Kovariate kontrolliert, dann verschwindet der Effekt (siehe @fig-ed-ancova-mod02).
 
 ```{r}
 #| fig-cap: "Streudiagramm der Rohdaten mit den Geraden aus dem ANCOVA-Modell"
@@ -288,27 +309,21 @@ ggplot(bw, aes(x,y,color=group)) +
   scale_x_continuous("Kovariate x")
 ```
 
-In @fig-ed-ancova-mod02 sehen wir, dass wenn die beiden parallen Geraden für die Kovariate auf Basis des ANCOVA-Modells eingefügt werden, dann ist der Unterschied zwischen den beiden Gruppen deutlich geringer.
+In @fig-ed-ancova-mod02 sehen wir, dass wenn die beiden parallen Geraden für die Kovariate auf Basis des ANCOVA-Modells eingefügt werden, dann ist der Unterschied zwischen den beiden Gruppen deutlich geringer. Dies betont noch einmal, dass ein Vergleich nur sinnvoll ist, wenn das level der Kovariaten zwischen den beiden Gruppen gleich ist. Es wird in diesem Fall dann von adjusted means $\bar{Y}_l'$ \index{adjusted means} gesprochen. Dazu wird der Mittelwert $\bar{X}_{..}$ der Kovariaten $X$ über alle Gruppen gebildet und dann der Effekt der Gruppe berechnet.
 
-Adjusted means $\bar{Y}_l'$
+\begin{equation*}
+E[\bar{Y}_{i.}] = \mu + \tau_i + \beta\bar{x}_{..}
+\label{eq-ed-ancova-adjusted-mean}
+\end{equation*}
 
-$$
-E[\bar{Y}_{i.}] = \mu + \tau_i + \beta\bar{x}_{..})
-$$
-
-```{r}
-#| echo: true
-
-x_new <- tibble(x = mean(bw$x), group=c('TRT','CON'))
-y_bar_j <- predict(mod_1, newdata = x_new)
-y_bar_j
-```
-
-Adjusted means im Beispiel
+Im Beispiel werden die Gruppen daher wie folgt miteinander verglichen (siehe @fig-ed-ancova-adjusted-means)
 
 ```{r}
 #| fig-cap: "Korrigierte Mittelwerte der Gruppen bei $\\bar{x}$."
+#| label: fig-ed-ancova-adjusted-means
 
+x_new <- tibble(x = mean(bw$x), group=c('TRT','CON'))
+y_bar_j <- predict(mod_1, newdata = x_new)
 mod_slopes <- tibble(
   x = rep(coef(mod_1)[2],2),
   y = c(coef(mod_1)[1] + c(0, coef(mod_1)[3])),
@@ -319,27 +334,19 @@ ggplot(bw, aes(x,y,shape=group)) +
   geom_abline(data = mod_slopes, aes(slope=x, intercept=y),
               linetype='dashed') +
   geom_point(data = x_new, size=4, col='red') +
+  annotate(geom = 'segment', x=x_new$x[1], y=x_new$y[1],
+                             xend=x_new$x[2], yend=x_new$y[2],
+            arrow=arrow(length=unit(0.1,"inch"), type='closed', ends='both')) +
   scale_shape_discrete("Gruppe") 
 ```
 
- ... oder Adjusted means mit `emmeans()`
+Wie wir an dem Beispiel sehen konnten, führt die Kombination von Mittelwerten in der Kovariaten $X$ dazu, dass der Effekt kleiner wird nachdem für die Kovariate kontrolliert wurde. Dies ist nicht immer der Fall sondern hängt davon ab, wie groß der Effekt ist und wie die Anordnung der Mittelwerte $\bar{X}_j$ in den Gruppen ist.
+
 
 ```{r}
-#| echo: true
-
-y_bar_j2 <- emmeans::emmeans(mod_1, ~group)
-y_bar_j2
-```
-
-
-## Beispiele für Effektrelationen 
-
-:::: columns
-::: column
-```{r}
-#| fig-height: 4
 #| fig-cap: "Effekt verkleinert sich"
- 
+#| label: fig-ed-ancova-adjusted-means-2
+
 gg_adjust <- function(y_1=1) {
 df_g <- tibble(
   x = c(1,2,2,3),
@@ -377,57 +384,166 @@ ggplot(df_g, aes(x,y,groups=g,xend=xend,yend=yend)) +
 gg_adjust()
 ```
 
-:::
-::: column
 ```{r}
-#| fig-height: 4
 #| fig-cap: "Effekt vergrößert sich"
+#| label: fig-ed-ancova-adjusted-means-3
 
 gg_adjust(3.5)
 ```
-:::
-::::
 
-## ANCOVA in `R`
+## Analyse einer ANCOVA in `R`
 
-## ANCOVA Effect size $\omega^2$
+Für die Analyse in `R` können wir die üblichen Herangehensweise mittels `lm()` verwenden. Einzig, wenn wir die Varianztabelle nach dem Muster in @tbl-ed-ancova-ssq erzeugen wollen und nicht von Hand die Modellvergleiche durchführen wollen, müssen wir auf die Funktion `ANOVA()` aus dem package `car` zurückgreifen. Beispielweise für das Spielzeugbeispiel (Daten sind im `tibble` `bw`) ergibt sich der folgende Code:
 
-### overall
-$$
+```{r}
+#| echo: true
+
+mod <- lm(y ~ group + x, bw)
+car::Anova(mod)
+```
+
+Über die Modellvergleiche:
+
+```{r}
+#| echo: true
+
+mod_full <- lm(y ~ group + x, bw)
+mod_r1 <- lm(y ~ group, bw)
+mod_r2 <- lm(y ~ x, bw)
+anova(mod_r1, mod_full)
+anova(mod_r2, mod_full)
+```
+
+Wenn wir die Standard-`anova()`-Funktion auf das `lm`-Modell anwenden erhalten wir einen sequentiellen Modellvergleich bei dem es darauf ankommt in welcher Reihenfolge wir die unabhängigen Variablen in das Modell eingefügt haben.
+
+```{r}
+#| echo: true
+
+mod_g_x <- lm(y ~ group + x , bw)
+mod_x_g <- lm(y ~ x + group , bw)
+anova(mod_g_x)
+anova(mod_x_g)
+```
+
+## Effektstärke bei der ANCOVA
+
+Für die ANCOVA können wir natürlich auch wieder eine Effektstärke berechnen. Wir verwenden wieder eine $\Omega^2$-Typ Effektstärke für den Gesamteffekt des Modells (siehe Formel \eqref{ed-ancova-omega_sqr}.
+
+\begin{equation}
 \hat{\omega}^2=\frac{df_{\text{effect}}(MS_{\text{effect}}-MS_{\text{error}})}{SS_{\text{total}}+MS_{\text{error}}}
-$$
+\label{ed-ancova-omega_sqr}
+\end{equation}
 
-### Im Beispiel
+Für das Spielzeugbeispiel erhalten wir den folgenden Wert:
+
 $$
 \hat{\omega}^2 = \frac{1(2.4 - 4)}{82 + 4} = `r round(1*(2.4-4)/(82+4),2)`
 $$
 
-^[Bei $\hat{\omega}^2 < 0$ wird auf $0$ gekappt.]
+Per Konvention wird bei $\hat{\omega}^2 < 0$ der Wert auf $0$ gekappt. D.h. in diesem Fall ist die Effektstärke gleich $0$. Die Effektstärke wird dabei bei Vernachlässigung der Kovariaten bestimmt. Die Kovariate wird als intrinsische Variable betrachtet und daher gehört die durch die Kovariate verursachte Varianz zur Varianz der abhängigen Variablen. Daher wird bei der ANCOVA der Gesamteffekt unter Einbeziehung der Kovariatenvarianz berechnet. D.h. es wird nicht der partielle Effekt bestimmt.
 
-## Effect size $\omega^2$
+Wenn wir die Effektstärke in `R` berechnen wollen, können wir wieder auf das package `effectsize` zurückgreifen und die `omega_squared()` Funktion anwenden. Hierbei sollte der Parameter `partial` wieder auf `FALSE` gesetzt werden um den globalen Effekt zu berechnen. 
 
 ```{r}
 #| echo: true
+
 effectsize::omega_squared(mod_1, partial=F)
 ```
 
+## Mehrfachvergleiche bei der ANCOVA
 
-## standardized differences between means
+Sollten wir einen statistisch signifikanten Effekt für die Treatmentvariable gefunden haben, dann können wir, wie üblich, auch Mehrfachvergleiche berechnen. Dies macht nur Sinn wenn $K>2$ gilt, da ansonsten der einzelne $\tau_i$-Koeffizient im Modell direkt den Vergleich der beiden Gruppen gibt. Auf die Herleitung der Varianz der Kontraste verzichten wir hier, da sich außer umfangreiche Algebra nichts grundlegendes Neues ergibt, außer das ein zusätzlicher Term für die Kovariate besteht.
 
 $$
-\hat{d} = \frac{\bar{Y}_l' - \bar{Y}_m'}{\sqrt{MS_W}}
+Var\left(\sum_{i}c_i \hat{\tau_i}\right) = MSE\left(\sum_i\frac{c_i^2}{r_i} + \frac{(\sum_i c_i \bar{x}_{i.})^2}{\sum_{i=1}^K \sum_{t=1}^{r_i} (x_{it}-\bar{x}_{i.})^2} \right)
 $$
+Der interessante Punkte hier, das die Varianz mit dem Abstand der Mittelwerte der Kovariate in den Gruppen $\bar{x}_{i.}$ größer wird. Deshalb ist eine möglichst ähnliche Verteilung der Kovariaten in den Gruppen zu bevorzugen. Um das nominelle Signifikanzniveau dann wieder für Mehrfachtestung zu kontrollieren können entweder eine Bonferroni- (pre-planned) oder die die Scheffé-;ethode verwendet werden. Für die Tukey-Methode gibt es keinen geschlossenen Beweis, obwohl wahrscheinlich auch die Tukey-Methode möglich ist [vgl. @dean1999, p.294].
 
+## Mehrfachvergleiche in `R`
+
+Um Mehrfachvergleiche in `R` durchzuführen, verwenden wir wieder das `emmeans`-package. Schauen wir uns dazu ein Beispiel hypothetisches Beispiel aus [@maxwell2004, p.429] mit drei Stufen für die Treatmentvariable an (siehe @fig-ed-ancova-max-01). Es wurde drei Patientengruppen mit Depression in drei Gruppen unterteilt. Eine Gruppe fungierte als Kontrollgruppe (`wait list`), eine Gruppe bekam ein Medikament (SSRI) und eine Gruppe bekam ein Placebo. Die Patienten wurde vor nach dem Treatment auf einer Depressionskala getestet.
+
+```{r}
+#| fig-cap: "Depression Beispiel aus Maxwell et al. (2004, p.429)"
+#| label: fig-ed-ancova-max-01
+
+tbl_97 <- readr::read_delim('data/maxwell_tbl_9_7.csv',
+                     delim = ',', trim_ws = TRUE) |> 
+  mutate(Condition = factor(Condition,
+                            levels = 1:3,
+                            labels = c('SSRI','Placebo','Wait list'))) |> 
+  mutate(id = paste0('P',1:n()), .before = 1) |> 
+  pivot_longer(-c(id, Condition), names_to = 'time', values_to = 'bdi') |> 
+  mutate(time = factor(time, levels = c('Pre','Post')))
+ggplot(tbl_97, aes(Condition, bdi, fill=time)) + 
+  geom_boxplot() +
+  scale_fill_discrete('Zeit') +
+  labs(x = 'Kondition', y = 'BDI depression score')
+```
+
+Da davon auszugehen ist, dass die schwere der Depression vor Beginn des Untersuchung einen Einfluss auf das Ergebnis hat, wurde die Eingangsmessung als eine Kovariate behandelt (commensurate covariate). Die Analyse der Daten (in `tibble` `bdi_w`) führt zu folgendem Ergebnis:
+
+```{r}
+bdi_w <-tbl_97 |>
+  pivot_wider(id_cols = c(id,Condition), names_from=time, values_from=bdi) 
+```
 
 ```{r}
 #| echo: true
-mod_r <- lm(y ~ group, bw)
-emmeans::eff_size(y_bar_j2, sigma = sigma(mod_r), edf = df.residual(mod_r))
+#| lst-label: lst-ed-ancova-max-ex
+#| lst-cap: "Ergebnis der ANCOVA-Analyse"
+
+mod_bdi <- lm(Post ~ Pre + Condition, bdi_w)
+car::Anova(mod_bdi)
 ```
 
-$MS_W$ = Error in ANOVA-Model: `y ~ g` w/o covariate or $(SS_g + SS_{\text{error}})/(df_g + df_{\text{error}})$ from ANCOVA-Model.
+Es wurde ein statistisch signifikanter Effekt für die Gruppenzugehörigkeit gefunden. Den nachfolgenden Mehrfachvergleich können wir für die paarweisen Vergleiche wie folgt berechnen.
 
-## sample size estimate
+```{r}
+#| echo: true
+
+bdi_em <- emmeans(mod_bdi, ~Condition)
+pairs(bdi_em, infer=T, adjust='scheffe')
+```
+
+D.h. wir finden nur für den Vergleich zwischen der medikamentös behandelten Gruppe und der Kontrollgruppe einen statistisch signifikanten Effekt.
+
+### Effektstärken für Vergleiche
+
+Oft möchten wir für Mehrfachvergleiche eine Cohen's D-artige Effektstärke berechnen. Dazu werden die sogenannte standardized differences between means \index{standardized differences between means} verwendet. Der einzige Schritt der etwas problematischer ist, ist die Berechnung der Standardabweichung. Hier wird auch wieder die Restvarianz $MS_W$ ohne die Reduktion durch die Kovariate verwendet.
+
+\begin{equation*}
+\hat{d} = \frac{\bar{Y}_l' - \bar{Y}_m'}{\sqrt{MS_W}}
+\end{equation*}
+
+Für die Berechnung von $MS_W$ muss daher ein Modell ohne die Kovariate gefittet werden und der Term $MSE$ verwendet werden. Alternativ kann mit Hilfe der Werte aus dem ANCOVA Modell die folgende Formel verwendet werden: $MS_W = \sqrt{(SS_X + SS_{\text{error}})/(N-K)}$.
+
+In `R` könnte dies wie folgt mittels der Funktion `eff_size()` aus dem package `emmeans` berechnet werden:
+
+```{r}
+#| echo: true
+
+y_bars <- emmeans(mod_bdi, ~Condition)
+mod_r <- lm(Post ~ Condition, bdi_w)
+eff_size(y_bars, sigma = sigma(mod_r), edf = df.residual(mod_r))
+```
+
+Unter Verwendung der Varianztabelle (siehe @lst-ed-ancova-max-ex) aus der ANCOVA können die standardized differences between means äquivalent wie folgt berechnet werden.
+
+```{r}
+#| echo: true
+
+df_W <- 30 - 3
+MS_W <- sqrt((756.33 + 313.37)/df_W)
+eff_size(y_bars, sigma = MS_W, edf = df_W)
+```
+
+
+- Unterscheidung zwischen
+  - Kovariate für das Untersuchungsdesign
+  - Kovariate für die Analyse der Daten
+
+## Bestimmung der Anzahl der Replikationen 
 
 \begin{align*}
 \sigma_{\epsilon(\text{ANCOVA})}^2 &= \sigma_{\epsilon(\text{CRD})}^2(1-\rho_{xy}^2) \\
@@ -436,12 +552,11 @@ f_{\text{ANCOVA}} &= \frac{\sigma_{\text{btw}}}{\sigma_{\epsilon(\text{CRD})}}\f
 
 $df_{\text{Residual}} = N - k - 1$ under the ANCOVA model
 
-## sample size Beispiel^[nach @maxwell2004]
+sample size Beispiel^[nach @maxwell2004]
 
 In einer CRD-Studie wurde eine Effektstärke für den Unterschied zwischen drei Gruppen ($k = 3$) von $f = 0.41$ gefunden. Wie verändert sich die notwendige Stichprobengröße wenn eine Kovariate mit $\rho = 0.5$ mit der abhängigen Variable hinzugenommen wird?
 
-## sample size example 
-\small
+::: {#exm-ed-ancova-sample-size} 
 Bei einer power von $0.8$ wird eine Stichprobengröße von:
 
 ```{r}
@@ -456,6 +571,9 @@ Wenn die Kovariate modelliert wird, erhöht sich die Effektstärke auf $f = 0.41
 
 pwr::pwr.anova.test(k=2, f=0.47, sig.level=0.05, power=0.8)$n
 ```
+
+:::
+
 
 ## Was passiert wenn die Kovariate interagiert
 
@@ -479,19 +597,19 @@ p_1 <- ggplot(df_i, aes(x,y,color=gruppe)) +
 print(p_1)
 ```
 
-## Modell
+Modell
 
 $$
 y_{it} = \beta_0 + \tau_i + \beta \cdot x_{it} + (\tau\beta)_{it}x_{it} + \epsilon_{it}
 $$
 
-## Welcher Unterschied zwischen den Gruppen? 
+### Welcher Unterschied zwischen den Gruppen? 
 
 ```{r}
 print(p_1)
 ```
 
-## Modellfit - Interaktionsmodell
+### Modellfit - Interaktionsmodell
 
 ```{r}
 #| echo: true
@@ -510,17 +628,12 @@ anova(mod) |> broom::tidy() |>
     caption="Anova-Tabelle für Interaktionsmodell")
 ```
 
-
-## Mehrfachvergleiche - EMS Mittelwerte
-
 ```{r}
 #| echo: true
  
 mod_ems <- emmeans(mod, ~gruppe|x, at=list(x=c(-2,0,2)))
 mod_ems
 ```
-
-## Mehrfachvergleiche - Paarweise Vergleiche
 
 ```{r}
 #| echo: true
@@ -537,60 +650,12 @@ pairs(mod_ems) |> broom::tidy() |>
          escape=F)
 ```
 
-## Beispiel aus [@maxwell2004, p.429]
+## Zum Nach- und Weiterlesen
 
-```{r}
-#| fig-cap: "Depression Beispiel aus Maxwell et al. (2004, p.429)"
-
-tbl_97 <- readr::read_delim('data/maxwell_tbl_9_7.csv',
-                     delim = ',', trim_ws = TRUE) |> 
-  mutate(Condition = factor(Condition,
-                            levels = 1:3,
-                            labels = c('SSRI','Placebo','Wait list'))) |> 
-  mutate(id = paste0('P',1:n()), .before = 1) |> 
-  pivot_longer(-c(id, Condition), names_to = 'time', values_to = 'bdi') |> 
-  mutate(time = factor(time, levels = c('Pre','Post')))
-ggplot(tbl_97, aes(Condition, bdi, fill=time)) + 
-  geom_boxplot() +
-  scale_fill_discrete('Zeit') +
-  labs(x = 'Kondition', y = 'BDI depression score')
-```
-
-## Analyse
-
-```{r}
-bdi_w <-tbl_97 |>
-  pivot_wider(id_cols = c(id,Condition), names_from=time, values_from=bdi) 
-```
-
-```{r}
-#| echo: true
-mod_bdi <- lm(Post ~ Pre + Condition, bdi_w)
-anova(mod_bdi) |> broom::tidy() |> 
-  kable(booktabs = T, digits = 3)
-```
-
-## Gruppenvergleiche
-
-```{r}
-#| echo: true
-
-bdi_em <- emmeans(mod_bdi, ~Condition)
-pairs(bdi_em, infer=T)
-```
-
-- Unterscheidung zwischen
-  - Kovariate für das Untersuchungsdesign
-  - Kovariate für die Analyse der Daten
-
-## Zum Nachlesen
-
-### Allgemein
+Allgemein
 [@maxwell2004, p.451-467]
 
-### Pre-post ANCOVA
+Pre-post ANCOVA
 @wan2021
 
-### Regression to the mean
-@shephard2003, @barnett2005, @nevill2004
 

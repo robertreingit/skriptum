@@ -12,6 +12,7 @@ require(tibble)
 require(dplyr)
 require(tidyr)
 require(knitr)
+require(emmeans)
 
 ####################################
 # helper functions
