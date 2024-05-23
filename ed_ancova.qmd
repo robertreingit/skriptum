@@ -158,7 +158,7 @@ Y_{it} = \mu + \tau_i + \beta x_{it} + \epsilon_{it} \quad \epsilon_{it} \sim \m
 
 In Model \eqref{eq-ed-ancova-model} kommt dementsprechend nichts Neues dazu, sondern unser bekanntes lineares Modell. Der einzige Unterschied besteht in der Terminologie, während wir vorher $\alpha_i$ für die nominale Variable verwendet haben, wird der nominale Faktor im ANCOVA-Modell $\tau_i$ bezeichnet. Das sind aber nur Unterschiede in den Buchstaben die leider auch in der Literatur unterschiedlich verwendet werden.
 
-Um die spätere Interpretation der Koeffizienten zu vereinfachen, wird auch oft ein in der Kovariaten zentriertes Modell verwendet. Dies hat jedoch keine Auswirkung auf das Ergebnis.
+Um die spätere Interpretation der Koeffizienten zu vereinfachen, wird auch oft ein in der Kovariaten zentriertes Modell verwendet. Dies hat jedoch keine Auswirkung auf das Ergebnis. Von den Werten der Kovariate wird dazu der Gesamtmittelwert $\bar{x}_{..}$ der Kovariatenwerten abgezogen.
 
 \begin{equation}
 Y_{it} = \mu + \tau_i + \beta (x_{it} - \bar{x}_{..}) + \epsilon_{it}
@@ -171,7 +171,7 @@ Ein interessante Interpretation der ANCOVA erhalten wir, wenn wir in Formel \eqr
 Y_{it} - \beta (x_{it} - \bar{x}_{..}) = \mu + \tau_i + \epsilon_{it}
 \end{equation*}
 
-Auf der linken Seite stehen die Residuen einer Regression, die Differenz der beobachteten Werte von denen mittels der Regression auf die Kovariate vorhergesagten Werten. Auf der rechten Seite haben wir das Modell der CRD. D.h. durch die ANCOVA werden die beobachteten Werte korrigiert und dadurch deren Varianz reduziert. 
+Auf der linken Seite stehen die Residuen einer einfachen Regression, die Differenz der beobachteten Werte $Y_{it}$ von denen mittels der Regression auf die Kovariate vorhergesagten Werten $\beta (x_{it} - \bar{x}_{..}$. Auf der rechten Seite haben wir das Modell der CRD. D.h. durch die ANCOVA werden die beobachteten Werte $Y_{it}$ korrigiert und dadurch deren Varianz reduziert. 
 
 Da es sich bei der ANCOVA aber insgesamt wieder nur um eine Variante des linearen Modell handelt, ergeben sich entsprechend auch keine unbekannten Voraussetzungen:
 
@@ -210,7 +210,7 @@ Das Ergebnis der Analyse wird oft auch in Form einer Varianz-Tabelle dargestellt
 
 : Varianztabelle der ANCOVA {#tbl-ed-ancova-ssq} 
 
-Die Schreibweise $T|\beta$ bezeichnet den Effekt des Treatments nachdem für die Kovariate kontrolliert wurde während $\beta|T$ den Effekt der Kovariate nachdem für das Treatment kontrolliert wurde beschreibt. Hier tritt eine Besonderheit, die Summe der Quadratsummen addiert sich nicht zur totalen Varianz von $Y$. Dies kommt dadurch zustande das nicht die Hierarchie vom einfachsten zum vollen Modell aufsummiert werden, sondern Vergleiche zwischen dem vollen Modell und jeweils einem Modell bei dem die andere Variable bereits vorhanden ist. Diese Quadratsummen werden als sogenannte Type-II Quadratsummen bezeichnet und verlieren die additive Eigenschaft. Im Spezialfall wenn beide Gruppen den gleichen Mittelwert in der Kovariaten $X$ haben, sind die Quadratsummen dann doch wieder additive. Die beiden Effekt Treatment und Kovariate sind dann orthogonal zueinander.
+Die Schreibweise $T|\beta$ bezeichnet den Effekt des Treatments nachdem für die Kovariate kontrolliert wurde während $\beta|T$ den Effekt der Kovariate nachdem für das Treatment kontrolliert wurde beschreibt. Hier tritt eine Besonderheit auf, die Summe der Quadratsummen addiert sich nicht zur totalen Varianz von $Y$. Dies kommt dadurch zustande das die Quadratsummen nicht der Hierarchie folgend vom einfachsten zum vollen Modell gebildet werden, sondern Vergleiche zwischen dem vollen Modell und jeweils einem Modell bei dem die andere Variable bereits vorhanden ist durchgeführt werden. Diese Quadratsummen werden als korrigierte Quadratsummen (adjusted sums of squares) [@christensen2018, p.362] oder auch Type-II Quadratsummen bezeichnet. Dadurch verlieren die Quadratsummen ihre additive Eigenschaft. Im Spezialfall wenn beide Gruppen den gleichen Mittelwert in der Kovariaten $X$ haben, sind die Quadratsummen dann doch wieder additive. Die beiden Effekt Treatment und Kovariate sind dann orthogonal zueinander.
 
 Schauen wir uns die Analyse in einem Spielzeugbeispiel an. In @tbl-ed-ancova-max-01 ist ein Beispieldatensatz aus @maxwell2004 abgebildet.
 
@@ -259,7 +259,7 @@ car::Anova(mod_1) |> broom::tidy() |>
   col.names = c("Term", "SSQ","df","MSQ","F","p-Wert"))
 ```
 
-Hier finden wir ebenfalls keinen statisch signifikaten Effekt für beide Variablen, die Wert für die Treatmentvariable sinnd in beiden Tabellen auch gleich. Schauen wir uns die Summe der Quadratsummen an.
+Hier finden wir ebenfalls keinen statisch signifikaten Effekt für beide Variablen, die Wert für die Treatmentvariable sind in beiden Tabellen gleich. Schauen wir uns die Summe der Quadratsummen an.
 
 ```{r}
 ssq <- car::Anova(mod_1) |> broom::tidy() |> dplyr::pull(sumsq)
@@ -342,9 +342,10 @@ ggplot(bw, aes(x,y,shape=group)) +
 
 Wie wir an dem Beispiel sehen konnten, führt die Kombination von Mittelwerten in der Kovariaten $X$ dazu, dass der Effekt kleiner wird nachdem für die Kovariate kontrolliert wurde. Dies ist nicht immer der Fall sondern hängt davon ab, wie groß der Effekt ist und wie die Anordnung der Mittelwerte $\bar{X}_j$ in den Gruppen ist.
 
+In @fig-ed-ancova-adjusted-means-2 ist der Fall noch mal etwas klarer dargestellt.
 
 ```{r}
-#| fig-cap: "Effekt verkleinert sich"
+#| fig-cap: "Zusammenhang zwischen der Kovariate und dem Gruppen Effekt, der sich verkleinert."
 #| label: fig-ed-ancova-adjusted-means-2
 
 gg_adjust <- function(y_1=1) {
@@ -352,7 +353,7 @@ df_g <- tibble(
   x = c(1,2,2,3),
   y = c(y_1,y_1+1,3,4),
   g = rep(letters[1:2],each=2),
-  Typ = c('raw','adj','adj','raw'),
+  Typ = c('roh','korrigiert','roh','korrigiert'),
   xend = 1:4,
   yend = 1:4
 )
@@ -384,12 +385,16 @@ ggplot(df_g, aes(x,y,groups=g,xend=xend,yend=yend)) +
 gg_adjust()
 ```
 
+Wir haben einerseits die einfachen, rohen Gruppenmittelwerte und die korrigierten Mittelwerte. In @fig-ed-ancova-adjusted-means-2 sind die einfachen Mittelwerte weiter auseinander entfernt als die korrigierten Mittelwerte. Daher wird der Effekt nach der Korrektur kleiner. Es kann aber auch der gegensätzliche Effekt eintreten. In @fig-ed-ancova-adjusted-means-3 ist dafür ein vereinfachtes Beispiel dargestellt.
+
 ```{r}
-#| fig-cap: "Effekt vergrößert sich"
+#| fig-cap: "Zusammenhang zwischen der Kovariate und dem Gruppen Effekt, der sich vergrößert."
 #| label: fig-ed-ancova-adjusted-means-3
 
 gg_adjust(3.5)
 ```
+
+In @fig-ed-ancova-adjusted-means-3 sind die einfachen Gruppenmittelwerte näher zusammen als dies der Fall bei den korrigierten Mittelwerten der Fall. Darin können wir sehen, dass nicht immer direkt klar ist in welche Richtung sich die Effekte verändern, wenn für eine Kovariate kontrolliert wird. Die Veränderung des Effekts hängt mit dem Zusammenhang zwischen der Kovariate und der abhängigen Variable $\beta$, dem Abstand der Mittelwerte der Kovariate $\bar{X}_i$ in den Gruppen und natürlich dem tatsächlichen Effekt $\tau_i$ zusammen.
 
 ## Analyse einer ANCOVA in `R`
 
@@ -506,7 +511,7 @@ bdi_em <- emmeans(mod_bdi, ~Condition)
 pairs(bdi_em, infer=T, adjust='scheffe')
 ```
 
-D.h. wir finden nur für den Vergleich zwischen der medikamentös behandelten Gruppe und der Kontrollgruppe einen statistisch signifikanten Effekt.
+D.h. wir finden nur für den Vergleich zwischen der medikamentös behandelten Gruppe und der Kontrollgruppe einen statistisch signifikanten Effekt. An dem Beispiel können wir auch schön sehen, wie das ANCOVA-Modell als Alternative anbietet um Daten zu analysieren die traditionell eher unter Repeated measures Designs fallen. Tatsächlich lässt sich zeigen, dass unter relativ milden, realistischen Annahmen die ANCOVA eine hohe Power besitzt [siehe @wan2021; @wan2020].
 
 ### Effektstärken für Vergleiche
 
@@ -538,33 +543,27 @@ MS_W <- sqrt((756.33 + 313.37)/df_W)
 eff_size(y_bars, sigma = MS_W, edf = df_W)
 ```
 
-
-- Unterscheidung zwischen
-  - Kovariate für das Untersuchungsdesign
-  - Kovariate für die Analyse der Daten
-
 ## Bestimmung der Anzahl der Replikationen 
+
+Der Vorteil der ANCOVA besteht ja darin, dass durch die Korrelation der Kovariate mit der abhängigen Variable zusätzliche Varianz aufgeklärt werden kann. Daher umso stärker der Zusammenhang zwischen $X$ und der abhängigen Variable ist umso mehr Varianz kann aufgeklärt werden umso größer ist die Power des Modells. Dementsprechend kann im Prinzip die gleiche Berechnung wie beim CRD angewendet werden wobei die Residualvarianz um Korrelation $\rho_{xy}$ vermindert wird. Formal folgt:
 
 \begin{align*}
 \sigma_{\epsilon(\text{ANCOVA})}^2 &= \sigma_{\epsilon(\text{CRD})}^2(1-\rho_{xy}^2) \\
 f_{\text{ANCOVA}} &= \frac{\sigma_{\text{btw}}}{\sigma_{\epsilon(\text{CRD})}}\frac{1}{\sqrt{1-\rho_{xy}^2}} = \frac{f_{\text{CRD}}}{\sqrt{1-\rho_{xy}^2}} 
 \end{align*}
 
-$df_{\text{Residual}} = N - k - 1$ under the ANCOVA model
-
-sample size Beispiel^[nach @maxwell2004]
-
-In einer CRD-Studie wurde eine Effektstärke für den Unterschied zwischen drei Gruppen ($k = 3$) von $f = 0.41$ gefunden. Wie verändert sich die notwendige Stichprobengröße wenn eine Kovariate mit $\rho = 0.5$ mit der abhängigen Variable hinzugenommen wird?
+Um den gleichen Ansatz wie beim CRD müssen dann lediglich noch die Freiheitsgrade angepasst werden mittels $df_{\text{Residual}} = N - k - 1$ im ANCOVA-Modell.
 
 ::: {#exm-ed-ancova-sample-size} 
-Bei einer power von $0.8$ wird eine Stichprobengröße von:
+Also beispielsweise in einer CRD-Studie wurde eine Effektstärke für den Unterschied zwischen drei Gruppen ($K = 3$) von $f = 0.41$ gefunden. Wie verändert sich die notwendige Stichprobengröße wenn eine Kovariate bei einer Korrelation von $\rho_{xy} = 0.5$ mit der abhängigen Variable hinzugenommen wird? Um eine power von $pow = 0.8$ zu erreichen wird im CRD die folgende Stichprobengröße benötigt:
 
 ```{r}
 #| echo: true
 
 pwr::pwr.anova.test(k=3, f=0.41, sig.level=0.05, power=0.8)$n
 ```
-Wenn die Kovariate modelliert wird, erhöht sich die Effektstärke auf $f = 0.41/\sqrt{1-0.5^2} = 0.47$. Daraus resultiert eine reduzierte Stichprobengröße von:
+
+D.h. es wird eine Stichprobengröße von $N_i = 21$ pro Gruppe benötigt. Wenn nun die Kovariate $X$ in das Modell integriert wird, erhöht sich die Effektstärke von $f = 0.41$ auf $f = 0.41/\sqrt{1-0.5^2} = 0.47$. Daraus resultiert eine reduzierte Stichprobengröße von:
 
 ```{r}
 #| echo: true
@@ -572,21 +571,41 @@ Wenn die Kovariate modelliert wird, erhöht sich die Effektstärke auf $f = 0.41
 pwr::pwr.anova.test(k=2, f=0.47, sig.level=0.05, power=0.8)$n
 ```
 
+D.h. im ANCOVA-Modell wird nur noch eine Stichprobengröße von $N_i = 19$ pro Gruppe benötigt. 
+
 :::
 
+::: {#exm-ed-ancova-fien-02}
+Schauen wir uns nochmal das Beispiel von @fien2019 an und Versuchen die Ergebnisse in Tabelle 4 zu replizieren. Die Daten aus der Publikation sind in der Datei `fien_2019_part.txt` gespeichert.
 
-## Was passiert wenn die Kovariate interagiert
+```{r}
+#| echo: true
+
+df_small <- readr::read_delim('data/fien_2019_parts.txt', delim = '\t')
+mod <- lm(gaitspeed24week ~ gaitspeedbaseline + chronicdiseases + exercise,
+          data = df_small)
+summary(mod)
+confint(mod) |> round(3)
+```
+
+Wenn wir die berechneten Werte mit denen aus Tabelle 4 aus @fien2019 vergleichen, sehen wir, dass wir zum gleichen Ergebnis kommen.
+:::
+
+## ANCOVA mit Interaktionseffekt 
+
+Tatsächlich kann es auch vorkommen, dass der Einfluss der Kovariaten $X$ in den Gruppen nicht gleich ist. D.h. das Treatment und die Kovariate nicht unabhänngig voneinander sind. In diesem Fall könnte z.B. der folgende Effekt eintreten (siehe @fig-ed-ancova-inter-01).
 
 ```{r}
 #| fig-cap: "Beispiel für einen Interaktionseffekt zwischen der Treatmentvariablen und der Kovariate"
- 
+#| label: fig-ed-ancova-inter-01 
 
 n <- 60
 set.seed(1)
+foo <- function(x,g) 3 + 2*g + 3*x + g*x 
 df_i <- tibble(
   x = runif(n, -3, 3),
   g = sample(-1:1, n, replace=T),
-  y = 3 + 2*g + 3*x + g*x + rnorm(n),
+  y = foo(x,g) + rnorm(length(x)),
   gruppe = LETTERS[1:3][g+2]
 )
 p_1 <- ggplot(df_i, aes(x,y,color=gruppe)) + 
@@ -597,65 +616,45 @@ p_1 <- ggplot(df_i, aes(x,y,color=gruppe)) +
 print(p_1)
 ```
 
-Modell
+Hier sehen wir, dass die Steigungen in den drei Gruppen unterschiedlich sind. Das Modell haben wir schon vorher bei der multiplen linearen Regression gesehen, wir haben ein Interaktionsmodell.
 
-$$
+\begin{equation}
 y_{it} = \beta_0 + \tau_i + \beta \cdot x_{it} + (\tau\beta)_{it}x_{it} + \epsilon_{it}
-$$
+\label{eq-ed-ancova-inter}
+\end{equation}
 
-### Welcher Unterschied zwischen den Gruppen? 
-
-```{r}
-print(p_1)
-```
-
-### Modellfit - Interaktionsmodell
+Im Prinzip bleibt bei der Analyse alles gleich. Es ergibt sich aber ein Problem wenn die Unterschied zwischen den drei Gruppen untersucht werden, da diese davon abhängigen für welchen Wert der Kovariate der Unterschied untersucht wird. In @fig-ed-ancova-inter-02 ist dieser Fall angezeigt.
 
 ```{r}
-#| echo: true
-#| results: hide
+#| fig-cap: "Vergleiche der Gruppe A mit Gruppe C für verschiedene Werte der Kovariaten $X$"
+#| label: fig-ed-ancova-inter-02
 
-mod <- aov(y ~ x*gruppe, df_i)
-anova(mod)
+p_1 +
+  annotate(geom = 'segment',
+            x=c(-1,-1), xend=c(-1,-1),
+            y=foo(c(-1,-1),-1), yend=foo(c(-1,-1),1),
+            arrow = arrow(type = 'closed', length=unit(.1,'inch'),
+                    ends='both')) +
+  annotate(geom = 'segment',
+            x=c(2,2), xend=c(2,2),
+            y=foo(c(2,2),-1), yend=foo(c(2,2),1),
+            arrow = arrow(type = 'closed', length=unit(.1,'inch'),
+                    ends='both')) 
 ```
 
-```{r}
-anova(mod) |> broom::tidy() |> 
-  knitr::kable(
-    booktabs=T,
-    digits = 2,
-    col.names = c('Term', 'df', 'SSQ', 'MSQ', 'F', 'p.value'),
-    caption="Anova-Tabelle für Interaktionsmodell")
-```
+In @fig-ed-ancova-inter-02 ist klar zu erkennen, dass in Abhängigkeit vom Wert der Kovariaten $X$ der Unterschied zwischen den Gruppen sehr unterschiedlich ausfällt. Wollten wir zum Beispiel die Unterschiede zwischen den Gruppen für die Werte der Kovariaten $X$ für $X = [-2,0,2]$ berechnen dann könnten wir das in `R` mittels `emmeans()` wie folgt durchführen:
 
 ```{r}
 #| echo: true
  
+mod <- lm(y ~ x*gruppe, df_i)
 mod_ems <- emmeans(mod, ~gruppe|x, at=list(x=c(-2,0,2)))
-mod_ems
+pairs(mod_ems, adjust='bonferroni')
 ```
 
-```{r}
-#| echo: true
-#| results: hide
-
-pairs(mod_ems)
-```
-
-```{r}
-pairs(mod_ems) |> broom::tidy() |> 
-  dplyr::select(x, contrast, estimate, std.error, df, statistic, adj.p.value) |> 
-  my_tbl(header=c('x','contrast','estimate','$s_e$', '$df$','t','p'),
-         caption="Paarvergleiche",
-         escape=F)
-```
+Damit solche Vergleiche sinnvoll sind, müssten die jeweiligen Werte für die Kovariaten schon im voraus möglichst bekannt sein bzw. festgelegt worden sein.
 
 ## Zum Nach- und Weiterlesen
 
-Allgemein
-[@maxwell2004, p.451-467]
-
-Pre-post ANCOVA
-@wan2021
-
+Ein gute Quelle um noch einmal die Grundlagen zur ANCOVA zu verstehen ist @maxwell2004. Genauere Information zur ANCOVA für pre-post Untersuchungen sind in @wan2021 und @wan2020 zu finden.
 

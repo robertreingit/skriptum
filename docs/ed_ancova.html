@@ -444,11 +444,7 @@ window.Quarto = {
   <li><a href="#effektstärken-für-vergleiche" id="toc-effektstärken-für-vergleiche" class="nav-link" data-scroll-target="#effektstärken-für-vergleiche"><span class="header-section-number">25.5.1</span> Effektstärken für Vergleiche</a></li>
   </ul></li>
   <li><a href="#bestimmung-der-anzahl-der-replikationen" id="toc-bestimmung-der-anzahl-der-replikationen" class="nav-link" data-scroll-target="#bestimmung-der-anzahl-der-replikationen"><span class="header-section-number">25.6</span> Bestimmung der Anzahl der Replikationen</a></li>
-  <li><a href="#was-passiert-wenn-die-kovariate-interagiert" id="toc-was-passiert-wenn-die-kovariate-interagiert" class="nav-link" data-scroll-target="#was-passiert-wenn-die-kovariate-interagiert"><span class="header-section-number">25.7</span> Was passiert wenn die Kovariate interagiert</a>
-  <ul class="collapse">
-  <li><a href="#welcher-unterschied-zwischen-den-gruppen" id="toc-welcher-unterschied-zwischen-den-gruppen" class="nav-link" data-scroll-target="#welcher-unterschied-zwischen-den-gruppen"><span class="header-section-number">25.7.1</span> Welcher Unterschied zwischen den Gruppen?</a></li>
-  <li><a href="#modellfit---interaktionsmodell" id="toc-modellfit---interaktionsmodell" class="nav-link" data-scroll-target="#modellfit---interaktionsmodell"><span class="header-section-number">25.7.2</span> Modellfit - Interaktionsmodell</a></li>
-  </ul></li>
+  <li><a href="#ancova-mit-interaktionseffekt" id="toc-ancova-mit-interaktionseffekt" class="nav-link" data-scroll-target="#ancova-mit-interaktionseffekt"><span class="header-section-number">25.7</span> ANCOVA mit Interaktionseffekt</a></li>
   <li><a href="#zum-nach--und-weiterlesen" id="toc-zum-nach--und-weiterlesen" class="nav-link" data-scroll-target="#zum-nach--und-weiterlesen"><span class="header-section-number">25.8</span> Zum Nach- und Weiterlesen</a></li>
   </ul>
 </nav>
@@ -572,7 +568,7 @@ Y_{it} = \mu + \tau_i + \beta x_{it} + \epsilon_{it} \quad \epsilon_{it} \sim \m
 \label{eq-ed-ancova-model}
 \end{equation}\]</span></p>
 <p>In Model <span class="math inline">\(\eqref{eq-ed-ancova-model}\)</span> kommt dementsprechend nichts Neues dazu, sondern unser bekanntes lineares Modell. Der einzige Unterschied besteht in der Terminologie, während wir vorher <span class="math inline">\(\alpha_i\)</span> für die nominale Variable verwendet haben, wird der nominale Faktor im ANCOVA-Modell <span class="math inline">\(\tau_i\)</span> bezeichnet. Das sind aber nur Unterschiede in den Buchstaben die leider auch in der Literatur unterschiedlich verwendet werden.</p>
-<p>Um die spätere Interpretation der Koeffizienten zu vereinfachen, wird auch oft ein in der Kovariaten zentriertes Modell verwendet. Dies hat jedoch keine Auswirkung auf das Ergebnis.</p>
+<p>Um die spätere Interpretation der Koeffizienten zu vereinfachen, wird auch oft ein in der Kovariaten zentriertes Modell verwendet. Dies hat jedoch keine Auswirkung auf das Ergebnis. Von den Werten der Kovariate wird dazu der Gesamtmittelwert <span class="math inline">\(\bar{x}_{..}\)</span> der Kovariatenwerten abgezogen.</p>
 <p><span class="math display">\[\begin{equation}
 Y_{it} = \mu + \tau_i + \beta (x_{it} - \bar{x}_{..}) + \epsilon_{it}
 \label{eq-ed-ancova-model-c}
@@ -581,7 +577,7 @@ Y_{it} = \mu + \tau_i + \beta (x_{it} - \bar{x}_{..}) + \epsilon_{it}
 <p><span class="math display">\[\begin{equation*}
 Y_{it} - \beta (x_{it} - \bar{x}_{..}) = \mu + \tau_i + \epsilon_{it}
 \end{equation*}\]</span></p>
-<p>Auf der linken Seite stehen die Residuen einer Regression, die Differenz der beobachteten Werte von denen mittels der Regression auf die Kovariate vorhergesagten Werten. Auf der rechten Seite haben wir das Modell der CRD. D.h. durch die ANCOVA werden die beobachteten Werte korrigiert und dadurch deren Varianz reduziert.</p>
+<p>Auf der linken Seite stehen die Residuen einer einfachen Regression, die Differenz der beobachteten Werte <span class="math inline">\(Y_{it}\)</span> von denen mittels der Regression auf die Kovariate vorhergesagten Werten <span class="math inline">\(\beta (x_{it} - \bar{x}_{..}\)</span>. Auf der rechten Seite haben wir das Modell der CRD. D.h. durch die ANCOVA werden die beobachteten Werte <span class="math inline">\(Y_{it}\)</span> korrigiert und dadurch deren Varianz reduziert.</p>
 <p>Da es sich bei der ANCOVA aber insgesamt wieder nur um eine Variante des linearen Modell handelt, ergeben sich entsprechend auch keine unbekannten Voraussetzungen:</p>
 <ul>
 <li>Experimental units sind randomisiert den <span class="math inline">\(K\)</span> Gruppen zugewiesen worden</li>
@@ -653,7 +649,7 @@ Tabelle&nbsp;25.1: Varianztabelle der ANCOVA
 </div>
 </figure>
 </div>
-<p>Die Schreibweise <span class="math inline">\(T|\beta\)</span> bezeichnet den Effekt des Treatments nachdem für die Kovariate kontrolliert wurde während <span class="math inline">\(\beta|T\)</span> den Effekt der Kovariate nachdem für das Treatment kontrolliert wurde beschreibt. Hier tritt eine Besonderheit, die Summe der Quadratsummen addiert sich nicht zur totalen Varianz von <span class="math inline">\(Y\)</span>. Dies kommt dadurch zustande das nicht die Hierarchie vom einfachsten zum vollen Modell aufsummiert werden, sondern Vergleiche zwischen dem vollen Modell und jeweils einem Modell bei dem die andere Variable bereits vorhanden ist. Diese Quadratsummen werden als sogenannte Type-II Quadratsummen bezeichnet und verlieren die additive Eigenschaft. Im Spezialfall wenn beide Gruppen den gleichen Mittelwert in der Kovariaten <span class="math inline">\(X\)</span> haben, sind die Quadratsummen dann doch wieder additive. Die beiden Effekt Treatment und Kovariate sind dann orthogonal zueinander.</p>
+<p>Die Schreibweise <span class="math inline">\(T|\beta\)</span> bezeichnet den Effekt des Treatments nachdem für die Kovariate kontrolliert wurde während <span class="math inline">\(\beta|T\)</span> den Effekt der Kovariate nachdem für das Treatment kontrolliert wurde beschreibt. Hier tritt eine Besonderheit auf, die Summe der Quadratsummen addiert sich nicht zur totalen Varianz von <span class="math inline">\(Y\)</span>. Dies kommt dadurch zustande das die Quadratsummen nicht der Hierarchie folgend vom einfachsten zum vollen Modell gebildet werden, sondern Vergleiche zwischen dem vollen Modell und jeweils einem Modell bei dem die andere Variable bereits vorhanden ist durchgeführt werden. Diese Quadratsummen werden als korrigierte Quadratsummen (adjusted sums of squares) <span class="citation" data-cites="christensen2018">(<a href="references.html#ref-christensen2018" role="doc-biblioref">Christensen 2018, p.362</a>)</span> oder auch Type-II Quadratsummen bezeichnet. Dadurch verlieren die Quadratsummen ihre additive Eigenschaft. Im Spezialfall wenn beide Gruppen den gleichen Mittelwert in der Kovariaten <span class="math inline">\(X\)</span> haben, sind die Quadratsummen dann doch wieder additive. Die beiden Effekt Treatment und Kovariate sind dann orthogonal zueinander.</p>
 <p>Schauen wir uns die Analyse in einem Spielzeugbeispiel an. In <a href="#tbl-ed-ancova-max-01" class="quarto-xref">Tabelle&nbsp;<span>25.2</span></a> ist ein Beispieldatensatz aus <span class="citation" data-cites="maxwell2004">Maxwell, Delaney, und Kelley (<a href="references.html#ref-maxwell2004" role="doc-biblioref">2004</a>)</span> abgebildet.</p>
 <div class="cell">
 <div id="tbl-ed-ancova-max-01" class="cell quarto-float anchored">
@@ -817,7 +813,7 @@ Tabelle&nbsp;25.4: Varianztabelle
 </figure>
 </div>
 </div>
-<p>Hier finden wir ebenfalls keinen statisch signifikaten Effekt für beide Variablen, die Wert für die Treatmentvariable sinnd in beiden Tabellen auch gleich. Schauen wir uns die Summe der Quadratsummen an.</p>
+<p>Hier finden wir ebenfalls keinen statisch signifikaten Effekt für beide Variablen, die Wert für die Treatmentvariable sind in beiden Tabellen gleich. Schauen wir uns die Summe der Quadratsummen an.</p>
 <p><span class="math display">\[
 SSQ_x + SSQ_{\text{group}} + SSE = 16+2.4+12 = 30.4
 \]</span></p>
@@ -920,6 +916,7 @@ Abbildung&nbsp;25.8: Korrigierte Mittelwerte der Gruppen bei <span class="math i
 </div>
 </div>
 <p>Wie wir an dem Beispiel sehen konnten, führt die Kombination von Mittelwerten in der Kovariaten <span class="math inline">\(X\)</span> dazu, dass der Effekt kleiner wird nachdem für die Kovariate kontrolliert wurde. Dies ist nicht immer der Fall sondern hängt davon ab, wie groß der Effekt ist und wie die Anordnung der Mittelwerte <span class="math inline">\(\bar{X}_j\)</span> in den Gruppen ist.</p>
+<p>In <a href="#fig-ed-ancova-adjusted-means-2" class="quarto-xref">Abbildung&nbsp;<span>25.9</span></a> ist der Fall noch mal etwas klarer dargestellt.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-ed-ancova-adjusted-means-2" class="quarto-figure quarto-figure-center quarto-float anchored">
@@ -928,12 +925,13 @@ Abbildung&nbsp;25.8: Korrigierte Mittelwerte der Gruppen bei <span class="math i
 <img src="ed_ancova_files/figure-html/fig-ed-ancova-adjusted-means-2-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ed-ancova-adjusted-means-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Abbildung&nbsp;25.9: Effekt verkleinert sich
+Abbildung&nbsp;25.9: Zusammenhang zwischen der Kovariate und dem Gruppen Effekt, der sich verkleinert.
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
+<p>Wir haben einerseits die einfachen, rohen Gruppenmittelwerte und die korrigierten Mittelwerte. In <a href="#fig-ed-ancova-adjusted-means-2" class="quarto-xref">Abbildung&nbsp;<span>25.9</span></a> sind die einfachen Mittelwerte weiter auseinander entfernt als die korrigierten Mittelwerte. Daher wird der Effekt nach der Korrektur kleiner. Es kann aber auch der gegensätzliche Effekt eintreten. In <a href="#fig-ed-ancova-adjusted-means-3" class="quarto-xref">Abbildung&nbsp;<span>25.10</span></a> ist dafür ein vereinfachtes Beispiel dargestellt.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-ed-ancova-adjusted-means-3" class="quarto-figure quarto-figure-center quarto-float anchored">
@@ -942,12 +940,13 @@ Abbildung&nbsp;25.9: Effekt verkleinert sich
 <img src="ed_ancova_files/figure-html/fig-ed-ancova-adjusted-means-3-1.png" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ed-ancova-adjusted-means-3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Abbildung&nbsp;25.10: Effekt vergrößert sich
+Abbildung&nbsp;25.10: Zusammenhang zwischen der Kovariate und dem Gruppen Effekt, der sich vergrößert.
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
+<p>In <a href="#fig-ed-ancova-adjusted-means-3" class="quarto-xref">Abbildung&nbsp;<span>25.10</span></a> sind die einfachen Gruppenmittelwerte näher zusammen als dies der Fall bei den korrigierten Mittelwerten der Fall. Darin können wir sehen, dass nicht immer direkt klar ist in welche Richtung sich die Effekte verändern, wenn für eine Kovariate kontrolliert wird. Die Veränderung des Effekts hängt mit dem Zusammenhang zwischen der Kovariate und der abhängigen Variable <span class="math inline">\(\beta\)</span>, dem Abstand der Mittelwerte der Kovariate <span class="math inline">\(\bar{X}_i\)</span> in den Gruppen und natürlich dem tatsächlichen Effekt <span class="math inline">\(\tau_i\)</span> zusammen.</p>
 </section>
 <section id="analyse-einer-ancova-in-r" class="level2" data-number="25.2">
 <h2 data-number="25.2" class="anchored" data-anchor-id="analyse-einer-ancova-in-r"><span class="header-section-number">25.2</span> Analyse einer ANCOVA in <code>R</code></h2>
@@ -1052,7 +1051,7 @@ group     |   0.00 | [0.00, 1.00]
 <h2 data-number="25.4" class="anchored" data-anchor-id="mehrfachvergleiche-bei-der-ancova"><span class="header-section-number">25.4</span> Mehrfachvergleiche bei der ANCOVA</h2>
 <p>Sollten wir einen statistisch signifikanten Effekt für die Treatmentvariable gefunden haben, dann können wir, wie üblich, auch Mehrfachvergleiche berechnen. Dies macht nur Sinn wenn <span class="math inline">\(K&gt;2\)</span> gilt, da ansonsten der einzelne <span class="math inline">\(\tau_i\)</span>-Koeffizient im Modell direkt den Vergleich der beiden Gruppen gibt. Auf die Herleitung der Varianz der Kontraste verzichten wir hier, da sich außer umfangreiche Algebra nichts grundlegendes Neues ergibt, außer das ein zusätzlicher Term für die Kovariate besteht.</p>
 <p><span class="math display">\[
-Var\left(\sum_{i}c_i \hat{\tau_i}\right) = msE\left(\sum_i\frac{c_i^2}{r_i} + \frac{(\sum_i c_i \bar{x}_{i.})^2}{\sum_{i=1}^K \sum_{t=1}^{r_i} (x_{it}-\bar{x}_{i.})^2} \right)
+Var\left(\sum_{i}c_i \hat{\tau_i}\right) = MSE\left(\sum_i\frac{c_i^2}{r_i} + \frac{(\sum_i c_i \bar{x}_{i.})^2}{\sum_{i=1}^K \sum_{t=1}^{r_i} (x_{it}-\bar{x}_{i.})^2} \right)
 \]</span> Der interessante Punkte hier, das die Varianz mit dem Abstand der Mittelwerte der Kovariate in den Gruppen <span class="math inline">\(\bar{x}_{i.}\)</span> größer wird. Deshalb ist eine möglichst ähnliche Verteilung der Kovariaten in den Gruppen zu bevorzugen. Um das nominelle Signifikanzniveau dann wieder für Mehrfachtestung zu kontrollieren können entweder eine Bonferroni- (pre-planned) oder die die Scheffé-;ethode verwendet werden. Für die Tukey-Methode gibt es keinen geschlossenen Beweis, obwohl wahrscheinlich auch die Tukey-Methode möglich ist <span class="citation" data-cites="dean1999">(vgl. <a href="references.html#ref-dean1999" role="doc-biblioref">Dean u.&nbsp;a. 1999, 1:p.294</a>)</span>.</p>
 </section>
 <section id="mehrfachvergleiche-in-r" class="level2" data-number="25.5">
@@ -1112,7 +1111,7 @@ Conf-level adjustment: scheffe method with rank 2
 P value adjustment: scheffe method with rank 2 </code></pre>
 </div>
 </div>
-<p>D.h. wir finden nur für den Vergleich zwischen der medikamentös behandelten Gruppe und der Kontrollgruppe einen statistisch signifikanten Effekt.</p>
+<p>D.h. wir finden nur für den Vergleich zwischen der medikamentös behandelten Gruppe und der Kontrollgruppe einen statistisch signifikanten Effekt. An dem Beispiel können wir auch schön sehen, wie das ANCOVA-Modell als Alternative anbietet um Daten zu analysieren die traditionell eher unter Repeated measures Designs fallen. Tatsächlich lässt sich zeigen, dass unter relativ milden, realistischen Annahmen die ANCOVA eine hohe Power besitzt <span class="citation" data-cites="wan2021 wan2020">(siehe <a href="references.html#ref-wan2021" role="doc-biblioref">Wan 2021</a>, <a href="references.html#ref-wan2020" role="doc-biblioref">2020</a>)</span>.</p>
 <section id="effektstärken-für-vergleiche" class="level3" data-number="25.5.1">
 <h3 data-number="25.5.1" class="anchored" data-anchor-id="effektstärken-für-vergleiche"><span class="header-section-number">25.5.1</span> Effektstärken für Vergleiche</h3>
 <p>Oft möchten wir für Mehrfachvergleiche eine Cohen’s D-artige Effektstärke berechnen. Dazu werden die sogenannte standardized differences between means verwendet. Der einzige Schritt der etwas problematischer ist, ist die Berechnung der Standardabweichung. Hier wird auch wieder die Restvarianz <span class="math inline">\(MS_W\)</span> ohne die Reduktion durch die Kovariate verwendet.</p>
@@ -1150,266 +1149,152 @@ sigma used for effect sizes: 6.294
 Confidence level used: 0.95 </code></pre>
 </div>
 </div>
-<ul>
-<li>Unterscheidung zwischen
-<ul>
-<li>Kovariate für das Untersuchungsdesign</li>
-<li>Kovariate für die Analyse der Daten</li>
-</ul></li>
-</ul>
 </section>
 </section>
 <section id="bestimmung-der-anzahl-der-replikationen" class="level2" data-number="25.6">
 <h2 data-number="25.6" class="anchored" data-anchor-id="bestimmung-der-anzahl-der-replikationen"><span class="header-section-number">25.6</span> Bestimmung der Anzahl der Replikationen</h2>
+<p>Der Vorteil der ANCOVA besteht ja darin, dass durch die Korrelation der Kovariate mit der abhängigen Variable zusätzliche Varianz aufgeklärt werden kann. Daher umso stärker der Zusammenhang zwischen <span class="math inline">\(X\)</span> und der abhängigen Variable ist umso mehr Varianz kann aufgeklärt werden umso größer ist die Power des Modells. Dementsprechend kann im Prinzip die gleiche Berechnung wie beim CRD angewendet werden wobei die Residualvarianz um Korrelation <span class="math inline">\(\rho_{xy}\)</span> vermindert wird. Formal folgt:</p>
 <p><span class="math display">\[\begin{align*}
 \sigma_{\epsilon(\text{ANCOVA})}^2 &amp;= \sigma_{\epsilon(\text{CRD})}^2(1-\rho_{xy}^2) \\
 f_{\text{ANCOVA}} &amp;= \frac{\sigma_{\text{btw}}}{\sigma_{\epsilon(\text{CRD})}}\frac{1}{\sqrt{1-\rho_{xy}^2}} = \frac{f_{\text{CRD}}}{\sqrt{1-\rho_{xy}^2}}
 \end{align*}\]</span></p>
-<p><span class="math inline">\(df_{\text{Residual}} = N - k - 1\)</span> under the ANCOVA model</p>
-<p>sample size Beispiel<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
-<p>In einer CRD-Studie wurde eine Effektstärke für den Unterschied zwischen drei Gruppen (<span class="math inline">\(k = 3\)</span>) von <span class="math inline">\(f = 0.41\)</span> gefunden. Wie verändert sich die notwendige Stichprobengröße wenn eine Kovariate mit <span class="math inline">\(\rho = 0.5\)</span> mit der abhängigen Variable hinzugenommen wird?</p>
+<p>Um den gleichen Ansatz wie beim CRD müssen dann lediglich noch die Freiheitsgrade angepasst werden mittels <span class="math inline">\(df_{\text{Residual}} = N - k - 1\)</span> im ANCOVA-Modell.</p>
 <div id="exm-ed-ancova-sample-size" class="theorem example">
-<p><span class="theorem-title"><strong>Beispiel 25.2</strong></span> Bei einer power von <span class="math inline">\(0.8\)</span> wird eine Stichprobengröße von:</p>
+<p><span class="theorem-title"><strong>Beispiel 25.2</strong></span> Also beispielsweise in einer CRD-Studie wurde eine Effektstärke für den Unterschied zwischen drei Gruppen (<span class="math inline">\(K = 3\)</span>) von <span class="math inline">\(f = 0.41\)</span> gefunden. Wie verändert sich die notwendige Stichprobengröße wenn eine Kovariate bei einer Korrelation von <span class="math inline">\(\rho_{xy} = 0.5\)</span> mit der abhängigen Variable hinzugenommen wird? Um eine power von <span class="math inline">\(pow = 0.8\)</span> zu erreichen wird im CRD die folgende Stichprobengröße benötigt:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>pwr<span class="sc">::</span><span class="fu">pwr.anova.test</span>(<span class="at">k=</span><span class="dv">3</span>, <span class="at">f=</span><span class="fl">0.41</span>, <span class="at">sig.level=</span><span class="fl">0.05</span>, <span class="at">power=</span><span class="fl">0.8</span>)<span class="sc">$</span>n</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 20.13803</code></pre>
 </div>
 </div>
-<p>Wenn die Kovariate modelliert wird, erhöht sich die Effektstärke auf <span class="math inline">\(f = 0.41/\sqrt{1-0.5^2} = 0.47\)</span>. Daraus resultiert eine reduzierte Stichprobengröße von:</p>
+<p>D.h. es wird eine Stichprobengröße von <span class="math inline">\(N_i = 21\)</span> pro Gruppe benötigt. Wenn nun die Kovariate <span class="math inline">\(X\)</span> in das Modell integriert wird, erhöht sich die Effektstärke von <span class="math inline">\(f = 0.41\)</span> auf <span class="math inline">\(f = 0.41/\sqrt{1-0.5^2} = 0.47\)</span>. Daraus resultiert eine reduzierte Stichprobengröße von:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>pwr<span class="sc">::</span><span class="fu">pwr.anova.test</span>(<span class="at">k=</span><span class="dv">2</span>, <span class="at">f=</span><span class="fl">0.47</span>, <span class="at">sig.level=</span><span class="fl">0.05</span>, <span class="at">power=</span><span class="fl">0.8</span>)<span class="sc">$</span>n</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 18.77618</code></pre>
 </div>
 </div>
+<p>D.h. im ANCOVA-Modell wird nur noch eine Stichprobengröße von <span class="math inline">\(N_i = 19\)</span> pro Gruppe benötigt.</p>
+</div>
+<div id="exm-ed-ancova-fien-02" class="theorem example">
+<p><span class="theorem-title"><strong>Beispiel 25.3</strong></span> Schauen wir uns nochmal das Beispiel von <span class="citation" data-cites="fien2019">Fien u.&nbsp;a. (<a href="references.html#ref-fien2019" role="doc-biblioref">2019</a>)</span> an und Versuchen die Ergebnisse in Tabelle 4 zu replizieren. Die Daten aus der Publikation sind in der Datei <code>fien_2019_part.txt</code> gespeichert.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>df_small <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_delim</span>(<span class="st">'data/fien_2019_parts.txt'</span>, <span class="at">delim =</span> <span class="st">'</span><span class="sc">\t</span><span class="st">'</span>)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(gaitspeed24week <span class="sc">~</span> gaitspeedbaseline <span class="sc">+</span> chronicdiseases <span class="sc">+</span> exercise,</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">data =</span> df_small)</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mod)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = gaitspeed24week ~ gaitspeedbaseline + chronicdiseases + 
+    exercise, data = df_small)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.18796 -0.07297 -0.01670  0.05582  0.49789 
+
+Coefficients:
+                  Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)        0.41128    0.13586   3.027 0.004415 ** 
+gaitspeedbaseline  0.65936    0.11553   5.707 1.44e-06 ***
+chronicdiseases   -0.02407    0.01020  -2.359 0.023563 *  
+exerciseexercise   0.14887    0.03776   3.943 0.000334 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.1201 on 38 degrees of freedom
+Multiple R-squared:  0.6677,    Adjusted R-squared:  0.6415 
+F-statistic: 25.46 on 3 and 38 DF,  p-value: 3.357e-09</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">confint</span>(mod) <span class="sc">|&gt;</span> <span class="fu">round</span>(<span class="dv">3</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                   2.5 % 97.5 %
+(Intercept)        0.136  0.686
+gaitspeedbaseline  0.425  0.893
+chronicdiseases   -0.045 -0.003
+exerciseexercise   0.072  0.225</code></pre>
+</div>
+</div>
+<p>Wenn wir die berechneten Werte mit denen aus Tabelle 4 aus <span class="citation" data-cites="fien2019">Fien u.&nbsp;a. (<a href="references.html#ref-fien2019" role="doc-biblioref">2019</a>)</span> vergleichen, sehen wir, dass wir zum gleichen Ergebnis kommen.</p>
 </div>
 </section>
-<section id="was-passiert-wenn-die-kovariate-interagiert" class="level2" data-number="25.7">
-<h2 data-number="25.7" class="anchored" data-anchor-id="was-passiert-wenn-die-kovariate-interagiert"><span class="header-section-number">25.7</span> Was passiert wenn die Kovariate interagiert</h2>
+<section id="ancova-mit-interaktionseffekt" class="level2" data-number="25.7">
+<h2 data-number="25.7" class="anchored" data-anchor-id="ancova-mit-interaktionseffekt"><span class="header-section-number">25.7</span> ANCOVA mit Interaktionseffekt</h2>
+<p>Tatsächlich kann es auch vorkommen, dass der Einfluss der Kovariaten <span class="math inline">\(X\)</span> in den Gruppen nicht gleich ist. D.h. das Treatment und die Kovariate nicht unabhänngig voneinander sind. In diesem Fall könnte z.B. der folgende Effekt eintreten (siehe <a href="#fig-ed-ancova-inter-01" class="quarto-xref">Abbildung&nbsp;<span>25.12</span></a>).</p>
 <div class="cell">
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="ed_ancova_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption>Beispiel für einen Interaktionseffekt zwischen der Treatmentvariablen und der Kovariate</figcaption>
+<div id="fig-ed-ancova-inter-01" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ed-ancova-inter-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="ed_ancova_files/figure-html/fig-ed-ancova-inter-01-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ed-ancova-inter-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;25.12: Beispiel für einen Interaktionseffekt zwischen der Treatmentvariablen und der Kovariate
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>Modell</p>
-<p><span class="math display">\[
+<p>Hier sehen wir, dass die Steigungen in den drei Gruppen unterschiedlich sind. Das Modell haben wir schon vorher bei der multiplen linearen Regression gesehen, wir haben ein Interaktionsmodell.</p>
+<p><span class="math display">\[\begin{equation}
 y_{it} = \beta_0 + \tau_i + \beta \cdot x_{it} + (\tau\beta)_{it}x_{it} + \epsilon_{it}
-\]</span></p>
-<section id="welcher-unterschied-zwischen-den-gruppen" class="level3" data-number="25.7.1">
-<h3 data-number="25.7.1" class="anchored" data-anchor-id="welcher-unterschied-zwischen-den-gruppen"><span class="header-section-number">25.7.1</span> Welcher Unterschied zwischen den Gruppen?</h3>
+\label{eq-ed-ancova-inter}
+\end{equation}\]</span></p>
+<p>Im Prinzip bleibt bei der Analyse alles gleich. Es ergibt sich aber ein Problem wenn die Unterschied zwischen den drei Gruppen untersucht werden, da diese davon abhängigen für welchen Wert der Kovariate der Unterschied untersucht wird. In <a href="#fig-ed-ancova-inter-02" class="quarto-xref">Abbildung&nbsp;<span>25.13</span></a> ist dieser Fall angezeigt.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="ed_ancova_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid figure-img" width="672"></p>
+<div id="fig-ed-ancova-inter-02" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ed-ancova-inter-02-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="ed_ancova_files/figure-html/fig-ed-ancova-inter-02-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ed-ancova-inter-02-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;25.13: Vergleiche der Gruppe A mit Gruppe C für verschiedene Werte der Kovariaten <span class="math inline">\(X\)</span>
+</figcaption>
 </figure>
 </div>
 </div>
 </div>
-</section>
-<section id="modellfit---interaktionsmodell" class="level3" data-number="25.7.2">
-<h3 data-number="25.7.2" class="anchored" data-anchor-id="modellfit---interaktionsmodell"><span class="header-section-number">25.7.2</span> Modellfit - Interaktionsmodell</h3>
+<p>In <a href="#fig-ed-ancova-inter-02" class="quarto-xref">Abbildung&nbsp;<span>25.13</span></a> ist klar zu erkennen, dass in Abhängigkeit vom Wert der Kovariaten <span class="math inline">\(X\)</span> der Unterschied zwischen den Gruppen sehr unterschiedlich ausfällt. Wollten wir zum Beispiel die Unterschiede zwischen den Gruppen für die Werte der Kovariaten <span class="math inline">\(X\)</span> für <span class="math inline">\(X = [-2,0,2]\)</span> berechnen dann könnten wir das in <code>R</code> mittels <code>emmeans()</code> wie folgt durchführen:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">aov</span>(y <span class="sc">~</span> x<span class="sc">*</span>gruppe, df_i)</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(mod)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="cell-output-display">
-<table class="table table-sm table-striped small">
-<caption>Anova-Tabelle für Interaktionsmodell</caption>
-<thead>
-<tr class="header">
-<th style="text-align: left;">Term</th>
-<th style="text-align: right;">df</th>
-<th style="text-align: right;">SSQ</th>
-<th style="text-align: right;">MSQ</th>
-<th style="text-align: right;">F</th>
-<th style="text-align: right;">p.value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">x</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">1321.60</td>
-<td style="text-align: right;">1321.60</td>
-<td style="text-align: right;">1847.21</td>
-<td style="text-align: right;">0</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">gruppe</td>
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">151.11</td>
-<td style="text-align: right;">75.56</td>
-<td style="text-align: right;">105.61</td>
-<td style="text-align: right;">0</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">x:gruppe</td>
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">78.76</td>
-<td style="text-align: right;">39.38</td>
-<td style="text-align: right;">55.04</td>
-<td style="text-align: right;">0</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Residuals</td>
-<td style="text-align: right;">54</td>
-<td style="text-align: right;">38.63</td>
-<td style="text-align: right;">0.72</td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>mod_ems <span class="ot">&lt;-</span> <span class="fu">emmeans</span>(mod, <span class="sc">~</span>gruppe<span class="sc">|</span>x, <span class="at">at=</span><span class="fu">list</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>,<span class="dv">0</span>,<span class="dv">2</span>)))</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>mod_ems</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x<span class="sc">*</span>gruppe, df_i)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>mod_ems <span class="ot">&lt;-</span> <span class="fu">emmeans</span>(mod, <span class="sc">~</span>gruppe<span class="sc">|</span>x, <span class="at">at=</span><span class="fu">list</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>,<span class="dv">0</span>,<span class="dv">2</span>)))</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="fu">pairs</span>(mod_ems, <span class="at">adjust=</span><span class="st">'bonferroni'</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>x = -2:
- gruppe emmean    SE df lower.CL upper.CL
- A      -3.286 0.373 54   -4.033    -2.54
- B      -3.101 0.335 54   -3.773    -2.43
- C      -2.725 0.256 54   -3.238    -2.21
+ contrast estimate    SE df t.ratio p.value
+ A - B      -0.185 0.501 54  -0.368  1.0000
+ A - C      -0.561 0.452 54  -1.241  0.6597
+ B - C      -0.377 0.422 54  -0.893  1.0000
 
 x =  0:
- gruppe emmean    SE df lower.CL upper.CL
- A       0.934 0.208 54    0.517     1.35
- B       2.958 0.185 54    2.587     3.33
- C       5.303 0.201 54    4.900     5.71
+ contrast estimate    SE df t.ratio p.value
+ A - B      -2.023 0.279 54  -7.264  &lt;.0001
+ A - C      -4.369 0.289 54 -15.099  &lt;.0001
+ B - C      -2.345 0.273 54  -8.593  &lt;.0001
 
 x =  2:
- gruppe emmean    SE df lower.CL upper.CL
- A       5.155 0.315 54    4.524     5.79
- B       9.016 0.248 54    8.519     9.51
- C      13.331 0.361 54   12.607    14.05
+ contrast estimate    SE df t.ratio p.value
+ A - B      -3.862 0.401 54  -9.642  &lt;.0001
+ A - C      -8.176 0.479 54 -17.073  &lt;.0001
+ B - C      -4.314 0.438 54  -9.853  &lt;.0001
 
-Confidence level used: 0.95 </code></pre>
+P value adjustment: bonferroni method for 3 tests </code></pre>
 </div>
 </div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pairs</span>(mod_ems)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="cell-output-display">
-<table class="table table-sm table-striped small">
-<caption>Paarvergleiche</caption>
-<thead>
-<tr class="header">
-<th style="text-align: right;">x</th>
-<th style="text-align: left;">contrast</th>
-<th style="text-align: right;">estimate</th>
-<th style="text-align: right;"><span class="math inline">\(s_e\)</span></th>
-<th style="text-align: right;"><span class="math inline">\(df\)</span></th>
-<th style="text-align: right;">t</th>
-<th style="text-align: right;">p</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: right;">-2</td>
-<td style="text-align: left;">A - B</td>
-<td style="text-align: right;">-0.18</td>
-<td style="text-align: right;">0.50</td>
-<td style="text-align: right;">54</td>
-<td style="text-align: right;">-0.37</td>
-<td style="text-align: right;">0.93</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">-2</td>
-<td style="text-align: left;">A - C</td>
-<td style="text-align: right;">-0.56</td>
-<td style="text-align: right;">0.45</td>
-<td style="text-align: right;">54</td>
-<td style="text-align: right;">-1.24</td>
-<td style="text-align: right;">0.43</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">-2</td>
-<td style="text-align: left;">B - C</td>
-<td style="text-align: right;">-0.38</td>
-<td style="text-align: right;">0.42</td>
-<td style="text-align: right;">54</td>
-<td style="text-align: right;">-0.89</td>
-<td style="text-align: right;">0.65</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">0</td>
-<td style="text-align: left;">A - B</td>
-<td style="text-align: right;">-2.02</td>
-<td style="text-align: right;">0.28</td>
-<td style="text-align: right;">54</td>
-<td style="text-align: right;">-7.26</td>
-<td style="text-align: right;">0.00</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">0</td>
-<td style="text-align: left;">A - C</td>
-<td style="text-align: right;">-4.37</td>
-<td style="text-align: right;">0.29</td>
-<td style="text-align: right;">54</td>
-<td style="text-align: right;">-15.10</td>
-<td style="text-align: right;">0.00</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">0</td>
-<td style="text-align: left;">B - C</td>
-<td style="text-align: right;">-2.35</td>
-<td style="text-align: right;">0.27</td>
-<td style="text-align: right;">54</td>
-<td style="text-align: right;">-8.59</td>
-<td style="text-align: right;">0.00</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">2</td>
-<td style="text-align: left;">A - B</td>
-<td style="text-align: right;">-3.86</td>
-<td style="text-align: right;">0.40</td>
-<td style="text-align: right;">54</td>
-<td style="text-align: right;">-9.64</td>
-<td style="text-align: right;">0.00</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">2</td>
-<td style="text-align: left;">A - C</td>
-<td style="text-align: right;">-8.18</td>
-<td style="text-align: right;">0.48</td>
-<td style="text-align: right;">54</td>
-<td style="text-align: right;">-17.07</td>
-<td style="text-align: right;">0.00</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">2</td>
-<td style="text-align: left;">B - C</td>
-<td style="text-align: right;">-4.31</td>
-<td style="text-align: right;">0.44</td>
-<td style="text-align: right;">54</td>
-<td style="text-align: right;">-9.85</td>
-<td style="text-align: right;">0.00</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</section>
+<p>Damit solche Vergleiche sinnvoll sind, müssten die jeweiligen Werte für die Kovariaten schon im voraus möglichst bekannt sein bzw. festgelegt worden sein.</p>
 </section>
 <section id="zum-nach--und-weiterlesen" class="level2" data-number="25.8">
 <h2 data-number="25.8" class="anchored" data-anchor-id="zum-nach--und-weiterlesen"><span class="header-section-number">25.8</span> Zum Nach- und Weiterlesen</h2>
-<p>Allgemein <span class="citation" data-cites="maxwell2004">(<a href="references.html#ref-maxwell2004" role="doc-biblioref">Maxwell, Delaney, und Kelley 2004, p.451–467</a>)</span></p>
-<p>Pre-post ANCOVA <span class="citation" data-cites="wan2021">Wan (<a href="references.html#ref-wan2021" role="doc-biblioref">2021</a>)</span></p>
+<p>Ein gute Quelle um noch einmal die Grundlagen zur ANCOVA zu verstehen ist <span class="citation" data-cites="maxwell2004">Maxwell, Delaney, und Kelley (<a href="references.html#ref-maxwell2004" role="doc-biblioref">2004</a>)</span>. Genauere Information zur ANCOVA für pre-post Untersuchungen sind in <span class="citation" data-cites="wan2021">Wan (<a href="references.html#ref-wan2021" role="doc-biblioref">2021</a>)</span> und <span class="citation" data-cites="wan2020">Wan (<a href="references.html#ref-wan2020" role="doc-biblioref">2020</a>)</span> zu finden.</p>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
 <div id="ref-casella2008" class="csl-entry" role="listitem">
 Casella, George. 2009. <em>Statistical Design</em>. 1. Aufl. Springer Texts in Statistics. Springer, New York, NY.
+</div>
+<div id="ref-christensen2018" class="csl-entry" role="listitem">
+Christensen, Ronald. 2018. <em>Analysis of variance, design, and regression: Linear modeling for unbalanced data</em>. CRC Press.
 </div>
 <div id="ref-dean1999" class="csl-entry" role="listitem">
 Dean, Angela, Daniel Voss, Danel Draguljić, u.&nbsp;a. 1999. <em>Design and analysis of experiments</em>. Bd. 1. Springer.
@@ -1420,16 +1305,13 @@ Fien, Samantha, Tim Henwood, Mike Climstein, Evelyne Rathbone, und Justin WL Keo
 <div id="ref-maxwell2004" class="csl-entry" role="listitem">
 Maxwell, Scott E, Harold D Delaney, und Ken Kelley. 2004. <em>Designing experiments and analyzing data: A model comparison perspective</em>. 2. Aufl. Routledge.
 </div>
+<div id="ref-wan2020" class="csl-entry" role="listitem">
+Wan, Fei. 2020. <span>„Analyzing pre-post designs using the analysis of covariance models with and without the interaction term in a heterogeneous study population“</span>. <em>Statistical Methods in Medical Research</em> 29 (1): 189–204. <a href="https://doi.org/10.1177/0962280219827971">https://doi.org/10.1177/0962280219827971</a>.
+</div>
 <div id="ref-wan2021" class="csl-entry" role="listitem">
-Wan, Fei. 2021. <span>„Statistical analysis of two arm randomized pre-post designs with one post-treatment measurement“</span>. <em>BMC medical research methodology</em> 21 (1): 1–16.
+———. 2021. <span>„Statistical analysis of two arm randomized pre-post designs with one post-treatment measurement“</span>. <em>BMC medical research methodology</em> 21 (1): 1–16.
 </div>
 </div>
-</section>
-<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
-<hr>
-<ol>
-<li id="fn1"><p>nach <span class="citation" data-cites="maxwell2004">Maxwell, Delaney, und Kelley (<a href="references.html#ref-maxwell2004" role="doc-biblioref">2004</a>)</span><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-</ol>
 </section>
 
 </main> <!-- /main -->
