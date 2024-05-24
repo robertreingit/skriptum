@@ -457,16 +457,16 @@ effectsize::omega_squared(mod_1, partial=F)
 
 ## Mehrfachvergleiche bei der ANCOVA
 
-Sollten wir einen statistisch signifikanten Effekt für die Treatmentvariable gefunden haben, dann können wir, wie üblich, auch Mehrfachvergleiche berechnen. Dies macht nur Sinn wenn $K>2$ gilt, da ansonsten der einzelne $\tau_i$-Koeffizient im Modell direkt den Vergleich der beiden Gruppen gibt. Auf die Herleitung der Varianz der Kontraste verzichten wir hier, da sich außer umfangreiche Algebra nichts grundlegendes Neues ergibt, außer das ein zusätzlicher Term für die Kovariate besteht.
+Sollten wir einen statistisch signifikanten Effekt für die Treatmentvariable gefunden haben, dann können wir, wie üblich, auch Mehrfachvergleiche über Kontraste $\Psi_i$ berechnen. Dies macht nur Sinn wenn $K>2$ gilt, da ansonsten der einzelne $\tau_i$-Koeffizient im Modell direkt den Vergleich der beiden Gruppen gibt. Auf die Herleitung der Varianz der Kontraste verzichten wir hier, da sich außer umfangreicher Algebra nichts grundlegendes Neues ergibt. Die Varianz für einen Kontrast $\Psi_i$ besitzt einen zusätzlichen Term für den Einfluss der Kovariate $X$.
 
 $$
 Var\left(\sum_{i}c_i \hat{\tau_i}\right) = MSE\left(\sum_i\frac{c_i^2}{r_i} + \frac{(\sum_i c_i \bar{x}_{i.})^2}{\sum_{i=1}^K \sum_{t=1}^{r_i} (x_{it}-\bar{x}_{i.})^2} \right)
 $$
-Der interessante Punkte hier, das die Varianz mit dem Abstand der Mittelwerte der Kovariate in den Gruppen $\bar{x}_{i.}$ größer wird. Deshalb ist eine möglichst ähnliche Verteilung der Kovariaten in den Gruppen zu bevorzugen. Um das nominelle Signifikanzniveau dann wieder für Mehrfachtestung zu kontrollieren können entweder eine Bonferroni- (pre-planned) oder die die Scheffé-;ethode verwendet werden. Für die Tukey-Methode gibt es keinen geschlossenen Beweis, obwohl wahrscheinlich auch die Tukey-Methode möglich ist [vgl. @dean1999, p.294].
+Der interessante Punkte hier, das die Varianz mit dem Abstand der Mittelwerte der Kovariate in den Gruppen $\bar{x}_{i.}$ größer wird. Deshalb ist eine möglichst ähnliche Verteilung der Kovariaten in den Gruppen zu bevorzugen. Um das nominelle Signifikanzniveau dann wieder für Mehrfachtestung zu kontrollieren können entweder eine Bonferroni- (pre-planned) oder die die Scheffé-Methode verwendet werden. Für die Tukey-Methode gibt es keinen geschlossenen Beweis, obwohl wahrscheinlich auch die Tukey-Methode möglich ist [vgl. @dean1999, p.294].
 
 ## Mehrfachvergleiche in `R`
 
-Um Mehrfachvergleiche in `R` durchzuführen, verwenden wir wieder das `emmeans`-package. Schauen wir uns dazu ein Beispiel hypothetisches Beispiel aus [@maxwell2004, p.429] mit drei Stufen für die Treatmentvariable an (siehe @fig-ed-ancova-max-01). Es wurde drei Patientengruppen mit Depression in drei Gruppen unterteilt. Eine Gruppe fungierte als Kontrollgruppe (`wait list`), eine Gruppe bekam ein Medikament (SSRI) und eine Gruppe bekam ein Placebo. Die Patienten wurde vor nach dem Treatment auf einer Depressionskala getestet.
+Um Mehrfachvergleiche in `R` durchzuführen, verwenden wir wieder das `emmeans`-package. Schauen wir uns dazu ein Beispiel hypothetisches Beispiel aus [@maxwell2004, p.429] mit drei Stufen für die Treatmentvariable an (siehe @fig-ed-ancova-max-01). Es wurde drei Patientengruppen mit Depression in drei Gruppen unterteilt. Eine Gruppe fungierte als Kontrollgruppe (`wait list`), eine Gruppe bekam ein Medikament (SSRI) und eine Gruppe bekam ein Placebo. Die Patienten wurde vor und nach dem Treatment auf einer Depressionskala (BDI depression score) getestet.
 
 ```{r}
 #| fig-cap: "Depression Beispiel aus Maxwell et al. (2004, p.429)"
@@ -486,7 +486,7 @@ ggplot(tbl_97, aes(Condition, bdi, fill=time)) +
   labs(x = 'Kondition', y = 'BDI depression score')
 ```
 
-Da davon auszugehen ist, dass die schwere der Depression vor Beginn des Untersuchung einen Einfluss auf das Ergebnis hat, wurde die Eingangsmessung als eine Kovariate behandelt (commensurate covariate). Die Analyse der Daten (in `tibble` `bdi_w`) führt zu folgendem Ergebnis:
+Da davon auszugehen ist, dass die Schwere der Depression vor Beginn der Untersuchung einen Einfluss auf das Ergebnis hat, wurde die Eingangsmessung als eine Kovariate behandelt (commensurate covariate). Die Analyse der Daten (in `tibble` `bdi_w`) führte zu folgendem Ergebnis:
 
 ```{r}
 bdi_w <-tbl_97 |>
@@ -502,7 +502,7 @@ mod_bdi <- lm(Post ~ Pre + Condition, bdi_w)
 car::Anova(mod_bdi)
 ```
 
-Es wurde ein statistisch signifikanter Effekt für die Gruppenzugehörigkeit gefunden. Den nachfolgenden Mehrfachvergleich können wir für die paarweisen Vergleiche wie folgt berechnen.
+Es wurde ein statistisch signifikanter Effekt für die Gruppenzugehörigkeit gefunden. Den nachfolgenden Mehrfachvergleich können wir für die paarweisen Vergleiche wie folgt wieder mittels `emmeans()` berechnen.
 
 ```{r}
 #| echo: true
@@ -511,19 +511,20 @@ bdi_em <- emmeans(mod_bdi, ~Condition)
 pairs(bdi_em, infer=T, adjust='scheffe')
 ```
 
-D.h. wir finden nur für den Vergleich zwischen der medikamentös behandelten Gruppe und der Kontrollgruppe einen statistisch signifikanten Effekt. An dem Beispiel können wir auch schön sehen, wie das ANCOVA-Modell als Alternative anbietet um Daten zu analysieren die traditionell eher unter Repeated measures Designs fallen. Tatsächlich lässt sich zeigen, dass unter relativ milden, realistischen Annahmen die ANCOVA eine hohe Power besitzt [siehe @wan2021; @wan2020].
+D.h. wir finden nur für den Kontrast zwischen der medikamentös behandelten Gruppe und der Kontrollgruppe einen statistisch signifikanten Effekt. An dem Beispiel können wir auch schön sehen, wie das ANCOVA-Modell eine Alternative darstellt um Daten zu analysieren die traditionell eher unter Repeated measures Designs fallen. Tatsächlich lässt sich zeigen, dass unter relativ milden, realistischen Annahmen die ANCOVA eine hohe Power für diese Designs besitzt [siehe @wan2021; @wan2020].
 
-### Effektstärken für Vergleiche
+### Effektstärken für paarweise Vergleiche
 
-Oft möchten wir für Mehrfachvergleiche eine Cohen's D-artige Effektstärke berechnen. Dazu werden die sogenannte standardized differences between means \index{standardized differences between means} verwendet. Der einzige Schritt der etwas problematischer ist, ist die Berechnung der Standardabweichung. Hier wird auch wieder die Restvarianz $MS_W$ ohne die Reduktion durch die Kovariate verwendet.
+Oft möchten wir für paarweise Vergleiche eine Cohen's D-artige Effektstärke berechnen. Dazu werden die sogenannte standardized differences between means \index{standardized differences between means} verwendet. Der einzige Schritt der etwas problematischer ist, ist die Berechnung der Standardabweichung. Hier wird auch wieder die Restvarianz $MS_W$ ohne die Reduktion durch die Kovariate $X$ verwendet.
 
-\begin{equation*}
+\begin{equation}
 \hat{d} = \frac{\bar{Y}_l' - \bar{Y}_m'}{\sqrt{MS_W}}
-\end{equation*}
+\label{eq-ed-ancova-sdbw}
+\end{equation}
 
-Für die Berechnung von $MS_W$ muss daher ein Modell ohne die Kovariate gefittet werden und der Term $MSE$ verwendet werden. Alternativ kann mit Hilfe der Werte aus dem ANCOVA Modell die folgende Formel verwendet werden: $MS_W = \sqrt{(SS_X + SS_{\text{error}})/(N-K)}$.
+Für die Berechnung von $MS_W$ muss ein lineares Modell ohne die Kovariate $X$ gefittet werden und der Term $MSE$ aus diesem Modell wird als $MS_W$ verwendet. Alternativ kann mit Hilfe der Werte aus dem ANCOVA Modell die folgende Formel verwendet werden: $MS_W = \sqrt{(SS_X + SS_{\text{error}})/(N-K)}$.
 
-In `R` könnte dies wie folgt mittels der Funktion `eff_size()` aus dem package `emmeans` berechnet werden:
+In `R` kann dies wie folgt mittels der Funktion `eff_size()` wieder aus dem package `emmeans` berechnet werden:
 
 ```{r}
 #| echo: true
@@ -545,17 +546,17 @@ eff_size(y_bars, sigma = MS_W, edf = df_W)
 
 ## Bestimmung der Anzahl der Replikationen 
 
-Der Vorteil der ANCOVA besteht ja darin, dass durch die Korrelation der Kovariate mit der abhängigen Variable zusätzliche Varianz aufgeklärt werden kann. Daher umso stärker der Zusammenhang zwischen $X$ und der abhängigen Variable ist umso mehr Varianz kann aufgeklärt werden umso größer ist die Power des Modells. Dementsprechend kann im Prinzip die gleiche Berechnung wie beim CRD angewendet werden wobei die Residualvarianz um Korrelation $\rho_{xy}$ vermindert wird. Formal folgt:
+Der Vorteil der ANCOVA besteht nun darin, dass durch die Korrelation der Kovariate mit der abhängigen Variable zusätzliche Varianz aufgeklärt werden kann. Daher umso stärker der Zusammenhang ist zwischen $X$ und der abhängigen Variable umso mehr Varianz in $Y$ kann aufgeklärt werden und umso höher ist die Power des Modells. Dementsprechend kann im Prinzip die gleiche Berechnung wie beim CRD angewendet werden wobei die Residualvarianz um Korrelation $\rho_{xy}$ zwischen der Kovariate $X$ und $Y$ vermindert wird. Formal folgt:
 
 \begin{align*}
 \sigma_{\epsilon(\text{ANCOVA})}^2 &= \sigma_{\epsilon(\text{CRD})}^2(1-\rho_{xy}^2) \\
 f_{\text{ANCOVA}} &= \frac{\sigma_{\text{btw}}}{\sigma_{\epsilon(\text{CRD})}}\frac{1}{\sqrt{1-\rho_{xy}^2}} = \frac{f_{\text{CRD}}}{\sqrt{1-\rho_{xy}^2}} 
 \end{align*}
 
-Um den gleichen Ansatz wie beim CRD müssen dann lediglich noch die Freiheitsgrade angepasst werden mittels $df_{\text{Residual}} = N - k - 1$ im ANCOVA-Modell.
+Um den gleichen Ansatz wie beim CRD zu verwenden müssen dann lediglich noch die Freiheitsgrade angepasst werden mittels $df_{\text{Residual}} = N - K - 1$ aus dem ANCOVA-Modell.
 
 ::: {#exm-ed-ancova-sample-size} 
-Also beispielsweise in einer CRD-Studie wurde eine Effektstärke für den Unterschied zwischen drei Gruppen ($K = 3$) von $f = 0.41$ gefunden. Wie verändert sich die notwendige Stichprobengröße wenn eine Kovariate bei einer Korrelation von $\rho_{xy} = 0.5$ mit der abhängigen Variable hinzugenommen wird? Um eine power von $pow = 0.8$ zu erreichen wird im CRD die folgende Stichprobengröße benötigt:
+Also beispielsweise in einer CRD-Studie wurde eine Effektstärke für den Unterschied zwischen drei Gruppen ($K = 3$) von $f = 0.41$ gefunden. Wie verändert sich die notwendige Stichprobengröße wenn eine Kovariate mit einer Korrelation von $\rho_{xy} = 0.5$ mit der abhängigen Variable hinzugenommen wird? Um eine power von $pow = 0.8$ zu erreichen wird im CRD zunächst die folgende Stichprobengröße benötigt:
 
 ```{r}
 #| echo: true
@@ -563,7 +564,7 @@ Also beispielsweise in einer CRD-Studie wurde eine Effektstärke für den Unters
 pwr::pwr.anova.test(k=3, f=0.41, sig.level=0.05, power=0.8)$n
 ```
 
-D.h. es wird eine Stichprobengröße von $N_i = 21$ pro Gruppe benötigt. Wenn nun die Kovariate $X$ in das Modell integriert wird, erhöht sich die Effektstärke von $f = 0.41$ auf $f = 0.41/\sqrt{1-0.5^2} = 0.47$. Daraus resultiert eine reduzierte Stichprobengröße von:
+D.h. es ist eine Stichprobengröße von $N_i = 21$ pro Gruppe notwendig um im CRD eine Power von $pow = 0.8$ zu erreichen. Wenn nun die Kovariate $X$ in das Modell integriert wird, erhöht sich die Effektstärke von $f = 0.41$ auf $f = 0.41/\sqrt{1-0.5^2} = 0.47$. Daraus resultiert dann eine reduzierte Stichprobengröße von:
 
 ```{r}
 #| echo: true
@@ -572,11 +573,12 @@ pwr::pwr.anova.test(k=2, f=0.47, sig.level=0.05, power=0.8)$n
 ```
 
 D.h. im ANCOVA-Modell wird nur noch eine Stichprobengröße von $N_i = 19$ pro Gruppe benötigt. 
-
 :::
 
+Das Prinzip sollte daher eigentlich einleuchtend sein, durch die Modellierung der Kovariate $X$ vermindert sich Residualvarianz was dann bei einer gegebenen Effektstärke zu einer Vergrößerung der standardisierten Effektstärke führt.
+
 ::: {#exm-ed-ancova-fien-02}
-Schauen wir uns nochmal das Beispiel von @fien2019 an und Versuchen die Ergebnisse in Tabelle 4 zu replizieren. Die Daten aus der Publikation sind in der Datei `fien_2019_part.txt` gespeichert.
+Schließen wir die ANCOVA noch einmal mit einer Reproduktion der Ergebnisse aus @fien2019 ab und versuchen die Ergebnisse in Tabelle 4 zu replizieren. Die Daten aus der Publikation sind in der Datei `fien_2019_part.txt` gespeichert.
 
 ```{r}
 #| echo: true
@@ -653,6 +655,10 @@ pairs(mod_ems, adjust='bonferroni')
 ```
 
 Damit solche Vergleiche sinnvoll sind, müssten die jeweiligen Werte für die Kovariaten schon im voraus möglichst bekannt sein bzw. festgelegt worden sein.
+
+## Zusammenfassung
+
+In der Herleitung und den Beispielen haben wir ANCOVAs mit nur einer Kovariate $X$ und einem Treatmentfaktor $\tau_i$ uns angeschaut. Die ANCOVA ist aber nicht nur auf diesen Fall beschränkt sondern es können problemlos auch mehrere Kovariaten $X_i, \ldots, X_p$ in das Modell nach dem genau gleichen Prinzip intergriert werden. Genauso kann die ANCOVA auch mit einem CRFD kombiniert werden und es kann eine kompliziertere Treatmenstruktur mit mehreren Faktoren verwendet werden. Ein Beispiel ist in @duncan2017 zu finden wo mehrere ANCOVAs gerechnet wurden um Körperkomposition in Abhängigkeit von Gender und Bewegungsfertigkeiten (high, medium, low) zu modellieren mit Alter, Alter beim maximalen Wachstumsschub und körperliche Aktivität als Kovariaten. Diese flexiblen Möglichkeiten machen die ANCOVA zu einem sehr mächtigen Verfahren. Wie schon mehrfach betont, ist die ANCOVA dabei nichts anderes als ein allgemeines lineares Modell.
 
 ## Zum Nach- und Weiterlesen
 
