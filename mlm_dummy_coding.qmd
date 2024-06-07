@@ -738,7 +738,121 @@ b_0 &= \bar{y} - \Delta \times \bar{x} \\
 &= \bar{y}_m
 \end{align*}
 
+## Verschiedene Kodierschemas für die Dummy-Variablen.
+
+In der Herleitung der Integration von nominalen Faktoren in die multiple Regression haben wir ein bestimmtes Schema kennengelernt, wie die einzelnen Faktorstufen auf $X$-Variablen abgebildet werden. Wir haben eine Referenzstufe welche durch einen $y$-Achsenabschnitt modelliert wird und die anderen $\beta_i$-Koeffizienten bilden Abweichungen in den Faktorstufenmittelwerten von dieser Referenzstufe ab.
+
+Wenn wir die $\beta_i$-Koeffizienten in einem Vektor $\boldsymbol{\beta}$ zusammenfassen.
+\begin{equation*}
+\boldsymbol{\beta} = (\beta_0, \beta_1, \ldots, \beta_K)^T
+\end{equation*}
+
+und die Mittelwerte $\mu_i$ der Faktorstufen $i = 1,2,\ldots,K$ in einem Vektor $\boldsymbol{\mu}$
+\begin{equation*}
+\boldsymbol{\mu} = (\mu_1, \mu_2, \ldots, \mu_K)^T
+\end{equation*}
+
+Dann können wir die Interpretation der $\beta$-Koeffzienten im Sinne der Mittelwerte der Faktorstufen als eine Abbildung von $\boldsymbol{\beta} \rightarrow \boldsymbol{\mu}$ auffassen. Bezeichnen wir diese Abbildung mit dem Symbol $\boldsymbol{B}$.
+
+\begin{equation*}
+\boldsymbol{\mu} = \boldsymbol{B\beta}
+\end{equation*}
+
+::: {.callout-tip}
+Wenn ihr euch mit Matrizen auskennt, dann werdet ihr gemerkt haben, dass wir hier um lineare Abbildungen herumtanzen. Wenn euch das nichts sagt, dann einfach weiterlesen.
+:::
+
+Die Abbildung mit einer Referenzstufe und Abweichungen von dieser Stufe, die wir kennengelernt haben, wird als **treatment coding** \index{treatment coding}. Und kann mit Hilfe der Funktion `contr.treatment()` erstellt werden, bzw. ist standardmäßig bei `R` eingestellt. Schauen wir `R` dazu etwas unter die Motorhaube.
+
+Unsere Faktorvariable $A$ hat beispielsweise drei Stufen $K = 3, A, B, C$. Mit der Funktion `mean_contrasts()` aus dem package `codingMatrices` können wir uns die Abbildung darstellen lassen (Im Code werden noch die Zeilen- und Spaltenbeschriftungen geändert um den Output leichter interpretieren zu können).
+
+```{r}
+#| echo: true
+
+f_A <- c("A","B","C")
+beta_to_mu <- codingMatrices::mean_contrasts(contr.treatment(f_A))
+dimnames(beta_to_mu)[[1]] <- paste0("beta_",0:2)
+dimnames(beta_to_mu)[[2]] <- paste0("mu_",f_A)
+beta_to_mu
+```
+
+Im Ausdruck bezeichnen die Zeilen die $\beta$-Koeffizienten im multiplen Regressionsmodell, während die Spalten die Mittelwerte $\mu_i$ der Faktorstufen $A,B$ und $C$ spezifizieren. Die Punkte `.` stehen für den Wert $0$. Wir sehen, dass in der ersten Zeile für $\beta_0$ eine $1$ unter $\mu_1$ eingetragen ist, während unter $\mu_2$ und $\mu_3$ jeweils eine $0$ eingetragen sind. D.h., der Koeffizient $\beta_0$ repräsentiert den Mittelwert der Faktorstufe $A$, der Referenzstufe. In der zweiten Zeile für $\beta_1$ dagegen, steht unter dem Mittelwert $\mu_A$ eine $-1$, unter $\mu_B$ eine 1 und unter $\mu_C$ eine $0$. D.h., wie schon bekannt, der Koeffizient $\beta_1$ repräsentiert den Unterschied zwischen den Mittelwerten $\mu_A$ und $\mu_B$ der dazugehörenden Faktorstufen $A$ und $B$. Das gleiche gilt für die dritte Zeile für $\beta_2$ für den Unterschied $\mu_C - \mu_A$. Insgesamt, erkennen wir hier direkt die Kodierung der Faktorstufen wie wir sie oben hergeleitet haben.
+
+Allerdings ist die Treatmentkodierung nicht die einzig mögliche Kodierung, sondern es geht noch zahlreiche Andere bzw. es können auch eigene Abbildungen definiert werden, worauf wir hier aber nicht eingehen. Ein weiteres Kodierungsschema ist die Abweichungskodierung (engl. deviation) welche auch als sum-to-zero Kodierung bezeichnet wird. Schauen wir uns zunächst an, wie das Schema aussieht. In `R` können wir dieses Schema mit der Funktion `contr.sum()` generieren.
+
+```{r}
+#| echo: true
+
+beta_to_mu <- codingMatrices::mean_contrasts(contr.sum(f_A))
+dimnames(beta_to_mu)[[1]] <- paste0("beta_",0:2)
+dimnames(beta_to_mu)[[2]] <- paste0("mu_",f_A)
+beta_to_mu
+```
+
+Die erste Zeile ist direkt ablesbar. Der Koeffizient $\beta_0$ stellt den Mittelwert $\bar{\mu}$ der Stufenmittelwerte dar. Die zweite und dritte Zeile für $\beta_1$ und $\beta_2$ sind etwas undurchsichtiger. Deswegen direkt die Lösung und danach die Herleitung. Die $\beta_i$-Koffizienten repräsentieren jeweils die Abweichung der Stufe $\mu_i$ vom Gesamtmittelwert $\bar{\mu}$. Formal:
+
+\begin{equation*}
+\beta_i = \mu_i - \bar{\mu}, i = 2,3,\ldots,K
+\end{equation*}
+
+Wie kommen wir dann auf diese Kodierung? Schauen wir uns $\beta_1$ an.
+
+\begin{equation*}
+\begin{aligned}
+\beta_1 &= \mu_1 - \bar{\mu} = \mu_1 - \frac{\sum_{i=1}^3\mu_i}{3} \\
+        &= \mu_A - \frac{1}{3}\mu_A - \frac{1}{3}\mu_B - \frac{1}{3}\mu_C = \frac{2}{3}\mu_A - \frac{1}{3}\mu_B - \frac{1}{3}\mu_C
+\end{aligned}
+\end{equation*}
+
+Wir erkennen unsere Koeffizienten aus dem Output wieder. Das gleiche Schema trifft auch für $\beta_2$ zu. Schauen wir uns das Schema in unserem Beispiel der Reaktionszeiten an.
+
+```{r}
+#| echo: true
+
+mu_i <- data |> group_by(group) |> summarize(m = mean(rt))
+mu_bar <- mean(data$rt)
+mu_i |> add_row(group="mu_bar", m = mu_bar)
+```
+
+Beziehungsweise für die Abweichungen der Mittelwerte $\mu_i$ vom Gesamtmittelwert $\bar{\mu}$.
+
+```{r}
+#| echo: true
+
+mu_i$m - mu_bar
+```
+
+Fitten wir nun das Modell mit `lm()`, verwenden nun aber `contr.sum()` anstatt `contr.treatment()`. Wir können dies direkt im Aufruf von `lm()` spezifizieren über den Parameter `contrasts` dem eine Liste mit den Namen der nominalen Variablen zusammen mit der Kodierungsfunktion als Zeichenkette übergeben wird (Es gibt noch weitere Möglichkeiten).
+
+```{r}
+#| echo: true
+
+mod_sum <- lm(rt ~ group, data, contrasts = list(group = 'contr.sum'))
+coef(mod_sum)
+```
+
+Wir sehen, dass die $\beta$-Koeffizienten tatsächlich den Gesamtmittelwert und die Abweichungen der Faktormittelwerte $\mu_i$ vom Gesamtmittelwert $\bar{\mu}$ kodieren. Es fehlt allerdings der letzte Abweichungswert. Wie können wir diesen erhalten? Hier kommt die Eigenschaft dieser Kodierung ins Spiel, die der Kodierung ihren Namen sum-to-zero gegeben hat. Per Konstruktion haben die Abweichungen die Eigenschaft das sie aufsummiert gleich $0$ ergeben. Wie bereits bei den Residuen kennengelernt, die Abweichungen von Werten von deren Mittelwert müssen $0$ ergeben. Daher gilt:
+
+\begin{equation*}
+\begin{aligned}
+& \sum_{i=1}^K \beta_i = 0 \\
+\Leftrightarrow & \beta_K = -\sum_{i=1}^{K-1}
+\end{aligned}
+\end{equation*}
+
+D.h. durch die Aufsummation der Abweichungen und der Invertierung des Vorzeichens bekommen wir den letzten Abweichungswert. Übertragen auf unser Beispiel:
+
+```{r}
+#| echo: true
+
+-sum(coef(mod_sum)[2:4])
+```
+
+Und tatsächlich, ist dies der gesuchte Wert.
+
+Insgesamt heißt dies, das wir um die Koeffizienten interpretieren zu können, immer wissen müssen welches Kodierungssystem verwendet wird. Leider führen unterschiedliche Kodierungssysteme zu relativ subtilen Unterschieden die ganz und gar nicht offensichtlich sind. Vor allem später, wenn wir uns mit faktoriellen experimentellen Designs beschäftigen wird dies noch mal stärker von Relevanz werden. Diese kurze Einführung basiert hauptsächlich auf @venables2023. Dies ist auch die primäre Quelle um sich in die Thematik noch einmal tiefer einzulesen. 
+
 ## Zum Nach- und Weiterlesen
 
-In [@kutner2005, p.313-319] sind die Herleitungen noch mal genauer erkärt.
+In [@kutner2005, p.313-319] sind die Herleitungen zur Indexkodierung etwas ausführlicher erklärt.
 
