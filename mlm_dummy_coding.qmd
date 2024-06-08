@@ -5,6 +5,7 @@
 #| warning: false
 #| message: false
 source('_common.R')
+library(codingMatrices)
 ```
 
 
@@ -692,51 +693,6 @@ ggplot(lew, aes(ta, perf)) +
 
 In @fig-mlm-dummy-combi-05 sind die einzelnen Modellkoeffizienten aus @tbl-mlm-dummy-combi-02 in der Grafik miteingefügt. Die Interpretation der Werte sollte damit klarer werden.
 
-## Zusammenfassung
-
-In diesem Kapitel haben wir gesehen, dass wir ohne Probleme auch nominale Prädiktorvariablen in das lineare Modell integrieren können. Dabei können die Variablen rein additiv oder auch als interaktive Effekte eingehen. Damit haben wir eine extrem flexiblen Prozess um Daten zu modellieren und dabei immer in dem bekannten Punkt-Steigungs-Modell bleiben.
-
-## Herleitung der Identität von t-Test und linearen Modell (advanced)
-
-Seien beide Gruppen gleich groß ($n$) mit $N = n_m + n_w = 2 \times n$. Der t-Wert für $\beta_1$ berechnet sich aus $t = \frac{b_1}{s_b}$ mit:
-
-$$
-s_b = \sqrt{\frac{\sum_{i=1}^N (y_i - \bar{y})^2}{N-2}\frac{1}{\sum_{i=1}^N(x_i-\bar{x})^2}}
-$$
-Dadurch, das die $x_i$ entweder gleich $0$ oder $1$ sind, ist $\bar{x}=0.5$ und die Abweichungsquadrate im zweiten Term sind alle gleich $\frac{1}{4}$.
-
-$$
-\sum_{i=1}^N(x_i - \bar{x})^2=\sum_{i=1}^N\left(x_i - \frac{1}{2}\right)^2 = \sum_{i=1}^N\frac{1}{4}=\frac{N}{4}=\frac{2n}{4}=\frac{n}{2}
-$$
-
-Der ersten Term kann mit etwas Algebra und der Definition für die Stichprobenvarianz $s^2$ auf die gewünschte Form gebracht werden.
-
-$$
-\frac{\sum_{i=1}^N(y_i-\hat{y})^2}{N-2}=\frac{\sum_{i=1}^n(\overbrace{y_{im} - \bar{y}_m}^{Männer})^2+\sum_{i=1}^n(\overbrace{y_{iw}-\bar{y}_w}^{Frauen})^2}{2(n-1)}=\frac{(n-1)s_m^2+(n-1)s_w^2}{2(n-1)}=\frac{s_m^2+s_w^2}{2}
-$$
-
-Die Herleitung für $\beta_1 = \Delta = \mu_w - \mu_m$ ist ebenfalls relativ geradlinig wenn wir uns an den Zusammenhang zwischen $\beta_1$ und der Kovarianz zwischen $x$ und $y$ erinnern. Mit $s_x^2 = \frac{N\frac{1}{4}}{N-1} = \frac{N}{4(N-1)}$ folgt:
-
-\begin{align*}
-    b_1 &= \frac{cov(x,y)}{s_x^2} \\
-    &= \frac{\sum_{i=1}^N(y_i - \bar{y})(x_i - \bar{x})}{N-1} \frac{4(N-1)}{N} \\
-    &= 4\frac{\sum_{i=1}^n(y_{im}-\bar{y})\frac{-1}{2}+\sum(y_{iw}-\bar{y})\frac{1}{2}}{N} \\
-    &= \frac{4}{2}\frac{\sum_{i=1}^n(y_{iw}-\bar{y}) - \sum_{i=1}^n(y_{im}-\bar{y})}{2n} \\
-    &= \frac{\sum_{i=1}^n y_{iw}}{n} - \frac{n\bar{y}}{n} - \frac{\sum_{i=1}^n y_{im}}{n} + \frac{n\bar{y}}{n} \\
-    &= \bar{y}_w - \bar{y}_m = \Delta
-\end{align*}
-
-Zu guter Letzt noch die Herleitung für $\beta_0 = \mu_m$.
-
-Mit $b_1 = \Delta = \bar{y}_w - \bar{y}_m$:
-\begin{align*}
-b_0 &= \bar{y} - \Delta \times \bar{x} \\
-&= \frac{\sum_{i=1}^N y_i}{N} - \Delta \times \frac{1}{2} \\
-&= \frac{\sum_{i=1}^n y_{im} + \sum_{i=1}^n y_{iw}}{2n} - \frac{1}{2}(\bar{y}_w - \bar{y}_m)  \\
-&= \frac{1}{2}\frac{\sum_{i=1}^ny_{im}}{n} + \frac{1}{2}\frac{\sum_{i=1}^ny_{iw}}{n} - \frac{1}{2}\bar{y}_w + \frac{1}{2}\bar{y}_m \\
-&= \frac{1}{2}\bar{y}_m + \frac{1}{2}\bar{y}_w - \frac{1}{2}\bar{y}_w + \frac{1}{2}\bar{y}_m \\
-&= \bar{y}_m
-\end{align*}
 
 ## Verschiedene Kodierschemas für die Dummy-Variablen.
 
@@ -762,6 +718,8 @@ Dann können wir die Interpretation der $\beta$-Koeffzienten im Sinne der Mittel
 Wenn ihr euch mit Matrizen auskennt, dann werdet ihr gemerkt haben, dass wir hier um lineare Abbildungen herumtanzen. Wenn euch das nichts sagt, dann einfach weiterlesen.
 :::
 
+### Treatment-Kodierung
+
 Die Abbildung mit einer Referenzstufe und Abweichungen von dieser Stufe, die wir kennengelernt haben, wird als **treatment coding** \index{treatment coding}. Und kann mit Hilfe der Funktion `contr.treatment()` erstellt werden, bzw. ist standardmäßig bei `R` eingestellt. Schauen wir `R` dazu etwas unter die Motorhaube.
 
 Unsere Faktorvariable $A$ hat beispielsweise drei Stufen $K = 3, A, B, C$. Mit der Funktion `mean_contrasts()` aus dem package `codingMatrices` können wir uns die Abbildung darstellen lassen (Im Code werden noch die Zeilen- und Spaltenbeschriftungen geändert um den Output leichter interpretieren zu können).
@@ -770,7 +728,7 @@ Unsere Faktorvariable $A$ hat beispielsweise drei Stufen $K = 3, A, B, C$. Mit d
 #| echo: true
 
 f_A <- c("A","B","C")
-beta_to_mu <- codingMatrices::mean_contrasts(contr.treatment(f_A))
+beta_to_mu <- mean_contrasts(contr.treatment(f_A))
 dimnames(beta_to_mu)[[1]] <- paste0("beta_",0:2)
 dimnames(beta_to_mu)[[2]] <- paste0("mu_",f_A)
 beta_to_mu
@@ -778,12 +736,14 @@ beta_to_mu
 
 Im Ausdruck bezeichnen die Zeilen die $\beta$-Koeffizienten im multiplen Regressionsmodell, während die Spalten die Mittelwerte $\mu_i$ der Faktorstufen $A,B$ und $C$ spezifizieren. Die Punkte `.` stehen für den Wert $0$. Wir sehen, dass in der ersten Zeile für $\beta_0$ eine $1$ unter $\mu_1$ eingetragen ist, während unter $\mu_2$ und $\mu_3$ jeweils eine $0$ eingetragen sind. D.h., der Koeffizient $\beta_0$ repräsentiert den Mittelwert der Faktorstufe $A$, der Referenzstufe. In der zweiten Zeile für $\beta_1$ dagegen, steht unter dem Mittelwert $\mu_A$ eine $-1$, unter $\mu_B$ eine 1 und unter $\mu_C$ eine $0$. D.h., wie schon bekannt, der Koeffizient $\beta_1$ repräsentiert den Unterschied zwischen den Mittelwerten $\mu_A$ und $\mu_B$ der dazugehörenden Faktorstufen $A$ und $B$. Das gleiche gilt für die dritte Zeile für $\beta_2$ für den Unterschied $\mu_C - \mu_A$. Insgesamt, erkennen wir hier direkt die Kodierung der Faktorstufen wie wir sie oben hergeleitet haben.
 
-Allerdings ist die Treatmentkodierung nicht die einzig mögliche Kodierung, sondern es geht noch zahlreiche Andere bzw. es können auch eigene Abbildungen definiert werden, worauf wir hier aber nicht eingehen. Ein weiteres Kodierungsschema ist die Abweichungskodierung (engl. deviation) welche auch als sum-to-zero Kodierung bezeichnet wird. Schauen wir uns zunächst an, wie das Schema aussieht. In `R` können wir dieses Schema mit der Funktion `contr.sum()` generieren.
+### Sum-to-zero Kodierung
+
+Allerdings ist die Treatmentkodierung \index{Abweichungskodierung} \index{sum-to-zero coding} nicht die einzig mögliche Kodierung, sondern es geht noch zahlreiche Andere bzw. es können auch eigene Abbildungen definiert werden, worauf wir hier aber nicht eingehen. Ein weiteres Kodierungsschema ist die Abweichungskodierung (engl. deviation) welche auch als sum-to-zero Kodierung bezeichnet wird. Schauen wir uns zunächst an, wie das Schema aussieht. In `R` können wir dieses Schema mit der Funktion `contr.sum()` generieren.
 
 ```{r}
 #| echo: true
 
-beta_to_mu <- codingMatrices::mean_contrasts(contr.sum(f_A))
+beta_to_mu <- mean_contrasts(contr.sum(f_A))
 dimnames(beta_to_mu)[[1]] <- paste0("beta_",0:2)
 dimnames(beta_to_mu)[[2]] <- paste0("mu_",f_A)
 beta_to_mu
@@ -792,7 +752,7 @@ beta_to_mu
 Die erste Zeile ist direkt ablesbar. Der Koeffizient $\beta_0$ stellt den Mittelwert $\bar{\mu}$ der Stufenmittelwerte dar. Die zweite und dritte Zeile für $\beta_1$ und $\beta_2$ sind etwas undurchsichtiger. Deswegen direkt die Lösung und danach die Herleitung. Die $\beta_i$-Koffizienten repräsentieren jeweils die Abweichung der Stufe $\mu_i$ vom Gesamtmittelwert $\bar{\mu}$. Formal:
 
 \begin{equation*}
-\beta_i = \mu_i - \bar{\mu}, i = 2,3,\ldots,K
+\beta_i = \mu_i - \bar{\mu} \quad i = 2,3,\ldots,K
 \end{equation*}
 
 Wie kommen wir dann auf diese Kodierung? Schauen wir uns $\beta_1$ an.
@@ -848,9 +808,92 @@ D.h. durch die Aufsummation der Abweichungen und der Invertierung des Vorzeichen
 -sum(coef(mod_sum)[2:4])
 ```
 
-Und tatsächlich, ist dies der gesuchte Wert.
+Und tatsächlich erhalten wir den gesuchten Wert.
 
-Insgesamt heißt dies, das wir um die Koeffizienten interpretieren zu können, immer wissen müssen welches Kodierungssystem verwendet wird. Leider führen unterschiedliche Kodierungssysteme zu relativ subtilen Unterschieden die ganz und gar nicht offensichtlich sind. Vor allem später, wenn wir uns mit faktoriellen experimentellen Designs beschäftigen wird dies noch mal stärker von Relevanz werden. Diese kurze Einführung basiert hauptsächlich auf @venables2023. Dies ist auch die primäre Quelle um sich in die Thematik noch einmal tiefer einzulesen. 
+### Differenzkodierung
+
+Schauen wir uns noch eine weitere Möglichkeit an die Faktorstufen zu kodieren, die Differenzkodierung \index{Differenzkodierung}. Bei der Differenzkodierung werden jeweils aufeinanderfolgende Stufen miteinander verglichen. In `R` können wir dieses Kodierungsssystem mittels der Funktion `contr.diff()` aus dem package `codingMatrices` erstellen. Wenden wir das Kodierungssystem wieder zunächst auf unseren Faktor `f_A` an.
+
+```{r}
+#| echo: true
+
+beta_to_mu <- mean_contrasts(contr.diff(f_A))
+dimnames(beta_to_mu)[[1]] <- paste0("beta_",0:2)
+dimnames(beta_to_mu)[[2]] <- paste0("mu_",f_A)
+beta_to_mu
+```
+
+Der Koeffizient $\beta_0$ ist wieder gleich dem Mittelwert aus Gruppe $A$. Der Koeffiziente $\beta_1$ kodiert ähnlich wie beim Treatmentkoding den Unterschied zwischen den Mittelwerten der Faktoren $A$ und $B$. Im Unterschied zum Treatmentkoding kodiert $\beta_2$ dagegen den Unterschied zwischen den Mittelwerten der Faktoren $C$ und $B$.
+
+Angewendet auf das Reaktionszeitexperiment erhalten wir.
+
+```{r}
+#| echo: true
+
+mod_diff <- lm(rt ~ group, data, contrasts = list(group = 'contr.diff'))
+coef(mod_diff)
+```
+
+Die Koeffizienten entsprechen den aufeinanderfolgenden Unterschieden der Gruppenmittelwerten.
+
+```{r}
+#| echo: true
+
+diff(mu_i$m)
+```
+
+### Zusammenfassung
+
+Zusammenfassend, die verschiedenen Kodierungssysteme führen dazu, dass die Bedeutung der Regressionskoeffizienten $\beta_i$ sich unterscheidet. Daher, um die Koeffizienten interpretieren zu können, muss immer bekannt sein, welches Kodierungssystem bei der Analyse verwendet wurde. Leider ist dies nicht die einzige Implikation, sondern die unterschiedlichen Kodierungssysteme relativ zu weiteren subtilen Unterschieden die ganz und gar nicht offensichtlich sind. Vor allem später, bei der Behandlung von faktoriellen, experimentellen Designs werden die Details der Kodierungssysteme noch einmal stärker von Relevanz werden. In Bezug auf den Fit des Modells haben die Unterschiedlichen Systeme allerdings keinen Einfluss. Die Regressionsgerade (Ebene) wird durch die Wahl der Kodierungssysteme nicht beeinflusst. Somit sind auch die Residuen $e_i$ unter allen Kodierungssystemen gleich.  In der gegensätzlichen Richtung ermöglichen die Kodierungssysteme gewollte Vergleiche zwischen Faktorenstufen direkt zu kodieren und dann in Form der Koeffizienten statistisch zu überprüfen. Unter der Treatmentkodierung bilden die Koeffizienten direkt die Unterschiede der Faktorenstufen von der Referenzstufe ab. Daher sagt die statistische Signifikanz der Koeffizienten $\beta_i, i = 2,3,\ldots,K$ direkt schon etwas über die statistische Signifikanz dieser Stufen von der ersten Stufe aus. Wird zum Beispiel als die Referenzstufe eine Kontrollkondition gewählt und die anderen Stufen bilden unterschiedliche Interventionsstufen ab, dann kann über die Koeffizienten direkt der Unterschied der Interventionsstufen von der Kontrollstufe überprüft werden. Dadurch überschneidet die Thematik der Kodierungssysteme sich mit dem der Kontraste das wir später im Kapitel zu Linearen Kontrasten kennenlernen werden.
+
+Dieser kurze Überblick über die Kodierungssysteme basiert hauptsächlich auf @venables2023. Dies ist auch die primäre Quelle um sich in die Thematik noch einmal tiefer einzulesen. 
+
+## Zusammenfassung
+
+In diesem Kapitel haben wir gesehen, dass wir ohne Probleme auch nominale Prädiktorvariablen in das lineare Modell integrieren können. Dabei können die Variablen rein additiv oder auch als interaktive Effekte eingehen. Damit haben wir eine extrem flexiblen Prozess um Daten zu modellieren und dabei immer in dem bekannten Punkt-Steigungs-Modell bleiben.
+
+## Herleitung der Identität von t-Test und linearen Modell (optional)
+
+Seien beide Gruppen gleich groß ($n$) mit $N = n_m + n_w = 2 \times n$. Der t-Wert für $\beta_1$ berechnet sich aus $t = \frac{b_1}{s_b}$ mit:
+
+$$
+s_b = \sqrt{\frac{\sum_{i=1}^N (y_i - \bar{y})^2}{N-2}\frac{1}{\sum_{i=1}^N(x_i-\bar{x})^2}}
+$$
+Dadurch, das die $x_i$ entweder gleich $0$ oder $1$ sind, ist $\bar{x}=0.5$ und die Abweichungsquadrate im zweiten Term sind alle gleich $\frac{1}{4}$.
+
+$$
+\sum_{i=1}^N(x_i - \bar{x})^2=\sum_{i=1}^N\left(x_i - \frac{1}{2}\right)^2 = \sum_{i=1}^N\frac{1}{4}=\frac{N}{4}=\frac{2n}{4}=\frac{n}{2}
+$$
+
+Der ersten Term kann mit etwas Algebra und der Definition für die Stichprobenvarianz $s^2$ auf die gewünschte Form gebracht werden.
+
+$$
+\frac{\sum_{i=1}^N(y_i-\hat{y})^2}{N-2}=\frac{\sum_{i=1}^n(\overbrace{y_{im} - \bar{y}_m}^{Männer})^2+\sum_{i=1}^n(\overbrace{y_{iw}-\bar{y}_w}^{Frauen})^2}{2(n-1)}=\frac{(n-1)s_m^2+(n-1)s_w^2}{2(n-1)}=\frac{s_m^2+s_w^2}{2}
+$$
+
+Die Herleitung für $\beta_1 = \Delta = \mu_w - \mu_m$ ist ebenfalls relativ geradlinig wenn wir uns an den Zusammenhang zwischen $\beta_1$ und der Kovarianz zwischen $x$ und $y$ erinnern. Mit $s_x^2 = \frac{N\frac{1}{4}}{N-1} = \frac{N}{4(N-1)}$ folgt:
+
+\begin{align*}
+    b_1 &= \frac{cov(x,y)}{s_x^2} \\
+    &= \frac{\sum_{i=1}^N(y_i - \bar{y})(x_i - \bar{x})}{N-1} \frac{4(N-1)}{N} \\
+    &= 4\frac{\sum_{i=1}^n(y_{im}-\bar{y})\frac{-1}{2}+\sum(y_{iw}-\bar{y})\frac{1}{2}}{N} \\
+    &= \frac{4}{2}\frac{\sum_{i=1}^n(y_{iw}-\bar{y}) - \sum_{i=1}^n(y_{im}-\bar{y})}{2n} \\
+    &= \frac{\sum_{i=1}^n y_{iw}}{n} - \frac{n\bar{y}}{n} - \frac{\sum_{i=1}^n y_{im}}{n} + \frac{n\bar{y}}{n} \\
+    &= \bar{y}_w - \bar{y}_m = \Delta
+\end{align*}
+
+Zu guter Letzt noch die Herleitung für $\beta_0 = \mu_m$.
+
+Mit $b_1 = \Delta = \bar{y}_w - \bar{y}_m$:
+\begin{align*}
+b_0 &= \bar{y} - \Delta \times \bar{x} \\
+&= \frac{\sum_{i=1}^N y_i}{N} - \Delta \times \frac{1}{2} \\
+&= \frac{\sum_{i=1}^n y_{im} + \sum_{i=1}^n y_{iw}}{2n} - \frac{1}{2}(\bar{y}_w - \bar{y}_m)  \\
+&= \frac{1}{2}\frac{\sum_{i=1}^ny_{im}}{n} + \frac{1}{2}\frac{\sum_{i=1}^ny_{iw}}{n} - \frac{1}{2}\bar{y}_w + \frac{1}{2}\bar{y}_m \\
+&= \frac{1}{2}\bar{y}_m + \frac{1}{2}\bar{y}_w - \frac{1}{2}\bar{y}_w + \frac{1}{2}\bar{y}_m \\
+&= \bar{y}_m
+\end{align*}
+
 
 ## Zum Nach- und Weiterlesen
 
