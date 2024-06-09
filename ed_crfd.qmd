@@ -492,13 +492,14 @@ ggplot(sway_m, aes(Gruppe, m)) +
 
 In @fig-ed-crfd-multcom-01 sind die *wahrscheinlich* sinnvollen Vergleiche abgebildet. D.h. auf Grund der Interaktion sollte der Unterschied zwischen den Gruppen getrennt für die beiden Augenkonditionen untersucht werden bzw. der Unterschied zwischen den Augenkonditionen für jede Gruppe getrennt. Algebraisch ist natürlich auch möglich beispielsweise die U19 bei geschlossenen Augen mit den PROs mit offenen Augen zu vergleichen, allerdings ist dieser Vergleich aus wissenschaftlicher Sicht wahrscheinlich wenig sinnvoll.
 
-Achtung!!! @gelman2006 @nieuwenhuis2011
+Bezüglich der Analyse von Interaktionseffekten ergibt sich noch ein weiterer wichtiger Punkt. Gehen wir von einem einfachen $2\times 2$-Design aus mit den Stufen $A_1, A_2, B_1$ und $B_2$.
+
+Es kann zum Beispiel vorkommen, dass die Unterschiede zwischen den @gelman2006 @nieuwenhuis2011
 
 ```{r}
-#| out.width="70%"
 
-knitr::include_graphics('../pics/gelman2006.png')
 ```
+
 
 Nochmal Kontraste bei Paarvergleichen
 
@@ -594,50 +595,59 @@ eff_size(mod_em_cauge, sigma=sigma(mod_aov),
 
 ## Anzahl der Replikationen a-priori ermitteln
 
-Drei Möglichkeiten: 
+Wir haben wimmer drei verschiedene Ansätze die Anzahl der Replikationen vor dem Experiment zu bestimmen: 
 
 1) Anhand der Literatur wird $f$ bestimmt.
-2) Es wird ein relevantes/plausibels $\Delta$, als der Unterschied zwischen zwei Gruppen angesetzt.^[$\sigma$ muss trotzdem anhand der Literatur abgeschätzt werden., k = Anzahl der Freiheitsgrade, $f = \sqrt{\omega^2/(1-\omega^2)}$]
+2) Es wird ein relevantes/plausibels $\Delta$, als der Unterschied zwischen zwei Gruppen angesetzt. 
 3) Konfidenzintervalle
 
-$$
+Im ersten Fall gibt es zunächst nichts zu berechnen, sondern die Effektstärke für den gewünschten Effekte (Haupt- oder Interaktionseffekt) wird mittels der Literatur hergeleitet.
+
+Im zweiten Fall wird die Effektstärke $f$ mittels Vorüberlegungen über relevante Unterschiede $\Delta$ zwischen Faktorstufe festgelegt wie das auch für das CRD durchgeführt wurde. Allerdings ist hierfür immer noch Information über $\sigma$ anhand der Literatur notwendig.
+
+\begin{equation}
 f = \sqrt{\frac{\Delta^2}{2(k+1)\sigma^2}}
-$$
+\end{equation}
 
-Stichprobengröße a-prior ermitteln
+| k = Anzahl der Freiheitsgrade
 
-```{r}
-#| results: asis
-#| echo: true
+Nachdem die Effektstärke $f$ ermittelt wurde wird zunächst die Stichprobengröße pro Zelle genau gleich wie für das CRD bestimmt. 
 
-pwr::pwr.anova.test(f = 0.27, k = 3, sig.level = 0.05, power = 0.8)
-```
-Aus dem Beispiel $f = \sqrt{\omega^2/(1-\omega^2)} = \sqrt{0.07/0.93} = 0.27$
 
-Stichprobengrößen a-priori ermitteln
+Berechnung der Stichprobengröße pro Zelle wie beim CRD. Allerdings wird für $k$ die Anzahl der Freiheitsgrade + 1 verwendet. Diese orientieren sich daran anhand welchen Effekts die Stichprobe ermittelt werden soll. Für die Haupteffekte ist der Korrekturfaktor entsprechend entweder $p$ (Anzahl der Faktorstufen von Faktor $A$) oder $q$ (Anzahl der Faktorstufen für Faktor $B$) und für den Interaktionseffekt $(p-1)\times(q-1)+1$. Anschließend kann die Stichprobengröße pro Zelle $n'$ mittels der folgenden Formel ermittelt werden:
 
-Berechnung der Stichprobengröße pro Zelle wie beim CRD. Allerdings wird für $k$ die Anzahl der Freiheitsgrade + 1 verwendet. Also für die Haupteffekte entweder $p$ oder $q$ und für den Interaktionseffekt $(p-1)\times(q-1)+1$  Anschließend Korrektur des erhaltenten $n'$ mittels:
-
-$$
+\begin{equation}
 n_c = \frac{(n'-1)(u+1)}{\#n\ \mathrm{Zellen}} + 1
-$$
+\label{eq-ed-crfd-sample-size}
+\end{equation}
 
 Anz. Zellen = $p \times q$, u = Freiheitsgrade für den gewünschten Effekt entweder $(p-1), (q-1)$ oder $(p-1)\times(q-1)$.
 
 Die Gesamtstichprobengröße N ist dann $n_c \times \#Zellen$.
 
-Im Beispiel
+:::{#exm-ed-crfd-sample-size} 
+Gehen wir beispielsweise von einer Effektstärke in einem $2\times 3$ Design für den Interaktionseffekt eine Effektstärke von $\omega^2 = 0.3$ beobachtet. Wir berechnen zunächst die $\omega^2$ um $f = \sqrt{\omega^2/(1-\omega^2)} = \sqrt{0.3/0.7} = 0.42$. Die Freiheitsgrade sind $(q-1) \times (p-1) + 1 = 1 \times 2 + 1 = 3$. Unter Verwendung der `pwr.anova.test()`-Funktion erhalten wir:
 
 ```{r}
-k_p <- pwr::pwr.anova.test(f = 0.27, k = 3,
+#| echo: true
+
+pwr::pwr.anova.test(f = 0.42, k = 3, sig.level = 0.05, power = 0.8)
+```
+```{r}
+k_p <- pwr::pwr.anova.test(f = 0.42, k = 3,
                     sig.level = 0.05, power = 0.8)
 n_s <- ceiling(k_p$n)
 n_c <- ((n_s - 1)*(2+1))/6 + 1
 ```
 
-Für den Interaktionseffekt $n' = `r n_s`$ mit `pwr::pwr.anova.test()` bestimmt.
+D.h. für den Interaktionseffekt wird zunächst $n' = `r n_s`$ ermittelt. Dieser Wert muss nun anhand von Formel \eqref{eq-ed-crfd-sample-size} korrigiert werden. $u$ ist in diesem Fall wieder $(p-1) \times (q-1) = (2-1) \times (3-1) = 2$, während die Anzahl der Zellen $p \times q = 2 \times 3 = 6$.
 
-$$
+\begin{equation*}
 n_c = \frac{(`r n_s` - 1)(2+1)}{6} + 1 = `r n_c`
-$$
+\end{equation*}
 
+:::
+
+Insgesamt zeigt dies, dass die Anzahl der Replikation sich unterscheiden kann, je nachdem ob für ein Design nach den Haupteffekten oder den Interaktionseffekten berechnet wird.
+
+## Zum Nach- und Weiterlesen
