@@ -446,10 +446,11 @@ window.Quarto = {
   <li><a href="#einteilung-der-mehrfachvergleiche" id="toc-einteilung-der-mehrfachvergleiche" class="nav-link" data-scroll-target="#einteilung-der-mehrfachvergleiche"><span class="header-section-number">23.3</span> Einteilung der Mehrfachvergleiche</a></li>
   <li><a href="#mehrfachvergleiche-in-r" id="toc-mehrfachvergleiche-in-r" class="nav-link" data-scroll-target="#mehrfachvergleiche-in-r"><span class="header-section-number">23.4</span> Mehrfachvergleiche in <code>R</code></a>
   <ul class="collapse">
-  <li><a href="#cohens-d-für-mehrfachvergleiche" id="toc-cohens-d-für-mehrfachvergleiche" class="nav-link" data-scroll-target="#cohens-d-für-mehrfachvergleiche"><span class="header-section-number">23.4.1</span> Cohen’s d für Mehrfachvergleiche</a></li>
+  <li><a href="#das-package-emmeans" id="toc-das-package-emmeans" class="nav-link" data-scroll-target="#das-package-emmeans"><span class="header-section-number">23.4.1</span> Das package <code>emmeans</code></a></li>
+  <li><a href="#cohens-d-für-mehrfachvergleiche" id="toc-cohens-d-für-mehrfachvergleiche" class="nav-link" data-scroll-target="#cohens-d-für-mehrfachvergleiche"><span class="header-section-number">23.4.2</span> Cohen’s d für Mehrfachvergleiche</a></li>
   </ul></li>
   <li><a href="#bestimmung-des-replikationsfaktors-anhand-des-konfidenzintervalls" id="toc-bestimmung-des-replikationsfaktors-anhand-des-konfidenzintervalls" class="nav-link" data-scroll-target="#bestimmung-des-replikationsfaktors-anhand-des-konfidenzintervalls"><span class="header-section-number">23.5</span> Bestimmung des Replikationsfaktors anhand des Konfidenzintervalls</a></li>
-  <li><a href="#dokumentation-eines-crds" id="toc-dokumentation-eines-crds" class="nav-link" data-scroll-target="#dokumentation-eines-crds"><span class="header-section-number">23.6</span> Dokumentation eines CRDs</a></li>
+  <li><a href="#vollständige-dokumentation-eines-crds" id="toc-vollständige-dokumentation-eines-crds" class="nav-link" data-scroll-target="#vollständige-dokumentation-eines-crds"><span class="header-section-number">23.6</span> Vollständige Dokumentation eines CRDs</a></li>
   <li><a href="#zum-nacharbeiten" id="toc-zum-nacharbeiten" class="nav-link" data-scroll-target="#zum-nacharbeiten"><span class="header-section-number">23.7</span> Zum Nacharbeiten</a></li>
   </ul>
 </nav>
@@ -663,6 +664,44 @@ Abbildung&nbsp;23.3: Beispiel für die entstehende Hierarchie von Fehlern bei Me
 <p><span class="math display">\[\begin{equation*}
 \sum_{i=1}^K c_i \cdot a_i = \frac{1}{2}\cdot 1 + \frac{1}{2}\cdot 2 - \frac{1}{3}\cdot 3
 \end{equation*}\]</span></p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tipp
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Linearkombination können in <code>R</code> einfach über das Skalarprodukt berechnet werden.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>c_i <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>,<span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>,<span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>a_i <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">t</span>(a_i) <span class="sc">%*%</span> c_i</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1]
+[1,]  2.5</code></pre>
+</div>
+</div>
+<p>Was einen Spezialfall des Matrizenprodukts darstellt.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>mat <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="at">nr=</span><span class="dv">2</span>, <span class="at">byrow=</span>T)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>mat</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1] [,2] [,3]
+[1,]    1    2    3
+[2,]    4    5    6</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>mat <span class="sc">%*%</span> c_i</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1]
+[1,]  2.5
+[2,]  6.5</code></pre>
+</div>
+</div>
+</div>
+</div>
 <section id="struktur-von-kontrasten" class="level3" data-number="23.2.1">
 <h3 data-number="23.2.1" class="anchored" data-anchor-id="struktur-von-kontrasten"><span class="header-section-number">23.2.1</span> Struktur von Kontrasten</h3>
 <p>Seien nun die Elemente von <span class="math inline">\(\boldsymbol{a}\)</span> die Modellparamter eines statistischen Models dann erhalten ergibt sich die folgende Definition:</p>
@@ -678,7 +717,7 @@ Y_{ij} = \mu + \tau_i + \epsilon_{ij}
 \psi = \sum_{i=1}^k c_i \tau_i, \quad \text{mit } \sum_{i=1}^k c_i=0
 \label{eq-ed-lc-crd-con}
 \end{equation}\]</span></p>
-<p>In den meisten Fällen wird mittels eines Kontrasts die Mittelwerte <span class="math inline">\(\mu_i\)</span> der Faktorstufen miteinander verglichen, da die Mittelwert <span class="math inline">\(\bar{y}_i\)</span> als Schätzer für die Faktorstufeneffekte <span class="math inline">\(\hat{\tau}_i = \bar{y}_i\)</span> dienen. Der Effekt der <span class="math inline">\(i\)</span>-ten Stufe setzt sich nach dem Modell zusammen aus <span class="math inline">\(\mu + \tau_i\)</span> und dieser ist bei einem CRD gleich dem Gruppenmittelwert <span class="math inline">\(\bar{y}_i\)</span>. D.h. ein Schätzer für einen Kontrast <span class="math inline">\(\hat{\psi}\)</span> hat die Form.</p>
+<p>In den meisten Fällen werden mittels eines Kontrasts die Mittelwerte <span class="math inline">\(\mu_i\)</span> der Faktorstufen miteinander verglichen, da die Mittelwert <span class="math inline">\(\bar{y}_i\)</span> als Schätzer für die Faktorstufeneffekte <span class="math inline">\(\hat{\tau}_i = \bar{y}_i\)</span> dienen. Der Effekt der <span class="math inline">\(i\)</span>-ten Stufe setzt sich nach dem Modell zusammen aus <span class="math inline">\(\mu + \tau_i\)</span> und dieser ist bei einem CRD gleich dem Gruppenmittelwert <span class="math inline">\(\bar{y}_i\)</span>. D.h. ein Schätzer für einen Kontrast <span class="math inline">\(\hat{\psi}\)</span> hat die Form.</p>
 <p><span class="math display">\[\begin{equation}
 \hat{\psi} = \sum_{i=1}^K c_i (\hat{\mu} + \hat{\tau_i}) = \sum_{i=1}^K c_i \bar{y}_{i.}
 \end{equation}\]</span></p>
@@ -795,71 +834,80 @@ c_1 = \frac{1}{2}, c_2 = \frac{1}{2}, c_3 = -1
 <h3 data-number="23.2.2" class="anchored" data-anchor-id="varianz-von-kontrasten"><span class="header-section-number">23.2.2</span> Varianz von Kontrasten</h3>
 <p>Um die Varianz von Kontrasten herzuleiten hier noch einmal kurz zur Wiederholung der Standardfehler des Mittelwerts</p>
 <p><span class="math display">\[\begin{equation}
-s_{\bar{x}} = \frac{\sigma}{\sqrt{n}}
+\sigma_{\bar{x}} = \frac{\sigma}{\sqrt{n}}
 \end{equation}\]</span></p>
-<p>Die Varianz ist dementsprechend das Quadrat des Standardfehlers <span class="math inline">\(s_{\bar{x}}\)</span>. Als zweites Wiederholungsitem die Varianz einer Linearkombination von unabhängigen Zufallsvariablen berechnet sich nach (siehe Formel <span class="math inline">\(\eqref{eq-stats-hypo-sum-var}\)</span>)</p>
+<p>Die Varianz des Mittelswerts ist dementsprechend das Quadrat des Standardfehlers <span class="math inline">\(\sigma_{\bar{x}}^2\)</span>. Sei beispielsweise der Mittelwert in der Stichprobe unter der <span class="math inline">\(i\)</span>-ten Faktorstufe <span class="math inline">\(\bar{Y}_i\)</span> mit der Stichprobengröße <span class="math inline">\(n_i\)</span>, dann gilt:</p>
+<p><span class="math display">\[\begin{equation*}
+Var(\bar{Y}_i) = \frac{\sigma^2}{n_i}
+\end{equation*}\]</span></p>
+<p>Als zweites Wiederholungsitem die Varianz einer Linearkombination von unabhängigen Zufallsvariablen berechnet sich nach (siehe Formel <span class="math inline">\(\eqref{eq-stats-hypo-sum-var}\)</span>)</p>
 <p><span class="math display">\[\begin{equation*}
 Var\left(\sum_{i=1}^n a_i X_i\right) = \sum_{i=1}^n a_i^2 Var(X_i)
 \end{equation*}\]</span></p>
-<p>Wichtig für die weiteren Herleitungen ist insbesondere das Beispiel <a href="stats_hypotheses.html#exm-ed-hypo-var-diff" class="quarto-xref">Beispiel&nbsp;<span>12.2</span></a>. Angewendet auf einen Kontrast folgt für den Kontrast auf der Population.</p>
+<p>Wichtig für die weiteren Herleitungen ist insbesondere das Beispiel <a href="stats_hypotheses.html#exm-ed-hypo-var-diff" class="quarto-xref">Beispiel&nbsp;<span>12.2</span></a>. Angewendet auf einen Kontrast <span class="math inline">\(\psi\)</span> folgt für die Varianz des Kontrast unter der Annahme das die eingehenden Mittelwerte <span class="math inline">\(\bar{Y}_{i.}\)</span> alle die gleiche Varianz <span class="math inline">\(\sigma^2\)</span> haben (unsere übliche Annahme der Homoskedastizität), also <span class="math inline">\(Var(\bar{Y}_{i.}) = \sigma^2\)</span>.</p>
 <p><span class="math display">\[\begin{equation}
-Var(\psi) = Var\left(\sum c_i \bar{Y}_{i.}\right) = \sum c_i^2 Var(\bar{Y}_{i.}) = \sum c_i^2(\sigma^2/n_i) = \sigma^2\sum(c_i^2/n_i)
+\begin{aligned}
+Var(\psi) &amp;= Var\left(\sum c_i \bar{Y}_{i.}\right) = \sum c_i^2 Var(\bar{Y}_{i.}) \\
+  &amp;= \sum c_i^2(\sigma^2/n_i) = \sigma^2\sum(c_i^2/n_i)
+\end{aligned}
 \label{eq-ed-lc-var-con-pop}
 \end{equation}\]</span></p>
-<p>Da wir üblicherweise die Varianz <span class="math inline">\(\sigma^2\)</span> anhand der Stichprobe abschätzen mittels der <span class="math inline">\(MSE\)</span> bzw. in der Terminologie des CRD <span class="math inline">\(MS_{\text{within}}\)</span>. Zur Erinnerung der <span class="math inline">\(MSE\)</span> ist die Quadratsumme der Residuen <span class="math inline">\(e_i\)</span> geteilt durch die Stichprobengröße <span class="math inline">\(N\)</span> minus der Anzahl der Parameter <span class="math inline">\(p\)</span>. Daraus folgt für die den Schätzer der Varianz des Kontrasts <span class="math inline">\(\widehat{Var}(\psi)\)</span>.</p>
+<p>D.h. die Kontrastgewichte <span class="math inline">\(c_i\)</span> werden quadriert und durch die jeweilige Stichprobengröße <span class="math inline">\(n_i\)</span> der <span class="math inline">\(i\)</span>-ten Faktorstufe geteilt. Wie immer schätzen wir die Varianz <span class="math inline">\(\sigma^2\)</span> anhand der Stichprobe mittels des <span class="math inline">\(MSE\)</span> bzw. in der Terminologie des CRD <span class="math inline">\(MS_{\text{within}}\)</span>. Zur Erinnerung der <span class="math inline">\(MSE\)</span> ist die Quadratsumme der Residuen <span class="math inline">\(e_i\)</span> geteilt durch die Stichprobengröße <span class="math inline">\(N\)</span> minus der Anzahl der Parameter <span class="math inline">\(p\)</span>. Daraus folgt für die den Schätzer der Varianz des Kontrasts <span class="math inline">\(\widehat{Var}(\psi)\)</span>.</p>
 <p><span class="math display">\[\begin{equation}
 \widehat{Var}(\psi) = \widehat{Var}\left(\sum c_i \bar{y}_{i.}\right) = MS_w\sum (c_i^2/n_i)
 \label{eq-ed-lc-var-con}
 \end{equation}\]</span></p>
-<p>Um von der Varianz auf den Standardfehler des Kontrasts <span class="math inline">\(s_{\psi}\)</span> zu kommen, ziehen wir wie immer die Wurzel aus der Varianz:</p>
+<p>Letztendlich ist dies die Formel die wir in der Einführung zu Experimentellen Design verwendet haben, um die Verteilungen der Stichprobengrößen in die beiden Gruppen zu verteilen. Um nun von der Varianz auf den Standardfehler des Kontrasts <span class="math inline">\(s_{\psi}\)</span> zu kommen, ziehen wir wie immer die Wurzel aus der Varianz:</p>
 <p><span class="math display">\[\begin{equation}
 s_{\psi} = \sqrt{MS_w\sum (c_i^2/n_i)}
 \label{eq-ed-lc-se-contrast}
 \end{equation}\]</span></p>
-<p>Mit <span class="math inline">\(n_i\)</span> = Stichprobengröße in Gruppe i und <span class="math inline">\(\hat{\sigma}^2 = MS_w = MSE\)</span>. Angewendet auf den Kontrast bei Paarvergleichen folgt für den Vergleich der Faktorstufen <span class="math inline">\(i\)</span> und <span class="math inline">\(j\)</span> da <span class="math inline">\(c_i^2 = (1)^2, c_j^2 = (-1)^2\)</span> während alle anderen <span class="math inline">\(c_l = 0\)</span> sind.</p>
+<div class="line-block"><span class="math inline">\(n_i\)</span> = Stichprobengröße in Faktorstufe <span class="math inline">\(i\)</span><br>
+<span class="math inline">\(\hat{\sigma}^2 = MS_w = MSE\)</span></div>
+<p>Angewendet auf den Kontrast bei Paarvergleichen folgen für den Vergleich der Faktorstufen <span class="math inline">\(i\)</span> und <span class="math inline">\(j\)</span> dargestellt mittels der Kontrastgewichte <span class="math inline">\(c_i\)</span> die folgenden Terme <span class="math inline">\(c_i^2 = (1)^2, c_j^2 = (-1)^2\)</span> während alle anderen <span class="math inline">\(c_l = 0\)</span> sind.</p>
 <p><span class="math display">\[\begin{equation}
 Var(\psi) = Var\left(\tau_i - \tau_j\right) = \sigma^2\left(\frac{1}{n_i} + \frac{1}{n_j}\right) =
 \end{equation}\]</span></p>
 <p>Wenn wir ein Design haben, bei dem die Stichprobengrößen unter allen Faktorstufen gleich groß sind, also <span class="math inline">\(n_i = n_j = n\)</span>, gilt, dann folgt mit der Festsetzung <span class="math inline">\(2n = N\)</span> für den Standardfehler des Kontrasts <span class="math inline">\(\sigma_{\psi}\)</span> in der Population:</p>
 <p><span class="math display">\[\begin{equation*}
 \sigma_{\psi} = s_{\Delta} = \sqrt{\sigma^2\left(\frac{1}{N/2}
-+\frac{1}{N/2}\right)}=\sqrt{\sigma^2\frac{2}{N/2}} = \sigma\sqrt\frac{4}{N}=\frac{2\sigma}{\sqrt{N}}
++\frac{1}{N/2}\right)}=\sqrt{\sigma^2\frac{2}{N/2}} = \sigma\sqrt\frac{4}{N}=\sigma \frac{2}{\sqrt{N}}
 \end{equation*}\]</span></p>
 <p>Beziehungsweise in der Stichprobe dann entsprechend.</p>
 <p><span class="math display">\[\begin{equation}
 s_{\psi} = s_{\Delta} = \sqrt{MSE}\frac{2}{\sqrt{N}}
 \end{equation}\]</span></p>
-<p>D.h. beim Kontrast zwischen zwei Mittelwerten verdoppelt sich der Standardfehler.</p>
+<p>D.h. der Kontrast für den Vergleich zwischen zwei Mittelwerten hat im Vergleich zu Standardfehler des Mittelwerts die doppelte Größe. Insgesamt erhalten wir aber wieder den gleichen Wurzelzusammenhang der dazu führt, dass der Standardfehler für den Kontrast mit zunehmender Stichprobengröße stetig abnimmt, aber die Abnahme mit größer werdenden Stichproben immer kleiner wird. Anders herum bei kleinen Stichprobengrößen führt jeder Hinzunahme von Stichproben zu einer <em>relativ</em> stärkeren Verkleinerung des Standardfehlers und damit zu einer Erhöhung der Power.</p>
 </section>
 <section id="hypothesentests-für-kontraste" class="level3" data-number="23.2.3">
 <h3 data-number="23.2.3" class="anchored" data-anchor-id="hypothesentests-für-kontraste"><span class="header-section-number">23.2.3</span> Hypothesentests für Kontraste</h3>
 <p>Ein Hypothesentest für den Kontrast kann nun wieder nach dem üblichen Muster konstruiert werden indem wir den Kontrast <span class="math inline">\(\hat{\psi}\)</span> durch seinen Standardfehler teilen <span class="math inline">\(s_{\psi}\)</span>. Die entsprechenden Hypothesen sind:</p>
 <p><span class="math display">\[\begin{equation}
 \begin{split}
-H_{0,\psi} = \sum_{i=1}^k c_i \tau_i = 0 \\
-H_{1,\psi} = \sum_{i=1}^k c_i \tau_i \neq 0
+H_{0,\psi}:  \sum_{i=1}^k c_i \tau_i = 0 \\
+H_{1,\psi}:  \sum_{i=1}^k c_i \tau_i \neq 0
 \end{split}
 \end{equation}\]</span></p>
-<p>Die Teststatistik <span class="math inline">\(t\)</span> wird in diesem Fall zu:</p>
+<p>Die Teststatistik <span class="math inline">\(t\)</span> ist wiederum nichts anderes als ein Verhältnis von Effektstärke normiert durch deren Standardfehler. Wenn dieses Verhältnis dann wieder größer als ein kritischer Wert <span class="math inline">\(w\)</span> ist, kann die entsprechende <span class="math inline">\(H_0\)</span> abgelehnt werden. Es folgt somit:</p>
 <p><span class="math display">\[\begin{equation}
 \text{Lehne }H_0\text{ ab, wenn} \left|\frac{\sum_{i=1}^K c_k \tau_i}{\sqrt{MSE\sum_{i=1}^K c_i^2/n_i}}\right| &gt; w
 \label{eq-ed-lc-w}
 \end{equation}\]</span></p>
-<p>Im folgendem werden wir sehen, dass der kritische Wert <span class="math inline">\(w\)</span>, also letztendlich die Quantile <span class="math inline">\(q_{\alpha}\)</span>, davon abhängt welche der Art der <span class="math inline">\(\alpha\)</span>-Kontrolle angewendet. Es verschiedene Möglichkeiten die <span class="math inline">\(\alpha\)</span>-Kontrolle durchzuführen und sollte so gewählt werden, dass eine möglichst große Power erreicht wird.</p>
+<p>Der kritische Wert <span class="math inline">\(w\)</span> ist somit letztendlich wieder nichts anders als die Quantile <span class="math inline">\(q_{\alpha}\)</span> einer entsprechenden theoretischen Verteilung. Welche theoretische Verteilung gewählt werden muss, hängt nun davon welche Art der <span class="math inline">\(\alpha\)</span>-Kontrolle angewendet werden soll. Im folgenden werden verschiedene Methoden vorgestellt <span class="math inline">\(\alpha\)</span>-Kontrolle durchzuführen und entsprechend sollten die Überlegungen zur Auswahl so durchgeführt werden, dass eine möglichst hohe Power für das gewählte Design erreicht werden kann.</p>
 </section>
 <section id="konfidenzintervalle-von-kontrasten" class="level3" data-number="23.2.4">
 <h3 data-number="23.2.4" class="anchored" data-anchor-id="konfidenzintervalle-von-kontrasten"><span class="header-section-number">23.2.4</span> Konfidenzintervalle von Kontrasten</h3>
-<p>Nach dem uns bekannten Muster können wir auch Konfidenzintervalle für einen Kontrast erstellen. Das Berechnungsmuster ist dabei immer der gleiche.</p>
+<p>Nach dem uns bekannten Muster können wir auch Konfidenzintervalle für einen Kontrast <span class="math inline">\(\psi\)</span> erstellen. Das Berechnungsmuster ist dabei immer das Gleiche:</p>
 <p><span class="math display">\[\begin{gather*}
 \text{CI}(\hat{\psi}) = \sum_i c_i \hat{\tau}_i \pm w \sqrt{\widehat{Var}\left(\sum c_i \hat{\tau}_i\right)} = \hat{\psi} + w \times s_{\psi}\\
 \text{estimate } \pm (\text{kritischer Wert}) \times (\text{Standardfehler})
 \end{gather*}\]</span></p>
-<p>Der Kontrastschätzer <span class="math inline">\(\hat{\psi}\)</span> bleibt dabei gleich und es ändert sich mit der Methode der kritische Wert <span class="math inline">\(w\)</span>.</p>
+<p>Der Kontrastschätzer <span class="math inline">\(\hat{\psi}\)</span> bleibt dabei gleich und es ändert sich je nach gewählter Methode der kritische Wert <span class="math inline">\(w\)</span>.</p>
 </section>
 </section>
 <section id="einteilung-der-mehrfachvergleiche" class="level2" data-number="23.3">
 <h2 data-number="23.3" class="anchored" data-anchor-id="einteilung-der-mehrfachvergleiche"><span class="header-section-number">23.3</span> Einteilung der Mehrfachvergleiche</h2>
-<p>Mehrfachvergleiche können zunächst in zwei Arten unterschieden werden. Vergleiche die vor dem Experiment geplant wurden und Vergleiche die nach einsehen der Daten auf Basis der Ergebnisse durchgeführt werden. Die vorher geplanten Vergleiche werden als <em>pre-planned</em> bezeichnet, während die Vergleiche nach Betrachtung der Daten als <em>post-hoc</em> Vergleiche bezeichnet werden. Zwischen diesen beiden Vergleichen wird unterschieden, da bei den <em>post-hoc</em> dadurch, das die Daten schon bekannt sind, die Vergleiche durch die Daten beeinflusst werden. Daher muss in diesem Fall die Kontrolle strikter sein, als wenn die Vergleiche im Voraus geplant werden.</p>
+<p>Mehrfachvergleiche können zunächst in zwei Arten unterschieden werden. Vergleiche die vor dem Experiment geplant wurden und Vergleiche die nach einsehen der Daten auf Basis der Ergebnisse durchgeführt werden. Vergleiche die vor der Durchführung des Experiments festgelegt werden, werden als <em>pre-planned</em> bezeichnet. Vergleiche die dagegen nach der Durchführung des Experiments nach der Einsicht der Daten durchgeführt werden, werden als <em>post-hoc</em> Vergleiche bezeichnet. Zwischen diesen beiden Vergleichen wird unterschieden, da bei den <em>post-hoc</em> dadurch, das die Daten schon bekannt sind, die Vergleiche durch die Daten beeinflusst werden. Daher muss in diesem Fall die Kontrolle strikter sein, als wenn die Vergleiche im Voraus geplant werden.</p>
 <p>Es gibt mittlerweile zahllose Arten die Kontrolle bei Mehrfachvergleiche durchzuführen. Daher besprechen wir hier nur eine kleine Auswahl der üblichsten Methoden. In <a href="#tbl-ed-lc-contype" class="quarto-xref">Tabelle&nbsp;<span>23.3</span></a> sind die Bonferroni, Tukey, Scheffé, Dunnet und die FisherLSD Korrekturmethoden inklusive der Art der Kontraste tabellarisch dargestellt.</p>
 <div id="tbl-ed-lc-contype" class="quarto-float anchored">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -926,7 +974,7 @@ Tabelle&nbsp;23.3: Systematik Mehrfachvergleiche
 <p><span class="math display">\[\begin{equation}
 w_{\text{Bonferroni}} = t_{N-K,1-\alpha/(2m)}
 \end{equation}\]</span></p>
-<p>Eine weitere weit verbreitete Methode ist die Tukey-Pairwise difference Methode. Diese Methode ist optimiert darauf alle paarweisen Vergleiche durchzuführen und daher nur für einfache Kontraste anwendbar. Durch die Optimierung sind die Konfidenzintervalle unter der Tukey-Methode überlicherweise schmaler als dies unter der Bonferroni-Methode der Fall wäre. Die Tukey-Methode ist ebenfalls <strong>pre-planned</strong> und im Falle von ungleichen Stichproben in den Faktorstufen ist die Methode nur asymptotisch exact. Unter der Tukey-Methode berechnet sich der kritische Wert <span class="math inline">\(w\)</span> anhand eine speziellen Verteilung, der Studentized range statistics.</p>
+<p>Eine weitere weit verbreitete Methode ist die Tukey-Pairwise difference Methode . Diese Methode ist optimiert darauf alle paarweisen Vergleiche durchzuführen und daher nur für einfache Kontraste anwendbar. Durch die Optimierung sind die Konfidenzintervalle unter der Tukey-Methode überlicherweise schmaler als dies unter der Bonferroni-Methode der Fall wäre. Die Tukey-Methode ist ebenfalls <strong>pre-planned</strong> und im Falle von ungleichen Stichproben in den Faktorstufen ist die Methode nur asymptotisch exact. Unter der Tukey-Methode berechnet sich der kritische Wert <span class="math inline">\(w\)</span> anhand eine speziellen Verteilung, der Studentized range statistics.</p>
 <p><span class="math display">\[\begin{equation}
 w_{\text{Tukey}} = q_{K,N-K,\alpha/\sqrt{2}}
 \label{eq-ed-lc-tukey-w}
@@ -1007,20 +1055,24 @@ Tabelle&nbsp;23.4: Vergleich der kritischen Wert <span class="math inline">\(w\)
 </div>
 </div>
 <p><a href="#tbl-ed-lc-contrasts-w" class="quarto-xref">Tabelle&nbsp;<span>23.4</span></a> zeigt, dass der Tukey durchgehend bei den drei Methoden die kleinsten kritischen Werte hat, also das schmalste Konfidenzintervall erstellt. Für diesen Fall liegt die Bonferroni-Methode immer zwischen Tukey und Scheffé die immer den größten kritschen <span class="math inline">\(w\)</span> hat.</p>
-<p>Zwei weitere Methoden sind noch die Methode nach Dunnet und Fisher least significant difference (FisherLSD). Die Dunnet Methode ist ebenfalls pre-planned und ist darauf optimiert ein Kontrollkondition mit den anderen Konditionen zu vergleichen. Die FisherLSD-Methode führt keine Anpassung durch sondern ist ein Spezialfall wenn der Faktor <span class="math inline">\(K = 3\)</span> Stufen hat und im ersten Schritt ein statistisch Signifikanter <span class="math inline">\(F\)</span>-Wert gefunden wurde. Die drei individuellen Tests werden dann als normale t-Tests durchgeführt mit jeweils mit dem unkorrigierten <span class="math inline">\(\alpha\)</span>. In diesem Fall, als Test nach einen signifikanten <span class="math inline">\(F\)</span>-Test ist bei <span class="math inline">\(K=3\)</span> eine gesonderte <span class="math inline">\(\alpha\)</span>-Kontrolle nicht notwendig.</p>
+<p>Zwei weitere Methoden sind noch die Methode nach Dunnet und Fisher least significant difference (FisherLSD) . Die Dunnet Methode ist ebenfalls pre-planned und ist darauf optimiert ein Kontrollkondition mit den anderen Konditionen zu vergleichen. Die FisherLSD-Methode führt keine Anpassung durch sondern ist ein Spezialfall wenn der Faktor <span class="math inline">\(K = 3\)</span> Stufen hat und im ersten Schritt ein statistisch Signifikanter <span class="math inline">\(F\)</span>-Wert gefunden wurde. Die drei individuellen Tests werden dann als normale t-Tests durchgeführt mit dem jeweils unkorrigierten <span class="math inline">\(\alpha\)</span>. In diesem Fall, wenn der paarweise Vergleich nach einen signifikanten <span class="math inline">\(F\)</span>-Test bei <span class="math inline">\(K=3\)</span> durchgeführt wird, ist eine gesonderte <span class="math inline">\(\alpha\)</span>-Kontrolle nicht mehr notwendig.</p>
 </section>
 <section id="mehrfachvergleiche-in-r" class="level2" data-number="23.4">
 <h2 data-number="23.4" class="anchored" data-anchor-id="mehrfachvergleiche-in-r"><span class="header-section-number">23.4</span> Mehrfachvergleiche in <code>R</code></h2>
-<p>In <code>R</code> können Mehrfachvergleiche über verschiedene Pakete durchgeführt werden. Wir beschränken uns hier aber auf das Paket <code>emmeans</code>, da es sehr flexibel ist. Die Arbeit mit <code>emmeans</code> ist immer zweistufiger. Zunächst müssen die Zellmittelwerte mit der Funktion <code>emmeans(&lt;MODEL&gt;, ~&lt;FAKTOR&gt;)</code> berechnet werden. Anschließen erfolgt die Berechnung des Vergleich entweder mittels mittels <code>pairs()</code> bei paarweisen Vergleichen oder mit <code>contrast()</code> für beliebige Vergleiche. Alternativen zu <code>emmeans</code> sind <code>multcomp</code> und <code>gmodels</code>.</p>
-<p>Wollen wir zum Beispiel mittels Bonferroni ein einfachen Vergleich zwischen Koffein und Placebo sowie einen komplexen Vergleich der Mittelwerte von Koffein und Placebo gegen Kontrolle, können wir dies auf die folgenden Weise erreichen.</p>
+<section id="das-package-emmeans" class="level3" data-number="23.4.1">
+<h3 data-number="23.4.1" class="anchored" data-anchor-id="das-package-emmeans"><span class="header-section-number">23.4.1</span> Das package <code>emmeans</code></h3>
+<p>In <code>R</code> können Mehrfachvergleiche über verschiedene Pakete durchgeführt werden. Wir beschränken uns hier hauptsächlich auf das Paket <code>emmeans</code>, da es sehr flexibel ist und mit einer Vielzahl von verschiedenen Modellen über das allgemeine lineare Modell hinaus zusammenarbeit. Alternativen zu <code>emmeans</code> sind <code>multcomp</code> und <code>gmodels</code>.</p>
+<p>Bei der Verwendung von <code>emmeans</code> ist immer zweistufiger Prozess durchzuführen. Zunächst müssen die Zellmittelwerte mit der Funktion <code>emmeans(&lt;MODEL&gt;, ~&lt;FAKTOR&gt;)</code> berechnet werden. Anschließen erfolgt die Berechnung der Vergleiche entweder mittels mittels der Funktion <code>pairs()</code> bei paarweisen Vergleichen oder mit <code>contrast()</code> für beliebige Vergleiche.</p>
+<p>Wollen wir zum Beispiel mittels Bonferroni-Korrektur einen einfachen Vergleich zwischen Koffein und Placebo sowie einen komplexen Vergleich der Mittelwerte von Koffein und Placebo gegen Kontrolle durchführen, dann verwenden wir die folgenden Befehle nachdem wir das package <code>emmeans</code> geladen haben:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(emmeans)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>mod_em <span class="ot">&lt;-</span> <span class="fu">emmeans</span>(mod_aov, <span class="sc">~</span>Gruppe)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">contrast</span>(mod_em, <span class="at">adjust=</span><span class="st">'bonferroni'</span>, <span class="at">infer=</span>T ,</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">method =</span> <span class="fu">list</span>(</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>           <span class="st">"Koffein vs. Placebo"</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="dv">0</span>),</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>           <span class="st">"Tablette vs. CON"</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>, <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>, <span class="sc">-</span><span class="dv">1</span>)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>         ))</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>mod_em <span class="ot">&lt;-</span> <span class="fu">emmeans</span>(mod_aov, <span class="at">specs=</span><span class="sc">~</span>Gruppe)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">contrast</span>(mod_em,</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">adjust=</span><span class="st">'bonferroni'</span>,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">method =</span> <span class="fu">list</span>(</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>           <span class="st">"Koffein vs. Placebo"</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>           <span class="st">"Tablette vs. CON"</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>, <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>, <span class="sc">-</span><span class="dv">1</span>)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>         ),</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">infer=</span><span class="cn">TRUE</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> contrast            estimate   SE df lower.CL upper.CL t.ratio p.value
  Koffein vs. Placebo    -10.5 2.09 57    -15.3    -5.67  -5.014  &lt;.0001
@@ -1031,54 +1083,114 @@ Conf-level adjustment: bonferroni method for 2 estimates
 P value adjustment: bonferroni method for 2 tests </code></pre>
 </div>
 </div>
-<p>Um alle paarweisen Vergleiche mittels der Tukey-Methode zu berechnen verwenden wir die <code>pairs()</code> Methode auf den Faktormittelwerten in <code>mod_em</code>.</p>
+<p>Im ersten Schritt haben wir die Mittelwerte mittels <code>emmeans()</code> berechnet. Dazu haben wir das gefitte Modell <code>mod_aov</code> übergeben und als zweiten Parameter <code>specs</code> übergeben wir eine Formel für welchen Faktor wir die Mittelwerte berechnen wollen. Wie wir später bei mehrfaktoriellen Modellen sehen gibt es hier verschiedene Möglichkeiten. Bei diesem Beispiel sind hier aber nur die Mittelwerte für die Faktorstufen von <code>Gruppe</code> möglich. Schauen wir uns kurz an, welchen Output `emmeans()´ produziert.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pairs</span>(mod_em, <span class="at">adjust=</span><span class="st">"tukey"</span>, <span class="at">infer=</span>T)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>mod_em</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code> contrast          estimate   SE df lower.CL upper.CL t.ratio p.value
- Koffein - Placebo   -10.48 2.09 57   -15.51    -5.45  -5.014  &lt;.0001
- Koffein - Control   -13.34 2.09 57   -18.37    -8.31  -6.383  &lt;.0001
- Placebo - Control    -2.86 2.09 57    -7.89     2.17  -1.369  0.3639
+<pre><code> Gruppe  emmean    SE df lower.CL upper.CL
+ Koffein   1914 1.478 57     1911     1917
+ Placebo   1925 1.478 57     1922     1928
+ Control   1928 1.478 57     1925     1931
+
+Confidence level used: 0.95 </code></pre>
+</div>
+</div>
+<p>Letztendlich haben wir hier die Mittelwerte der drei verschiedenen Gruppen die anhand des Modells berechnet werden.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warnung
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In diesem Fall sind die Mittelwerte <span class="math inline">\(\bar{y}_i\)</span> der Rohdaten gleich denjenigen des Modell des Modells, da es sich um ein balancierten Datensatz handelt, d.h. in allen Gruppen sind die Stichproben gleich. Wenn dies nicht der Fall ist, dann müssen die geschätz ten Mittelwerte <span class="math inline">\(\hat{y}_i\)</span> anhand des Modells nicht unbedingt gleich zu den Mittelwerte <span class="math inline">\(\bar{y}_i\)</span> der Rohdaten sein. Dies trifft vor allem zu, wenn die Modell komplexer werden. Die Werte von <code>emmeans()</code> werden anhand des Modells geschätzt und werden daher auch als <em>expected marginal means</em> bezeichnet (daher auch der Name des packages <code>e</code>(expected)<code>m</code>(arginal)<code>means</code>).</p>
+</div>
+</div>
+<p>Nachdem wir die Mittelwerte mit <code>emmeans()</code> berechnet haben, können wir nun die Kontraste mit der Funktion <code>contrast()</code> aufsetzen. Dazu wird das <code>emmeans</code>-Objekt als erster Parameter übergeben. Über den Parameter <code>adjust</code> wird die Korrekturmethode angegeben. In diesem Fall <code>bonferroni</code>. Anschließend übergeben wir eine Liste der Kontraste die berechnet werden sollen. Hierzu muss die Abfolge der Mittelwerte laut der Reihenfolge in der Ausgabe in <code>emmeans()</code> verwendet werden, die üblicherweise die Gleiche wie auch bei <code>lm()</code> ist. Die Kontraste werden als Liste mit <code>&lt;NAME&gt; = &lt;KONTRAST&gt;</code> übergeben. Der Name ist willkürlich und sollte so gewählt werden, dass der eben Wert möglichst einfach interpretiert werden kann. Der Parameter <code>infer</code> kontrolliert ob direkt ein Konfidenzintervall berechnet werden soll. Alternativ könnte auch wie folgt vorgegangen werden:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>contrast_list <span class="ot">&lt;-</span><span class="fu">list</span>(</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>           <span class="st">"Koffein vs. Placebo"</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>           <span class="st">"Tablette vs. CON"</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>, <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>, <span class="sc">-</span><span class="dv">1</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>         )</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>mod_contrast <span class="ot">&lt;-</span> <span class="fu">contrast</span>(mod_em,</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>                         <span class="at">adjust =</span> <span class="st">'bonferroni'</span>,</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>                         <span class="at">method =</span> contrast_list)</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>mod_contrast</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> contrast            estimate   SE df t.ratio p.value
+ Koffein vs. Placebo    -10.5 2.09 57  -5.014  &lt;.0001
+ Tablette vs. CON        -8.1 1.81 57  -4.476  0.0001
+
+P value adjustment: bonferroni method for 2 tests </code></pre>
+</div>
+</div>
+<p>Mit nachfolgender Berechnung der Konfidenzintervalle.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">confint</span>(mod_contrast)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> contrast            estimate   SE df lower.CL upper.CL
+ Koffein vs. Placebo    -10.5 2.09 57    -15.3    -5.67
+ Tablette vs. CON        -8.1 1.81 57    -12.3    -3.93
 
 Confidence level used: 0.95 
-Conf-level adjustment: tukey method for comparing a family of 3 estimates 
+Conf-level adjustment: bonferroni method for 2 estimates </code></pre>
+</div>
+</div>
+<p>Die Ergebnisse sind natürlich in beiden Folgen gleich und zeigen einen statistisch signifikanten Unterschied zwischen den Koffein und der Placebo Kondition, sowie einen statistisch signifikanten Unterschied zwischen der Tablettengabe unabhängig vom Wirkstoff und der Kontrollkondition.</p>
+<p>Möchten wir dagegen alle paarweisen Vergleiche beispielsweise mittels der Tukey-Methode berechnen können wir die <code>pairs()</code> Methode auf die mittels <code>emmeans()</code> gefitten Faktormittelwerte anwenden.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pairs</span>(mod_em, <span class="at">adjust=</span><span class="st">"tukey"</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> contrast          estimate   SE df t.ratio p.value
+ Koffein - Placebo   -10.48 2.09 57  -5.014  &lt;.0001
+ Koffein - Control   -13.34 2.09 57  -6.383  &lt;.0001
+ Placebo - Control    -2.86 2.09 57  -1.369  0.3639
+
 P value adjustment: tukey method for comparing a family of 3 estimates </code></pre>
 </div>
 </div>
-<p>Die Tukey Methode wird standardmäßig von <code>pairs()</code> verwendet, wenn keine Argument für <code>adjust</code> angegeben wird.</p>
-<p>Entsprechend können wir über <code>adjust=scheffe</code> die Methode für beliebige Kontraste anwenden.</p>
+<p>Die Tukey Methode wird standardmäßig von <code>pairs()</code> verwendet, wenn keine Argument für <code>adjust</code> angegeben wird. Alternativ geht es auch über die <code>contrast()</code> Funktion wenn für <code>method</code> die Zeichenkette <code>pairwise</code> übergeben wird.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">contrast</span>(mod_em, <span class="at">adjust=</span><span class="st">'scheffe'</span>, <span class="at">infer=</span>T ,</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>         <span class="at">method =</span> <span class="fu">list</span>(</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>           <span class="st">"Koffein vs. Placebo"</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="dv">0</span>),</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>           <span class="st">"Tablette vs. CON"</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>, <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>, <span class="sc">-</span><span class="dv">1</span>)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>         ))</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">contrast</span>(mod_em, <span class="at">method=</span><span class="st">'pairwise'</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code> contrast            estimate   SE df lower.CL upper.CL t.ratio p.value
- Koffein vs. Placebo    -10.5 2.09 57    -15.7    -5.23  -5.014  &lt;.0001
- Tablette vs. CON        -8.1 1.81 57    -12.6    -3.55  -4.476  0.0002
+<pre><code> contrast          estimate   SE df t.ratio p.value
+ Koffein - Placebo   -10.48 2.09 57  -5.014  &lt;.0001
+ Koffein - Control   -13.34 2.09 57  -6.383  &lt;.0001
+ Placebo - Control    -2.86 2.09 57  -1.369  0.3639
 
-Confidence level used: 0.95 
-Conf-level adjustment: scheffe method with rank 2 
+P value adjustment: tukey method for comparing a family of 3 estimates </code></pre>
+</div>
+</div>
+<p>Soll die Korrektur mittels der Scheffé-Methode durchgeführt werden, kann dies über <code>adjust=scheffe</code> erreicht werden.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">contrast</span>(mod_em,</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>         <span class="at">adjust=</span><span class="st">'scheffe'</span>,</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">method =</span> contrast_list) </span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> contrast            estimate   SE df t.ratio p.value
+ Koffein vs. Placebo    -10.5 2.09 57  -5.014  &lt;.0001
+ Tablette vs. CON        -8.1 1.81 57  -4.476  0.0002
+
 P value adjustment: scheffe method with rank 2 </code></pre>
 </div>
 </div>
-<p>Um die Methode nach Dunnett zu verwenden übergeben wir der Funktion <code>contrast()</code> die Parameter <code>method='trt.vs.ctrl'</code> und können über den <code>ref</code>-Parameter angeben welches die Kontrollbedingung ist.</p>
+<p>Um die Dunnettkorrektur zu verwenden, entsprechend <code>contrast()</code> mit dem Parameter <code>method='trt.vs.ctrl'</code>. Hier kann zusätzlich über den Parameter <code>ref</code> explizit angeben werden, welche Faktorstufe die Kontrollbedingung darstellt.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">contrast</span>(mod_em, <span class="at">method=</span><span class="st">'trt.vs.ctrl'</span>, <span class="at">infer=</span>T, <span class="at">ref=</span><span class="st">'Control'</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">contrast</span>(mod_em, <span class="at">method=</span><span class="st">'trt.vs.ctrl'</span>, <span class="at">ref=</span><span class="st">'Control'</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code> contrast          estimate   SE df lower.CL upper.CL t.ratio p.value
- Koffein - Control   -13.34 2.09 57   -18.10    -8.58  -6.383  &lt;.0001
- Placebo - Control    -2.86 2.09 57    -7.62     1.90  -1.369  0.3029
+<pre><code> contrast          estimate   SE df t.ratio p.value
+ Koffein - Control   -13.34 2.09 57  -6.383  &lt;.0001
+ Placebo - Control    -2.86 2.09 57  -1.369  0.3029
 
-Confidence level used: 0.95 
-Conf-level adjustment: dunnettx method for 2 estimates 
 P value adjustment: dunnettx method for 2 tests </code></pre>
 </div>
 </div>
-<p>Wenn wir die FisherLSD-Methode verwenden wollen, dann können wir wieder <code>pairs()</code> verwenden mit dem Parameter <code>adjust='none'</code>.</p>
+<p>Wenn wir die FisherLSD-Methode verwenden wollen, dann kann beispielweise wieder <code>pairs()</code> mit dem Parameter <code>adjust='none'</code> verwendet werden.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pairs</span>(mod_em, <span class="at">adjust=</span><span class="st">'none'</span>, <span class="at">infer=</span>T)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pairs</span>(mod_em, <span class="at">adjust=</span><span class="st">'none'</span>, <span class="at">infer=</span>T)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> contrast          estimate   SE df lower.CL upper.CL t.ratio p.value
  Koffein - Placebo   -10.48 2.09 57   -14.66    -6.29  -5.014  &lt;.0001
@@ -1088,12 +1200,14 @@ P value adjustment: dunnettx method for 2 tests </code></pre>
 Confidence level used: 0.95 </code></pre>
 </div>
 </div>
-<section id="cohens-d-für-mehrfachvergleiche" class="level3" data-number="23.4.1">
-<h3 data-number="23.4.1" class="anchored" data-anchor-id="cohens-d-für-mehrfachvergleiche"><span class="header-section-number">23.4.1</span> Cohen’s d für Mehrfachvergleiche</h3>
+<p>Wie schon erwähnt ist das package <code>emmeans</code> extrem flexibel und bietet unzählige Möglichkeiten verschiedene Mehrfachvergleiche zu spezifizieren und entsprechend zu berechnen. Daher lohnt sich die intensive Auseinandersetzung mit der Dokumentation in jedem Fall. Wahrscheinlich geht ein Teil des Erfolges von <code>R</code> in den letzten Jahren auf die Funktionalität dieses packages zurück.</p>
+</section>
+<section id="cohens-d-für-mehrfachvergleiche" class="level3" data-number="23.4.2">
+<h3 data-number="23.4.2" class="anchored" data-anchor-id="cohens-d-für-mehrfachvergleiche"><span class="header-section-number">23.4.2</span> Cohen’s d für Mehrfachvergleiche</h3>
 <p>Über das Paket <code>emmeans</code> können wir auch eine Cohen’s D Typ Effektstärke mittels der Funktion <code>eff_size()</code> berechnen. Allerdings müssen wir als Parameter die zu verwendende Standardabweichung sowie die Freiheitsgrade selbst angeben.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">eff_size</span>(mod_em, <span class="at">sigma=</span><span class="fu">sigma</span>(mod_aov),</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">edf=</span><span class="fu">df.residual</span>(mod_aov))</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">eff_size</span>(mod_em, <span class="at">sigma=</span><span class="fu">sigma</span>(mod_aov),</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">edf=</span><span class="fu">df.residual</span>(mod_aov))</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> contrast          effect.size    SE df lower.CL upper.CL
  Koffein - Placebo      -1.586 0.349 57    -2.29   -0.886
@@ -1108,7 +1222,7 @@ Confidence level used: 0.95 </code></pre>
 </section>
 <section id="bestimmung-des-replikationsfaktors-anhand-des-konfidenzintervalls" class="level2" data-number="23.5">
 <h2 data-number="23.5" class="anchored" data-anchor-id="bestimmung-des-replikationsfaktors-anhand-des-konfidenzintervalls"><span class="header-section-number">23.5</span> Bestimmung des Replikationsfaktors anhand des Konfidenzintervalls</h2>
-<p>Im Kapitel zum CRD haben wir den Replikationsfaktor für die experimentellen Einheiten anhand der Effektstärke bestimmt. Ein weitere Möglichkeit den Replikationsfaktor zu bestimmen besteht mittels der Kontraste bzw. deren Konfidenzintervallen. Die angesteuerte Größe ist hierbei die Breite des Konfidenzintervalls. Der direkteste Weg ist hierbei den minimal signifikanten Unterschied (minimal significant difference: msd). Der Ansatz basiert im Grunde genommen auf der Dualität von Hypothesentest und Konfidenzintervall.</p>
+<p>Im Kapitel zum CRD haben wir den Replikationsfaktor für die experimentellen Einheiten anhand der Effektstärke bestimmt. Ein weitere Möglichkeit den Replikationsfaktor zu bestimmen besteht mittels der Kontraste bzw. deren Konfidenzintervallen. Die angesteuerte Größe ist hierbei die Breite des Konfidenzintervalls. Der direkteste Weg ist hierbei den minimal signifikanten Unterschied (minimal significant difference: msd) . Der Ansatz basiert im Grunde genommen auf der Dualität von Hypothesentest und Konfidenzintervall.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-ed-lc-msd-01" class="quarto-figure quarto-figure-center quarto-float anchored">
@@ -1146,10 +1260,10 @@ q_{K,N-K,\alpha}/\sqrt{2} \sqrt{30\frac{2}{n}} &amp;= q_{K,N-K,\alpha} \sqrt{\fr
 \end{align*}\]</span></p>
 <p>D.h. das Quadrat der studentized range quantile muss kleiner als <span class="math inline">\(\frac{5}{6}n\)</span> sein, damit das Konfidenzintervall schmal genug ist. Da sich der Wert von <span class="math inline">\(q_{K,N-K,\alpha}\)</span> mit der Stichprobengröße ändert führen wir eine try-and-error Methode durch und berechnen die Breite des Konfindenzintervalls für verschiedene Wert von <span class="math inline">\(n\)</span>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>K <span class="ot">&lt;-</span> <span class="dv">3</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">10</span><span class="sc">:</span><span class="dv">20</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>q_t <span class="ot">&lt;-</span> <span class="fu">qtukey</span>(<span class="fl">0.975</span>,K,K<span class="sc">*</span>n<span class="sc">-</span>K)<span class="sc">**</span><span class="dv">2</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>n_w <span class="ot">&lt;-</span> <span class="dv">5</span><span class="sc">/</span><span class="dv">6</span><span class="sc">*</span>n</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>K <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">10</span><span class="sc">:</span><span class="dv">20</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>q_t <span class="ot">&lt;-</span> <span class="fu">qtukey</span>(<span class="fl">0.975</span>,K,K<span class="sc">*</span>n<span class="sc">-</span>K)<span class="sc">**</span><span class="dv">2</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>n_w <span class="ot">&lt;-</span> <span class="dv">5</span><span class="sc">/</span><span class="dv">6</span><span class="sc">*</span>n</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div id="tbl-ed-lc-tukey-rep" class="cell quarto-float anchored">
@@ -1232,8 +1346,8 @@ Tabelle&nbsp;23.5: Stichprobengrößen und Vergleich mit msd
 </div>
 <p>In <a href="#tbl-ed-lc-tukey-rep" class="quarto-xref">Tabelle&nbsp;<span>23.5</span></a> sehen wir, dass wir eine Stichprobengröße von <span class="math inline">\(n = 18\)</span> also insgesamt <span class="math inline">\(N = 54\)</span> Athleten brauchen um die gewünschte Präzision für das Konfidenzintervall zu erreichen.</p>
 </section>
-<section id="dokumentation-eines-crds" class="level2" data-number="23.6">
-<h2 data-number="23.6" class="anchored" data-anchor-id="dokumentation-eines-crds"><span class="header-section-number">23.6</span> Dokumentation eines CRDs</h2>
+<section id="vollständige-dokumentation-eines-crds" class="level2" data-number="23.6">
+<h2 data-number="23.6" class="anchored" data-anchor-id="vollständige-dokumentation-eines-crds"><span class="header-section-number">23.6</span> Vollständige Dokumentation eines CRDs</h2>
 <p>Hier einmal beispielhaft Dokumentation eines CRD.</p>
 <p>Eine einfaktorielle ANOVA mit dem Faktor Gruppe ergabe einen statistisch signifikanten Haupteffekt für Gruppe <span class="math inline">\(F(2, 57) = 22,6, p &lt; 0,001\)</span>. Überprüfung auf Varianzgleichheit zwischen den Gruppen mittels eines Levene-Tests deutete auf keine Verletzung der Voraussetzungen hin, <span class="math inline">\(F(2, 57) = 0,38, p = 0,69\)</span>. Daher wird die <span class="math inline">\(H_0\)</span>, das kein Unterschied zwischen den Gruppen besteht, abgelehnt. Die beobachtete Effektstärke <span class="math inline">\(\omega^2 = 0,42\)</span>, CI<span class="math inline">\(95\%[0,22, 0,56]\)</span> ist als großer Effekt zu interpretieren. Pre-planned Paarweisetestung mittels Tukey-Korrektur deutete auf statistisch signifikate Unterschiede zwischen den Gruppen Koffein und Placebo <span class="math inline">\(z = -10.4\)</span>, CI95%<span class="math inline">\([-15,5, -5,5], p &lt; 0,001\)</span>, und Koffein und Kontrolle, <span class="math inline">\(z = -13,3\)</span>, CI95<span class="math inline">\(\%[-18,4, -8,3], p &lt; 0,001\)</span>, hin. Insgesamt deuten die Ergebnisse daher darauf hin, dass die Gabe von Koffein zu einer bedeutsamen Leistungssteigerung <span class="math inline">\((&gt;5-10s)\)</span> in der beobachteten Untersuchungsgruppe geführt hat.</p>
 </section>
