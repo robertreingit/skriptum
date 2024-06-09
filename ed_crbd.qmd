@@ -1,4 +1,4 @@
-# Completely Randomized Block Design 
+# Block Design 
 
 ```{r}
 #| echo: false
@@ -35,6 +35,7 @@ Fangen wir mit einem Beispiel an, das zunächst einmal nichts mit sportlicher Le
 ```{r}
 #| fig-cap: "Untersuchung verschiedener Teigmischungen."
 #| label: fig-ed-crdb-oven
+#| fig-height: 2 
 
 include_graphics('pics/oven.png')
 ```
@@ -42,7 +43,7 @@ include_graphics('pics/oven.png')
 Wir könnten mit einer einfachen Randomisierung anfangen. Wir nummerieren die Plätze auf allen Backblechen der Reihe nach durch und weisen die Teigmischungen zufällig den Platznummern zu. Nun, da wir alle ständig Backsendungen schauen, wissen wir, dass die Höhe der Blechs im Ofen einen Einfluss auf die Temperatur hat. Darauf folgt, dass alle Brötchen die auf einem Blech angeordnet sind, alle wenn nicht der Gleiche dann doch einer sehr ähnliche Temperatur ausgesetzt sind. Dabei werden die Temperaturvariationen innerhalb eines Bleches geringer als zwischen den Blechen sein. Wenn nun der Fall eintritt, dass alle Brötchen der Teigmischung $I$ auf dem tiefsten Blech sind, alle Brötchen $II$ auf dem Zweitniedrigsten uns so weiter, dann bekommen wir ein Problem. Wenn wir Unterschiede zwischen den Backmischungen finden dann können wir nicht ausschließen das die Unterschiede auf die Bleche anstatt die Backmischungen zurück zu führen sind. Der Effekt des Blechs und der Effekt der Backmischung sind miteinander konfundiert (engl. confounder \index{confounder}). Letztendlich hat das Problem dadurch eine ähnliche Struktur wie wir das in der ANCOVA kennengelernt haben. Wir sind nicht an den Unterschieden zwischen den Blechen interessiert und wollen für deren Einfluss kontrollieren. Wie könnten wir in diesem Fall vorgehen? Eine direkte Möglichkeit ist, dass wir jeweils die gleich Anzahl an Backmischungen jedem Blech zuweisen. Danach weisen wir die Position der Backmischungen auf dem Blech dann wieder randomisiert. Die Bleche werden unter dieser Perspektive als Blöcke bezeichnet. Durch die nachfolgende Randomisierung erklärt sich auch der Begriff completely randomized block design (CRBD). 
 
 ::: {#def-ed-crbd-block}
-## Blöcke \index{Block}
+## Blockdesign \index{Blockdesign}
 
 In einem statistischen Design, wir als ein Block eine Gruppe von experimentellen Einheiten bezeichnet, die sich hinsichtlich bestimmter Merkmale ähneln. Diese Merkmale können äußere Einflüsse sein, die die Ergebnisse des Experiments beeinflussen könnten.
 :::
@@ -60,8 +61,9 @@ Umformuliert als Pseudogleichung erhalten wir:
 \sigma_{Y}^2 = \sigma_{\text{Effekt(e)}}^2 + \sigma_{\text{Kovariate}}^2 + \sigma_{\text{Block}}^2 + \sigma_{\epsilon}^2
 \end{equation*}
 
+## Der abhängige t-Test als Blockdesign
 
-Tatsächlich ist das Konzept eines Blockfaktors nichts Neues sondern das haben wir wahrscheinlich schon im Zusammenhang mit dem abhängigen t-Test kennengelernt. Schauen wir uns ein hypothetisches Beispiel mit $N = 6$ Personen an, die wir unter zwei Konditionen $A$ und $B$ beobachtet haben. Der Datensatz ist in @fig-ed-crbd-ttest abgebildet.
+Tatsächlich ist das Konzept eines Blockfaktors nichts Neues sondern wir haben Prinzip wahrscheinlich schon früher einmal im Zusammenhang mit dem abhängigen t-Test kennengelernt. Schauen wir uns ein hypothetisches Beispiel mit $N = 6$ Personen an, die wir unter zwei Konditionen $A$ und $B$ beobachtet haben. Der Datensatz ist in @fig-ed-crbd-ttest abgebildet.
 
 ```{r}
 #| fig-cap: "Hypothetisches Experiment mit zwei Konditionen und $n = 6$"
@@ -76,7 +78,7 @@ ggplot(df_dep, aes(condition,y,group=id)) +
   scale_y_continuous(breaks=NULL, limits=c(5,20)) 
 ```
 
-Standardmäßig würden wir dieses Design mit einem abhängigen t-Test analysieren. In `R` könnte das zu folgendem Code führen (Daten in `df_dep`).
+Standardmäßig würden wir dieses Design mit einem abhängigen t-Test analysieren. In `R` würde dies beispielsweise zu folgendem Code führen (Daten in `df_dep`).
 
 ```{r}
 #| echo: true
@@ -85,7 +87,7 @@ mod_ttest <- t.test(y ~ condition, data = df_dep, paired=T)
 mod_ttest
 ```
 
-Wir sehen, dass wir ein statistisch signifikantes Ergebnis für den Unterschied zwischen den beiden Konditionen erhalten haben. Konzeptionell können wir die Personen als Blöcke ansehen. Wir betrachten jede Person unter beiden Konditionen. Dabei gehen wir davon aus, dass es Unterschiede zwischen den Personen gibt, die uns aber gar nicht interessieren. Dadurch das wir beide Konditionen in den gleichen Personen beobachten, können wir diese Unterschied raus nehmen und können den Effekt der Konditionen isolieren. Hätten wir unterschiedliche Personen für die beiden Gruppen genommen, dann hätten wir zu dem potentiellen Unterschieden zwischen den Personen auch noch die Unterschiede zwischen den Personen. Dadurch, dass wir eine Blockstruktur nehmen sind wir also wieder in der Lage Varianzkomponenten zu isolieren.
+Wir sehen, dass wir ein statistisch signifikantes Ergebnis für den Unterschied zwischen den beiden Konditionen erhalten haben. Konzeptionell können wir die Personen als Blöcke ansehen. Wir betrachten jede Person unter beiden Konditionen. Dabei gehen wir davon aus, dass es Unterschiede zwischen den Personen gibt, die uns aber nicht wirklich interessieren. Dadurch das wir beide Konditionen in den gleichen Personen beobachten, können wir diese Unterschiede von dem Effekt der Konditionen isolieren. Hätten wir unterschiedliche Personen für die beiden Gruppen genommen, dann hätten wir zu dem potentiellen Unterschieden zwischen den Konditionen auch noch die Unterschiede zwischen den Personen. Dadurch, dass wir eine Blockstruktur nehmen sind wir also wieder in der Lage Varianzkomponenten zu isolieren.
 
 Schauen wir uns als nächstes an, ob wir den abhängigen t-Test auch in die Form eines linearen Modells bekommen. Wenn wir parallel zum Ansatz in der ANCOVA vorgehen, dann sehen wir Unterschiede zwischen den Personen als Störvariable respektive Kovariate an. D.h. wir möchten die Unterschiede zwischen den Personen modellieren. Eine direkte Möglichkeit ist daher die Personen `id` als eine nominale Variable zu identifizieren und Dummy-Variablen für die Personen in das Modell zu integrieren. Als `lm`-Modell formuliert erhalten wir den folgenden Code:
 
@@ -106,20 +108,26 @@ confint(mod_lm)
 
 Wieder erhalten wir exakt die gleichen Werte für den für uns relevanten Effekt der Kondition. Insgesamt sehen wir, dass wir wieder ein zunächst als getrennt behandeltes Verfahren, der abhängige t-Test, in das allgemeine lineare Modell integriert werden kann. Weiterhin kann der Ansatz Varianz in der abhängigen Variable mit Hilfe von Blockeffekten zu erklären auf direkte und uns schon bekannte Art und Weise in das Modell integriert werden. Wir gewinnen dadurch wiederum Flexibilität bei der Erstellung und Analyse von Experimenten. Letztendlich können wir, wie auch bei der ANCOVA, durch die geschickte Wahl von Blöcken, die Power unseres Untersuchungsdesigns erhöhen.
 
+Bezogen auf die Designstruktur stellen die einzelnen Personen die EUs. Die Randomisierung findet in diesem Fall auf der Ebene der Blöcke statt. Innerhalb jeder Person wir die Abfolge der Konditionen randomisiert.
+
 ## Varianten von Blockdesigns
+
+Im Rahmen des Skripts unterscheiden wir drei grundsätzliche Designs. Führen wir aber zunächst einmal erst wieder etwas Terminologie ein:
 
 | B = Anzahl der Blöcke 
 | M = Anzahl der Messungen in einem Block (block size) 
 | K = Anzahl der Treatments 
 | n = Anzahl der Repetitionen
 
-- Randomized complete block design (RCBD) $M = K$
-- General complete block design (GCBD) $M = n \times K$
-- Incomplete block design (IBD) $M < K$
+Ausgehend auf dem Verhältnis von der Anzahl der Messungen in einem Block $M$ und der Anzahl der Treatments $K$ ergeben sich unter anderem die folgenden drei Blockdesigns (siehe @tbl-ed-crbd-overview}:
+
+- Randomized complete block design (RCBD) $M = K$ 
+- General complete block design (GCBD) $M = n \times K$ \index{General complete block design}
+- Incomplete block design (IBD) $M < K$ \index{Incomplete block design}
 
 ### Layout 
 
-::: {#col-panel layout-ncol=3}
+::: {#tbl-ed-crbd-overview layout-ncol=3}
 +------+----+----+----+
 |B     | A1 | A2 | A3 |
 +======+:==:+:==:+:==:+
@@ -130,7 +138,7 @@ Wieder erhalten wir exakt die gleichen Werte für den für uns relevanten Effekt
 | III  | X  | X  | X  |
 +------+----+----+----+
 
-: CRBD
+: CRBD {#tbl-ed-crbd-crbd}
 
 +------+----+----+-----+
 |B     | A1 | A2 | A3  |
@@ -142,7 +150,7 @@ Wieder erhalten wir exakt die gleichen Werte für den für uns relevanten Effekt
 | III  | XX | XX | XX  |
 +------+----+----+-----+
 
-: GCBD
+: GCBD {#tbl-ed-crbd-gcbd}
 
 +------+----+----+----+
 |B     | A1 | A2 | A3 |
@@ -154,40 +162,46 @@ Wieder erhalten wir exakt die gleichen Werte für den für uns relevanten Effekt
 | III  |    | X  | X  |
 +------+----+----+----+
 
-: IBD
+: IBD {#tbl-ed-crbd-ibd}
 
+Übersicht über verschiedene Blockdesigns (X: Beobachtung)
 :::
 
+Die Unterschiede zwischen den drei Designs beziehen sich hauptsächlich darauf wie oft das Treatment mit dem Block gekreuzt ist. Im CRBD haben wir pro Block jede Treatmentkondition genau einmal, während beim GCBD jede Treatmentkondition mehrmals pro Block beobachtet wird. Im Gegensatz dazu werden beim IBD nicht alle Treatmentkondition in jedem Block beobachtet.
 
-Modell mit einem Blockfaktor $\theta$
+Beginnen wir mit einem CRBD.
 
-$$
+## Completely Randomized Block Design
+
+Beim Completely Randomized Block Design \index{Blockdesign!Randomized complete block design} wird jede Treatmentkondition genau einmal pro Block beobachtet. D.h. die Anzahl der Messungen pro Block $M$ sind gleich der Anzahl der Treatmentkonditionen $K$. Da die Blöcke vom Prinzip her genauso wie andere nominale Faktoren zu behandeln sind, entspricht das dazugehörige Modell einer zweifaktoriellen CRFD ohne Interaktionseffekte. Entsprechend erhalten wir ein Modell mit einem Blockfaktor $\theta_h$ mit $h = 1,2,\ldots,M$ und einem Effekt $\alpha_i, i=1,2,\ldots,K$ für die $K$ Treatmentkonditionen. Das entsprechende Modell können wir folgt formulieren (siehe Formel \eqref{eq-ed-crbd-crbd}):
+
+\begin{equation}
 Y_{hi} = \mu + \theta_h + \tau_i + \epsilon_{hi}
-$$
+\label{eq-ed-crbd-crbd}
+\end{equation}
 
 | $\mu$ = Gesamtmittelwert
 | $\theta_h$ = Blockeffekt der $h$-ten Stufe, $h = 1, \ldots, B$
 | $\tau_i$ = Faktoreffekt der $i$-ten Stufe, $i = 1, \ldots, K$
 | $e_{hi} \sim \mathcal{N}(0,\sigma^2)$, paarweise unabhängig
 
-Statistisches Modell
+Da wir nur eine Kombination von Treatmentfaktor und Blockfaktor haben, können wir keine Interaktionseffekte zwischen $\theta$ und $\alpha_i$ bestimmen, da diese mit den Residualfaktoren konfundiert sind. Daraus folgt, wir mit unserem Modellvergleichansatz das volle Modell mit beiden Faktoren mit einem reduzierten Modell mit nur den Blockfaktoren vergleichen, bzw. wenn es gewollt ist den Blockeffekt zu überprüfen entsprechend ein weiteres reduziertes Modell mit nur einen $y$-Achsenabschnitt.
 
-Full model
-$$
-Y_{hi} = \mu + \theta_h + \tau_i + \epsilon_{hi}
-$$
-
-Reduced models
 \begin{align*}
-Y_{hi} &= \mu + \epsilon_{hi} \\
-Y_{hi} &= \mu + \theta_h + \epsilon_{hi}
+Y_{hi} &= \mu + \theta_h + \tau_i + \epsilon_{hi} & \text{full} \\
+Y_{hi} &= \mu + \theta_h + \epsilon_{hi} & \text{reduced 1} \\
+Y_{hi} &= \mu + \epsilon_{hi}  & \text{reduced 2}
 \end{align*}
 
-Hypothesen
+
+Dementsprechend bezieht sich die Haupthypothese auf den Effekt des Treatmentfaktors.
+
 \begin{align*}
 H_0 &: \tau_1 = \tau_2 = \ldots = \tau_v = 0 \\
 H_1 &: \tau_i \neq \tau_j, i \neq j
 \end{align*}
+
+Wie immer können die Ergebnisse auch mittels einer ANOVA-Tabelle dokumentiert werden (siehe @tbl-ed-crbd-crbd}.
 
 $F$-Tabelle
 
@@ -198,30 +212,20 @@ $F$-Tabelle
 | Error | $KB-B-K+1$ | $ssE$ | $\frac{ssE}{KB-B-K+1}$ |
 | Total | $KB-1$ | $sstot$|  |  |
 
-: Varianzanalyse beim CRBD
+: Varianzanalyse beim CRBD {#tbl-ed-crbd-crbd}
 
 | $ss\theta = K\sum_h \bar{y}_{h.}^2-KB\bar{y}_{..}^2$ 
 | $ssT = B\sum_i \bar{y}_{.i}^2-KB\bar{y}_{..}^2$
 | $ssE = sstot - ssB - ssT$
 | $sstot = \sum_h\sum_i y_{hi}^2-KB\bar{y}_{..}^2$ 
+
+Schauen wir uns dazu ein Beispiel @dean1999 an.
  
 ::: {#exm-ed-crbd-rmr}
-Beispiel - Resting metabolic rate experiment (@dean1999)
+Bei $N = 9$ Patienten wurde der Ruheumsatz am Morgen in Abhängigkeit von drei verschiedenen Konditionen untersucht. Unter Kondition $A$ haben die Patienten im Krankhaus übernachtet und gefrühstückt, unter Kondition $B$ zu Hause geschlafen und im Krankenhaus gefrühstückt und unter Kondition $C$ beides zu Hause durchgeführt. Die Reihenfolge der Konditionen wurde zwischen den Patienten randomisiert. In @fig-ed-crbd-rmr sind die Rohdaten abgebildet.
 
 ```{r}
-#| tbl-cap: "Beispieldaten aus Dean et al. (1999) zum Ruheumsatz wenn Patienten im Krankenhaus geschlafen und gefrühstückt haben (A), zu Hause gegessen haben und im Krankenhaus gefrühstückt haben (B) oder beides zu Hause gemacht haben (C)."
-
-rmr |> pivot_wider(id_cols = subject, values_from = rate, names_from =protocol) |> 
-  knitr::kable(booktabs = T, linesep='')
-```
-
-| A = in house meal and sleep
-| B = in house meal and sleep out
-| C = meal and sleep out
-
-
-```{r}
-#| fig-cap: "Boxplot der Ruheumsatzdaten"
+#| fig-cap: "Liniendiagramm der Ruheumsatzdaten am Morgen. A: Im Krankenhaus geschlafen und gefrühstück, B: zu Hause geschlafen und im Krankenhaus gefrühstückt, C: beides zu Hause durchgeführt. (rot: Mittelwert)"
 #| label: fig-ed-crbd-rmr
 
 rmr_m <- rmr |> group_by(protocol) |> summarize(rate = mean(rate)) |> 
@@ -234,11 +238,23 @@ ggplot(rmr, aes(protocol, rate)) +
   geom_line(aes(group = subject)) +
   labs(x = 'Protocol', y = 'RMR') 
 ```
+In @fig-ed-crbd-rmr ist kein klarer Trend zu erkennen, was bei $N=9$ auch nicht weiter verwunderlich ist. Dargestellt als ANOVA-Tabelle ergibt sich das folgende Ergebnis.
+
+```{r}
+lm(rate ~ subject + protocol, rmr) |> 
+  anova() |> 
+  broom::tidy() |> 
+  kable(
+    booktabs=TRUE,
+    col.names=c("Term","df","SS","MS","F","p-value"),
+    digits = 3)
+```
+D.h. wir finden keinen Einfluss des Treatments auf den Ruheumsatz basierend auf der vorliegenden Stichprobe.
 :::
 
-## Analyse eines RCBD in `R`
+### CRBD in `R`
 
-mit `lm()`
+Wir haben verschiedene Ansätze um die Analyse durchzuführen. Zunächst mittels Modelverlgeichen mit `lm()`
 
 ```{r}
 #| echo: true
@@ -248,7 +264,7 @@ mod_reduced <- lm(rate ~ subject, rmr)
 anova(mod_reduced,mod_full)
 ```
 
-RCBD in `R`  mit `aov()`
+Alternativ können wir auch wieder `aov()` verwenden.
 
 ```{r}
 #| echo: true
@@ -257,8 +273,7 @@ mod_aov_1 <- aov(rate ~ subject + protocol, data = rmr)
 summary(mod_aov_1)
 ```
 
-
-RCBD in `R`  mit `aov()` und `Error()`
+Als weitere Alternative mit `aov()` und der Zusatzfunktion `Error()`
 
 ```{r}
 #| echo: true
@@ -267,20 +282,11 @@ mod_aov_2 <- aov(rate ~ protocol + Error(subject), data = rmr)
 summary(mod_aov_2)
 ```
 
-### Modell mit Interaktionen
+Dies führt zu der Unterteilung der Effekte in zwei Strata wie sie bei Repeated Measures ANOVA verwendet werden. Einmal in die Zwischenblockeffekte die allerdings mangels Fehlerterm nicht analysisert werden und die Innerblockeffekte. Die Innerblockeffekte sind gleich dem in SPSS üblichen Ansatz mit Innersubjekteffekten.
 
-$$
-Y_{hi} = \mu + \theta_h + \tau_i + (\theta\tau)_{hi} + \epsilon_{hi}
-$$
+### Feste versus zufällige Effekte
 
-```{r}
-#| echo: true
-
-mod_2 <- lm(rate ~ subject*protocol, data = rmr)
-anova(mod_2)
-```
-
-## Effektstärken $\omega^2$ und $f$ beim CRBD
+### Effektstärken $\omega^2$ und $f$ beim CRBD
 
 \begin{align*}
 \omega^2 &= \frac{df_{\mathrm{effect}} \times (MS_{\mathrm{effect}} - MS_{\mathrm{error}})}{SS_{\mathrm{total}} + MS_{\mathrm{subjects}}} \\
@@ -314,7 +320,7 @@ $$
 
 Effektstärke CRBD in `R`
 
-### General complete block design GCBD
+## General complete block design GCBD
 
 ```{r}
 include_graphics('pics/golf_driver_1.jpg')
@@ -382,7 +388,7 @@ $$
 
 $w_T = q_{\alpha/\sqrt{2},v, bv-b-v+1}$ = Quantile der Studentized Range Distribution. In `R` mit `qtukey(alpha/sqrt(2), v, b*v-b-b+1)`.
 
-## Mehrfachvergleiche in `R`
+### Mehrfachvergleiche in `R`
 
 ```{r}
 #| echo: true
@@ -401,7 +407,7 @@ pairs(y_bars, infer=c(T,T)) %>% as_tibble() %>%
 ```
 
 
-## Bestimung der Anzahl der Blöcke a-priori 
+### Bestimung der Anzahl der Blöcke a-priori 
 
 Direkt über den $F$-Test per trial-and-error
 
@@ -649,7 +655,6 @@ Beispiel - Mehrfachvergleiche
 emmeans::emmeans(mod, pairwise ~ recipe)
 ```
 
-## Feste versus zufällige Effekte
 
 ## Zum Nachlesen
 

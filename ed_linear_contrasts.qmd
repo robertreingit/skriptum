@@ -5,6 +5,9 @@
 #| warning: false
 #| message: false
 source('_common.R')
+```
+
+```{r}
 #source('../resources/nice_format_helper_fcn.R')
 n <- 20
 k <- 3
@@ -16,7 +19,7 @@ kaffee <- tibble(
 mod_aov <- aov(Zeit ~ Gruppe, data = kaffee)
 ```
 
-Bei der Analyse eines CRDs haben wir bisher nur die untersucht, ob es irgendwo zwischen den verschiedenen Faktorstufen einen relevanten Unterschied gibt. Im nächsten Schritt wollen wir daher bestimmen zwischen welchen Faktorstufen auch tatsächlich ein Unterschied besteht. Im einfachen Fall aus unsererm Laufbeispiel mit drei Faktorstufen (Koffein, Placebo und Control, siehe @fig-ed-lc-01) können drei verschiedene, paarweise Vergleiche durchgeführt werden.
+Bei der Analyse eines CRDs haben wir bisher nur untersucht, ob es *irgendwo* zwischen den verschiedenen Faktorstufen einen relevanten Unterschied gibt. Im nächsten Schritt wollen wir daher bestimmen zwischen welchen Faktorstufen tatsächlich ein Unterschied besteht. Im einfachen Fall aus unserem Laufbeispiel mit drei Faktorstufen (Koffein, Placebo und Control, siehe @fig-ed-lc-01) können drei verschiedene, sogenannte paarweise Vergleiche durchgeführt werden.
 
 ```{r}
 #| fig-cap: "Einfluss von Koffeine auf die Laufleistung über 8km"
@@ -29,17 +32,17 @@ ggplot(kaffee, aes(Gruppe, Zeit)) +
        x = 'Gruppe') 
 ```
 
-Wir können Koffein mit Placebo, Koffein mit Control und Placebo mit Control vergleichen. In allen drei Fällen vergleichen wir die Mittelwert der jeweiligen beteiligten Faktorstufen miteinander. Allerdings haben wir hier das Problem, dass jede Faktorstufe in mehreren (im Beispiel zweimal) Vergleichen beteiligt ist. Wenn wir mehr Faktorstufen haben entsprechend noch öfter. Allgemein gilt, wenn wir $K$-Faktorstufen haben dann gibt es insgesamt
+Wir können Koffein mit Placebo, Koffein mit Control und Placebo mit Control vergleichen. In allen drei Fällen vergleichen wir die Mittelwerte $\mu_i$ der jeweiligen Faktorstufen miteinander. Allerdings haben wir hier das Problem, dass jede Faktorstufe in mehreren (im Beispiel zwei) Vergleichen beteiligt ist. Wenn wir mehr Faktorstufen haben entsprechend noch öfter. Allgemein gilt bei $K$-Faktorstufen: 
 
 \begin{equation}
 \text{Anzahl der Paarvergleiche} = K(K-1)
 \end{equation}
 
-Das führt zu dem Problem der Mehrfachvergleiche.
+Dadurch, das jeder Mittelwert $\mu_i$ in mehreren Vergleichen beteiligt ist, führt dies zu dem Problem der Mehrfachvergleiche.
 
 ## Das multiple-comparison Problem
 
-Allgemein gilt, wenn wir mehrere statistische Tests durchführen, und uns den $\alpha$-Fehler betrachten, dass über die Gesamtheit der Test der $\alpha$-Fehler nicht mehr gleich dem nominalen Level ist. Die Überlegung dazu ist die folgende. Wir testen $m$ Hypothesen, jede mit einer Irrtumswahrscheinlichkeit von $\alpha$ und in allen Fällen sei die $H_0$ zutreffend. Dann haben wir für jeden einzelnen Test eine Wahrscheinlichkeit von $1 - \alpha$ die korrekte Entscheidung zu treffen. Wenn wir nun $m$ unabhängige Hypothesentestungen durchführen, wird die Wahrscheinlichkeit sich korrekt zu entscheiden insgesamt $m$-Mal miteinander multipliziert.
+Allgemein gilt, wenn wir mehrere statistische Tests durchführen, und uns den $\alpha$-Fehler betrachten, dass über die Gesamtheit der Test der $\alpha$-Fehler nicht mehr gleich dem nominalen Level ist. Die Überlegung dazu ist die Folgende. Wir testen $m$ Hypothesen, jede mit einer Irrtumswahrscheinlichkeit von $\alpha$ und in allen Fällen sei die $H_0$ zutreffend. Dann haben wir für jeden einzelnen Test eine Wahrscheinlichkeit von $1 - \alpha$ die korrekte Entscheidung zu treffen. Wenn wir nun $m$ unabhängige Hypothesentestungen durchführen, wird die Wahrscheinlichkeit sich korrekt zu entscheiden insgesamt $m$-Mal miteinander multipliziert.
 
 \begin{equation}
 P(\text{korrekte Entscheidung}) = (1-\alpha)\cdots(1-\alpha) = (1-\alpha)^m
@@ -51,7 +54,7 @@ Daraus folgt, dass die Wahrscheinlichkeit mindestens einen $\alpha$-Fehler zu ma
 P(\text{min. }1\text{ Type-I Fehler}) = 1 - (1-\alpha)^m 
 \end{equation}
 
-Tragen wir diese Wahrscheinlichkeit gegen die Anzahl der Test ab, erhalten wir folgenden Zusammenhang (siehe @fig-ed-lc-02).
+Wird diese Wahrscheinlichkeit gegen die Anzahl der Test abgetragen, ergibt sich der folgende Zusammenhang (siehe @fig-ed-lc-02).
 
 ```{r}
 #| fig-cap: "Inflation des $\\alpha$-Fehlers mit $\\alpha=0.05$"
@@ -63,12 +66,12 @@ ggplot(tibble(m = 1:20, p = 1 - (1-0.05)**m),
   labs(x = 'Anzahl der Tests', y = 'P min 1\nTyp-I Fehler')
 ```
 
-In @fig-ed-lc-02 können wir sehen, dass die Wahrscheinlichkeit für mindestens einen $\alpha$ sehr schnell mit der Anzahl der Tests ansteigt. D.h. ab etwa 15 Tests liegt die Wahrscheinlichkeit für ein statistisch signifikantes Ergebnis bei etwas $50\%$. Daher müssen wir für die Anzahl der Tests kontrollieren (siehe @rothman1990 für eine Gegenposition).
+In @fig-ed-lc-02 ist zu erkennen, dass die Wahrscheinlichkeit für mindestens einen $\alpha$ sehr schnell mit der Anzahl der Tests ansteigt. D.h. ab etwa 15 Tests liegt die Wahrscheinlichkeit für ein statistisch signifikantes Ergebnis bei etwas über $50\%$. Daher, umso mehr Tests in einer Untersuchung durchgeführt werden, umso höher die Wahrscheinlichkeit, dass ein Test *anspringt*. Um dieses Problem einzufangen, sollte daher für die Anzahl der Tests kontrolliert werden (siehe @rothman1990 für eine Gegenposition).
 
-Ein Umstand macht die Kontrolle der $\alpha$-Fehlerrate allerdings etwas undurchsichtig, da nicht eindeutig ist auf welchem Level die Fehlerkontrolle stattfinden soll. In @fig-ed-lc-errors ist eine typische Struktur eines Experiments dargestellt.
+Ein Umstand macht die Kontrolle der $\alpha$-Fehlerrate allerdings etwas undurchsichtig, da nicht eindeutig ist auf welchem Level die Fehlerkontrolle stattfinden soll. In @fig-ed-lc-errors ist die typische Struktur eines Experiments dargestellt.
 
 ```{dot}
-//| fig-cap: "Einteilung der Fehler."
+//| fig-cap: "Beispiel für die entstehende Hierarchie von Fehlern bei Mehrfachvergleichen bei einem Experiment."
 //| label: fig-ed-lc-errors
 
 graph G {
@@ -105,50 +108,73 @@ F1 -- Y3;
 }
 ```
 
-Wir haben zwei Endpunkte in dem Experiment und beide Endpunkte wurden unter jeweils zwei verschiedenen Faktoren untersucht. Faktor 1 besitzt drei Faktorstufen. D.h. wir können wiederum drei paarweise Vergleiche zwischen den Mittelwerten (MW) der drei Stufen durchführen. Ähnliches trifft aber auch auf Faktor 2 zu. Bei zwei Endpunkten verdoppelt sich noch einmal die Anzahl der Test bzw. wenn wir noch weitere Endpunkte haben entsprechend mehr. Das führt dazu, dass wir entweder auf der Ebene der Endpunkte, der Ebene der Faktor innerhalb eines Endpunktes oder auf der Ebene der Faktorstufen innerhalb eines Faktors innerhalb eines Endpunktes kontrollieren können. Von oben nach unten werden diese Ebenen als *Experiment*, *family* und *test* wise error rates bezeichnet und sind von unten nach oben immer strikter da die Anzahl der zu berücksichtigenden Test immer größer wird. Dazu kommt, dass es leider in der Literatur dazu keinen klaren Konsens gibt auf welcher Ebene die Mehrfachtestung berücksichtigt werden solle, so dass in den meisten Fällen wohl auf *test*-Ebene kontrolliert wird.
+In dem Beispiel sind zwei Endpunkte in dem Experiment geplant gewesen (Primary und Secondary Endpoint). Dies könnte zum Beispiel die Squad und die Hip thrust Leistung in der Stichprobe sein. Beide Endpunkte wurden unter jeweils zwei verschiedenen Faktoren untersucht (z.B. Ernährungsergänzung und Kontrolle). Faktor 1 besitzt drei Faktorstufen. D.h. wir können wiederum drei paarweise Vergleiche zwischen den Mittelwerten (MW) der drei Stufen durchführen. Ähnliches trifft aber auch auf Faktor 2 zu. Bei zwei Endpunkten verdoppelt sich noch einmal die Anzahl der Test bzw. wenn wir noch weitere Endpunkte haben entsprechend mehr. Dies führt dazu, dass wir mehrere Ebenen haben auf denen ein Fehlerkontrollmechanismus ansetzen kann. Die Kontrolle kann entweder auf der Ebene der Endpunkte, der Ebene der Faktoren innerhalb eines Endpunktes oder auf der Ebene der einzelnen Faktorstufen innerhalb eines Faktors innerhalb eines Endpunktes kontrolliert werden. Von oben nach unten werden diese Ebenen als *Experiment* \index{experiment wise error rate}, *family* \index{family wise erro rate} und *test* \index{test wise error rate} wise error rates bezeichnet. Die Kontrolle ist dabei von unten nach oben immer strikter da die Anzahl der zu berücksichtigenden Test immer größer wird. Dazu kommt, dass es leider in der Literatur dazu keinen klaren Konsens gibt auf welcher Ebene die Mehrfachtestung berücksichtigt werden sollte. In den meisten Fällen wird dher auf der *test*-Ebene kontrolliert.
 
 ## Kontraste $\psi$
 
-Im folgenden werden wir ein etwas allgemeineres Rahmenwerk aufbauen um die Vergleiche zwischen den Faktorstufen durchzuführen. Dazu führen wir zunächst das Konzept eines Kontrasts für Mittelwertsvergleiche ein. 
+Im folgenden wird ein etwas allgemeineres Rahmenwerk aufgebaut um Vergleiche zwischen Faktorstufen durchzuführen. Dazu wird zunächst das Konzept eines Kontrasts für Mittelwertsvergleiche benötigt.Ein Kontrast $\psi$ ist dabei ein Spezialfall einer sogenannten Linearkombination \index{Linearkombination}. Allgemein hat eine Linearkombination die folgende Form.
+
+\begin{equation*}
+\sum_{i=1}^K c_i \cdot a_i
+\end{equation*}
+
+Es wird eine Summe Elementen $a_i$ multipliziert mit einem Faktor $c_i$. Die $c_i$s werden als Gewichte bezeichnet. Sei zum Beispiel ein Vektor $\boldsymbol{a}$ gegeben mit den Elementen $\boldsymbol{a} = (1,2,3)$ und ein Gewichtsvektor mit den Elementen $\boldsymbol{c} = (1/2,1/2,1/3)$, dann hat die entsprechende Linearkombination die folgende Form:
+
+\begin{equation}
+\sum_{i=1}^K c_i \cdot a_i = \frac{1}{2}\cdot 1 + \frac{1}{2}\cdot 2 + \frac{1}{3}\cdot 3
+\label{eq-ed-lc-ex-01}
+\end{equation}
+
+Ein Kontrast $\psi$ ist dann ein Spezialfall einer Linearkombination bei dem die Gewichte $a_i$ sich zu Null addieren. D.h. es gilt: 
+
+\begin{equation*}
+\sum_{i=1}^K c_i \cdot a_i \quad \text{mit } \sum_{i=1}^K c_i = 0
+\end{equation*}
+
+Das Beispiel der Linearkombination in Formel \eqref{eq-ed-lc-ex-01} stellt somit keinen Kontrast dar, da $1/2 + 1/2 + 1/3 \neq 0$ gilt. Dagegen wäre die folgende Linearkombination mit $\boldsymbol{c} = (1/2,1/2,-1)$ ein Kontrast.
+
+\begin{equation*}
+\sum_{i=1}^K c_i \cdot a_i = \frac{1}{2}\cdot 1 + \frac{1}{2}\cdot 2 - \frac{1}{3}\cdot 3
+\end{equation*}
+
+### Struktur von Kontrasten
+
+Seien nun die Elemente von $\boldsymbol{a}$ die Modellparamter eines statistischen Models dann erhalten ergibt sich die folgende Definition:
+
 
 ::: {#def-contrast}
 ### Kontrast
-Ein Kontrast\index{Kontrast} ist eine Linearkombination von Modellparametern deren Koeffizienten sich zu Null addieren.
+Ein Kontrast\index{Kontrast} $\psi$ ist eine Linearkombination von Modellparametern deren Koeffizienten sich zu Null addieren.
 :::
 
-Nehmen wir zum Beispiel den Fall des Modells aus dem CRD.
+Nehmen wir zum Beispiel den Fall des CRD Modells mit einem Faktor und $K$ Faktorstufen. 
 
-\begin{equation}
+\begin{equation*}
 Y_{ij} = \mu + \tau_i + \epsilon_{ij}
-\end{equation}
+\end{equation*}
 
-Die jeweiligen Effekte der Faktorstufen werden durch die Parameter $\tau_i,i=1,\ldots,K$ repräsentiert. Eine linearkombination der $\tau_i$ sieht dann folgendermaßen aus.
-
-\begin{equation}
-\sum_{i=1}^K c_i \tau_i
-\end{equation}
-
-D.h. die $\tau_i$ werden jeweils mit einem Faktor $c_i$ multipliziert und die Produkte werden aufsummiert. Die Terme $c_i$ werden als Kontrastgewichte oder allgemein Gewichte bezeichnet. Wenn die $c_i$s nun noch die Eigenschaften haben, dass deren Summe $\sum_{i=1}^K c_i = 0$ ist, dann wird aus der Linearkombination ein Kontrast $\psi$:
+Die jeweiligen Effekte der Faktorstufen werden durch die Parameter $\tau_i,i=1,\ldots,K$ repräsentiert. Die allgemeine Form eines Kontrasts $\psi$ für dieses Modell hat dann die Form:
 
 \begin{equation}
 \psi = \sum_{i=1}^k c_i \tau_i, \quad \text{mit } \sum_{i=1}^k c_i=0
-\label{eq-ed-lc-contrats}
+\label{eq-ed-lc-crd-con}
 \end{equation}
 
-Da wir in unserem Fall in den meisten Fällen die Gruppen Mittelwerte miteinander vergleichen wollen, werden wir meistens Kontraste der Gruppenmittelwerte erstellen, da diese als Schätzer für Gruppeneffekte dienen. Also der Effekt der $i$-ten Stufe setzt sich nach dem Modell zusammen aus $\mu + \tau_i$ und dieser ist bei einem CRD gleich dem Gruppenmittelwert. D.h. unser Schätzer für einen Kontrasts $\hat{\psi}$ ist.
+In den meisten Fällen wird mittels eines Kontrasts die Mittelwerte $\mu_i$ der Faktorstufen miteinander verglichen, da die Mittelwert $\bar{y}_i$ als Schätzer für die Faktorstufeneffekte $\hat{\tau}_i = \bar{y}_i$ dienen. Der Effekt der $i$-ten Stufe setzt sich nach dem Modell zusammen aus $\mu + \tau_i$ und dieser ist bei einem CRD gleich dem Gruppenmittelwert $\bar{y}_i$. D.h. ein Schätzer für einen Kontrast $\hat{\psi}$ hat die Form.
 
 \begin{equation}
 \hat{\psi} = \sum_{i=1}^K c_i (\hat{\mu} + \hat{\tau_i}) = \sum_{i=1}^K c_i \bar{y}_{i.}
 \end{equation}
 
-Aber es gilt:
+Unter Verwendung der Eigenschaft, dass ein Kontraste $\psi$ zu $0$ aufsummiert gilt: 
+
 \begin{equation*}
 \psi=\sum_{i=1}^Kc_i(\mu + \tau_i) = \sum_{i=1}^Kc_i \mu + \sum_{i=1}^K c_i\tau_i=\mu\underbrace{\sum_{i=1}^K c_i}_{=0} + \sum_{i=1}^K c_i\tau_i = \sum_{i=1}^K c_i\tau_i
 \end{equation*}
 
-D.h. über den Vergleich der Mittelwerte erhalten wir den Vergleich der Modellparameter $\tau_i$.
+D.h. über den Vergleich der Mittelwerte $\bar{y}_i$ erhalten wir den Vergleich der Modellparameter $\tau_i$.
 
-Durch eine schlaue Kombination von $c_i$ sind wir jetzt in der Lage die gewünschten Gruppenvergleiche durchzuführen. Gehen wir zurück zu unserem Beispiel der Koffeindaten. Mit der folgenden Kombination von $c_i$s können wir die Gruppenvergleich als Kontraste definieren (siehe @tbl-ed-lc-contrast-01).
+Durch eine geschickte Kombination von $c_i$ können nun gewünschte Gruppenvergleiche durchgeführt werden. Im Beispiel der Laufdaten, können mittels des folgenden Schemas von $c_i$s die Gruppenvergleich als Kontraste definiert werden (siehe @tbl-ed-lc-contrast-01).
 
 
 | Kontrast  | Koffein $(c_1)$ | Placebo $(c_2)$ | Control $(c_3)$ | $\sum_{i=1}^K c_i$ | 
@@ -181,15 +207,15 @@ Wollen wir nun einen Vergleich zwischen den Gruppen Koffein und Placebo bestimme
 
 D.h. wir beobachten einen Unterschied von $`r round(k_bar$m[1] - k_bar$m[2], 1)`s$ zwischen den beiden Gruppen. Die beiden verbleibenden paarweisen Vergleichen können parallel durchgeführt werden.
 
-Allgemein wird zwischen zwei Arten von Kontrasten unterschieden: Einfache und komplexe Kontraste. Einfache Kontraste sind dabei die paarweisen Vergleiche und alle anderen Arten von Kontrasten als komplexe Kontraste bezeichnet werden. Aus dem Beispiel sehen wir, dass bei paarweisen Kontrasten immer ein Kontrastgewicht $c_i = 1$ ist und ein weiterer $c_j = -1$ gesetzt wird, während alle anderen Gewichte $c_l = 0, \forall l \neq i,j$ sind.
+Allgemein wird zwischen zwei Arten von Kontrasten unterschieden: Einfache und komplexe Kontraste. Einfache Kontraste \index{Kontraste!Einfache Kontraste} sind dabei die paarweisen Vergleiche und alle anderen Arten von Kontrasten als komplexe Kontraste \index{Kontraste!Komplexe Kontraste} bezeichnet werden. Im Beispiel ist zu erkennen, dass bei paarweisen Kontrasten immer ein Kontrastgewicht $c_i = 1$ gesetzt ist und ein weiterer auf $c_j = -1$ gesetzt wird, während alle anderen Gewichte $c_l = 0, \forall l \neq i,j$ sind.
 
-Erstellen wir nun einen komplexen Kontrast. Wir wollen zum Beispiel untersuchen ob es einen Unterschied zwischen der Kontrollgruppe und den beiden Gruppen die eine Pille bekommen haben unabhängig davon ob in der Pille ein Wirkstoff (Koffein) oder nicht (Placebo) war. Mittels eines Kontrasts können wir diesen Vergleich wie folgt darstellen.
+Erstellen wir nun einen komplexen Kontrast. Zum Beispiel möchten wir untersuchen ob es einen Unterschied zwischen der Kontrollgruppe und den beiden Gruppen die eine Pille bekommen gibt. D.h. wir wollen Untersuchen ob die Gabe einer Pille unabhängig davon ob in der Pille ein Wirkstoff (Koffein) oder nicht (Placebo) gewesen ist. Mittels eines Kontrasts können wir diesen Vergleich wie folgt durchführen.
 
 \begin{equation*}
 c_1 = \frac{1}{2}, c_2 = \frac{1}{2}, c_3 = -1
 \end{equation*}
 
-D.h. wir Mitteln die Mittelwerte von Koffein und Placebo und vergleichen diesen Mittelwert mit dem Mittelwert der Kontrollgruppe. Wenn wir die Summe der Gewichte bilden erhalten wir $\frac{1}{2} + \frac{1}{2} - 1 = 0$. Wir haben es also tatsächlich mit einem Kontrast zu tun Angewendet auf das Beispiel erhalten wir:
+D.h. wir Mitteln die Mittelwerte von Koffein und Placebo und vergleichen diesen Mittelwert mit dem Mittelwert der Kontrollgruppe. Wenn wir die Summe der Gewichte bilden erhalten wir $\frac{1}{2} + \frac{1}{2} - 1 = 0$. Es handelt sich also immer noch um eine Kontrast. Angewendet auf das Beispiel erhalten wir:
 
 \begin{equation*}
 \hat{\psi} = \sum_{i=1}^k c_i \bar{y}_{i.} = \frac{1}{2} \cdot `r k_bar$m[1]` + \frac{1}{2} \cdot `r k_bar$m[2]` + (-1) \cdot `r k_bar$m[3]` = `r round(sum(k_bar$m[1:2])/2 - k_bar$m[3],2)`
@@ -197,8 +223,7 @@ D.h. wir Mitteln die Mittelwerte von Koffein und Placebo und vergleichen diesen 
 
 D.h. der Effekt der Pillengabe unabhängig von Wirkstoff ist $`r round(sum(k_bar$m[1:2])/2 - k_bar$m[3],2)`s$.
 
-Insgesamt haben wir mittels der Kontraste einen flexiblen Mechanismus um beliebige Vergleiche zwischen Faktorstufen durchzuführen bzw. Modellparameter miteinander zu vergleichen. Die üblichen paarweisen Vergleich bilden hierbei nur einen Spezialfall der einfachen Kontraste. Um nun zu bewerten ob ein beobachter Kontrast auch wirklich bedeutsam ist, benötigen wir nun aber auch Information über seine Varianz.
-
+Zusammengefasst ermöglichen Kontraste beliebige Vergleiche zwischen mehreren Faktorstufen durchzuführen um Modellparameter miteinander zu vergleichen. Die üblichen paarweisen Vergleich bilden hierbei einen Spezialfall (einfache Kontraste) der allgemeineren komplexen Kontrasten. Um nun zu bewerten ob ein beobachteter Kontrast $\psi_i$ auch wirklich bedeutsam ist, wird nun noch Information über die Varianz $Var(\psi_i)$ benötigt.
 
 ### Varianz von Kontrasten
 
