@@ -980,11 +980,25 @@ w_{\text{Tukey}} = q_{K,N-K,\alpha/\sqrt{2}}
 \label{eq-ed-lc-tukey-w}
 \end{equation}\]</span></p>
 <p>In <code>R</code> kann die Quantile der Studentized range distribution aus Formel <span class="math inline">\(\eqref{eq-ed-lc-tukey-w}\)</span> mittels der Funktion <code>qtukey()</code> bestimmen werden.</p>
-<p>Die Scheffé-Methode ist ebenfalls sehr oft in der Literatur anzutreffen, da sie <em>post-hoc</em>, also nach Einsicht der Daten, angewendet werden kann. Mit der Scheffé-Methode können auch alle Arten von Vergleichen, einfache und komplexe, durchgeführt werden. Der kritische Wert <span class="math inline">\(w\)</span> wird bei Scheffé-Methode mittels der <span class="math inline">\(F\)</span>-Verteilung mit <span class="math inline">\(K-1\)</span> und <span class="math inline">\(N-k\)</span> Freiheitsgraden bei <span class="math inline">\(1-\alpha\)</span>. Wobei noch eine Korrekturfaktor <span class="math inline">\(K-1\)</span> multipliziert werden muss.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warnung
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Die Tukeykorrektur ist nur für balancierte Vergleiche, d.h. gleiche Stichprobengrößen in allen Gruppen, hergeleitet und für ungleiche Stichprobengrößen nur annährend exakt .</p>
+</div>
+</div>
+<p>Die Scheffé-Methode ist ebenfalls sehr oft in der Literatur anzutreffen, da sie <em>post-hoc</em>, also nach Einsicht der Daten, angewendet werden kann. Mit der Scheffé-Methode können auch alle Arten von Vergleichen, einfache wie auch komplexe Vergleiche, durchgeführt werden. Der kritische Wert <span class="math inline">\(w\)</span> wird bei Scheffé-Methode mittels der <span class="math inline">\(F\)</span>-Verteilung mit <span class="math inline">\(K-1\)</span> und <span class="math inline">\(N-k\)</span> Freiheitsgraden bei <span class="math inline">\(1-\alpha\)</span> ermittelt. Wobei noch ein Korrekturfaktor <span class="math inline">\(K-1\)</span> multipliziert werden muss. Dabei ist die Anzahl der Vergleiche irrelevant, da der kritische Wert alle möglichen Vergleiche einbezieht.</p>
 <p><span class="math display">\[\begin{equation}
 w_{\text{Scheffé}} = \sqrt{(K-1)F_{K-1,N-K,1-\alpha}}
 \end{equation}\]</span></p>
-<p>In <a href="#tbl-ed-lc-contrasts-w" class="quarto-xref">Tabelle&nbsp;<span>23.4</span></a> sind verschiedene kritische Werte <span class="math inline">\(w\)</span> der drei Methoden für verschiedenen Anzahl <span class="math inline">\(K\)</span> der Faktorstufen bzw. der resultierenden paarweisen Vergleichen abgebildet.</p>
+<p>Dementsprechend kann die Scheffé-Korrektur eigentlich immer angewendet werden, egal ob pre-planned oder post-hoc und unabhängig von der Art der Vergleichen ohne das das Risiko einer fehlerhaften Korrektur eingegangen wird.</p>
+<p>Um noch einmal die Unterschiede der verschiedenen Methoden stärker zu betonen, sind in <a href="#tbl-ed-lc-contrasts-w" class="quarto-xref">Tabelle&nbsp;<span>23.4</span></a> die verschiedene kritische Werte <span class="math inline">\(w\)</span> der drei Methoden für verschiedenen Anzahl <span class="math inline">\(K\)</span> von Faktorstufen bzw. der resultierenden paarweisen Vergleichen aufgelistet.</p>
 <div class="cell">
 <div id="tbl-ed-lc-contrasts-w" class="cell quarto-float anchored">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -1054,14 +1068,15 @@ Tabelle&nbsp;23.4: Vergleich der kritischen Wert <span class="math inline">\(w\)
 </figure>
 </div>
 </div>
-<p><a href="#tbl-ed-lc-contrasts-w" class="quarto-xref">Tabelle&nbsp;<span>23.4</span></a> zeigt, dass der Tukey durchgehend bei den drei Methoden die kleinsten kritischen Werte hat, also das schmalste Konfidenzintervall erstellt. Für diesen Fall liegt die Bonferroni-Methode immer zwischen Tukey und Scheffé die immer den größten kritschen <span class="math inline">\(w\)</span> hat.</p>
+<p><a href="#tbl-ed-lc-contrasts-w" class="quarto-xref">Tabelle&nbsp;<span>23.4</span></a> zeigt, dass der Tukey durchgehend bei den drei Methoden die kleinsten kritischen Werte <span class="math inline">\(w\)</span> verwendet. Dadurch wird entsprechend das Konfidenzintervall auch schmaler. Für diesen Fall liegt die Bonferroni-Methode immer zwischen Tukey und Scheffé die immer den größten kritischen Wert <span class="math inline">\(w\)</span> hat. Die kritischen Werte unter der Scheffé werden relativ schnell größer. Da die Größe des kritischen Werts <span class="math inline">\(w\)</span> die Power beeinflusst, können wir anhand der Werte ableiten, dass die Scheffé-Methode entsprechend die geringste Power hat.</p>
 <p>Zwei weitere Methoden sind noch die Methode nach Dunnet und Fisher least significant difference (FisherLSD) . Die Dunnet Methode ist ebenfalls pre-planned und ist darauf optimiert ein Kontrollkondition mit den anderen Konditionen zu vergleichen. Die FisherLSD-Methode führt keine Anpassung durch sondern ist ein Spezialfall wenn der Faktor <span class="math inline">\(K = 3\)</span> Stufen hat und im ersten Schritt ein statistisch Signifikanter <span class="math inline">\(F\)</span>-Wert gefunden wurde. Die drei individuellen Tests werden dann als normale t-Tests durchgeführt mit dem jeweils unkorrigierten <span class="math inline">\(\alpha\)</span>. In diesem Fall, wenn der paarweise Vergleich nach einen signifikanten <span class="math inline">\(F\)</span>-Test bei <span class="math inline">\(K=3\)</span> durchgeführt wird, ist eine gesonderte <span class="math inline">\(\alpha\)</span>-Kontrolle nicht mehr notwendig.</p>
+<p>Zusammenfassend sollte vor der Durchführung des Experiment schon eine klare Idee formuliert werden, welche Vergleiche von primären Interesse sind und entsprechend in einer Prä-Registrierung festgehalten werden. Dadurch lässt sich die Power maximieren.</p>
 </section>
 <section id="mehrfachvergleiche-in-r" class="level2" data-number="23.4">
 <h2 data-number="23.4" class="anchored" data-anchor-id="mehrfachvergleiche-in-r"><span class="header-section-number">23.4</span> Mehrfachvergleiche in <code>R</code></h2>
 <section id="das-package-emmeans" class="level3" data-number="23.4.1">
 <h3 data-number="23.4.1" class="anchored" data-anchor-id="das-package-emmeans"><span class="header-section-number">23.4.1</span> Das package <code>emmeans</code></h3>
-<p>In <code>R</code> können Mehrfachvergleiche über verschiedene Pakete durchgeführt werden. Wir beschränken uns hier hauptsächlich auf das Paket <code>emmeans</code>, da es sehr flexibel ist und mit einer Vielzahl von verschiedenen Modellen über das allgemeine lineare Modell hinaus zusammenarbeit. Alternativen zu <code>emmeans</code> sind <code>multcomp</code> und <code>gmodels</code>.</p>
+<p>In <code>R</code> können Mehrfachvergleiche über verschiedene Pakete durchgeführt werden. Wir beschränken uns hier hauptsächlich auf das Paket <code>emmeans</code>, da es sehr flexibel ist und mit einer Vielzahl von verschiedenen Modellen über das allgemeine lineare Modell hinaus zusammenarbeitet. Alternativen zu <code>emmeans</code> sind <code>multcomp</code> und <code>gmodels</code>.</p>
 <p>Bei der Verwendung von <code>emmeans</code> ist immer zweistufiger Prozess durchzuführen. Zunächst müssen die Zellmittelwerte mit der Funktion <code>emmeans(&lt;MODEL&gt;, ~&lt;FAKTOR&gt;)</code> berechnet werden. Anschließen erfolgt die Berechnung der Vergleiche entweder mittels mittels der Funktion <code>pairs()</code> bei paarweisen Vergleichen oder mit <code>contrast()</code> für beliebige Vergleiche.</p>
 <p>Wollen wir zum Beispiel mittels Bonferroni-Korrektur einen einfachen Vergleich zwischen Koffein und Placebo sowie einen komplexen Vergleich der Mittelwerte von Koffein und Placebo gegen Kontrolle durchführen, dann verwenden wir die folgenden Befehle nachdem wir das package <code>emmeans</code> geladen haben:</p>
 <div class="cell">
@@ -1204,10 +1219,11 @@ Confidence level used: 0.95 </code></pre>
 </section>
 <section id="cohens-d-für-mehrfachvergleiche" class="level3" data-number="23.4.2">
 <h3 data-number="23.4.2" class="anchored" data-anchor-id="cohens-d-für-mehrfachvergleiche"><span class="header-section-number">23.4.2</span> Cohen’s d für Mehrfachvergleiche</h3>
-<p>Über das Paket <code>emmeans</code> können wir auch eine Cohen’s D Typ Effektstärke mittels der Funktion <code>eff_size()</code> berechnen. Allerdings müssen wir als Parameter die zu verwendende Standardabweichung sowie die Freiheitsgrade selbst angeben.</p>
+<p>Über das Paket <code>emmeans</code> können wir auch eine Cohen’s D Typ Effektstärke mittels der Funktion <code>eff_size()</code> berechnen. Allerdings müssen wir als Parameter die zu verwendende Standardabweichung sowie die Freiheitsgrade selbst angeben. Dies können aber über die Funktionen <code>sigma()</code> und <code>df.residual()</code> aus dem gefitteten <code>lm</code>-Objekt extrahiert werden.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">eff_size</span>(mod_em, <span class="at">sigma=</span><span class="fu">sigma</span>(mod_aov),</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">edf=</span><span class="fu">df.residual</span>(mod_aov))</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">eff_size</span>(mod_em,</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>         <span class="at">sigma=</span><span class="fu">sigma</span>(mod_aov),</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">edf=</span><span class="fu">df.residual</span>(mod_aov))</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> contrast          effect.size    SE df lower.CL upper.CL
  Koffein - Placebo      -1.586 0.349 57    -2.29   -0.886
@@ -1218,11 +1234,26 @@ sigma used for effect sizes: 6.609
 Confidence level used: 0.95 </code></pre>
 </div>
 </div>
+<p>Standardmäßig werden paarweise Vergleiche berechnet, aber über den Parameter <code>method</code> können die Effektstärken auch für beliebige Kontraste berechnet werden.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">eff_size</span>(mod_em,</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>         <span class="at">sigma=</span><span class="fu">sigma</span>(mod_aov),</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">edf=</span><span class="fu">df.residual</span>(mod_aov),</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">method =</span> contrast_list)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> contrast            effect.size    SE df lower.CL upper.CL
+ Koffein vs. Placebo       -1.59 0.349 57    -2.29   -0.886
+ Tablette vs. CON          -1.23 0.297 57    -1.82   -0.631
+
+sigma used for effect sizes: 6.609 
+Confidence level used: 0.95 </code></pre>
+</div>
+</div>
 </section>
 </section>
 <section id="bestimmung-des-replikationsfaktors-anhand-des-konfidenzintervalls" class="level2" data-number="23.5">
 <h2 data-number="23.5" class="anchored" data-anchor-id="bestimmung-des-replikationsfaktors-anhand-des-konfidenzintervalls"><span class="header-section-number">23.5</span> Bestimmung des Replikationsfaktors anhand des Konfidenzintervalls</h2>
-<p>Im Kapitel zum CRD haben wir den Replikationsfaktor für die experimentellen Einheiten anhand der Effektstärke bestimmt. Ein weitere Möglichkeit den Replikationsfaktor zu bestimmen besteht mittels der Kontraste bzw. deren Konfidenzintervallen. Die angesteuerte Größe ist hierbei die Breite des Konfidenzintervalls. Der direkteste Weg ist hierbei den minimal signifikanten Unterschied (minimal significant difference: msd) . Der Ansatz basiert im Grunde genommen auf der Dualität von Hypothesentest und Konfidenzintervall.</p>
+<p>Im Kapitel zum CRD haben wir den Replikationsfaktor für die experimentellen Einheiten anhand der Effektstärke bestimmt. Ein weitere Möglichkeit den Replikationsfaktor zu bestimmen besteht mittels der Kontraste bzw. deren Konfidenzintervallen. Die angesteuerte Größe ist hierbei die Breite des Konfidenzintervalls. Der direkteste Weg ist hierbei den minimal signifikanten Unterschied (minimal significant difference: msd) . Der Ansatz basiert im Grunde genommen auf der Dualität von Hypothesentests und Konfidenzintervallen.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-ed-lc-msd-01" class="quarto-figure quarto-figure-center quarto-float anchored">
@@ -1237,34 +1268,36 @@ Abbildung&nbsp;23.4: Der erwartete Kontrast und dessen Konfidenzintervall.
 </div>
 </div>
 </div>
-<p>In <a href="#fig-ed-lc-msd-01" class="quarto-xref">Abbildung&nbsp;<span>23.4</span></a> ist noch einmal der Zusammenhang zwischen dem Hypothesentest unter der <span class="math inline">\(H_0\)</span> und der Breite des Konfidenzintervalls dargestellt. Wenn das Konfidenzintervall die <span class="math inline">\(H_0\)</span> nicht enthält, dann gehen wir von einem statistisch signifikantem Ergebnis aus. Daher wenn wir von einem gegebenem Effekt, im vorliegenden Fall einem Kontrast <span class="math inline">\(\psi\)</span> ausgehen und die Residualvarianz <span class="math inline">\(\sigma\)</span> kennen, können wir über den Standardfehler <span class="math inline">\(s_{\psi}\)</span> die notwendige Stichprobengröße bestimmen. Der minimale signifikante Unterschied msd kann über die folgende Formel ermittelt werden.</p>
-<p><span class="math display">\[
-msd = w \sqrt{\widehat{Var}\left(\sum c_i \hat{\tau}_i\right)}=w \times s_{\psi}
-\]</span> Wir wollen zum Beispiel den Effekt eines Nahrungsergänzungsmittels auf die Laufleistung bei einem Mitteldistanzwettkampf ähnlich wie bei unserem Koffeinexperiment durchführen. Wir wollen das gleiche Design mit Interventions-, Placebo- und Kontrollgruppe durchführen (<span class="math inline">\(K = 3\)</span>). Wir gehen davon aus, dass ein Unterschied zwischen der Placebogruppe und der Interventionsgruppe von <span class="math inline">\(5\)</span>s mindestens gefunden werden sollte um als praktisch relevant zu gelten. Damit gilt</p>
+<p>In <a href="#fig-ed-lc-msd-01" class="quarto-xref">Abbildung&nbsp;<span>23.4</span></a> ist noch einmal der Zusammenhang zwischen dem Hypothesentest unter der <span class="math inline">\(H_0\)</span> und der Breite des Konfidenzintervalls dargestellt. Wenn das Konfidenzintervall die <span class="math inline">\(H_0\)</span> nicht enthält, dann gehen wir von einem statistisch signifikantem Ergebnis aus. Daher wenn wir von einem gegebenem Effekt, im vorliegenden Fall einem Kontrast <span class="math inline">\(\psi\)</span> ausgehen und die Residualvarianz <span class="math inline">\(\sigma\)</span> kennen, können wir über den Standardfehler <span class="math inline">\(s_{\psi}\)</span> die notwendige Stichprobengröße bestimmen. Der minimale signifikante Unterschied kann über die folgende Formel berechnet werden.</p>
 <p><span class="math display">\[\begin{equation}
-msd = 5
+msd = w \sqrt{\widehat{Var}\left(\sum c_i \hat{\tau}_i\right)}=w \times s_{\psi}
 \end{equation}\]</span></p>
+<p>Wir wollen zum Beispiel den Effekt eines Nahrungsergänzungsmittels auf die Laufleistung bei einem Mitteldistanzwettkampf ähnlich wie bei unserem Koffeinexperiment durchführen. Wir wollen das gleiche Design mit Interventions-, Placebo- und Kontrollgruppe durchführen (<span class="math inline">\(K = 3\)</span>). Wir gehen davon aus, dass ein Unterschied zwischen der Placebogruppe und der Interventionsgruppe von <span class="math inline">\(5\)</span>s mindestens gefunden werden sollte um als praktisch relevant zu gelten. Damit gilt</p>
+<p><span class="math display">\[\begin{equation*}
+msd = 5
+\end{equation*}\]</span></p>
 <p>Im Koffeinbeispiel hatten wir für <span class="math inline">\(\sigma^2\)</span> einen Wert von <span class="math inline">\(\hat{\sigma^2} = MSE \approx 30\)</span>s bestimmt. Daraus folgt für einen paarweisen Vergleich mit gleicher Stichprobengröße <span class="math inline">\(n\)</span> in beiden Gruppen:</p>
 <p><span class="math display">\[\begin{equation*}
 msd = w \sqrt{30\left(\frac{1}{n} + \frac{1}{n}\right)} = w\sqrt{30\frac{2}{n}} \leq 5
 \end{equation*}\]</span></p>
-<p>Wir wissen a-priori das wir nur paarweise Vergleiche durchführen wollen, daher wissen wir, dass wir die Quartile mittels der Tukey-Methode bestimmen werden. D.h. der kritische Wert <span class="math inline">\(w\)</span> berechnet sich nach Formel <span class="math inline">\(\eqref{eq-ed-lc-tukey-w}\)</span> nach.</p>
+<p>Wir wissen a-priori das wir nur paarweise Vergleiche durchführen wollen, daher wissen wir, dass wir die Quartile mittels der Tukey-Methode bestimmen werden. D.h. der kritische Wert <span class="math inline">\(w\)</span> berechnet sich nach Formel <span class="math inline">\(\eqref{eq-ed-lc-tukey-w}\)</span>.</p>
 <p><span class="math display">\[\begin{equation*}
 w = q_{K,N-K,\alpha}/\sqrt{2}
 \end{equation*}\]</span></p>
 <p>Damit erhalten wir:</p>
 <p><span class="math display">\[\begin{align*}
-q_{K,N-K,\alpha}/\sqrt{2} \sqrt{30\frac{2}{n}} &amp;= q_{K,N-K,\alpha} \sqrt{\frac{30}{n}} \leq 5 = msd \\
+\frac{q_{K,N-K,\alpha}}{\sqrt{2}} \sqrt{30\frac{2}{n}} &amp;= q_{K,N-K,\alpha} \sqrt{\frac{30}{n}} \leq 5 = msd \\
 \Leftrightarrow  q_{K,N-K,\alpha}^2 \frac{30}{n} &amp;\leq 25 \\
 \Leftrightarrow  q_{K,N-K,\alpha}^2 \leq \frac{25}{30}n &amp;= \frac{5}{6}n \\
 \end{align*}\]</span></p>
-<p>D.h. das Quadrat der studentized range quantile muss kleiner als <span class="math inline">\(\frac{5}{6}n\)</span> sein, damit das Konfidenzintervall schmal genug ist. Da sich der Wert von <span class="math inline">\(q_{K,N-K,\alpha}\)</span> mit der Stichprobengröße ändert führen wir eine try-and-error Methode durch und berechnen die Breite des Konfindenzintervalls für verschiedene Wert von <span class="math inline">\(n\)</span>.</p>
+<p>D.h. das Quadrat der studentized range quantile muss kleiner als <span class="math inline">\(\frac{5}{6}n\)</span> sein, damit das Konfidenzintervall schmal genug ist. Da sich der Wert von <span class="math inline">\(q_{K,N-K,\alpha}\)</span> mit der Stichprobengröße ändert führen wir eine try-and-error Methode durch und berechnen die Breite des Konfindenzintervalls für verschiedene Wert von <span class="math inline">\(n\)</span> mittels <code>qtukey()</code>-Funktion.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>K <span class="ot">&lt;-</span> <span class="dv">3</span></span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">10</span><span class="sc">:</span><span class="dv">20</span></span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>q_t <span class="ot">&lt;-</span> <span class="fu">qtukey</span>(<span class="fl">0.975</span>,K,K<span class="sc">*</span>n<span class="sc">-</span>K)<span class="sc">**</span><span class="dv">2</span></span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>n_w <span class="ot">&lt;-</span> <span class="dv">5</span><span class="sc">/</span><span class="dv">6</span><span class="sc">*</span>n</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>K <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">10</span><span class="sc">:</span><span class="dv">20</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>q_t <span class="ot">&lt;-</span> <span class="fu">qtukey</span>(<span class="fl">0.975</span>,K,K<span class="sc">*</span>n<span class="sc">-</span>K)<span class="sc">**</span><span class="dv">2</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>n_w <span class="ot">&lt;-</span> <span class="dv">5</span><span class="sc">/</span><span class="dv">6</span><span class="sc">*</span>n</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>Wenn wir die Werte in einer Tabelle abtragen erhalten wir die folgende Liste (siehe <a href="#tbl-ed-lc-tukey-rep" class="quarto-xref">Tabelle&nbsp;<span>23.5</span></a>).</p>
 <div class="cell">
 <div id="tbl-ed-lc-tukey-rep" class="cell quarto-float anchored">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -1348,7 +1381,7 @@ Tabelle&nbsp;23.5: Stichprobengrößen und Vergleich mit msd
 </section>
 <section id="vollständige-dokumentation-eines-crds" class="level2" data-number="23.6">
 <h2 data-number="23.6" class="anchored" data-anchor-id="vollständige-dokumentation-eines-crds"><span class="header-section-number">23.6</span> Vollständige Dokumentation eines CRDs</h2>
-<p>Hier einmal beispielhaft Dokumentation eines CRD.</p>
+<p>Hier einmal beispielhaft Dokumentation eines CRD inklusive verwendeter Mehrfachvergleiche.</p>
 <p>Eine einfaktorielle ANOVA mit dem Faktor Gruppe ergabe einen statistisch signifikanten Haupteffekt für Gruppe <span class="math inline">\(F(2, 57) = 22,6, p &lt; 0,001\)</span>. Überprüfung auf Varianzgleichheit zwischen den Gruppen mittels eines Levene-Tests deutete auf keine Verletzung der Voraussetzungen hin, <span class="math inline">\(F(2, 57) = 0,38, p = 0,69\)</span>. Daher wird die <span class="math inline">\(H_0\)</span>, das kein Unterschied zwischen den Gruppen besteht, abgelehnt. Die beobachtete Effektstärke <span class="math inline">\(\omega^2 = 0,42\)</span>, CI<span class="math inline">\(95\%[0,22, 0,56]\)</span> ist als großer Effekt zu interpretieren. Pre-planned Paarweisetestung mittels Tukey-Korrektur deutete auf statistisch signifikate Unterschiede zwischen den Gruppen Koffein und Placebo <span class="math inline">\(z = -10.4\)</span>, CI95%<span class="math inline">\([-15,5, -5,5], p &lt; 0,001\)</span>, und Koffein und Kontrolle, <span class="math inline">\(z = -13,3\)</span>, CI95<span class="math inline">\(\%[-18,4, -8,3], p &lt; 0,001\)</span>, hin. Insgesamt deuten die Ergebnisse daher darauf hin, dass die Gabe von Koffein zu einer bedeutsamen Leistungssteigerung <span class="math inline">\((&gt;5-10s)\)</span> in der beobachteten Untersuchungsgruppe geführt hat.</p>
 </section>
 <section id="zum-nacharbeiten" class="level2" data-number="23.7">

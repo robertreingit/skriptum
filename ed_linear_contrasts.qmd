@@ -349,7 +349,7 @@ Der Kontrastschätzer $\hat{\psi}$ bleibt dabei gleich und es ändert sich je na
 
 ## Einteilung der Mehrfachvergleiche
 
-Mehrfachvergleiche können zunächst in zwei Arten unterschieden werden. Vergleiche die vor dem Experiment geplant wurden und Vergleiche die nach einsehen der Daten auf Basis der Ergebnisse durchgeführt werden. Vergleiche die vor der Durchführung des Experiments festgelegt werden, werden als *pre-planned* \index{Kontrast!pre-planned} bezeichnet. Vergleiche die dagegen nach der Durchführung des Experiments nach der Einsicht der Daten durchgeführt werden, werden als *post-hoc* \index{Kontrast!post-hoc} Vergleiche bezeichnet. Zwischen diesen beiden Vergleichen wird unterschieden, da bei den *post-hoc* dadurch, das die Daten schon bekannt sind, die Vergleiche durch die Daten beeinflusst werden. Daher muss in diesem Fall die Kontrolle strikter sein, als wenn die Vergleiche im Voraus geplant werden.
+Mehrfachvergleiche können zunächst in zwei Arten unterschieden werden. Vergleiche die vor dem Experiment geplant wurden und Vergleiche die nach einsehen der Daten auf Basis der Ergebnisse durchgeführt werden. Vergleiche die vor der Durchführung des Experiments festgelegt werden, werden als *pre-planned* \index{Kontraste!pre-planned} bezeichnet. Vergleiche die dagegen nach der Durchführung des Experiments nach der Einsicht der Daten durchgeführt werden, werden als *post-hoc* \index{Kontraste!post-hoc} Vergleiche bezeichnet. Zwischen diesen beiden Vergleichen wird unterschieden, da bei den *post-hoc* dadurch, das die Daten schon bekannt sind, die Vergleiche durch die Daten beeinflusst werden. Daher muss in diesem Fall die Kontrolle strikter sein, als wenn die Vergleiche im Voraus geplant werden.
 
 Es gibt mittlerweile zahllose Arten die Kontrolle bei Mehrfachvergleiche durchzuführen. Daher besprechen wir hier nur eine kleine Auswahl der üblichsten Methoden. In @tbl-ed-lc-contype sind die Bonferroni, Tukey, Scheffé, Dunnet und die FisherLSD Korrekturmethoden inklusive der Art der Kontraste tabellarisch dargestellt.
 
@@ -385,13 +385,19 @@ w_{\text{Tukey}} = q_{K,N-K,\alpha/\sqrt{2}}
 
 In `R` kann die Quantile der Studentized range distribution aus Formel \eqref{eq-ed-lc-tukey-w} mittels der Funktion `qtukey()` bestimmen werden.
 
-Die Scheffé-Methode \index{Mehrfachvergleiche!Scheffé-Korrektur} ist ebenfalls sehr oft in der Literatur anzutreffen, da sie *post-hoc*, also nach Einsicht der Daten, angewendet werden kann. Mit der Scheffé-Methode können auch alle Arten von Vergleichen, einfache und komplexe, durchgeführt werden. Der kritische Wert $w$ wird bei Scheffé-Methode mittels der $F$-Verteilung mit $K-1$ und $N-k$ Freiheitsgraden bei $1-\alpha$. Wobei noch eine Korrekturfaktor $K-1$ multipliziert werden muss.
+::: {.callout-warning}
+Die Tukeykorrektur ist nur für balancierte Vergleiche, d.h. gleiche Stichprobengrößen in allen Gruppen, hergeleitet und für ungleiche Stichprobengrößen nur annährend exakt \cite{lawson2014}.
+:::
+
+Die Scheffé-Methode \index{Mehrfachvergleiche!Scheffé-Korrektur} ist ebenfalls sehr oft in der Literatur anzutreffen, da sie *post-hoc*, also nach Einsicht der Daten, angewendet werden kann. Mit der Scheffé-Methode können auch alle Arten von Vergleichen, einfache wie auch komplexe Vergleiche, durchgeführt werden. Der kritische Wert $w$ wird bei Scheffé-Methode mittels der $F$-Verteilung mit $K-1$ und $N-k$ Freiheitsgraden bei $1-\alpha$ ermittelt. Wobei noch ein Korrekturfaktor $K-1$ multipliziert werden muss. Dabei ist die Anzahl der Vergleiche irrelevant, da der kritische Wert alle möglichen Vergleiche einbezieht.
 
 \begin{equation}
 w_{\text{Scheffé}} = \sqrt{(K-1)F_{K-1,N-K,1-\alpha}}
 \end{equation}
 
-In @tbl-ed-lc-contrasts-w sind verschiedene kritische Werte $w$ der drei Methoden für verschiedenen Anzahl $K$ der Faktorstufen bzw. der resultierenden paarweisen Vergleichen abgebildet.
+Dementsprechend kann die Scheffé-Korrektur eigentlich immer angewendet werden, egal ob pre-planned oder post-hoc und unabhängig von der Art der Vergleichen ohne das das Risiko einer fehlerhaften Korrektur eingegangen wird.
+
+Um noch einmal die Unterschiede der verschiedenen Methoden stärker zu betonen, sind in @tbl-ed-lc-contrasts-w die verschiedene kritische Werte $w$ der drei Methoden für verschiedenen Anzahl $K$ von Faktorstufen bzw. der resultierenden paarweisen Vergleichen aufgelistet.
 
 ```{r}
 #| tbl-cap: "Vergleich der kritischen Wert $w$ der verschiedenen $\\alpha$-Kontrollmethoden und einen einzelnen Test $\\alpha_{PC}$."
@@ -414,15 +420,17 @@ tibble(
   )
 ```
 
-@tbl-ed-lc-contrasts-w zeigt, dass der Tukey durchgehend bei den drei Methoden die kleinsten kritischen Werte hat, also das schmalste Konfidenzintervall erstellt. Für diesen Fall liegt die Bonferroni-Methode immer zwischen Tukey und Scheffé die immer den größten kritschen $w$ hat.
+@tbl-ed-lc-contrasts-w zeigt, dass der Tukey durchgehend bei den drei Methoden die kleinsten kritischen Werte $w$ verwendet. Dadurch wird entsprechend das Konfidenzintervall auch schmaler. Für diesen Fall liegt die Bonferroni-Methode immer zwischen Tukey und Scheffé die immer den größten kritischen Wert $w$ hat. Die kritischen Werte unter der Scheffé werden relativ schnell größer. Da die Größe des kritischen Werts $w$ die Power beeinflusst, können wir anhand der Werte ableiten, dass die Scheffé-Methode entsprechend die geringste Power hat.
 
-Zwei weitere Methoden sind noch die Methode nach Dunnet und Fisher least significant difference (FisherLSD) \index{Mehrfachkorrekturf!Fisher least-significant difference}. Die Dunnet Methode ist ebenfalls pre-planned und ist darauf optimiert ein Kontrollkondition mit den anderen Konditionen zu vergleichen. Die FisherLSD-Methode führt keine Anpassung durch sondern ist ein Spezialfall wenn der Faktor $K = 3$ Stufen hat und im ersten Schritt ein statistisch Signifikanter $F$-Wert gefunden wurde. Die drei individuellen Tests werden dann als normale t-Tests durchgeführt mit dem jeweils unkorrigierten $\alpha$. In diesem Fall, wenn der paarweise Vergleich nach einen signifikanten $F$-Test bei $K=3$ durchgeführt wird, ist eine gesonderte $\alpha$-Kontrolle nicht mehr notwendig.
+Zwei weitere Methoden sind noch die Methode nach Dunnet und Fisher least significant difference (FisherLSD) \index{Mehrfachvergleiche!Fisher least-significant difference}. Die Dunnet Methode ist ebenfalls pre-planned und ist darauf optimiert ein Kontrollkondition mit den anderen Konditionen zu vergleichen. Die FisherLSD-Methode führt keine Anpassung durch sondern ist ein Spezialfall wenn der Faktor $K = 3$ Stufen hat und im ersten Schritt ein statistisch Signifikanter $F$-Wert gefunden wurde. Die drei individuellen Tests werden dann als normale t-Tests durchgeführt mit dem jeweils unkorrigierten $\alpha$. In diesem Fall, wenn der paarweise Vergleich nach einen signifikanten $F$-Test bei $K=3$ durchgeführt wird, ist eine gesonderte $\alpha$-Kontrolle nicht mehr notwendig.
+
+Zusammenfassend sollte vor der Durchführung des Experiment schon eine klare Idee formuliert werden, welche Vergleiche von primären Interesse sind und entsprechend in einer Prä-Registrierung festgehalten werden. Dadurch lässt sich die Power maximieren.
 
 ## Mehrfachvergleiche in `R`
 
 ### Das package `emmeans`
 
-In `R` können Mehrfachvergleiche über verschiedene Pakete durchgeführt werden. Wir beschränken uns hier hauptsächlich auf das Paket `emmeans`, da es sehr flexibel ist und mit einer Vielzahl von verschiedenen Modellen über das allgemeine lineare Modell hinaus zusammenarbeit. Alternativen zu `emmeans` sind  `multcomp` und `gmodels`.
+In `R` können Mehrfachvergleiche über verschiedene Pakete durchgeführt werden. Wir beschränken uns hier hauptsächlich auf das Paket `emmeans`, da es sehr flexibel ist und mit einer Vielzahl von verschiedenen Modellen über das allgemeine lineare Modell hinaus zusammenarbeitet. Alternativen zu `emmeans` sind  `multcomp` und `gmodels`.
 
 Bei der Verwendung von `emmeans` ist immer zweistufiger Prozess durchzuführen. Zunächst müssen die Zellmittelwerte mit der Funktion `emmeans(<MODEL>, ~<FAKTOR>)` berechnet werden. Anschließen erfolgt die Berechnung der Vergleiche entweder mittels mittels der Funktion `pairs()` bei paarweisen Vergleichen oder mit `contrast()` für beliebige Vergleiche. 
 
@@ -527,18 +535,30 @@ Wie schon erwähnt ist das package `emmeans` extrem flexibel und bietet unzähli
 
 ### Cohen's d für Mehrfachvergleiche 
 
-Über das Paket `emmeans` können wir auch eine Cohen's D Typ Effektstärke mittels der Funktion `eff_size()` berechnen. Allerdings müssen wir als Parameter die zu verwendende Standardabweichung sowie die Freiheitsgrade selbst angeben.
+Über das Paket `emmeans` können wir auch eine Cohen's D Typ Effektstärke mittels der Funktion `eff_size()` berechnen. Allerdings müssen wir als Parameter die zu verwendende Standardabweichung sowie die Freiheitsgrade selbst angeben. Dies können aber über die Funktionen `sigma()` und `df.residual()` aus dem gefitteten `lm`-Objekt extrahiert werden.
 
 ```{r}
 #| echo: true
 
-eff_size(mod_em, sigma=sigma(mod_aov),
-                 edf=df.residual(mod_aov))
+eff_size(mod_em,
+         sigma=sigma(mod_aov),
+         edf=df.residual(mod_aov))
+```
+
+Standardmäßig werden paarweise Vergleiche berechnet, aber über den Parameter `method` können die Effektstärken auch für beliebige Kontraste berechnet werden.
+
+```{r}
+#| echo: true
+
+eff_size(mod_em,
+         sigma=sigma(mod_aov),
+         edf=df.residual(mod_aov),
+         method = contrast_list)
 ```
 
 ## Bestimmung des Replikationsfaktors anhand des Konfidenzintervalls 
 
-Im Kapitel zum CRD haben wir den Replikationsfaktor für die experimentellen Einheiten anhand der Effektstärke bestimmt. Ein weitere Möglichkeit den Replikationsfaktor zu bestimmen besteht mittels der Kontraste bzw. deren Konfidenzintervallen. Die angesteuerte Größe ist hierbei die Breite des Konfidenzintervalls. Der direkteste Weg ist hierbei den minimal signifikanten Unterschied (minimal significant difference: msd) \index{minimal significant difference}. Der Ansatz basiert im Grunde genommen auf der Dualität von Hypothesentest und Konfidenzintervall.
+Im Kapitel zum CRD haben wir den Replikationsfaktor für die experimentellen Einheiten anhand der Effektstärke bestimmt. Ein weitere Möglichkeit den Replikationsfaktor zu bestimmen besteht mittels der Kontraste bzw. deren Konfidenzintervallen. Die angesteuerte Größe ist hierbei die Breite des Konfidenzintervalls. Der direkteste Weg ist hierbei den minimal signifikanten Unterschied (minimal significant difference: msd) \index{minimal significant difference}. Der Ansatz basiert im Grunde genommen auf der Dualität von Hypothesentests und Konfidenzintervallen.
 
 ```{r}
 #| fig-cap: "Der erwartete Kontrast und dessen Konfidenzintervall."
@@ -563,16 +583,17 @@ ggplot(df_1,ggplot2::aes(x, y, xmin=xmin, xmax=xmax)) +
   theme(text = element_text(size=18))
 ```
 
-In @fig-ed-lc-msd-01 ist noch einmal der Zusammenhang zwischen dem Hypothesentest unter der $H_0$ und der Breite des Konfidenzintervalls dargestellt. Wenn das Konfidenzintervall die $H_0$ nicht enthält, dann gehen wir von einem statistisch signifikantem Ergebnis aus. Daher wenn wir von einem gegebenem Effekt, im vorliegenden Fall einem Kontrast $\psi$ ausgehen und die Residualvarianz $\sigma$ kennen, können wir über den Standardfehler $s_{\psi}$ die notwendige Stichprobengröße bestimmen. Der minimale signifikante Unterschied msd kann über die folgende Formel ermittelt werden.
-
-$$
-msd = w \sqrt{\widehat{Var}\left(\sum c_i \hat{\tau}_i\right)}=w \times s_{\psi}
-$$
-Wir wollen zum Beispiel den Effekt eines Nahrungsergänzungsmittels auf die Laufleistung bei einem Mitteldistanzwettkampf ähnlich wie bei unserem Koffeinexperiment durchführen. Wir wollen das gleiche Design mit Interventions-, Placebo- und Kontrollgruppe durchführen ($K = 3$). Wir gehen davon aus, dass ein Unterschied zwischen der Placebogruppe und der Interventionsgruppe von $5$s mindestens gefunden werden sollte um als praktisch relevant zu gelten. Damit gilt
+In @fig-ed-lc-msd-01 ist noch einmal der Zusammenhang zwischen dem Hypothesentest unter der $H_0$ und der Breite des Konfidenzintervalls dargestellt. Wenn das Konfidenzintervall die $H_0$ nicht enthält, dann gehen wir von einem statistisch signifikantem Ergebnis aus. Daher wenn wir von einem gegebenem Effekt, im vorliegenden Fall einem Kontrast $\psi$ ausgehen und die Residualvarianz $\sigma$ kennen, können wir über den Standardfehler $s_{\psi}$ die notwendige Stichprobengröße bestimmen. Der minimale signifikante Unterschied kann über die folgende Formel berechnet werden.
 
 \begin{equation}
-msd = 5 
+msd = w \sqrt{\widehat{Var}\left(\sum c_i \hat{\tau}_i\right)}=w \times s_{\psi}
 \end{equation}
+
+Wir wollen zum Beispiel den Effekt eines Nahrungsergänzungsmittels auf die Laufleistung bei einem Mitteldistanzwettkampf ähnlich wie bei unserem Koffeinexperiment durchführen. Wir wollen das gleiche Design mit Interventions-, Placebo- und Kontrollgruppe durchführen ($K = 3$). Wir gehen davon aus, dass ein Unterschied zwischen der Placebogruppe und der Interventionsgruppe von $5$s mindestens gefunden werden sollte um als praktisch relevant zu gelten. Damit gilt
+
+\begin{equation*}
+msd = 5 
+\end{equation*}
 
 Im Koffeinbeispiel hatten wir für $\sigma^2$ einen Wert von $\hat{\sigma^2} = MSE \approx 30$s bestimmt. Daraus folgt für einen paarweisen Vergleich mit gleicher Stichprobengröße $n$ in beiden Gruppen:
 
@@ -580,7 +601,7 @@ Im Koffeinbeispiel hatten wir für $\sigma^2$ einen Wert von $\hat{\sigma^2} = M
 msd = w \sqrt{30\left(\frac{1}{n} + \frac{1}{n}\right)} = w\sqrt{30\frac{2}{n}} \leq 5 
 \end{equation*}
 
-Wir wissen a-priori das wir nur paarweise Vergleiche durchführen wollen, daher wissen wir, dass wir die Quartile mittels der Tukey-Methode bestimmen werden. D.h. der kritische Wert $w$ berechnet sich nach Formel \eqref{eq-ed-lc-tukey-w} nach.
+Wir wissen a-priori das wir nur paarweise Vergleiche durchführen wollen, daher wissen wir, dass wir die Quartile mittels der Tukey-Methode bestimmen werden. D.h. der kritische Wert $w$ berechnet sich nach Formel \eqref{eq-ed-lc-tukey-w}.
 
 \begin{equation*}
 w = q_{K,N-K,\alpha}/\sqrt{2}
@@ -589,12 +610,12 @@ w = q_{K,N-K,\alpha}/\sqrt{2}
 Damit erhalten wir:
 
 \begin{align*}
-q_{K,N-K,\alpha}/\sqrt{2} \sqrt{30\frac{2}{n}} &= q_{K,N-K,\alpha} \sqrt{\frac{30}{n}} \leq 5 = msd \\
+\frac{q_{K,N-K,\alpha}}{\sqrt{2}} \sqrt{30\frac{2}{n}} &= q_{K,N-K,\alpha} \sqrt{\frac{30}{n}} \leq 5 = msd \\
 \Leftrightarrow  q_{K,N-K,\alpha}^2 \frac{30}{n} &\leq 25 \\
 \Leftrightarrow  q_{K,N-K,\alpha}^2 \leq \frac{25}{30}n &= \frac{5}{6}n \\
 \end{align*}
 
-D.h. das Quadrat der studentized range quantile muss kleiner als $\frac{5}{6}n$ sein, damit das Konfidenzintervall schmal genug ist. Da sich der Wert von $q_{K,N-K,\alpha}$ mit der Stichprobengröße ändert führen wir eine try-and-error Methode durch und berechnen die Breite des Konfindenzintervalls für verschiedene Wert von $n$.
+D.h. das Quadrat der studentized range quantile muss kleiner als $\frac{5}{6}n$ sein, damit das Konfidenzintervall schmal genug ist. Da sich der Wert von $q_{K,N-K,\alpha}$ mit der Stichprobengröße ändert führen wir eine try-and-error Methode durch und berechnen die Breite des Konfindenzintervalls für verschiedene Wert von $n$ mittels `qtukey()`-Funktion.
 
 ```{r}
 #| echo: true
@@ -604,6 +625,8 @@ n <- 10:20
 q_t <- qtukey(0.975,K,K*n-K)**2
 n_w <- 5/6*n
 ```
+
+Wenn wir die Werte in einer Tabelle abtragen erhalten wir die folgende Liste (siehe @tbl-ed-lc-tukey-rep).
 
 ```{r}
 #| tbl-cap: "Stichprobengrößen und Vergleich mit msd"
@@ -623,7 +646,7 @@ In @tbl-ed-lc-tukey-rep sehen wir, dass wir eine Stichprobengröße von $n = 18$
 
 ## Vollständige Dokumentation eines CRDs
 
-Hier einmal beispielhaft Dokumentation eines CRD. 
+Hier einmal beispielhaft Dokumentation eines CRD inklusive verwendeter Mehrfachvergleiche. 
 
 Eine einfaktorielle ANOVA mit dem Faktor Gruppe ergabe einen statistisch signifikanten Haupteffekt für Gruppe $F(2, 57) = 22,6, p < 0,001$.  Überprüfung auf Varianzgleichheit zwischen den Gruppen mittels eines Levene-Tests deutete auf keine Verletzung der Voraussetzungen hin, $F(2, 57) = 0,38, p = 0,69$. Daher wird die $H_0$, das kein Unterschied zwischen den Gruppen besteht, abgelehnt. Die beobachtete Effektstärke $\omega^2 = 0,42$,  CI$95\%[0,22, 0,56]$ ist als großer Effekt zu interpretieren. Pre-planned Paarweisetestung mittels Tukey-Korrektur deutete auf statistisch signifikate Unterschiede zwischen den Gruppen Koffein und Placebo $z = -10.4$, CI95\%$[-15,5, -5,5], p < 0,001$, und Koffein und Kontrolle, $z = -13,3$, CI95$\%[-18,4, -8,3], p < 0,001$, hin. Insgesamt deuten die Ergebnisse daher darauf hin, dass die Gabe von Koffein zu einer bedeutsamen Leistungssteigerung $(>5-10s)$ in der beobachteten Untersuchungsgruppe geführt hat.
 
