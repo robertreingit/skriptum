@@ -138,7 +138,7 @@ ggplot(sway, aes(Gruppe, sway, fill = Auge)) + geom_boxplot() +
 
 Es wurde die Gleichgewichtsfähigkeit bei drei verschiedenen Gruppen (Faktor $A, p = 3$) unter zwei Konditionen (Faktor $B, q = 2$) untersucht. Größere Werte deuten auf eine schlechtere Gleichgewichtsfähigkeit hin. Wie zu erwarten nimmt in allen drei Gruppen die Gleichgewichtsfähigkeit bei geschlossen Augen ab. Allerdings scheint der Unterschied über die drei Gruppen unterschiedlich stark ausgeprägt zu sein. D.h. die Daten deuten auf einen Interaktionseffekt. Um Interaktionseffekte noch einmal besser zu verstehen schauen wir uns im Folgenden verschiedene Arten von Interaktionseffekten und deren Beziehung zu Haupteffekten an. 
 
-## Einordnung von Interaktionseffekten
+## Systematik und Problem bei Interaktionseffekten
 
 In @fig-ed-crfd-ordinal sind beispielhaft die Ergebnisse für ein $2\times 2$ CRFD abgetragen.
 
@@ -170,7 +170,7 @@ gridExtra::grid.arrange(p1, p2, ncol=2)
 
 Wir haben zwei Faktoren $A$ und $B$ die jeweils zwei Stufen haben $A_1, A_2$ und $B_1, B_2$. Um die Beziehung zwischen den Haupteffekten als den Unterschieden zwischen $A_1$ und $A_2$ bzw. $B_1$ und $B_2$ unabhängige von Wert der jeweils anderern Variable zu interpretieren ist es am einfachsten die Frage zu stellen: "Wenn ich innerhalb eines Faktors von einer Stufe zur nächsten Stufe gehe. Kann ich dann eine einheitliche Aussage treffen?". Also im Fall @fig-ed-crfd-ordinal wenn ich von $A_1$ nach $A_2$ gehe, dann beobachten wir eine Zunahme der abhängigen Variable unabhängig ob ich mich in Stufe $B_1$ oder $B_2$ befinde. Das Gleiche gilt für Hauptfaktor $B$. Wenn ich von $B_1$ nach $B_2$ gehe, dann nimmt in beiden Fällen ($A_1$ und $A_2$) der Wert der abhängigen Variablen ab. D.h. in diesem Fall kann sinnvoll über den Haupteffekt gesprochen werden, trotzdem ein Interaktionseffekt vorliegt, die die Zunahme unter $A$ bzw. die Abnahme unter $B$ unterschiedlich ist, je nach dem Wert der jeweils anderen Variable. Wenn die Haupt- und Interkationseffekte dies Form annehmen, dann wird von einem ordinalen Interaktionseffekt \index{ordinaler Interaktionseffekt} gesprochen. D.h. bei einem ordinalen Interaktionseffekt kann auch sinnvoll über die Haupteffekte gesprochen werden.
 
-In @fig-ed-crfd-hybrid ist nun ein andere Konfiguratino der Interaktionseffekte abgebildet.
+In @fig-ed-crfd-hybrid ist nun ein andere Konfiguration der Interaktionseffekte abgebildet.
 
 ```{r}
 #| fig-cap: "Beispiel für hybride/semidisordinale Interaktionseffekte"
@@ -463,9 +463,33 @@ effectsize::omega_squared(mod_aov, partial=TRUE, ci=0.95)
 
 ## Mehrfachvergleiche im CRFD 
 
-Im CRFD können wir genauso wie auch im CRD Mehrfachvergleiche einsetzen um gezielt Unterschiede zwischen bestimmten Kombination der Faktorstufen zu untersuchen. 
+Im CRFD können wir genauso wie auch im CRD Mehrfachvergleiche verwenden um gezielt Unterschiede zwischen bestimmten Kombination der Faktorstufen zu untersuchen. Prinzipiell laufen die Mehrfachvergleiche daher genauso wie im CRD ab. Es werden ein Kontrast und die dazugehörende Varianz berechnet und das Verhältnis mit einem kritischen Werten $w$ verglichen. Wiederum in Abhängigkeit davon welche Methode verwendet wird ändert sich entsprechend der kritische Wert $w$.
 
-Prinzipiell läufen die Mehrfachvergleiche parallel wie im CRD ab mit unterschiedlichen kritischen Werten $w$, je nachdem welche Methode verwendet wird. Ein zusätzlicher Punkt ist beim Interaktionsmodell, dass nicht immer alle algebraisch möglichen Vergleiche auch inhaltlich sinnvoll sind.
+Durch die Interaktionseffekt ergbit sich jedoch wiederum ein zusätzlicher Punkt beim Interaktionsmodell der beachtet werden sollte. Nämlich, nicht immer sind alle algebraisch möglichen Vergleiche auch tatsächlich inhaltlich sinnvoll. Im Bespiel mit den Fußballdaten sind in @fig-ed-crfd-multcom-01 noch einmal die Mittelwerte der verschiedenen Gruppen abgetragen.
+
+```{r}
+#| fig-cap: "Mögliche Mehrfachvergleiche für das Fußballbeispiel"
+#| label: fig-ed-crfd-multcom-01
+ 
+sway_mw <- sway_m |> select(-s) |> mutate(g_n = as.numeric(Gruppe))
+p_c <- t(combn(1:6, 2))
+sway_pc <- tibble(
+  x = sway_mw$g_n[p_c[,1]],
+  xend = sway_mw$g_n[p_c[,2]],
+  y =sway_mw$ m[p_c[,1]],
+  yend = sway_mw$m[p_c[,2]]
+)
+
+ggplot(sway_mw, aes(x=g_n,y=m)) +
+  geom_segment(data=sway_pc, aes(x=x, xend=xend, y=y, yend=yend),
+               linetype = 'dashed') +
+  geom_point(aes(color = Auge), size = 6) +
+  scale_x_continuous("Gruppe", breaks=1:3, minor_breaks = NULL,
+                     labels = c('U19','U21','PRO')) +
+  labs(y = 'Mittlere Schwankung \ndes KSP[°]') 
+```
+
+Prinzipiell können immer alle Gruppenmittelwerte des Modells miteinander paarweise verglichen werden bzw. alle weiteren komplexen Kontraste berechnet werden. Bei der Beschränkung auf die paarweisen Vergleiche, wird in diesem konkreten Fall beispielsweise der Vergleich zwischen den Werten der U19 bei geschlossenen Augen mit den PROs bei offenen Augen inhaltlichen wenig Sinn machen. Zumindest ist es nicht direkt ersichtlich welche Art von *wissenschaftlicher* Hypothese a-priori formuliert werden könnte, die genau diesen Vergleich zum Ziel hat. Anders ist beispielsweise der Vergleich zwischen den Augenkondition innerhalb der PRO-Spieler. Daher ist in den meisten Fällen nur eine Untermenge der möglichen paarweisen Vergleich inhaltlich auch wirklich sinnvoll. Aus Gründen der Power sollte daher die Analyse auch möglichst nur auf diese Teilmenge beschränkt werden. In @fig-ed-crfd-multcom-02 sind die *wahrscheinlich* sinnvollen Vergleiche für das Beispiel eingezeichnet.
 
 ```{r}
 #| layout-ncol: 2
@@ -473,7 +497,7 @@ Prinzipiell läufen die Mehrfachvergleiche parallel wie im CRD ab mit unterschie
 #| fig-subcap:
 #|   - "Unterschiede innerhalb der Gruppen"
 #|   - "Unterschiede innerhalb Augenkondition"
-#| label: fig-ed-crfd-multcom-01
+#| label: fig-ed-crfd-multcom-02
  
 sway_m_w <- sway_m |> select(-s) |>
   tidyr::pivot_wider(names_from = Auge, values_from = m)
@@ -490,41 +514,189 @@ ggplot(sway_m, aes(Gruppe, m)) +
   labs(y = 'Mittlere Schwankung \ndes KSP[°]') 
 ```
 
-In @fig-ed-crfd-multcom-01 sind die *wahrscheinlich* sinnvollen Vergleiche abgebildet. D.h. auf Grund der Interaktion sollte der Unterschied zwischen den Gruppen getrennt für die beiden Augenkonditionen untersucht werden bzw. der Unterschied zwischen den Augenkonditionen für jede Gruppe getrennt. Algebraisch ist natürlich auch möglich beispielsweise die U19 bei geschlossenen Augen mit den PROs mit offenen Augen zu vergleichen, allerdings ist dieser Vergleich aus wissenschaftlicher Sicht wahrscheinlich wenig sinnvoll.
+Für den vorliegenden Fall, sind daher die Unterschied zwischen den Gruppen getrennt für die beiden Augenkonditionen bzw. der Unterschied zwischen den beiden Augenkonditionen für jede Gruppe getrennt sinnvoll. D.h. es werden insgesamt neuen verschiedene paarweise Vergleichen betrachtet im Gegensatz zu den 15 möglichen. Wir beispielsweise die Bonferonni-Korrektur angewendet bedeutet dies schon einen Unterschied ob $0.05/9 = `r round(0.05/9, 3)`$ oder $0.05/15 = `r round(0.05/15, 3)`$ für $\alpha$ angesetzt muss. Schauen wir uns direkt an, wie dei Mehrfachvergleiche in `R` durchgeführt werden.
 
-Bezüglich der Analyse von Interaktionseffekten ergibt sich noch ein weiterer wichtiger Punkt. Gehen wir von einem einfachen $2\times 2$-Design aus mit den Stufen $A_1, A_2, B_1$ und $B_2$.
+## Mehrfachvergleiche in `R`
 
-Es kann zum Beispiel vorkommen, dass die Unterschiede zwischen den @gelman2006 @nieuwenhuis2011
+In `R` läuft der Vergleich wiederum nach dem bekannten Muster ab. Zunächst werden die Modellmittelwerte mittels der `emmeans()`-Funktion berechnet. Anschließend kann dann mittels der `pairs()` bzw. der `contrast()`-Funktion der gewünschte Vergleich durchgeführt werden. Allerdings, da `emmeans()` extrem flexibel ist, gibt es immer mehrere Arten um zum gleichen Ergebnis zu kommen.
+
+Fangen wir erst einmal mit allen möglichen Vergleichen an. Wir fitten zunächst alle Gruppenmittelwertskombination mit `emmeans()`.
 
 ```{r}
+#| echo: true
 
+mod_em <- emmeans(mod_aov, ~Gruppe*Auge)
+mod_em
 ```
 
+Im nächsten Schritt berechnen wir nun alle paarweisen Vergleiche entweder mit `pairs()` oder mit `contrast(method = "pairwise")`. Nehmen wir `pairs()`.
 
-Nochmal Kontraste bei Paarvergleichen
+```{r}
+#| echo: true
 
-Standardfehler Haupteffekts:
+pairs(mod_em)
+```
 
-$$
-s_{\text{Haupteffekt}} = \frac{2\sigma}{\sqrt{N}}
-$$
+Hier erhalten wir alle Vergleiche, also auch diejenigen die inhaltlich weniger sinnvoll sind. Wollen wir uns nur auf die Vergleiche innerhalb der jeweiligen Haupteffekte kontrolliert für die jeweilige Stufe des anderen Effekts beschränken. Können wir den Parameter `simple = "each"` verwenden.
 
-Standardfehler Interaktionseffekts:
 
-$$
-H_0: \mu_{12} - \mu_{22} = \mu_{11} - \mu_{21} \Leftrightarrow H_0: \mu_{12}-\mu_{22}-\mu_{11}-\mu_{21}=0
-$$
+```{r}
+#| echo: true
 
-$$
-s_{\text{Interaktion}} = \sigma\sqrt{\frac{1}{N/4} + \frac{1}{N/4} + \frac{1}{N/4}+\frac{1}{N/4}}=\frac{4\sigma}{\sqrt{N}} = 2s_{\text{Haupteffekt}}
-$$
+pairs(mod_em, simple = "each")
+```
 
-Power - Interaktionseffekt
+Alternativ können wir auch direkt die marginalen Mittelwerte berechnen. Zunächst berechnen wir wieder die Mittelwerte mittels `emmeans()` die Mittelwert für die Stufen über die Gruppen kontrolliert für Kondition der Augen.
+
+```{r} 
+#| echo: true
+
+mod_em_cauge <- emmeans(mod_aov, ~Gruppe|Auge)
+mod_em_cauge
+```
+
+Die Formel `~Gruppe|Auge` als zweiter Parameter zu `emmeans()` bedeutet, dass die Unterschiede zwischen den Stufen für `Gruppe` geblockt nach den `Auge`-Konditionen berechnet werden sollen. Alternativ könnte auch die folgende Syntax mit dem Parameter `by` verwendet werden:
+
+```{r}
+#| echo: true
+
+emmeans(mod_aov, ~Gruppe, by = "Auge")
+```
+
+In beiden Fällen erhalten wir die gleichen Modellmittelwerte. Die berechneten Mittelwerte unterscheiden sich dabei nicht zudenjenigen die wir über den ersten Ansatz berechnet haben. Es wird lediglich die strukturelle Unterteilung mit berücksichtigt. Im nächsten Schritt wird wieder die `pairs()`-Funktion auf die Mittelwerte angewendet, beispielsweise wenn die Bonferroni-Korrektur anwenden möchten.
+
+```{r}
+#| echo: true
+
+pairs(mod_em_cauge, adjust = 'bonferroni')
+```
+
+Mit der `contrast()`-Funktion hätte auch alternativ für unstrukturierten Mittelwerte `contrast(mod_em, method='pairwise' simple='Auge') verwendet werden. Die Berechnung der Unterschiede zwischen den Augenstufen geblockt nach Gruppen erfolgt dann genau gleich. Eine Überlegung die notwendig ist, bezieht sich auf die Ebene auf der die Korrektur angewendet wird. Beispielweise, da wir zwei Mehrfachvergleiche durchführen wollen, sollten wir die $\alpha$-Level für die beiden Gruppen von Mehrfachvergleichen so anpassen, dass wir insgesamt unter den anvisiertem $\alpha$ bleiben. In diesem Fall also $\alpha/2$. Insgesamt, zeigen die Berechnungen im Beispiel, dass zwischen den Gruppen bei offenen Augen keine Unterschiede gefunden wurden, während bei geschlossenen Augen alle Unterschiede statistisch signifikant sind.
+
+### Cohen's d für Mehrfachvergleiche 
+
+Cohen's d-artige Effektstärken können wieder mit der Funktion `eff_size()` berechnet werden. Hier müssen wieder die Standardabweichung $\hat{sigma}$ und die Freiheitsgrade direkt angegeben werden. In diesem Fall können diese Werte wieder mit den Funktionen `sigma()` und `df.residual()` aus dem Modellfit extrahiert werden.
+
+```{r}
+#| echo: true
+
+eff_size(mod_em_cauge,
+         sigma=sigma(mod_aov),
+         edf=df.residual(mod_aov))
+```
+
+oder über:
+
+```{r}
+#| echo: true
+
+eff_size(mod_em,
+         sigma=sigma(mod_aov),
+         edf=df.residual(mod_aov),
+         simple = "Gruppe")
+```
+
+Leider funktioniert der Parameter `simple = "each"` nicht mit `eff_size()`, d.h. wenn die unstrukturierten Gruppenmittelwerte verwendet werden, muss die Funktion zweimal aufgerufen werden, entsprechend mit `simple = "Gruppe"` bzw. `simple = "Auge"`.
+
+## Anzahl der Replikationen a-priori ermitteln
+
+Wir haben wie immer drei verschiedene Ansätze die Anzahl der Replikationen vor dem Experiment zu bestimmen: 
+
+1) Anhand der Literatur wird $f$ bestimmt.
+2) Es wird ein relevantes/plausibels $\Delta$, als der Unterschied zwischen zwei Gruppen angesetzt. 
+3) Konfidenzintervalle
+
+Im ersten Fall gibt es zunächst nichts zu berechnen, sondern die Effektstärke für den gewünschten Effekte (Haupt- oder Interaktionseffekt) wird mittels der Literatur hergeleitet.
+
+Im zweiten Fall wird die Effektstärke $f$ mittels Vorüberlegungen über relevante Unterschiede $\Delta$ zwischen Faktorstufen festgelegt wie das auch für das CRD durchgeführt wurde. Allerdings ist hierfür immer noch Information über die zu erwartende Streuung der Werte $\sigma^2$ anhand der Literatur oder einer sonstigen Abschätzung notwendig. Die Effektstärke $f$ kann dann über die folgende Formel abgeschätzt werden.
+
+\begin{equation}
+f = \sqrt{\frac{\Delta^2}{2(k+1)\sigma^2}}
+\end{equation}
+
+Der Faktor $k$ gibt dabei die Anzahl der Freiheitsgrade für den jeweiligen Effekt an. Ändert sich dementsprechend ob es sich um einen Interaktions- oder einen Haupteffekt handelt.
+
+Der Replikationsfaktor kann dann über den notwendigen $F$-Test ermittelt werden. D.h. wir müssen @tbl-ed-crf-anova , insbesondere die Freiheitsgrade für die verschiedenen Tests, im Blick behalten. Für die beiden Faktoren $A$ und $B$ berechnen sich die Freiheitsgrade entsprechend mittels der Anzahl der Faktorstufen $-1, df_A = p-1, df_B = q-1$, wenn $p$ die Anzahl der Faktorstufen für Faktor $A$ und $q$ die Anzahl der Faktorstufen für Faktor $B$ definieren. Für den Interaktionseffekt gilt für die Freiheitsgrade $df_{A\timesB} = (p-1)(q-1)$ und für die Residuen $df_e = N-pq$ mit $N$ der Gesamtstichprobengröße. $F$-Test beruht auf einem Bruch zwischen den Quadratsummen für den Effekt geteilt durch die Quadratsumme der Residuen. Dementsprechend brauchen wir für die Bestimmung des Replikationsfaktors die Anzahl der Faktorstufen und die Gesamtanzahl für einen gegebenen Effekt.
+
+\begin{equation*}
+\text{F-Test: }F = \frac{SS_{\text{Effekt}}}{SS_{\text{Residuen}}}
+\end{equation*}
+
+Die Berechnung efolgt nun über die Effektstärke $f$ die uns erlaubt den Nonzentralitätsparameter $\lambda$ zu bestimmen und die Anzahl der Stufen für die wir uns interessieren. Wollen wir zum Beispiel den Replikationsfaktor für einen Haupteffekt mit drei Stufen und $f = 0.1$ bestimmen. Dann suchen wir diejenigen Freiheitsgrade $df_e$ für eine gegebene Power und ein gegebenes $\alpha$-Niveau. Damit wir nicht zwischen $f$ und $lambda$ hin- und herrechnen müssen und Werte vergleichen verwenden wir direkt die Funktion `pwr.f2.test()` aus dem `pwr`-package. Die Funktion verwendet nicht $f$ sondern $f^2$. Mit der Funktion erhalten wir die Freiheitsgrade für die Residuen und können dann über die Umformung:
+
+\begin{equation*}
+df_{e} = N-qp \Leftrightarrow N = df_{e} + qp
+\end{equation*}
+
+Die Gesamtstichprobengröße.
+
+:::{#exm-ed-crfd-sample-size} 
+Gehen wir beispielsweise von einer Effektstärke in einem $2\times 3$ Design für den Interaktionseffekt von $\omega^2 = 0.3$ aus. Zunächst muss $\omega^2$ in $f = \sqrt{\omega^2/(1-\omega^2)} = \sqrt{0.3/0.7} = 0.42$ umgerechnet werden. Die Freiheitsgrade für den Interaktionseffekt sind nach @tbl-ed-crf-anova $df_{A\times B} = (q-1) \times (p-1) = 1 \times 2  = 2$. Unter Verwendung der `pwr.f2.test()`-Funktion erhalten wir für $\alpha=0.05$ und power $0.8$:
+
+```{r}
+#| echo: true
+
+pwr::pwr.f2.test(f2 = 0.42**2,
+                 sig.level = 0.05,
+                 power = 0.8,
+                 u = 2)
+```
+
+D.h. aufgerundet sind die Freiheitsgrade $df_e$ für die Quadratsumme der Residuen $df_e = 55$. Diese Freiheitsgrade stellen wir nun um, um $N$ berechnen:
+
+\begin{equation*}
+N = df_e + p\cdot q = 55 + 3\cdot 2 = 61
+\end{equation*}
+
+Da wir bei einem $2\times 3$-Design insgesamt sechs Zellen haben aber $61$ nicht durch $6$ teilbar ist runden wir auf insgesamt $N = 66$ auf. D.h. wir benötigen einen Replikationsfaktor von $11$ für jede Kombination der Faktorstufen und insgesamt somit $66$ EUs.
+
+:::
+
+Insgesamt zeigt dies, dass die Anzahl der Replikation sich unterscheiden kann, je nachdem ob für ein Design die Power nach den Haupteffekten oder den Interaktionseffekten berechnet wird.
+
+## Nochmal Interaktionseffekte und Power
+
+Es der eben gezeigten Berechnung des Replikationsfaktors ergibt sich noch ein wichtiger Punkt auf den noch mal gesondert eigegangen wird. Schauen wir uns einmal was passiert wenn wir uns die Stichprobengrößen bei einem $4 \times 3$-Design anschauen. Gehen wir weiter davon aus, dann die Effektstärke für alle drei Effekte gleich große sind und mit $f = 0.25$ von mittlerer Größe. Wenn wir die Berechnungen von eben für alle drei Effekt ausführen ergibt sich die folgende Tabelle für die resultierende Anzahl von EUs (siehe @tbl-ed-crfd-n-01).
+
+| Effekt | Freiheitsgrade | $N$ |
+| :---   | --- | --- |
+| $A$ | $4-1=3$ | $174+12=186$ |
+| $B$ | $3-1=2$ | $154+12=166$ |
+| $A \times B$ | $(4-1)(3-1)=6$ | $217+12=229$ |
+
+: Anzahl $N$ der EUs für Effekte mit $f=0.25$ in einem $4 \times 3$-Design {#tbl-ed-crfd-n-01}
+
+Wie in @tbl-ed-crfd-n-01 ersichtlich, steigt die benötigte Stichprobengröße mit der Anzahl der Stufen und insbesondere für die Interaktionseffekte steigt die Anzahl noch mal stark an, trotzdem für alle Effekte die gleiche Effektstärke $f$ angesetzt wurde. Versuchen wir den Mechanismus einmal heuristisch zu verstehen.
+
+Beim CRD haben wir gesehen, dass der Standardfehler des Haupteffekts für paarweise Vergleiche wie folgt berechnet werden kann. $N$ ist die Gesamtzahl der EUs in den beiden beteiligten Mittelwerten.
+
+\begin{equation*}
+\sigma_{\text{Haupteffekt}} = \sqrt{\frac{\sigma^2}{N/2} + \frac{\sigma^2}{N/2}} = \frac{2\sigma}{\sqrt{N}}
+\end{equation*}
+
+Der Interaktionseffekt berechnet sich über die Vergleiche von vier Faktorstufen gleichzeitig, da die $H_0$-Hypothese die folgende Form hat:
+
+\begin{equation*}
+\begin{aligned}
+H_0&: \mu_{12} - \mu_{22} = \mu_{11} - \mu_{21} \\
+\Leftrightarrow H_0&: \mu_{12}-\mu_{22}-\mu_{11}+\mu_{21}=0
+\end{aligned}
+\end{equation*}
+
+Daraus folgt für den Standardfehler des Interaktionseffekts $\sigma_{\text{Interaktion}}$:
+
+\begin{equation*}
+\sigma_{\text{Interaktion}} = \sqrt{\frac{\sigma^2}{N/4} + \frac{\sigma^2}{N/4} + \frac{\sigma^2}{N/4} + \frac{\sigma^2}{N/4}} = \frac{4 \sigma}{\sqrt{N}}
+ = 2\sigma_{\text{Haupteffekt}}
+\end{equation*}
+
+D.h. der Standardfehler des Interaktionseffekts $\sigma_{\text{Interaktion}}$ ist doppelt so groß wie derjenige des Haupteffekts $\sigma_{\text{Haupteffekt}}. Dazu kommt, das überlicherweise die absolute Größe des Interaktionseffekt kleiner ist als diejenige des Haupteffekts. Da dies jedoch nicht den Standardfehler betrifft führt dies zu dazu, dass ein kleinerer Effekt eine höhere Streuung aufweise. D.h. die effektive Effektstärke wird zusätzlich kleiner.
+
+Schauen wir uns diesen Zusammenhang zwischen der Power, der Effektstärke des Haupteffekts und der Effektstärke des Interaktionseffekts etwas systematischer an. In @fig-ed-crfd-power-inter ist die Power für den Interaktionseffekt in Abhängigkeit vom Verhältnis von Interaktionseffekt zum Haupteffekt abgetragen, wenn die Stichprobengröße für eine Power von $0.8$ für den Haupteffekt bestimmt wurde.
 
 ```{r}
 #| fig-cap: "Zusammenhang zwischen Power für den Interaktionseffekt in Relation zur Größe des Interaktionseffekts zum Haupteffekt bei Power = $0.8$ für den Haupteffekt"
-#| fig-width: 4
-#| fig-height: 1.8
+#| label: fig-ed-crfd-power-inter
  
 ref <- 2.8
 tibble(
@@ -545,109 +717,8 @@ tibble(
                      breaks = seq(0.1, 1, 0.1)) 
 ```
 
-see @gelman2018
-
-## Mehrfachvergleiche in `R`
-
-In `R` läuft der Vergleich wiederum nach dem bekannten Muster ab. Zunächst werden die Modellmittelwerte mittels der `emmeans()`-Funktion aus dem Paket `emmeans` anhand des Modells bestimmt. Anschließend kann dann mittels der `pairs()` bzw. der `contrast()`-Funktion der gewünschte Vergleich durchgeführt werden.
-
-Beispielsweise die paarweisen Vergleiche für alle möglichen Kombinationen, auch diejenigen die wenig sinnvoll sind, mittels:
-
-```{r}
-#| echo: true
-
-mod_em <- emmeans(mod_aov, ~Gruppe*Auge)
-pairs(mod_em)
-```
-
-Hätten wir uns a-priori entschieden schon fest zu setzen nur die Vergleiche innerhalb der Gruppen bzw. der Augenkonditionen zu untersuchen und mittels Bonferroni-Korrektur den $\alpha$-Level zu kontrollieren. Dann sieht die Syntax in `R` folgendermaßen aus: 
-
-```{r} 
-#| echo: true
-
-mod_em_cauge <- emmeans(mod_aov, ~Gruppe|Auge)
-pairs(mod_em_cauge, adjust = 'bonferroni', level = 1-0.05/2, infer=T)
-```
-
-Die Syntax `~Gruppe|Auge` bedeutet Unterschiede nach `Gruppe` geblockt nach `Auge`. Parallel dazu `Auge`-Unterschiede geblockt für `Gruppe`: Ein Besonderheit ist hier jetzt allerdings der $\alpha$-Level für die beiden Tests. Da wir zwei Mehrfachvergleiche durchführen wollen, sollten wir die $\alpha$-Level für die beiden Gruppen von Mehrfachvergleichen so anpassen, dass wir insgesamt unter den anvisiertem $\alpha$ bleiben. In diesem Fall also $\alpha/2$.
-
-Wir sehen, dass zwischen den Gruppen bei offenen Augen keine Unterschiede gefunden wurden, während bei geschlossenen Augen alle Unterschiede statistisch signifikant sind.
-
-```{r}
-#| echo: true
-
-mod_em_cgroup <- emmeans(mod_aov, ~Auge|Gruppe)
-pairs(mod_em_cgroup, adjust = 'bonferroni', level = 1-0.05/2)
-```
-
-Hier können wir erkennen dass alle Unterschiede zwischen den Augenkonditionen innerhalb der Gruppen statistisch signifikant sind.
-
-Alternativ hätten wir auch die Befehle `pairs(mod_em, simple="Gruppe", adjust="bonferroni", level=0.975, infer=T)`, bzw. `pairs(mod_em, simple='Auge', adjust="bonferroni", level=0.975, infer=T)` verwenden können um die gleichen Mehrfachvergleich durchzuführen. Das package `emmeans` ist sehr umfangreich und die Dokumentation hat zahlreiche Beispiele für die Syntax um gewünschte Vergleiche durchführen zu können.
-
-Cohen's d für Mehrfachvergleiche 
-
-```{r}
-#| echo: true
-
-eff_size(mod_em_cauge, sigma=sigma(mod_aov),
-                 edf=df.residual(mod_aov))
-```
-
-## Anzahl der Replikationen a-priori ermitteln
-
-Wir haben wimmer drei verschiedene Ansätze die Anzahl der Replikationen vor dem Experiment zu bestimmen: 
-
-1) Anhand der Literatur wird $f$ bestimmt.
-2) Es wird ein relevantes/plausibels $\Delta$, als der Unterschied zwischen zwei Gruppen angesetzt. 
-3) Konfidenzintervalle
-
-Im ersten Fall gibt es zunächst nichts zu berechnen, sondern die Effektstärke für den gewünschten Effekte (Haupt- oder Interaktionseffekt) wird mittels der Literatur hergeleitet.
-
-Im zweiten Fall wird die Effektstärke $f$ mittels Vorüberlegungen über relevante Unterschiede $\Delta$ zwischen Faktorstufe festgelegt wie das auch für das CRD durchgeführt wurde. Allerdings ist hierfür immer noch Information über $\sigma$ anhand der Literatur notwendig.
-
-\begin{equation}
-f = \sqrt{\frac{\Delta^2}{2(k+1)\sigma^2}}
-\end{equation}
-
-| k = Anzahl der Freiheitsgrade
-
-Nachdem die Effektstärke $f$ ermittelt wurde wird zunächst die Stichprobengröße pro Zelle genau gleich wie für das CRD bestimmt. 
-
-
-Berechnung der Stichprobengröße pro Zelle wie beim CRD. Allerdings wird für $k$ die Anzahl der Freiheitsgrade + 1 verwendet. Diese orientieren sich daran anhand welchen Effekts die Stichprobe ermittelt werden soll. Für die Haupteffekte ist der Korrekturfaktor entsprechend entweder $p$ (Anzahl der Faktorstufen von Faktor $A$) oder $q$ (Anzahl der Faktorstufen für Faktor $B$) und für den Interaktionseffekt $(p-1)\times(q-1)+1$. Anschließend kann die Stichprobengröße pro Zelle $n'$ mittels der folgenden Formel ermittelt werden:
-
-\begin{equation}
-n_c = \frac{(n'-1)(u+1)}{\#n\ \mathrm{Zellen}} + 1
-\label{eq-ed-crfd-sample-size}
-\end{equation}
-
-Anz. Zellen = $p \times q$, u = Freiheitsgrade für den gewünschten Effekt entweder $(p-1), (q-1)$ oder $(p-1)\times(q-1)$.
-
-Die Gesamtstichprobengröße N ist dann $n_c \times \#Zellen$.
-
-:::{#exm-ed-crfd-sample-size} 
-Gehen wir beispielsweise von einer Effektstärke in einem $2\times 3$ Design für den Interaktionseffekt eine Effektstärke von $\omega^2 = 0.3$ beobachtet. Wir berechnen zunächst die $\omega^2$ um $f = \sqrt{\omega^2/(1-\omega^2)} = \sqrt{0.3/0.7} = 0.42$. Die Freiheitsgrade sind $(q-1) \times (p-1) + 1 = 1 \times 2 + 1 = 3$. Unter Verwendung der `pwr.anova.test()`-Funktion erhalten wir:
-
-```{r}
-#| echo: true
-
-pwr::pwr.anova.test(f = 0.42, k = 3, sig.level = 0.05, power = 0.8)
-```
-```{r}
-k_p <- pwr::pwr.anova.test(f = 0.42, k = 3,
-                    sig.level = 0.05, power = 0.8)
-n_s <- ceiling(k_p$n)
-n_c <- ((n_s - 1)*(2+1))/6 + 1
-```
-
-D.h. für den Interaktionseffekt wird zunächst $n' = `r n_s`$ ermittelt. Dieser Wert muss nun anhand von Formel \eqref{eq-ed-crfd-sample-size} korrigiert werden. $u$ ist in diesem Fall wieder $(p-1) \times (q-1) = (2-1) \times (3-1) = 2$, während die Anzahl der Zellen $p \times q = 2 \times 3 = 6$.
-
-\begin{equation*}
-n_c = \frac{(`r n_s` - 1)(2+1)}{6} + 1 = `r n_c`
-\end{equation*}
-
-:::
-
-Insgesamt zeigt dies, dass die Anzahl der Replikation sich unterscheiden kann, je nachdem ob für ein Design nach den Haupteffekten oder den Interaktionseffekten berechnet wird.
+Wir können erkennen, das wenn der Interaktionseffekt nur noch halb so groß ist wie der Haupteffekt, ein nicht unüblicher Zusammenhangt, ist die Power für den Interaktionseffekt nur noch $0.1$. Erst wenn der Interaktionseffekt die doppelte Größe des Haupteffekts hat, ist dessen Power auch gleich derer für den Haupteffekt. Eine Annahme die praktisch immer unrealistisch ist. Dies führt dazu, dass wenn eine Studie nach der Effektstärke für einen Haupteffekt designed wird aber das eigentliche Interesse einem Interaktionseffekt die Power praktisch immer zu klein ist. Anders herum wird in den Daten ein nicht zu erwartender Interaktionseffekt beobachtet, dann wird dessen Effektstärke oft deutlich überschätzt, da die Power normalerweise zu klein ist und der Effekt extrem sein muss, um tatsächlich statistisch signifikant zu werden. Weitere Probleme in diesem Zusammen sind in der Literatur eingängig beschrieben [@gelman2006;@nieuwenhuis2011] finden aber leider selten ausreichend Beachtung und führen daher zu experimentellen Design die hoffnungslos unterpowert sind [@button2013].
 
 ## Zum Nach- und Weiterlesen
+
+@dean1999 behandelt die Eigenheiten von Interaktionsdesign sehr umfassend.
