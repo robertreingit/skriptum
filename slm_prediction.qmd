@@ -29,7 +29,7 @@ Wie schon mehrfach besprochen ist die Regressionsgerade inherent unsicher. Wir h
 
 ### Berechnung von $\hat{y}_i$ in `R`
 
-In @fig-pred-01 sind die bereits behandelten Sprungdaten gegen die Anlaufgeschwindigkeiten zusammen mit der Regressionsgeraden und vorhergesagten Werten (rot) abgetragen.
+In @fig-pred-01 sind die bereits behandelten Sprungdaten gegen die Anlaufgeschwindigkeiten zusammen mit der Regressionsgeraden und den vorhergesagten Werten $\hat{y}_i$ (rot) abgetragen.
 
 ```{r pred_01}
 #| label: fig-pred-01
@@ -213,9 +213,9 @@ Wie wir bereits bei der betrachtung von Vorhersagen gesehen haben, ist die Verbu
 
 Im vorliegenden Fall haben wir beispielsweise für das Sprungbeispiel $\hat{\sigma} = `r round(sigma(mod),2)`$ beobachtet. D.h. im Mittel liegen unser Modell knapp einen viertel Meter daneben. Ob eine derart große Abweichung das Modell unbrauchbar bei der Entscheidungsfindung ist, ist keine Entscheidung die über die Statistik getroffen werden kann, sondern diese Entscheidung muss durch die Anwenderin des Modell getroffen werden.
 
-#### Root-mean in `R`
+#### Root-mean square $\hat{\sigma}$ in `R`
 
-In `R` können wir den Standardschätzfehler mittels der `sigma()`-Funktion bestimmen.
+In `R` wird der Standardschätzfehler $\hat{\sigma}$ mittels der `sigma()`-Funktion ausgegeben.
 
 ```{r}
 #| echo: true
@@ -223,7 +223,15 @@ In `R` können wir den Standardschätzfehler mittels der `sigma()`-Funktion best
 sigma(mod)
 ```
 
-Der Wert wird auch bei der `summary()`-Funktion ausgegeben.
+Letztendlich berechnet diese Funktion nichts anderes als eben die Wurzel aus $MSE$.
+
+```{r}
+#| echo: true
+N <- 45
+sqrt(sum(resid(mod)**2)/(N-2))
+```
+
+Dies ist natürlich der gleiche Wert der auch durch die `summary()`-Funktion ausgegeben.
 
 ```{r}
 #| echo: true
@@ -231,7 +239,7 @@ Der Wert wird auch bei der `summary()`-Funktion ausgegeben.
 summary(mod)
 ```
 
-### Der Determinationskoeffizient $R^2$ als Maß für die Modellgüte
+### Der Determinationskoeffizient $R^2$ 
 
 ```{r}
 n <- 4
@@ -245,7 +253,7 @@ simple$ys <- paste0('list(x[',1:n,'],y[',1:n,'])')
 simple$yshat <- paste('hat(y)[',1:n,']')
 ```
 
-Im Folgenden schauen wir uns noch einen weiteren Parameter an um die Modellgüte zu beurteilen. Fangen wir dazu mit einem einfachen Modell mit nur vier Datenpunkten an.
+Im Folgenden schauen wir uns noch einen weiteren Parameter an, der oft verwendet wird die Modellgüte zu beurteilen. Fangen wir dazu mit einem einfachen Modell mit nur vier Datenpunkten an.
 
 ```{r}
 knitr::kable(simple[,1:2],
@@ -264,39 +272,32 @@ ggplot(simple, aes(x,y)) +
   geom_abline(intercept = coef(mod0)[1], slope = coef(mod0)[2], col = 'red')
 ```
 
-Schauen wir uns nun noch einmal die möglichen Abweichung im einfachen Regressionmodells an.
-
-Als erste Abweichung definieren wir die **Gesamtvarianz** $SSTO$ (siehe Formel \eqref{eq-slm-pred-sstot}).
+Schauen wir uns nun noch einmal die möglichen Abweichung bzw. Quadratsummen im einfachen Regressionmodell an. Bezeichnen wir als die **Gesamtvarianz** die quadrierten Abweichungen der $Y$-Werte vom Mittelwert $\mu_Y$ und bezeichnen diese als $SSTO$ . Oder bezogen auf die beobachteten Daten $y_i$ ist die Gesamtvarianz Summe der quadrierten Abweichungen der $y_i$-Werte vom Gesamtmittelwert $\bar{y}$ (siehe Formel \eqref{eq-slm-pred-sstot})
 
 \begin{equation}
 SSTO := \sum_{i=1}^N (y_i - \bar{y})^2
 \label{eq-slm-pred-sstot}
 \end{equation}
 
-D.h. die Gesamtvarianz berechnet sich als die quadrierten Abweichungen der $y_i$-Werte vom Gesamtmittelwert $\bar{y}$.
-
-Die zweite Regressionkomponenten ist die sogenannte **Regressionsvarianz** $SSR$. Diese ist definiert nach Formel \eqref{eq-slm-pred-ssreg}:
+Eine weitere Abweichung die berechnet werden kann ist die sogenannte **Regressionsvarianz** $SSR$. Diese wird berechnet nach Formel \eqref{eq-slm-pred-ssreg}:
 
 \begin{equation}
 SSR :=\sum_{i=1}^N(\hat{y}_i - \bar{y})^2
 \label{eq-slm-pred-ssreg}
 \end{equation}
 
-Die Regressionsvarianz wird als die Summe der quadrierte Abweichungen der $y_i$-Werte vom Gesamtmittelwert $\bar{y}$.
-
-Als letzte Abweichung haben wir dann noch die uns bereits bekannte **Residualvarianz** $SSE$ (siehe Formel \eqref{eq-slm-pred-ssres}).
+D.h. die Regressionsvarianz $SSR$ ist die Summe der quadrierte Abweichungen der anhand des Modells vorhergesagten Werte $\hat{y}_i$-Werte wiederum vom Gesamtmittelwert $\bar{y}$. Wir können diese Abweichungen dahingehend interpretieren, dass sie anzeigen, um wie viel die Abweichungen der Gesamtstreuung durch das Modell reduziert wird. Die letzte Komponente die noch fehlt ist bereits bekannte **Residualvarianz** $SSE$ (siehe Formel \eqref{eq-slm-pred-ssres}).
 
 \begin{equation}
 SSE := \sum_{i=1}^N (y_i - \hat{y}_i)^2
 \label{eq-slm-pred-ssres}
 \end{equation}
 
-In @fig-slm-pred-simpledev sind die drei verschiedenen Abweichung noch einmal graphisch dargestellt.
+D.h. die Summer der quadrierten Abweichungen der beobachteten $Y$-Werte $y_i$ von den anhand des Modells vorhergesagten Werte $\hat{y}_i$. In @fig-slm-pred-simpledev sind die drei verschiedenen Abweichung graphisch dargestellt.
 
 ```{r}
 #| fig.cap: "Minimalmodell der Abweichungen"
 #| label: fig-slm-pred-simpledev
-#| fig-height: 4
 
 y_av <- mean(simple$y)
 text_size <- 7
@@ -324,26 +325,23 @@ ggplot(simple, aes(x,y,label = epsilon)) +
             size = text_size) 
 ```
 
-Wir sehen anhand der Pfeile in @fig-slm-pred-simpledev das ein additiver Zusammenhang zwischen den Abweichungen besteht. Der blaue Pfeil setzt sich aus der Addition zwischen dem grünen und dem grauen Pfeil zusammen. Rein algebraisch gilt ebenfalls:
+Anhand der Grafik bzw. der Pfeile in @fig-slm-pred-simpledev lässt sich heuristisch erkennen, dass ein additiver Zusammenhang zwischen den Abweichungen besteht. Die blauen Pfeilen von $SSTO$ setzen sich aus den Additionen aus den grünen und den grauen Pfeilen zusammen. Nochmal bezogen auf $SSR$ wird jetzt hoffentlich deutlich warum $SSR$ dahingehend interpretiert werden kann um wie viel Abweichung das Modell $SSTO$ vermindert. Schauen wir uns den ersten Datenpunkt an. Wenn wir ohne das Modell starten, ist unsere beste Schätzung für den Wert Datenpunkts, der Mittelwert $\bar{y}$. Dies resultiert in dem blauen Pfeil als Fehler. Wenn wir nun aber unser Modell dazunehmen, vermindert sich unser Fehler deutlich, da der anhand des Modell vorhergesagte Wert $\hat{y}_1$ nun deutlich näher an den beobachteten Wert $y_1$ herangerückt ist. Nämlich um den Betrag des grauen Pfeils $SSR$. Unser verbleibender Fehler ist jetzt deutlich kleiner, nämlich der grüne Pfeil $SSE$. Formalisieren wir diese Idee etwas erhalten wir:
 
 \begin{equation*}
-y_i - \bar{y} = y_i - \hat{y}_i + \hat{y}_i - \bar{y} = (y_i - \hat{y}_i) + (\hat{y}_i - \bar{y})
+y_i - \bar{y} = y_i - \hat{y}_i + \hat{y}_i - \bar{y} = \underbrace{(y_i - \hat{y}_i)}_{SSE} + \underbrace{(\hat{y}_i - \bar{y})}_{SSR}
 \end{equation*}
 
-Tatsächlich lässt sich zeigen, dass dieser Zusammenhang auch für die Summe der quadrierten Abweichung gilt.
+Hier fehlt allerdings, dass wenn wir diese Abweichungen quadrieren und über alle Punkte summieren, wir noch Zusatzterme, die Kreuzprodukte der beiden Komponenten, erhalten. Tatsächlich lässt sich aber zeigen, dass diese Kreuzprodukte sich gegenseitig algebraisch auslöschen und daher dieser Zusammenhang auch für die Summe der quadrierten Abweichung gilt. Daraus folgt der Zusammenhang:
 
 \begin{equation}
 SSTO = SSR + SSE
 \end{equation}
 
-D.h. die Gesamtvarianz setzt sich aus zwei verschiedenen Komponenten zusammen. Einmal der Teil der Varianz der anhand des Modells erklärt werden kann ($SSR$) und derjenige Teil der nicht anhand des Modells erklärt werden kann ($SSE$). 
-
-Aus diesem Zusammenhang lässt sich eine Metrik erstellen um die Modellgüte zu beurteilen. Schauen wir uns dazu an, was passiert wenn wir einen perfekten Zusammenhang zwischen der $X$ und $Y$-Variablen haben. In @fig-slm-pred-r2-perfect ist ein solcher Zusammenhang abgebildet.
+D.h. auch die Summe der quadrierten Abweichungen, die Gesamtvarianz $SSTO$ setzt sich aus zwei getrennten Komponenten zusammen. Einmal der Teil der Varianz der anhand des Modells erklärt werden kann ($SSR$) und derjenige Teil der nicht anhand des Modells erklärt werden kann ($SSE$). Aus diesem Zusammenhang lässt sich eine Metrik erstellen indem das Verhältnis von $SSR$ to $SSTO$ gebildet wird. Schauen wir uns dazu an, was passiert wenn wir einen perfekten Zusammenhang zwischen der $X$ und $Y$-Variablen haben. In @fig-slm-pred-r2-perfect ist ein solcher Zusammenhang abgebildet.
 
 ```{r}
 #| fig-cap: "Beispiel für einen perfekter linearen Zusammenhang zwischen $x$ und $y$."
 #| label: fig-slm-pred-r2-perfect
-#| fig-height: 3
 
 ggplot(simple, aes(x,y_hat,label = epsilon)) + 
   geom_line(aes(y = y_hat), size=2, color = 'red') +
@@ -366,20 +364,17 @@ ggplot(simple, aes(x,y_hat,label = epsilon)) +
             size=text_size, color = 'green') + geom_point(aes(y = y_hat), size=7) 
 ```
 
-In diesem Fall, liegen die beobachteten Werte $y_i$ genau auf der Regressionsgeraden. D.h. die Abweichungen $y_i - \hat{y}_i = 0$ und damit $SSE = 0$. Bereichnen wir nun des Verhältnis von $SSR$ zu $SSTO$ dann erhalten wir. 
+In diesem Fall, liegen die beobachteten Werte $y_i$ genau auf der Regressionsgeraden. D.h. die Abweichungen $y_i - \hat{y}_i = 0$ und damit $SSE = 0$. Berechnen wir nun des Verhältnis von $SSR$ zu $SSTO$ dann erhalten wir. 
 
 \begin{equation}
 \frac{SSR}{SSTO} = 1
 \end{equation}
 
-In @fig-slm-pred-r2-null ist das gegenteilige Beispiel abgebildet. Es besteht keine Zusammenhang zwischen der $x$ und $y$-Variable.
-
-In @fig-slm-pred-r2-null ist das gegenteilige Beispiel abgebildet. Es besteht keine Zusammenhang zwischen der $x$ und $y$-Variable.
+In @fig-slm-pred-r2-null ist nun der gegenteilige Zusammenhang abgebildet. Es besteht keine Zusammenhang zwischen der $x$ und $y$-Variable. D.h. das Modell liefert keine Informationen zu $Y$, da die $Y$-Werte unabhängig von den $X$-Werte sind.
 
 ```{r}
 #| fig-cap: "Beispiel für keinen linearen Zusammenhang zwischen $x$ und $y$."
 #| label: fig-slm-pred-r2-null
-#| fig-height: 3
 
 simple$rnd <- y_av + c(0.5, -1.0, 0.8, -.5)
 ggplot(simple, aes(x, rnd)) + 
@@ -403,15 +398,13 @@ ggplot(simple, aes(x, rnd)) +
   geom_point(aes(y = y_av), size = 7, color = 'red') 
 ```
 
-In diesem Fall hat die Regressiongerade die Steigung $\beta_1 = 0$ und der $y$-Achsenabschnitt geht durch den Mittelwert $\bar{y}$ der $y$-Werte. Für die Abweichungen resultiert daraus, dass nun $\hat{y}_i - \bar{y} = 0$ und somit $SSR = 0$ gilt
-
-Bilden wir wieder das Verhältnis von $SSR$ zu $SSTO$ dann erhalten wir:
+In diesem Fall sollte die Regressiongerade die Steigung $\beta_1 = 0$. Der $y$-Achsenabschnitt $\beta_0$ ist in diesem Fall gleich dem Mittelwert $\bar{y}$ der $y_i$-Werte. Für die Abweichungen resultiert daraus, dass nun keine Abweichung zwischen den vorhergesagten Werte $\hat{y}_i$ und dem Mittelwert $\bar{y}$ besteht. Es gilt somit $\hat{y}_i - \bar{y} = 0$. Daraus folgt wiederum, dass $SSR = 0$ gilt. Wir nun wieder das Verhältnis von $SSR$ zu $SSTO$ gebildet, dann folgt dementsprechend:
 
 \begin{equation*}
 \frac{SSR}{SSTO} = 0
 \end{equation*}
 
-Insgesamt zeigen diese beiden Beispiel das wir mittels des Verhältnisses von $SSR$ zu $SSTO$ eine Metrik erhalten die wiedergibt wie gut die $x$ und $y$-Variablen einen linearen Zusammenhang aufweisen. Das Verhältnis wird als Determinationskoeffizient $R^2$ bezeichnet. Die Metrik ist beschränkt auf Werte zwischen $0$ und $1$ wobei wie wir gesehen bei $R^2 = 0$ kein Zusammenhang besteht während bei $R^2 = 1$ ein perfekter Zusammenhang besteht. Insgesamt gilt:
+Zusammen zeigen diese beiden Beispiele, das mittels des Verhältnisses von $SSR$ zu $SSTO$ eine Metrik entsteht, wiedergibt wie gut die $X$ und $Y$-Variablen einen linearen Zusammenhang aufweisen. Das Verhältnis wird als Determinationskoeffizient $R^2$ bezeichnet. Die Metrik ist beschränkt auf Werte zwischen $0$ und $1$. Bei einem Wert von  $R^2 = 0$ besteht kein Zusammenhang, während bei $R^2 = 1$ ein perfekter Zusammenhang besteht. Insgesamt gilt:
 
 \begin{equation}
 R^2 = \frac{SSR}{SSTO} = 1 - \frac{SSE}{SSTO} \in [0,1] 
@@ -422,12 +415,24 @@ Es besteht auch ein enger Zusammenhang zwischen dem Determinationskoeffizienten 
 
 Im Zusammenhang mit dem Determinationskoeffizienten $R^2$ gilt es auf ein Missverständnis hinzuweisen. Ein hoher $R^2$ zeigt nicht an, dass präzise Vorhersagen mittels des Modells getroffen werden. Der Determinationskoeffzient bestimmt nur die relative Reduktion der Varianz an nicht die Absolute. Ob ein Modell nützlich zur Prädiktion ist, hängt wie oben besprochen sehr eng mit dem absoluten Höhe der Residualvarianz zusammen.
 
-Im Zusammenhang mit der multiplen Regression gibt es auch noch einen korrigierten Determinationskoeffizient $R_a^2$ bei dem ein penalty term auf Grund der Anzahl der Prädiktoren $X_i$ eingefügt wird.
+::: {.callout-warning}
+Trotzdem der Determinationskoeffizient $R^2$ oft verwendet wird sollte nicht verschwiegen werden, dass $R^2$ zur Beurteilung der Modellgüte nicht sonderlich gut geeignet ist. Die folgenden Ausführung beruhen weitestgehends auf @shalizi2015. Es lässt sich zeigen, dass $R^2$ der auch folgendermaßen hergeleitet werden kann:
+
+\begin{equation}
+R^2 = \frac{\beta_1^2Var(X)}{\beta_1^2Var(X)+\sigma^2}
+\end{equation}
+
+Daraus folgt, das wenn die Varianz von $X$ vergrößert wird $R^2$ beliebig nahe an $1$ gebracht werden kann. Genauso, indem die Varianz von $X$ verkleinert wird, kann $R^2$ beliebig nahe an $0$ gebracht werden. Weiterhin ist $R^2$ auch nicht wirklich hilfreich um die Vorhersagegüte des Modells zu beurteilen, da wenn die Residualvarianz $\sigma^2$ konstant gehalten wird, nur durch Veränderung der Varianz $X$ $R^2$ vergrößert wie auch verkleinert werden kann. Da wie schon erwähnt ein direkter Zusammenhang zwischen dem Korrelationskoeffizienten $\rho_{XY}$ und $R^2$ besteht, ist auch die oft verwendete Interpretation von $R^2$ als der Anteil der durch $X$ aufgeklärten Varianz von $Y$ irreführend, da die Korrelation symmetrisch in beiden Variablen ist. Durch die Abhängigkeit von der Varianz von $X$ kann $R^2$ auch nicht direkt über Datensätze hinweg verglichen werden, da sich üblicherweise $Var(X)$ zwischen Datensätzen unterscheiden wird [@shalizi2015]. Für eine umfangreiche Diskussion zu den Problem sei auch die Diskussion auf @gelman2024 empfohlen.
+:::
+
+Im Zusammenhang mit der multiplen Regression gibt es auch noch einen korrigierten Determinationskoeffizient $R_a^2$ bei dem ein penalty term auf Grund der Anzahl der Prädiktoren $X_i$ eingefügt wird. Wie wir später sehen werden, kann der Determinationskoeffizient verbessert werden, indem einfach zusätzlich Variablen in das Modell eingefügt werden auch wenn diese keinen Zusammenhang mit der abhängigen Variablen $Y$ haben. Um diese Eigenschaft mit einzubeziehen wird die Anzahl der Variablen penalisiert.
 
 \begin{equation}
 R_a^2 = 1 - \frac{\frac{SSE}{n-p}}{\frac{SSTO}{n-1}} = 1 - \frac{n-1}{n-p}\frac{SSE}{SSTO}
 \label{eq-slm-pres-rsquaredadj}
 \end{equation}
+
+Damit haben wir nun mittlerweile auch fast alle Ausgabeinformationen der `summary()`-Funktion kennengelernt. Es fehlt noch die letzte Zeile die wir im Zusammenhang mit der multiplen linearen Regression bearbeiten werden. Insgesamt sollte der Determinationskoeffizient $R^2$ eher seltener eingesetzt werden und insbesondere wenn es um Modellgüte eigentlich auf Grund der Limitationen eher nicht.
 
 #### Determinationskoeffizient $R^2$ in `R`
 
@@ -439,5 +444,16 @@ In `R` erhalten wir den Determinationskoeffizienten über die `summary()`-Funkti
 summary(mod)
 ```
 
-D.h. es wurde ein sehr guter Modellfit bezüglich eines linearen Zusammenhang zwischen der Anlaufgeschwindigkeit und der Sprungweite mit $R^2 = `r round(summary(mod)[['r.squared']], 2)`$ gefunden. Hier haben wir aber auch direkt den Fall, dass wir ein hohes $R^2$ beobachten aber die absolute Varianz trotzdem relativ hoch ist.
+D.h. es wurde ein hoher Determinationskoeffizient bezüglich des linearen Zusammenhang zwischen der Anlaufgeschwindigkeit und der Sprungweite mit $R^2 = `r round(summary(mod)[['r.squared']], 2)`$ beobachtet. Das Beispiel zeigt aber auch direkt die Limitation des Determinationskoeffizienten $R^2$. Trotzdem ein hohes $R^2$ beobachtet wurde, ist dass Modell nur sehr eingeschränkt hilfreich, da der Residualfehler mit $\hat{\sigma} = `r round(sigma(mod),2)`[m]$ relativ hoch ist.
 
+Wir können $R^2$ natürlich auch relativ einfach von Hand ausrechnen.
+
+```{r}
+#| echo: true
+ssr <- sum( (predict(mod) - mean(jump$jump_m))**2 )
+sst <- sum( (jump$jump_m -  mean(jump$jump_m))**2 )
+ssr/sst
+```
+
+
+## Zum Weiterlesen
