@@ -818,6 +818,127 @@ tibble(x = seq(0, 100), y = sqrt(x)) |>
 
 In @fig-stats-sig-sqrtfcn ist zu Erinnerung aus der Schule die Funktion $y = \sqrt{x}$ abgetragen. Daran sehen wir, dass die Funktionswerte für kleine Werte von $x$ steil ansteigen und später dann anfangen immer langsamer größer zu werden. Angewendet auf unsere Powerfrage, wenn der Standardfehler mit der Wurzel der Stichprobengröße $n$ kleiner wird, dann ist dies besonders bei kleinen Stichprobengrößen von Bedeutung, also zum Beispiel der Unterschied zwischen $n = 10$ und $n = 20$. Der gleiche Stichprobenunterschied dagegen zwischen $n = 110$ und $n = 120$ fällt nicht mehr ganz so groß in Gewicht. D.h. bei kleinen Stichproben sollte um jede zusätzliche Teilnehmerin bzw. Teilnehmer gekämpft werden. Allgemein gilt, umso größer die Stichprobengröße umso größer die Power. 
 
+## (Exkurs) Power und false discovery rate
+
+Der folgende Abschnitt betrachtet wie sich die die durchschnittliche Power auf die Literatur insgesamt auswirkt. Sei eine bestimmte Anzahl von Studien bzw. Veröffentlichungen gegeben. Ein Teil dieser Studien wird signifikante Ergebnisse dokumentieren während der andere Teil keine signifikanten Ergebnisse gefunden hat. Innerhalb der signifikanten Ergebnisse wird ein Teil der Ergebnisse auf einem tatsächlichen Effekt beruhen während der andere Teil zwar statistisch signifikant ist aber eigentlich kein Effekt vorliegt. Sondern es wurde ein Typ-I Fehler begangen. Der Anteil der Studien bei denen kein Effekt vorliegt bezeichenen wir mit $P(H_0)$. Es allgemeiner formuliert, die Wahrscheinlichkeit für eine Studie mit einem Nulleffekt. Wenn $N$ die Gesamtzahl der betrachteten Studien bezeichnet, dann berechnet sich die Anzahl der Studien bei denen ein Nulleffekt vorliegt mittels.
+
+\begin{equation*}
+N_{H_0} = P(H_0) \cdot N
+\end{equation*}
+
+Multiplizieren wir nun diese Studien mit der Irrtumswahrscheinlichkeit $\alpha$ dann, erhalten wir wiederum diejenige Anzahl der Studien die zwar einen Nulleffekt, also eigentlich keinen Effekt haben, aber sich auf Grund der Irrtumswahrscheinlichkeit *geiirt* haben.
+
+\begin{equation*}
+N_{H_0, \text{signifikant}} = P(H_0) \cdot \alpha \cdot N
+\end{equation*}
+
+Ein einfaches Beispiel wäre, wenn $N = 200$ Studien gegeben wäre, und $P(H_0) = 0.5$ wäre, dann liegt bei $100$ Studien kein Effekt vor. Aber aus diesen $100$ Studien werden wir uns in $\alpha$ der Fälle irren, also $5$ statisisch signifikante Ergebnisse beobachten. In @fig-stats-sig-fdr-01 ist dies einmal graphisch dargestellt.
+
+```{r}
+#| fig-cap: "Anteil der signifikanten Nulleffekte (große Punkte) bei $N = 200$ Studien und $P(H_0) = 0.5$."
+#| label: fig-stats-sig-fdr-01
+
+fdr_1 <- tibble(
+  x = rep(1:20,10),
+  y = rep(1:10,each=20),
+  h0 = rep(c("H_0","H_1"), each=100),
+  sig = rep(1:0, c(5,195))
+)
+ggplot(fdr_1, aes(x,y, color=h0)) +
+  geom_point() +
+  geom_point(data = fdr_1 |> dplyr::filter(sig == 1),
+             size=4) +
+  scale_color_discrete(
+    "Effekt",
+    labels = c(expression(H[0]),expression(H[1]))) +
+  theme_void()
+```
+
+Die gleichen Überlegungen können für diejenigen Studien gemacht werden, bei denen tatsächlich ein Effekt vorliegt. Die Anzahl der Studien ist genau das Komplement zu denjenigen bei denen der Nulleffekt vorliegt. Formal
+
+\begin{equation*}
+N_{H_1} = (1-P(H_0))\cdot N
+\end{equation*}
+
+Die Anzahl derjenigen Studien bei denen nun ein Effekt vorliegt und die auch als statistisch signifikant beobachtet werden ist abhängig von der Power $\rho$. Dementsprechend berechnet sich die Anzahl der statistisch signifikanten Studien bei denen auch ein Effekt vorliegt mittels:
+
+\begin{equation*}
+N_{H_1,\text{signifikant}} = (1-P(H_0))\cdot \rho \cdot N
+\end{equation*}
+
+In unserem Beispiel mit $N = 200$ Studien und $P(H_0) = 0.5$ würde bei $100$ Studien ein Effekt vorliegen und bei einer Power von $\rho = 0.8$ würden $80$ dieser Studien als statistisch signifikant beobachtet werden (siehe @fig-stats-sig-fdr-02).
+
+```{r}
+#| fig-cap: "Anteil der signifikanten Null- und $H_1$-effekten (große Punkte) bei $N = 200$ Studien, $P(H_0) = 0.5$ und Power $\\rho = 0.8$."
+#| label: fig-stats-sig-fdr-02
+
+fdr_2 <- tibble(
+  x = rep(1:20,10),
+  y = rep(1:10,each=20),
+  h0 = rep(c("H_0","H_1"), each=100),
+  sig = c(rep(1:0, c(5,95)), rep(1:0, c(80,20)))
+)
+ggplot(fdr_2, aes(x,y, color=h0)) +
+  geom_point() +
+  geom_point(data = fdr_2 |> dplyr::filter(sig == 1),
+             size=4) +
+  scale_color_discrete(
+    "Effekt",
+    labels = c(expression(H[0]),expression(H[1]))) +
+  theme_void()
+```
+
+Schauen wir uns den Anteil aller signifikanten Ergebnisse an, bei denen eigentlich ein Nulleffekt vorliegt erhalten wir die false discovery rate (fdr), die folgendermaßen definiert ist (siehe @bartovs2022).
+
+\begin{equation}
+\begin{aligned}
+\text{fdr} &= \frac{P(H_0)\cdot \alpha \cdot N}{P(H_0)\cdot \alpha \cdot N + (1-P(H_0))\cdot \rho \cdot N} \\
+&=\frac{P(H_0)\cdot \alpha}{P(H_0)\cdot \alpha + (1-P(H_0))\cdot \rho}  
+\end{aligned}
+\label{eq-stats-sig-fdr}
+\end{equation}
+
+D.h. derjenige Anteil der statistisch signifikanten Ergebnisse bei denen es sich um einen falschen Befund handelt. D.h. es wurde ein Effekt in Form eines statistisch signifikanten Ergebnisses beobachtet obwohl eigentlich kein Effekt vorliegt. D.h. wir teilen großen $H_0$ Punkte durch die Gesamtanzahl der großen Punkte, der signifikanten Punkte (siehe @fig-stats-sig-fdr-02a).
+
+```{r}
+#| fig-cap: "Signifikante Null- und $H_1$-effekten bei $N = 200$ Studien, $P(H_0) = 0.5$ und Power $\\rho = 0.8$."
+#| label: fig-stats-sig-fdr-02a
+
+ggplot(fdr_2, aes(x,y, color=h0)) +
+  geom_point(data = fdr_2 |> dplyr::filter(sig == 1),
+             size=4) +
+  scale_color_discrete(
+    "Effekt",
+    labels = c(expression(H[0]),expression(H[1]))) +
+  lims(y = c(1,10)) +
+  theme_void()
+```
+
+Die Formel \eqref{eq-stats-sig-fdr} für die fdr kann nun verwendet werden um den Zusammenhang der false discovery rate mit der Power für eine gegebene Nulleffektswahrscheinlichkeit $P(H_0)$ und $\alpha$ zu betrachten (siehe @fig-stats-sig-fdr-03).
+
+```{r}
+#| fig-cap: "Zusammenhang zwischen der Power $\\rho$ und der false discovery rate fdr bei $\\alpha = 0.05$."
+#| label: fig-stats-sig-fdr-03
+
+alpha <- 0.05
+p_H_0 <- c(0.25, 0.5, 0.75, 0.8)
+fdr <- function(rho, p_H_0 = 0.5, alpha = 0.05) p_H_0 * alpha/(p_H_0 * alpha + (1-p_H_0)*rho)
+n <- 100
+tibble(
+  power = rep(seq(.1, .99, length.out = n),length(p_H_0)),
+  p_H_0 = rep(p_H_0, each=n),
+  fdr = fdr(power, p_H_0, alpha),
+  p_H_0f = forcats::as_factor(p_H_0)
+) |> 
+ggplot(aes(power, fdr, color=p_H_0f, group=p_H_0f)) +
+  geom_line() +
+  scale_colour_discrete(expression(p(H[0]))) +
+  labs(x = expression(paste("Power ",rho))) +
+  lims(y = c(0,1))
+```
+
+In @fig-stats-sig-fdr-03 ist zu erkennen, dass die fdr besonders hoch ist, wenn die Power in der Literatur niedrig ist. D.h. wenn die mittlere Power in der Literatur durch vorwiegend kleine Studien niedrig ist, dann sinkt die Wahrscheinlichkeit, dass ein gegebenes statistisch signifikantes Ergebnis tatsächlich durch einen Effekt hervorgerufen wurde. Daher ist es für eine Forschungsdisziplin wichtig, dass die Studien ausreichend Power haben um die gewünschten Effekte tatsächlich beobachten zu können (siehe @button2013). In @fig-stats-sig-fdr-03 ist dieser Effekt besonders groß, wenn die Grundrate der tatsächlichen Effekte $1-P(H_0)$ niedrig ist bzw. eben $P(H_0)$ sehr hoch ist. Wenn nur $20\%$ der Studien tatsächlich Effekte zugrundeliegen sind, sind $2/3$ der Ergebnisse false positives.
+
 ## Things to know
 
 - Datengenerierender Prozess
