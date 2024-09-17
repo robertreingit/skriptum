@@ -19,7 +19,7 @@ d_gr <- 100
 d_x <- 2
 ```
 
-Beginnen wir mit eine einfachen Modell. Dazu nehmen beginnen mit einer übersichtlichen kleinen Welt. Die Welt über die wir eine Aussage treffen wollen besteht daher nur aus insgesamt 20 Personen. In @fig-small-world sind Bewohner unserer Welt einzeln zu sehen. Die Gesamtheit aller Personen (allgemein Objekte) über die wir eine Aussage treffen wollen bezeichnen wir als die Population\index{Population}.
+Starten wir mit einer übersichtlichen kleinen Welt um das notwendige statistische Modell so einfach wie möglich zu halten. Die Welt über die wir eine Aussage treffen wollen besteht nur aus insgesamt 20 Personen. In @fig-small-world sind die Bewohner dieser Welt einzeln zu sehen. Die Gesamtheit aller Personen (allgemein Objekte) über die wir eine Aussage treffen wollen bezeichnen wir als die Population\index{Population}.
 
 ```{r}
 #| fig.cap: "Eine kleine Welt"
@@ -27,7 +27,6 @@ Beginnen wir mit eine einfachen Modell. Dazu nehmen beginnen mit einer übersich
 #| fig.height: 4
 
 include_graphics('pics/small_world.png')
-
 ```
 
 ::: {#def-population}
@@ -39,7 +38,7 @@ Die Gesamtheit aller Objekte/Dinge/Personen über die eine Aussage getroffen wer
 
 ## Ein Experiment
 
-Wir wollen nun ein Experiment, eine Krafttrainingsstudie, durchführen um zu überprüfen ob das Training die Beinkraft erhöht. Wir haben allerdings nur sehr wenige Ressourcen zur Verfügung (bzw. wir sind faul) und können daher nur insgesamt sechs Messungen durchführen. Aus einem kürzlich durchgeführten Census haben wir aber die Beinkraftwerte der ganzen Population. Stellen wir die Kraftwerte zunächst mittels einer Tabelle dar (siehe @tbl-sts-basics-world)
+Wir wollen nun ein Experiment, eine Krafttrainingsstudie, durchführen um zu überprüfen ob ein bestimmtes Training dazu führt, dass sich die Beinkraft erhöht. Allerdings haben wir nur sehr wenige Ressourcen zur Verfügung (bzw. wir sind faul) und können daher nur sechs Messungen durchführen. Aus einem kürzlich durchgeführten Zensus haben wir die Beinkraftwerte der ganzen Population. Eine einfache Möglichkeit die Kraft darzustellen ist eine Tabelle (siehe @tbl-sts-basics-world)
 
 ```{r}
 #| tbl-cap: "Kraftwerte (in Newton) der Lummerländer an der einbeinigen Beinpresse"
@@ -52,7 +51,7 @@ world |>
     col.names = c('ID', 'Kraft[N]')) #,'ID','Kraft[N]')) 
 ```
 
-Selbst bei 20 Werten ist diese Darstellung mittels einer Tabelle leider wenig übersichtlich. Wir müssen Zeile für Zeile die Tabelle durchgehen und uns spezifische Kennwerte notieren. Beispielsweise könnten wir notieren, dass der Maximalwert der Beinkraft bei $`r max(world$Kraft)`$N für `r world$ID[which.max(world$Kraft)]` und der Minimalwert von `r world$ID[which.min(world$Kraft)]` bei $`r min(world$Kraft)`$N liegt. Aber wirklich übersichtlich ist die Darstellung in Form einer Tabelle nicht. Für solche univariaten Daten (uni = eins) kann eine übersichtlichere Darstellung mittels eines sogenannten Dotplots erreicht werden (siehe @fig-sts-basics-lummer-dotplot).
+Selbst bei 20 Werten ist die Darstellung mittels einer Tabelle allerdings leider wenig übersichtlich. Wir müssen Zeile für Zeile die Tabelle durchgehen und uns spezifische Kennwerte notieren und Vergleiche zwischen den Werten durchführen zu können. Beispielsweise könnten wir notieren, dass der Maximalwert der Beinkraft bei $`r max(world$Kraft)`$N für `r world$ID[which.max(world$Kraft)]` und der Minimalwert von `r world$ID[which.min(world$Kraft)]` bei $`r min(world$Kraft)`$N liegt. Aber wirklich übersichtlich ist die Darstellung in Form einer Tabelle nicht. Für solche univariaten Daten (uni = eins) kann eine übersichtlichere Darstellung mittels eines sogenannten Dotplots erreicht werden (siehe @fig-sts-basics-lummer-dotplot).
 
 ```{r}
 #| fig.cap: "Dotplot der Lummerlandkraftdaten"
@@ -66,13 +65,11 @@ ggplot(world,
   scale_y_continuous('', breaks = NULL)
 ```
 
-Hier kann deutlich schneller abgelesen werden welchen Wert das Minimum bzw. das Maximum annimmt. Die graphische Darstellung erlaubt weiterhin direkt abzuschätzen in welchem Bereich sich der Großteil der Daten befindet. Allerdings wird durch diese Art der Darstellung die Information über welche Person die jeweiligen Werte besitzt nicht mehr dargestellt. Dies stellt allerdings nicht zwingend ein Problem dar, da wir in den meisten Fällen soweiso aussagen über die Gruppe und weniger über einzelne Personen machen wollen. Ein Dotplot hat auch gleichzeitig den Vorteil, dass wir die Verteilung der Werte abschätzen können. In welchem Bereich liegen die meisten Datenwerte? Liegen die Werte eng beineinander oder streuen die Werte sehr stark? Gibt es einzelne Werte die sehr unterschiedlich sind von den anderen Werten? Dies sind alles Fragen die notwendig sind um einen Datensatz und dessen Eigenschaften beurteilen zu können.
+Mittels eines Dotplots kann nun deutlich schneller abgelesen werden welchen Wert das Minimum bzw. das Maximum annimmt. Die graphische Darstellung erlaubt weiterhin direkt abzuschätzen in welchem Wertebereich der Großteil der Daten liegt. Allerdings wird durch diese Art der Darstellung die Information über welche Person die jeweiligen Werte besitzt nicht mehr dargestellt. Dies stellt allerdings nicht zwingend ein Problem dar, da wir in den meisten Fällen sowieso aussagen über die Gruppe und weniger über einzelne Personen machen wollen. Ein Dotplot hat gleichzeitig den Vorteil, dass wir die Verteilung der Werte abschätzen können. In welchem Bereich liegen die meisten Datenwerte? Liegen die Werte eng beieinander oder streuen die Werte sehr stark? Gibt es einzelne Werte die sehr unterschiedlich sind von den anderen Werten? Dies sind alles Fragen die notwendig sind um einen Datensatz und dessen Eigenschaften beurteilen zu können.
 
-Gehen wir jetzt von der folgenden Fragestellung aus. Wir wollen den Gesundheitsstatus unserer Lummerländer verbessern und wollen dazu ein Krafttraining für die Beine durchführen. Da wir evidenzbasiert arbeiten wollen, möchten wir überprüfen ob das Training wirklich ein Verbesserung der Beinkraft durch das Training stattfindet. Um die Experiment zu vereinfachen, und da es sich mehr um eine Gedankenexperiment handelt, gehen wir von einem perfekten Krafttraining aus. D.h wir führen eine perfekte Intervention durch.
+Kommen wir zurück zu unsererm Kraftexperiment. Wir wollen den Gesundheitsstatus unserer Lummerländer verbessern und führen dazu ein Krafttraining für die Beine durch. Da wir evidenzbasiert arbeiten wollen, möchten wir überprüfen ob das Training wirklich zu einer Verbesserung der Beinkraft geführt hat. Um das Experiment zu vereinfachen, und da es sich mehr um eine Gedankenexperiment handelt, gehen wir von einem perfekten Krafttraining aus. D.h wir führen eine perfekte Intervention durch die zu der gleichen Verbesserung bei allen Teilnehmerinnen und Teilnehmern führt (Warum ist dies eine unrealistische Annahme?).
 
-Das Beinkrafttraining sei also perfekt und verbessert die Kraftleistung um genau $+`r d_gr`$N. Dieser Kraftzuwachs ist unabhängig davon welche Person aus unserer Population das Training durchführt (Ist das eine realistische Annahme?). Um die Effektivität des Training abzuschätzen vergleichen wir zwei Gruppen miteinander. Eine Interventionsgruppe und eine Kontrollgruppe. In beiden Gruppen sollen jeweils $n_{\text{TRT}} = n_{\text{CON}} = 3$ TeilnehmerInnen bzw. Teilnehmer einbezogen werden da wir nicht mehr Ressourcen für mehr ProbandInnen haben.
-
-Um die spätere Diskussion zu vereinfachen, führen wir etwas Terminologie ein.
+Das Beinkrafttraining sei also perfekt und verbessert die Kraftleistung um genau $+`r d_gr`$N. Dieser Kraftzuwachs ist unabhängig davon welche Person aus unserer Population das Training durchführt. Um die Effektivität des Training abzuschätzen vergleichen wir zwei Gruppen miteinander. Eine Interventionsgruppe, die das Krafttraining durchläuft, und eine Kontrollgruppe. In beiden Gruppen sollen jeweils $n_{\text{TRT}} = n_{\text{CON}} = 3$ TeilnehmerInnen bzw. Teilnehmer einbezogen werden. Um die spätere Diskussion zu vereinfachen, führen wir nun etwas Terminologie ein.
 
 ::: {#def-dep-var}
 ## Abhängige Variablen \index{abhängige Variable}
@@ -88,9 +85,9 @@ Die unabhängige Variable ist die Variable, die in einer Studie oder einem Exper
 
 In unserem Experiment ist die Gruppenzugehörigkeit die unabhängige Variable und die Beinkraft die abhängige Variable. Wir untersuchen den Effekt der Gruppenzugehörigkeit auf die Beinkraft. Die Gruppe ist die Ursache für mögliche Effekte auf die Beinkraft.
 
-Wir gehen jetzt davon aus, dass wir die Daten aus dem Census nicht vorliegen haben. Dies kommt einer tatsächlichen Durchführung des Experiment näher, wo wir auch nicht wissen würden welche Beinkraft die TeilnehmerInnen vor dem Experiment hätten. Die erste Frage die sich nun stellt ist wie wir die sechs Personen aus unserer Population auswählen und wie teilen wir die sechs Personen in die beiden Gruppen auf? 
+Wir tuhen jetzt so, als ob wir die Daten aus dem Census nicht vorliegen haben. Dies kommt Durchführung eines tatsächlichen Experiments näher, da dort üblicherweise auch nicht vorher bekannt ist, welche Performance welche die Teilnehmerinnen und Teilnehmer vor dem Experiment haben. Es stellen sich nun zwei Fragen: 1) Wie wählen wir die sechs Personen aus unserer Population aus und 2) wie teilen wir die sechs Personen in die beiden Gruppen auf? 
 
-Wir könnten zum Beispiel die ersten drei Personen in die Interventionsgruppe und die letzten drei in die Kontrollgruppe stecken. Allerdings wenn wenn die Personen in irgendeiner Form sortiert sind, z.B. allgemeiner Gesundheitsstatus, Arbeitstätigkeit usw. dann würde diese Sortierung in den Gruppen auftreten. D.h. wir hätten sogenannte Störvariablen \index{Störvariable} die unser Ergebnis verfälschen würden.
+Wir könnten zum Beispiel die ersten drei Personen in die Interventionsgruppe und die letzten drei in die Kontrollgruppe stecken. Allerdings wenn wenn die Personen in irgendeiner Form nach der Beinkraft vorsortiert sind, z.B. allgemeiner Gesundheitsstatus, Arbeitstätigkeit usw. dann würde sich diese Sortierung auf die Gruppen übertragen. D.h. wir hätten eine sogenannte Störvariablen \index{Störvariable} die unser Ergebnis verfälschen würden.
 
 ::: {#def-confounder}
 ## Störvariable 
@@ -98,13 +95,7 @@ Wir könnten zum Beispiel die ersten drei Personen in die Interventionsgruppe un
 Eine Störvariable ist eine Variable die einen Einfluss auf die unabhängige Variable hat, deren Einfluss jedoch nicht kontrolliert wurde bzw. die Variable ist nicht Hauptinteresse der Untersuchung.
 :::
 
-Im Zweifelsfall kann davon ausgegangen werden, dass es immer eine ganze Reiche von Störvariablen gibt, von denen ich zum Teil gar nichts weiß, dass sie bestehen. Nach etwas überlegen kommen wir darauf, dass wir am besten eine zufällige Stichprobe ziehen sollten (Warum?). Für führen eine sogenannte Randomisierung durch.
-
-::: {#def-randomisierung}
-## Randomisierung \index{Randomisierung}
-
-Mit Randomisierung wird der Prozess der zufälligen Zuweisung von Probanden oder Elementen zu verschiedenen Gruppen oder Bedingungen in einem Experiment bezeichnet. Die Randomisierung wird verwendet, um sicherzustellen, dass die Auswahl und Zuordnung der Elemente frei von systematischer Beeinflussung erfolgt. 
-:::
+Im Zweifelsfall kann davon ausgegangen werden, dass es immer eine ganze Reihe von Störvariablen gibt. Unglücklicherweise auch Störvariablen die zum Teil gar nicht bekannt sind. D.h. es wird ein Mechanismus benötigt der Teilnehmerinnen und Teilnehmer auswählt und gleichzeitig dafür sorgt, das Variablen die gar nicht bekannt sind möglichst gleichmäßig ausgewählt werden. Der Mechanismus der dies sicherstellen kann ist eine sogenannte Zufallsstrichprobe (Warum?). 
 
 ::: {#def-sample}
 ## Stichprobe
@@ -118,13 +109,45 @@ Eine Stichprobe\index{Stichprobe} ist eine Teilmenge der Objekte aus der Populat
 Eine Zufallsstichprobe\index{Zufallsstichprobe} ist eine Teilmenge der Objekte aus der Population die *zufällig* ausgewählt wurde.
 :::
 
-Die sechs Personen unserer Stichprobe werden dann zufällig auf die beiden Gruppen aufgeteilt. (Warum zufällig?)
+Bei der Zufallsstichprobe haben alle Personen in der Population vor dem Experiment die gleiche Wahrscheinlichkeit gezogen zu werden. Dadurch kann sichergestellt werden, dass in der Stichprobe unterliegende Störvariablen, ob messbar oder nicht messbar, ebenso in der Stichprobe verteilt sind.
+
+::: {exm-random-sample}
+
+Schauen wir uns ein einfaches Beispiel an. Sei eine Population der Größe $N = 100$ geben in der $30$ Objekte das Merkmal A haben und $70$ Objekte das Merkmal B. Es werden nun wiederholt Zufallsstichproben der Größe 20 aus dieser Stichprobe gezogen und für jede Stichprobe wird der Anteil der As berechnet.
+
+```{r}
+set.seed(25)
+```
+
+```{r}
+#| echo: true
+
+pop <- rep(c("A","B"), c(30,70))
+n_sam <- 20
+res <- numeric(n_sam)
+for (i in 1:n_sam) {
+  sam <- sample(pop, 20)
+  res[i] <- mean(sam == 'A')
+}
+res
+```
+
+Wir sehen, dass tatsächlich in den meisten Fällen der Anteil von As in Stichprobe in der Nähe der $30\%$ aus der Population liegt. Nicht in allen Fällen, es gibt Schwankungen um diesen Wert herum, aber im Großen und Ganzen spiegelt die Stichprobe in Bezug auf die Verteilung von Merkmalen A und B die Population gut wieder. D.h es handelt sich um eine *repräsentative* Stichprobe.
+:::
+
+Nachdem jetzt geklärt ist, wie die Stichprobe aus der Population ermittelt wird ist nun die nächste Frage, wie die Objekte aus der Stichprobe auf die beiden Gruppen verteilt wird. Die gleichen Überlegungen wie diejenigen zur Ermittlung der Stichprobe führen dazu, dass die Objekte zufällig in die beiden Gruppen verteilt werden müssen. In diesem Fall der Aufteilung wird allerdings von einer sogenannten Randomisierung gesprochen.
+
+::: {#def-randomisierung}
+## Randomisierung \index{Randomisierung}
+
+Mit Randomisierung wird der Prozess der zufälligen Zuweisung von Probanden oder Elementen zu verschiedenen Gruppen oder Bedingungen in einem Experiment bezeichnet. Die Randomisierung wird verwendet, um sicherzustellen, dass die Auswahl und Zuordnung der Elemente frei von systematischer Beeinflussung erfolgt. 
+:::
 
 ```{r}
 id_s1 <- c(8, 9, 3, 7, 10, 20)
 ```
 
-Mit einem Zufallszahlengeneratoren haben wir die Zahlen $i = \{`r paste(sort(id_s1), collapse=',')`\}$ gezogen. Die entsprechenden Personen werden aus der Population anhand der ID ausgewählt. Anschließend teil wieder ein Zufallszahlengenerator die sechs Personen in die beiden Gruppen ein (siehe @fig-stats-basics-sample-01).
+Um jetzt für unser Experiment eine Stichprobe zu ermitteln, haben wir die Population durchnummeriert und mittels eines Zufallszahlengeneratoren die Zahlen $i = \{`r paste(sort(id_s1), collapse=',')`\}$ ermittelt. Die entsprechenden Personen werden aus der Population anhand der ID ausgewählt. Anschließend teilt wieder ein Zufallszahlengenerator die sechs Personen in die beiden Gruppen auf (siehe @fig-stats-basics-sample-01).
 
 ```{mermaid}
 %%| fig-cap: "Ablaufdiagramm der Gruppenzuweisung."
@@ -138,10 +161,12 @@ flowchart TD
     D --> F[Interventionsgruppe]
 ```
 
+Dieser Prozess der zufälligen Ziehung und Zuteilung ist extrem wichtig um das Ergebnis des Experiment eindeutig zuordnen zu können und eine Generalisierung über die bestehenden Objekte hinaus durchführen zu können. Leider ist der erste Schritt, die zufällige Ziehung von Objekten aus der Population, in der Realität nur sehr schwer realisierbar.
+
 In @tbl-sts-basics-experiment-1 ist die Stichprobe und Zuteilung in die Gruppen zu sehen.
 
 ```{r}
-#| tbl-cap: "Zufällig ausgewählte Stichprobe mit $N=6$ und die Zuteilung in Kontroll- (CON) und Interventionsgruppe (TRT)."
+#| tbl-cap: "Zufällig ausgewählte Stichprobe der Größe $N=6$ und die Zuteilung in Kontroll- (CON) und Interventionsgruppe (TRT)."
 #| label: tbl-sts-basics-experiment-1
 
 world_ex_1 <- world[id_s1,] |> mutate(Gruppe=rep(c('CON','TRT'),each=3))
@@ -151,7 +176,7 @@ world_ex_1 |>
     col.names = c('ID', 'Kraft[N]','Gruppe'))
 ```
 
-Mit diesen sechs Personen führen wir jetzt unser Experiment durch. Die drei Personen aus der Kontrollgruppe, unterlaufen im Interventionszeitraum nur ein Stretchtraining während die Interventionsgruppe zweimal die Woche für 12 Wochen unser perfektes Krafttraining durchführt. Nach diesem Zeitraum messen wir alle Personen aus beiden Gruppen und erhalten das folgende Ergebnis (siehe @tbl-sts-basics-sample-1). Nochmal zur Erinnerung, wir nehmen an, dass wir das Ergebnis aus dem Census nicht kennen.
+Mit diesen sechs Personen führen wir jetzt unser Experiment durch. Die drei Personen aus der Kontrollgruppe, unterlaufen im Interventionszeitraum nur ein Stretchtraining während die Interventionsgruppe zweimal die Woche für 12 Wochen unser perfektes Krafttraining durchführt. Nach diesem Zeitraum messen wir die Beinkraft aller Personen aus beiden Gruppen. Wir erhalten das folgende Ergebnis (siehe @tbl-sts-basics-sample-1). Nochmal zur Erinnerung, wir nehmen an, dass wir die Werte aus dem Census nicht kennen.
 
 ```{r}
 #| label: tbl-sts-basics-sample-1
@@ -192,7 +217,7 @@ kable(dat_int |> add_mean(),
   col.names=c('ID','Kraft[N]'))
 ```
 
-Letztendlich haben wir in der Interventionsgruppe nur die Ausgangswerte aus dem Census genommen und $100$N dazuaddiert. Für beide Gruppen ist in @tbl-sts-basics-sample-1 jeweils noch der Mittelwert\index{Mittelwert} angezeigt, um die Gruppen leichter miteinander vergleichen zu können. Später werden wir noch weitere Maße kennenlernen die es ermöglichen zwei Mengen von Werten miteinander zu vergleichen. Der Mittelwert ist dabei derjenige der wenn schon aus der Schule kennen.
+Für beide Gruppen ist in @tbl-sts-basics-sample-1 jeweils noch der Mittelwert\index{Mittelwert} $\bar{K}$ dokumentiert, um die Gruppen leichter miteinander vergleichen zu können. Später werden wir noch weitere Maße kennenlernen die es ermöglichen zwei Mengen von Werten miteinander zu vergleichen. Der Mittelwert ist ein Maß, dass uns schon bekannt sein sollte.
 
 ::: {#def-Mittelwert}
 ## Mittelwert
@@ -206,7 +231,7 @@ $$ {#eq-mean}
 Der Mittelwert wird mit einem Strich über der Variable dargestellt.
 :::
 
-Damit haben wir auch schon direkt ein neues Konzept aus der Statistik kennengelernt. Nämlich das der Statistik\index{Statistik}. Ein Wert der mittels der Werte aus der Stichprobe berechnet wird, wird als Statistik bezeichnet.
+Gleichzeitig haben wir das zentrale und namensgebende Konzept aus der Statistik kennengelernt. Nämlich das der Statistik\index{Statistik}. Ein Wert der mittels der Werte aus einer Stichprobe berechnet wird, wird als Statistik bezeichnet.
 
 ::: {#def-Statistik}
 ## Statistik
@@ -214,7 +239,9 @@ Damit haben wir auch schon direkt ein neues Konzept aus der Statistik kennengele
 Ein auf einer Stichprobe berechnet Wert, wird als Statistik bezeichnet.
 :::
 
-Um jetzt Unterschied zwischen den beiden Gruppen zu untersuchen berechnen wir die Differenz D zwischen den beiden Mittelwerten $D = \bar{K}_{\text{TRT}} - \bar{K}_{\text{CON}}$. Die Differenz kann natürlich auch in die andere Richtung berechnet werden und es würde sich das Vorzeichen ändern. Hier gibt es keine Vorgaben, sondern die Richtung kann frei bestimmt werden. Wenn bekannt ist in welcher Richtung der Unterschied berechnet wird, dann stellt dies keine Problem dar. Im vorliegenden Fall ziehen wir die Interventionsgruppe von der Kontrollgruppe ab, da wir davon ausgehen, dass die Intervention zu einer Krafterhöhung führt und wir dadurch einen positiven Unterschied erhalten (vgl. @eq-sts-basics-ex1-d)
+Der Definition folgend, ist somit der Mittelwert $\bar{X}$ einer Stichprobe eine Statistik. Das gleiche würde gelten wenn anstatt der Mittelwert der Maximalwert oder der Minimalwert einer Stichprobe ermittelt wird. Beide Werte würden ebenfalls eine Statistik darstellen.
+
+Um nun den Unterschied zwischen den beiden Gruppen zu untersuchen berechnen wir die Differenz $D$ zwischen den beiden Mittelwerten $D = \bar{K}_{\text{TRT}} - \bar{K}_{\text{CON}}$. Die Differenz kann natürlich auch in die andere Richtung berechnet werden und es würde sich das Vorzeichen ändern. Hier gibt es keine Vorgaben, sondern die Richtung kann frei bestimmt werden. Wenn bekannt ist in welcher Richtung der Unterschied berechnet wird, dann stellt dies keine Problem dar. Im vorliegenden Fall ziehen wir die Interventionsgruppe von der Kontrollgruppe ab, da wir davon ausgehen, dass die Intervention zu einer Krafterhöhung führt und wir dadurch einen positiven Unterschied erhalten wenn das Training tatsächlich zu einer Steigerung der Kraftleistung führt (vgl. @eq-sts-basics-ex1-d)
 
 ```{r}
 world_ex_1_hat <- world_ex_1 |> group_by(Gruppe) |> summarize(Kraft = round(mean(Kraft)))
@@ -394,7 +421,7 @@ Das sind jetzt natürlich selbst bei dieser kleinen Population ein große Menge 
 
 differences <- readr::read_csv('data/combinations_differences.csv')
 ggplot(differences |> dplyr::mutate(d = d + d_gr), aes(d)) +
-  geom_histogram(aes(y=..density..), bins=50) +
+  geom_histogram(aes(y=after_stat(density)), bins=50) +
   geom_vline(xintercept = d_gr, color='red', linetype='dashed') +
   labs(x = 'Differenzen D[N]', y = 'relative Häufigkeit') +
   lims(x = c(-800, 800)) 
