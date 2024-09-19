@@ -34,93 +34,137 @@ Ein immer wiederkehrender Operator in der Statistik ist das Summenzeichen $\sum$
   \sum_{i=0}^{2} i = (i=0) + (i=1) + (i=2) = 0 + 1 + 2 = 6 
 \end{equation*}
 
-Hier ist der Laufindex $i$ mit dem Startwert $i=0$ und dem Endwert $i=2$. Die Index durchläuft alle Ganzzahlen zwischen dem Start- und dem Endwert. In den meisten Fällen wird der Laufindex nicht direkt in den Summanden geschrieben sondern es wird ein bestimmte Menge von weiteren Werten damit indiziert. Sei zum Beispiel eine Menge von sechs Datenpunkte z.B. $\{10, 20, 30, 35, 40\}$ gegeben. Dann könnten diese Datenpunkte mittels einer Variablen bespielsweise dem Buchstaben $x$ repräsentiert werden und die einzelnen Werte mit Hilfe eines Laufindexes bestimmt werden.
+Hier ist der Laufindex $i$ mit dem Startwert $i=0$ und dem Endwert $i=2$. Die Index durchläuft alle Ganzzahlen zwischen dem Start- und dem Endwert. In den meisten Fällen wird der Laufindex nicht direkt in den Summanden geschrieben sondern es wird ein bestimmte Menge von weiteren Werten damit indiziert. Sei zum Beispiel eine Menge von sechs Datenpunkte z.B. $\{10, 20, 30, 35, 40\}$ gegeben. Dann könnten diese Datenpunkte mittels einer Variablen beispielsweise dem Buchstaben $x$ repräsentiert werden und die einzelnen Werte mit Hilfe eines Laufindexes bestimmt werden (siehe @tbl-app-index).
 
 ```{r}
+#| tbl-cap: "Beispiel für die Zuweisung eines Laufindexes $i$ zu Datenpunkten $x_i$"
+#| label: tbl-app-index
+ 
 data.frame(i=1:5, x = c(10,20,30,35,40)) |> 
   kable(booktabs=TRUE,
         col.names = c('$i$','$x_i$'))
 ```
 
+Soll nun über alle Datenpunkte summiert werden dann kann dies wie folgt mittels des Zusammenzeichen dargestellt werden.
 
+\begin{equation*}
+\sum_{i=1}^5 x_i = 10 + 20 + 30 + 35 + 40 = 135
+\end{equation*}
+
+Für das Summenzeichen gelten, es sich letztendlich nur um Addition handelt, die gleichen Regeln wie bei der einfachen Summation. Dementsprechend ergeben sich die folgenden Regeln:
 \begin{align}
-    \sum_{i=0}^{n}a_i+b_i &= \sum_{i=0}^{n}a_i + \sum_{i=0}^{n}b_i \\
+    \sum_{i=0}^{n}(a_i+b_i) &= \sum_{i=0}^{n}a_i + \sum_{i=0}^{n}b_i \\
     \sum_{i=0}^{n}a \times b_i &= a\sum_{i=0}^{n}b_i \label{eqn:asum} \\
-    \sum_{i=1}^{3} (x_i + 3)^2 &= (x_1 + 3)^2 + (x_2 + 3)^2 + (x_3 + 3)^2 \\
     \sum_{k=1}^{n} \frac{a_k}{n} &= \frac{1}{n}\sum_{k=1}^{n} a_i = \frac{1}{n}(a_1 + a_2 + \ldots + a_n) \\
     \sum_{i=1}^{n} a &= a + a + \ldots + a = n \times a \label{eqn:consum}
 \end{align}
 
-## Gemischt
-
-\begin{table}[!]
-    \centering
-    \begin{tabular}{ccc}
-    \toprule
-        $x_i$ & Werte & quadrierte Werte \\
-        \midrule
-        $x_1$  &  10 & 100\\
-         $x_2$ &  5  & 25\\
-         $x_3$ &  3 & 9\\
-         \midrule
-         $\sum$ & 18 & 134 \\
-     \bottomrule
-    \end{tabular}
-    \caption{Beispieldaten}
-    \label{tab:my_label}
-\end{table}
-
-Der Mittelwert wird im Rahmen der Statistik meistens mit einem Strich über der Variable angezeigt (z.B. $\bar{x}, \bar{z}, \bar{y}$). Dementsprechend wird der Mittelwert~$\bar{x}$ der Daten aus Tabelle~\ref{tab:my_label} wie folgt berechnet.
-\begin{align}
-    \bar{x} &= \frac{1}{n}\sum_{i=1}^{n}x_i \label{eqn:hat} \\
-    &= \frac{1}{3}\sum_{i=1}^{3}x_i = \frac{1}{3}(10 + 5 + 3) = 6 \nonumber 
-\end{align}
-
-Beim Berechnen von Summenwerten die den Mittelwert beinhalten, kann Formel~\ref{eqn:hat} zum Vereinfachen der Berechnungen benutzt werden. Dies wird in der Statistik bei mehreren Berechnungen welche die sogenannten Abweichungsquadrate, d.h. die quadrierten Abweichungen vom Mittelwert, enthalten zu Nutze gemacht.
-\begin{align}
-    \sum_{i=1}^{n}(x_i - \bar{x})^2 &= \sum_{i=1}^{n}(x_i^2 - 2x_i\bar{x} + \bar{x}^2) \nonumber \\
-     &= \sum_{i=1}^{n}x_i^2 - 2 \sum_{i=1}^{n}x_i\bar{x} + \sum_{i=1}^{n}\bar{x}^2 \nonumber 
-\end{align}
-Da der Mittelwert nicht mehr den Index enthält, kann er wie eine Konstante behandelt werden und aus der Summe rausgezogen werden (siehe Formel~\ref{eqn:asum}). Das Gleiche gilt für den letzten Term $\bar{x}^2$ der einfach n-mal genommen wird (Formel~\ref{eqn:consum}).
+Neben dem Summenzeichen, kommt auch immer wieder mal das Produktzeichen zur Anwendung. Wie der Name schon vermuten lässt, wird bei dem Produktzeichen die Addition durch die Multiplikation ersetzt.
 
 \begin{equation}
-    \sum_{i=1}^{n}x_i^2 - 2 \sum_{i=1}^{n}x_i\bar{x} + \sum_{i=1}^{n}\bar{x}^2 = \sum_{i=1}^{n}x_i^2 - 2 \bar{x} \sum_{i=1}^{n}x_i + n \bar{x}^2 \nonumber 
+\prod_{i=0}^n x_i = x_1 \times x_2 \times \cdots \times x_n
 \end{equation}
 
-Mit der Identität $n\bar{x}=\sum_{i=1}^{n}x_i$, folgt daraus:
+## Funktionen
 
-\begin{align}
-    \sum_{i=1}^{n}x_i^2 - 2 \bar{x} \sum_{i=1}^{n}x_i + n \bar{x}^2 &= \sum_{i=1}^{n}x_i^2 - 2 \bar{x} n \bar{x} + n \bar{x}^2 \nonumber \\
-    &= \sum_{i=1}^{n}x_i^2 - 2n\bar{x}^2 + n \bar{x}^2 \nonumber \\
-    &= \sum_{i=1}^{n}x_i^2 - n\bar{x}^2 \nonumber 
-\end{align}
+### Lineare Funktion
 
-Die Formel~\ref{eqn:hat} für den Mittelwert kann wieder benutzt werden und zurück eingesetzt werden um die Formel einfacher berechenbar zu machen:
+Die einfachste Funktion nach der konstanten Funktion ist die Gerade. Die Funktion der Gerade setzt sich aus dem $y$-Achsenabschnitt $a$ der Steigung $b$ zusammen.
 
-\begin{align}
-    \sum_{i=1}^{n}x_i^2 - n\bar{x}^2 &= \sum_{i=1}^{n}x_i^2 - n(\bar{x})^2 \nonumber \\
-    &=  \sum_{i=1}^{n}x_i^2 - n\left(\frac{1}{n}\sum_{i=1}^nx_i\right)^2 \nonumber \\
-    &=  \sum_{i=1}^{n}x_i^2 - n\left(\frac{1}{n}\right)^2\left(\sum_{i=1}^nx_i\right)^2 \nonumber \\
-    &=  \sum_{i=1}^{n}x_i^2 - \frac{n}{n^2}\left(\sum_{i=1}^nx_i\right)^2 \nonumber \\
-    &=  \sum_{i=1}^{n}x_i^2 - \frac{1}{n}\left(\sum_{i=1}^nx_i\right)^2 \nonumber 
-\end{align}
-
-Insgesamt folgt daher:
 \begin{equation}
-    \sum_{i=1}^{n}(x_i - \bar{x})^2 = \sum_{i=1}^{n}x_i^2 - \frac{1}{n}\left(\sum_{i=1}^nx_i\right)^2
-    \label{eqn:rms}
+    y = a + bx
 \end{equation}
 
-Die Formel~\ref{eqn:rms} bzw. Varianten dieser Formel tauchen in der Statistik immer wieder bei Berechnungen auf. Zum Beispiel bei der Berechnung der Varianz und der Korrelation. Die rechte Seite der Formel~\ref{eqn:rms} lässt auf einfache Art und Weise Abweichungsquadrate berechnen indem nur die Summen der Werte $\sum_{i=1}^{n}x_i$ und die Summe der quadrierten Werte $\sum_{i=1}^{n}x_i^2$ berechnet werden müssen (siehe Tabelle~\ref{tab:my_label}, siehe Arbeitsformeln in der Formelsammlung SQ3-Statistik).
+Aus der Schule dürfte dies als Punkt-Steigungsform (vielleicht in der Form $y = mx + b$) bekannt sein. Bei einer positiven (negativen) Steigung ($a > 0$) steigen (fallen) die $y$-Werte gegen $\infty$ ($-\infty$) wenn die $x$-Werte gegen $\infty$ ($-\infty$) gehen. In @fig-app-linear-graph ist der Graph der Funktion $y = 3x + 1$ abgetragen. 
 
-Für das Beispiel folgt daher:
-\begin{equation}
-    \sum_{i=1}^{3}(x_i - \bar{x})^2 = 134 - \frac{1}{3} \times 18^2 = 26 \nonumber
-\end{equation}
+```{r}
+#| fig-cap: "Graph der Geraden $y = 3x+1$."
+#| label: fig-app-linear-graph
 
-Beziehungsweise:
-\begin{align}
-    \bar{x} &= \frac{18}{3} = 6 \nonumber \\
-    \sum_{i=1}^{3}(x_i - 6)^2 &= (10 - 6)^2 + (5 - 6)^2 + (3 - 6)^2 \nonumber \\
-    &= 4^2 + 1^2 + 3^2 = 16 + 1 + 9 = 26 \nonumber
-\end{align}
+tibble(x = seq(-3,3,length.out=50), y = 3*x + 1) |> 
+  ggplot(aes(x,y)) +
+  geom_line() +
+  labs(x = 'x-Werte', y = 'y-Werte')
+```
+
+In @fig-app-linear-graph ist zu erkennen, dass auf Grund der positiven Steigung $b = 3$ die $y$-Werte größer werden, umso größer die $x$-Werte werden. Der Zuwachs der $y$-Werte ist dabei konstant. Wenn $x$ um eine Einheit vergrößert wird, dann vergrößert sich $y$ um $3$ Einheiten.
+
+Die Gerade kann als eine Funktion angesehen welche $x$-Werte auf $y$-Werte abbildet. $y = a + bx$ kann daher auch als $f(x) = a + bx$ interpretiert werden. Bzw. im konkreten Fall von @fig-app-linear-graph als $f(x) = 3x + 1$. D.h. wenn ich einen $x$-Wert in die Funktion $f(x)$ einsetzte, wird der entsprechenden $y$-Wert erhalten, z.B. $f(2) = 3 \times 2 + 1 = 7$.
+
+### Polynome
+
+### Exponentialfunktion
+
+## Matrizen
+
+Eine Matrix ist eine rechteckige Anordnung von Zahlen die in Zeilen und Spalten angeordnet sind. Matrizen werden häufig in der Statistik, verwendet, um lineare Gleichungssysteme darzustellen, Transformationen durchzuführen oder Daten zu organisieren.
+
+Eine Matrix mit $m$ Zeilen und $n$ Spalten wird als $m \times n$-Matrix bezeichnet. Dies wird als die Dimension der Matrix bezeichent. Die Elemente einer Matrix werden durch zwei Indizes angegeben: der erste Index steht für die Zeile, der zweite für die Spalte. Ein Beispiel für eine $2 \times 2$-Matrix könnte zum Beispiel sein:
+
+\begin{equation*}
+A = \begin{pmatrix}
+a_{11} & a_{12} \\
+a_{21} & a_{22}
+\end{pmatrix}
+\end{equation*}
+
+Matrizen können mittels spezieller Operatoren verarbeitet werden. Den einfachste Operation stellt die Addition dar. Zwei Matrizen gleicher Dimensionen, d.h. mit der gleichen Anzahl von Zeilen und Spalten können elementweise addiert werden. Elementweise bedeutet das jedes Element in der einen Matrize mit dem Element an der gleichen Position der anderen Matrix addiert wird.
+
+\begin{equation*} 
+A + B = \begin{pmatrix} a_{11} + b_{11} & a_{12} + b_{12} \\ a_{21} + b_{21} & a_{22} + b_{22} \end{pmatrix}
+\end{equation*}
+
+Ein weiterer Operator ist die Skalarmultiplikation. Bei der Skalarmultiplikation wird jedes Element einer Matrix wird mit einer Zahl (Skalar) multipliziert.
+
+\begin{equation*}
+k \cdot A = \begin{pmatrix} k \cdot a_{11} & k \cdot a_{12} \\ k \cdot a_{21} & k \cdot a_{22} \end{pmatrix}
+\end{equation*}
+
+Ein zentraler Operator ist die Matrixmultiplikation. Das Produkt zweier Matrizen entsteht durch die Multiplikation der Zeilen der ersten Matrix mit den Spalten der zweiten Matrix.
+
+\begin{gather*}
+\begin{bmatrix}
+    a_{11} & a_{12} & \dots  & a_{1n} \\
+    a_{21} & a_{22} & \dots  & a_{2n} \\
+    \vdots & \vdots & \ddots & \vdots \\
+    a_{m1} & a_{m2} & \dots  & a_{mn}
+\end{bmatrix}
+\times
+\begin{bmatrix}
+    b_{11} & b_{12} & \dots  & b_{1p} \\
+    b_{21} & b_{22} & \dots  & b_{2p} \\
+    \vdots & \vdots & \ddots & \vdots \\
+    b_{n1} & b_{n2} & \dots  & b_{np}
+\end{bmatrix}
+=
+\begin{bmatrix}
+    c_{11} & c_{12} & \dots  & c_{1p} \\
+    c_{21} & c_{22} & \dots  & c_{2p} \\
+    \vdots & \vdots & \ddots & \vdots \\
+    c_{m1} & c_{m2} & \dots  & c_{mp}
+\end{bmatrix} \\
+\text{mit } c_{ij} = a_{i1}b_{1j} + a_{i2}b_{2j} + \dots + a_{in}b_{nj} \text{ für } 1 \leq i \leq m \text{ und } 1 \leq j \leq p.
+\end{gather*}
+
+Etwas übersichtlicher mit einem einfachen Beispiel.
+
+$$
+\begin{matrix}
+& \begin{pmatrix}
+b_1 & b_2 \\
+b_3 & b_4
+\end{pmatrix} \\
+\begin{pmatrix}
+a_1 & a_2 \\
+a_3 & a_4 \\
+\end{pmatrix} &
+\begin{pmatrix}
+a_1 \cdot b_1 + a_2 \cdot b_3 & a_1\cdot b_2 + a_2\cdot b_4 \\
+a_3 \cdot b_1 + a_4 \cdot b_3 & a_3\cdot b_2 + a_4\cdot b_4 \\
+\end{pmatrix}
+\end{matrix}
+$$
+
+D.h. die Zeilen von $A$ werden mit den Spalten von $B$ per Skalaprodukt multipliziert. Für die Matrizenmultiplikation müssen die Matrizen $A$ und $B$ konform sein. Die Anzahl der Spalten von $A$ muss gleich der Anzahl der Zeilen von $B$ sein.
+
+Matrizen bieten eine kompakte Darstellung von Daten und Beziehungen und spielen eine zentrale Rolle in der linearen Algebra sowie vielen angewandten Wissenschaften.
