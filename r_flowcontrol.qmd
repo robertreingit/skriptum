@@ -141,37 +141,58 @@ my_abs(-3)
 
 ## `for`-Schleifen
 
-Als letztes Programmierkonstrukt kommen jetzt noch Schleifen, eine der Paradedisziplin von Computern, nämlich die gleiche Sache ganz oft hintereinander durchführen.
+Als letztes Programmierkonstrukt kommen jetzt noch Schleifen. Schleifen sind eine der Paradedisziplin von Computern, ein Schleife ermöglicht es Anweisungen wiederholt auszuführen. Wenn zum Beispiel eine Liste oder ein Vektor für jedes Element durchlaufen werden soll und immer wiederkehrende Anweisungen ausgeführt werden sollen.
 
-Die Syntax für eine Schleife in `R` ist wie folgt.
+Die Syntax um eine Schleife in `R`.
 
 ```{r}
 #| eval: false
 #| echo: true
 
-for (item in vector) { # <1>
+for (variable in sequenz) { # <1>
   Ausdruck             # <2>
 }
 
 ```
 
-1. Als erstes kommt das Schlüsselwort `for` gefolgt von einer Klammer. In der Klammer werden zwei Ausdrücke benötigt. Eine Variable die hier `item` heißt, die als Schleifenzähler fungiert. Der Schleifenzähler durchläuft die Einträge des Vektors `vector` einen nach dem anderen.
-2. Jedes Mal wenn `item` mit einem neuen Wert belegt worden ist, wird `Ausdruck` zwischen den geschweiften Klammer `{}` ausgeführt. Der jeweilige aktuelle Wert von `item` steht im Ausdruck zur Verfügung.
+1. Als erstes kommt das Schlüsselwort `for` gefolgt von einer Klammer. In der Klammer werden zwei Ausdrücke benötigt. Eine Variable die hier `variable` heißt, die als Schleifenzähler fungiert. Der Schleifenzähler durchläuft die Einträge der Variablen `sequenz` einen nach dem anderen. In den meisten Fällen handelt es sich hier um einen Vektor.
+2. Jedes Mal wenn `variable` mit einem neuen Wert belegt worden ist, wird `Ausdruck` zwischen den geschweiften Klammer `{}` ausgeführt. Der jeweilige aktuelle Wert von `variable` steht im Ausdruck zur Verfügung. Der Code zwischen den geschweiften Klammern wird als **Schleifenblock** bezeichnet.
 
 Hört sich komplizierter an als es ist. Ein einfaches Beispiel:
 
 ```{r}
 #| echo: true
 
-for (i in 1:4) {
-  cat('Ausdruck wird ausgeführt\n')
-  cat('i =', i, '\n')
+for (i in 1:5) {
+  print(i)
 }
 ```
 
-Wir verwenden in dem Code die `cat()` Funktion um die Wert auf der Kommandozeile auszugeben. Das Zeichen `\n` ist lediglich ein Sonderzeichen für neue Zeile. Was passiert in dem Code. Wir haben einen Vektor mit den Elementen von $1,2,3,4$. Die Variable `item` hat jetzt den Namen `i`. `i` wird Element für Element mit den Einträgen aus dem Vektor belegt und jedes mal wird der Ausdruck zwischen den Klammern ausgeführt.
+In dem Beispiel durchläuft der Schleifenzähler `i` die Werte von $1$ bis $5$. Für den Schleifenzähler hat es sich in der Informatik eingebürgert wenn möglich die Bezeichner `i`, `j` oder `k` zu verwenden ähnlich wie für Indexvariablen in der Mathematik. Der Vektor hätte auch in Form einer Variablen vorliegen können.
 
-Ein wird könnten nun zum Beispiel den Vektor als Index für die Einträge in einen anderen Vektor mit Elementen ansehen und dementsprechend über die Einträge des anderen Vektoren mit `i` iterieren.
+```{r}
+#| echo: true
+
+s <- 1:5
+for (i in s) {
+  print(i)
+}
+```
+
+Schauen wir uns das Beispiel noch etwas kleinteiliger an. In dem nächsten Problem wird die `cat()`-Funktion verwendet um Werte auf der Kommandozeile auszugeben. Das Zeichen `\n` ist lediglich ein Sonderzeichen für neue Zeile damit die Ausgaben untereinander und nicht nebeneinander stehen.
+
+```{r}
+#| echo: true
+
+for (i in 1:5) {
+  cat('Schleifenkörper wird ausgeführt\n')
+  cat('Schleifenzähler i =', i, '\n')
+}
+```
+
+Was passiert in dem Code. Wir haben einen Vektor mit den Elementen von $1,2,\ldots ,5$. Der Schleifenzähler hat den Bezeichner `i`. `i` wird Element für Element mit den Einträgen aus dem Vektor belegt und jedes mal wird der Ausdruck zwischen den Klammern ausgeführt.
+
+Ein weitere Beispiel könnte den Vektor als Index für die Einträge in einen anderen Vektor mit Elementen verwenden. Sei ein Vektor mit den Zeichenketten `"mama"`, `"papa"`, `"daughter"` und `"son"` gegeben und diese Werte sollen der Reihe nach ausgegeben werden. D.h. es soll durch die Werte **iteriert** werden. Dies könnte zu folgenden Programm führen.
 
 ```{r}
 #| echo: true
@@ -183,54 +204,114 @@ for (i in 1:4) {
 }
 ```
 
-
-### Ein längeres Beispiel mit `for`
-
-Zum Abschluss schauen wir uns ein Beispiel aus der Statistik an zu Publikationsfilter und welche Auswirkung der Filter auf die Effektstärke hat.
-
-Wir machen führen wiederholte t-Tests aus. Wir gehen davon aus, dass es eine Effektstärke von $D = 0.1$ gibt. Dazu ziehen wir zwei Stichproben der Größe $n$ aus den entsprechenden Normalverteilung die unserer Populationen darstellen. Dann berechnen wir den t-Test und wenn es sich um ein statistisch signifikantes Ergebnis handelt dann speichern wir den Unterschied zwischen den beiden Gruppen. Da es sich um ein Zufallsexperiment handelt, wissen wir vorher nicht, wie viele Vergleiche statistisch signifikant werden und wir speichern müssen, daher erstellen wir einen Ergebnisvektor der gleichen Länge wie oft wir das Experiment durchführen. Wir setzen der Einfachheit halber $n = 10, \delta = 0.1, \sigma = 1, \alpha = 0.05$ (zweiseitig). Dadurch ist der Unterschied zwischen den beiden Stichproben auch direkt als Cohen's D Effektstärke zu interpretieren. Führen wir die Simulation $N_{sim} = 100$ durch. Mit der Funktion `rnorm()` können wir normalverteilte Zufallszahlen ziehen und mit `qt()` können wir den kritischen Wert der t-Verteilung bestimmen. In Code:
+Da der Vektor `vec` eben auch ein Vektor ist, nur eben mit Zeichenketten könnten wir aber auch direkt:
 
 ```{r}
 #| echo: true
 
-n_sim <- 100
-n <- 10
-mu <- 0
-delta <- 0.1
-sigma <- 1
-df <- 2*n - 2
-kritischer_wert <- qt(0.975, df)
-ergebnis_vektor <- numeric(n_sim)
-for (i in 1:n_sim) {
-  # ziehen der Stichproben
-  stichprobe_a <- rnorm(n, mu, sigma)
-  stichprobe_b <- rnorm(n, delta, sigma)
-  
-  # zwischenwerte berechnen
-  a_bar <- mean(stichprobe_a)
-  b_bar <- mean(stichprobe_b)
-  a_sd <- sd(stichprobe_a)
-  b_sd <- sd(stichprobe_b)
-  
-  # t-Statistik berechnen
-  Delta <- abs(a_bar - b_bar)
-  s_pooled <- sqrt((a_sd**2 + b_sd**2)/2)
-  s_e <- s_pooled * sqrt(2/n)
-  t <- Delta/s_e
-  
-  # überprüfen auf statistische Signifikanz
-  if (t > kritischer_wert) {
-    ergebnis_vektor[i] <- Delta
-  }
+for (i in vec) {
+  cat('Ausdruck wird ausgeführt\n')
+  cat('i =', i, '\n')
 }
-
-statistisch_signifikant <- ergebnis_vektor[ergebnis_vektor > 0]
-D_bar <- mean(statistisch_signifikant)
-D_sd <- sd(statistisch_signifikant)
-cat('Die Effektstärke ist D =', D_bar,'+-', D_sd, '\n')
 ```
 
-Als Hausaufgaben versucht das Programm nachzuvollziehen und das Ergebnis zu interpretieren.
+Tatsächlich ist die Anwendung der `for`-Schleifen seltener als in anderen Programmiersprachen, da für viele Anweisungen **vektorisierte Funktionen** zur Verfügung stehen. D.h. soll ein Vektor von Werten bearbeitet werden, dann arbeitet eine vektorisierte Funktionen alle Elemente gleichzeitig statt und ist dabei meistens noch schneller. Im Hintergrund kann dann zwar immer noch eine `for`-Schleife zur Anwendung kommen, dies ist jedoch für die Benutzerin transparent. Ein Beispiel könnte ein Vektor mit Zeichenketten sein von denen nur immer der letzte Buchstabe benötigt wird.
+
+```{r}
+#| echo: true
+
+vec <- c("P1","P2","P3")
+vec
+```
+
+Dies könnte wieder mit einer `for`-Schleife und der `substr()`-Funktion erreicht werden.
+
+```{r}
+#| echo: true
+
+for (s in vec) {
+  print(substr(s, 2, 3))
+}
+```
+
+Die `substr()`-Funktion ist aber vektorisiert und kann schon direkt auf Zeichenkettenvektoren arbeiten. Daher wird mit der folgenden Anweisung das gleiche Ergebnis erreicht.
+
+```{r}
+#| echo: true
+
+substr(vec, 1, 3)
+```
+
+Diese Lösung hat auch noch den Vorteil, das das Ergebnis direkt als Vektor vorliegt.
+
+::: {.callout-tip}
+Bevor größere Programme mit `for`-Schleifen erstellt werden ist es meistens sinnvoll zunächst nach vektorisierten Lösungen zu schauen, da diese meistens schneller läuft und zu deutlich einfacher zu verstehenden Programme führt.
+:::
+
+Insgesamt ist eine `for`-Schleife ein Programmierkonstrukt das immer wieder auftritt und daher bekannt sein sollte.
+
+### Ein längeres Beispiel mit `for`
+
+Zur Vertiefung schauen wir uns ein längeres Beispiel für eine `for`-Schleifen.
+
+Problemstellung: Wir wollen eine Abschätzung darüber welche Unterschiede zwischen zwei Gruppen zu erwarten sind bei unterschiedlichen Treatments. Die Gruppen haben beide eine Größe von $n_1 = n_2 = n = 20$. Aus der Literatur wissen wir, dass die Gruppe unter Treatment 1 einen Mittelwert von $\mu_1 = 10$ während unter Treatment 2 im Mittel ein Mittelwert von $\mu_2 = 15$ zu erwarten sind. Das Beispiel ist abstrakt aber die Mittelwert könnten zum Beispiel Weiten beim Medizinball repräsentieren. Wir wollen jetzt abschätzen welche Unterschied wir zwischen den Gruppen erwarten würden wenn beide Gruppen eine Standardabweichung von $\sigma = 2$ aufweisen. D.h. wir definieren uns erst mal die Randwerte unserer Simulation.
+
+```{r}
+#| echo: true
+
+n <- 20
+mu_1 <- 10
+mu_2 <- 15
+sigma <- 2
+```
+
+Die Werte in den Gruppen folgen einer Normalverteilung. In `R` können wir Zufallsstichproben der Größe $n$ aus einer Normalverteilung mit Mittelwert $\mu$ und Standardabweichung $\sigma$ mittels der Funktion `rnorm(n, mu, sigma)` erzeugen. D.h. ein Durchgang der Simulation würde wie folgt aussehen.
+
+```{r}
+#| echo: true
+
+stichprobe_1 <- rnorm(n, mu_1, sigma)
+stichprobe_2 <- rnorm(n, mu_2, sigma)
+delta <- mean(stichprobe_1) - mean(stichprobe_2)
+delta
+```
+
+Nun, wollen wir diese Simulation nicht nur einmal sondern ganz oft, z.B. $n_sim = 1000$ wiederholen um eine realistische Abschätzung über die zu erwartenden Werte zu bekommen. Dafür setzen wir eine `for`-Schleife ein. 
+
+```{r}
+#| echo: true
+
+n_sim <- 1000
+for (i in 1:n_sim) {
+  stichprobe_1 <- rnorm(n, mu_1, sigma)
+  stichprobe_2 <- rnorm(n, mu_2, sigma)
+  delta <- mean(stichprobe_1) - mean(stichprobe_2) 
+}
+```
+
+Jetzt ergibt sich das Problem, dass wir noch einen Platz brauchen um die jeweiligen Ergebnisse abzuspeichern. Dafür wird ein Vektor erstellt der ausreichend bzw. genau so vielen Einträgen wie abzuspeichernde Werte hat. Mit der Funktion `numeric(n)` können wir einen numerischen Vektor der Länge `n` erstellen, der nur $0$ als Einträge hat. Kombiniert mit unserem Programm ergibt sich:
+
+```{r}
+#| echo: true
+
+n_sim <- 1000
+delta_s <- numeric(n_sim)
+for (i in 1:n_sim) {
+  stichprobe_1 <- rnorm(n, mu_1, sigma)
+  stichprobe_2 <- rnorm(n, mu_2, sigma)
+  delta_s[i] <- mean(stichprobe_1) - mean(stichprobe_2) 
+}
+```
+
+Jetzt sind alle Zwischenergebnisse in dem Vektor `delta_s` gespeichert und wir können uns die Verteilung der Unterschiede z.B. mit Hilfe eines Histogramm anschauen.
+
+```{r}
+#| echo: true
+
+hist(delta_s)
+```
+
+Wenig überraschend sind Unterschiede in den Mittelwerten um $-5$ Einheiten auseinander, aber es treten auch Unterschiede von $-7$ und $-3$ auf.
 
 ## Wiederholungen mit `replicate()`
 
@@ -248,7 +329,7 @@ x_bar <- mean(rnorm(n, mu, sigma))
 cat('Der beobachtete Mittelwert ist: ', x_bar, '\n')
 ```
 
-Okay, funktioniert. Wir wollen diese Anweisung jetzt nicht einmal sondern $100$mal durchführen. Dazu stecken wir sie in eine Funktion (streng genommen brauchen wir das nicht, aber damit es besser generalisiert machen wir hier etwas mehr Aufwand). Die Parameter für die Normalverteilung setzen wir in der Signatur der Funktion als Standardwerte.
+Sollen die Anweisung nun nicht nur einmal sondern wie im vorherigen Beispiel  für die `for`-Schleife $1000$mal durchgeführt werden, dann müssen die Anweisungen in Form einer eigenen Funktion gebündelt werden (Die Syntax für die Definition einer Funktion ist wahrscheinlich etwas undurchsichtig und wird erst im nächsten Kapitel genauer erklärt). 
 
 ```{r}
 #| echo: true
@@ -258,7 +339,7 @@ x_bar_func <- function(n = 20, mu = 3, sigma = 0.7) {
 }
 ```
 
-Wenn wir `x_bar_func()` aufrufen, erhalten wir entsprechend einen zufälligen Mittelwert aus einer Stichrprobe der Größe $n = `r n`$ aus der Normalverteilung $\mathcal{N}(`r mu`, `r sigma`)$.
+Mit dieser Anweisung wird eine neue Funktion `x_bar_func()` definiert. Diese Funktion kann nun wie jede andere Fuktion in `R` aufgerufen werden. Wenn `x_bar_func()` ausgeführt wird, erhalten wir wie oben einen zufälligen Mittelwert aus einer Stichrprobe der Größe $n = `r n`$ aus der Normalverteilung $\mathcal{N}(`r mu`, `r sigma`)$.
 
 ```{r}
 #| echo: true
@@ -266,7 +347,7 @@ Wenn wir `x_bar_func()` aufrufen, erhalten wir entsprechend einen zufälligen Mi
 x_bar_func()
 ```
 
-Diese Funktion können wir nun an `replicate()` als zweiters Argument übergeben mit dem ersten Argument der Anzahl der Wiederholungen. Starten wir erst mal nur mit $N_{sim} = 5$ Wiederholungen, um den Überblick zu behalten. 
+Die Funktion `x_bar_func()` kann nun an `replicate()` als zweites Argument übergeben werden, während mit dem ersten Argument der Anzahl der Wiederholungen spezifiziert wird. Starten wir erst mal nur mit $N_{sim} = 5$ Wiederholungen, um den Überblick zu behalten. 
 
 ```{r}
 #| echo: true
@@ -275,19 +356,20 @@ N_sim <- 5
 replicate(N_sim, x_bar_func())
 ```
 
-Als Rückgabewert von `x_bar_func()` erhalten wir einen Vektor mit den Rückgabewerten von `x_bar_func()`. Dementsprechend können wir den Rückgabewert an eine Variable zuweisen und können uns zum Beispiel ein Histogramm der Mittelwert erzeugen.
+Als Rückgabewert von `x_bar_func()` erhalten wir einen Vektor dessen Elemente die einzelnen Rückgabewerten der Aufrufe von `x_bar_func()` sind. Dieser Vektor mit den Rückgabewert kann nun ganz normal an eine Variable zugewiesen werden. Mittels der Variable kann dann zum Beispiel ein Histogramm der Mittelwerte erzeugt werden.
 
 ```{r}
 #| echo: true
+#| label: fig-flow-replicate
 
 N_sim <- 100
 x_bar_s <- replicate(N_sim, x_bar_func())
 hist(x_bar_s)
 ```
 
-Zusammenfassend, beginnen wir mit der Definition einer Funktion welche die benötigten Werte erzeugt. Diese Funktion übergeben wir an `replicate()` und können so einfach bestimmte Werte generieren.
+In @fig-flow-replicate ist zu erkennen, dass der Großteil der Mittelwerte um den Wert $3$ schwankt, was auch den Erwartungen entspricht, da wir Stichproben aus einer Normalverteilung mit dem Mittelwert $\mu = 3$ ziehen.
 
-Der Vollständigkeit halber eine Ausführung mit einer `for`-Schleife.
+Zusammenfassend lässt sich daher zur Verwendung von `replicate()` sagen, dass zunächst eine Funktion mit den benötigten Anweisungen definiert werden muss und diese dann an `replicate()` übergeben wird. Der Vollständigkeit halber eine Ausführung mit einer `for`-Schleife.
 
 ```{r}
 #| echo: true
@@ -299,5 +381,8 @@ for (i in 1:N_sim) {
 hist(x_bar_s2)
 ```
 
-Hier sehen wir, dass der Code nicht viel länger ist, wir aber expliziter uns um die Zuweisung der Ergebnisse kümmern müssen, während dies bei `replicate()` automatisch stattfindet. D.h. wenn wir mit der Schleifenvariable nichts explizit machen müssen/wollen, dann bietet `replicate()` eine Alternative zu `for`-Schleifen.
+Dass Programm ist zwar nicht viel länger, es muss sich aber expliziter die Zuweisung der Ergebnisse gekümmert werden. Dies findet bei `replicate()` automatisch statt.
 
+::: {.callout-tip}
+Wenn wiederholte Anweisungen durchgeführt werden sollen und die Schleifenvariable nicht explizit benötigt wird, dann bietet `replicate()` eine gute Alternative zu `for`-Schleifen.
+:::

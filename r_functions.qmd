@@ -11,7 +11,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-Eine zentrale Tätigkeit im Umgang mit jeder Programmiersprache ist das schreiben von eigenen Funktionen. Es ist zwar möglich relativ weit zu kommen ohne eigene Funktionen zu schreiben aber es ergeben sich um Umgang mit Daten immer wieder Situationen in denen immer wieder die gleichen Schritte durchgeführt werden. Dies führt dann oft zu copy-and-paste von Anweisungen. In solchen Fällen ist es oft hilfreich in der Lage zu sein eigene Funktionen schreiben zu können. Funktionen bieten hierdurch die Möglichkeit den eigenen Code in verschiedene logische Einheiten zu strukturieren und dadurch leichter lesbar und robuster zu machen. Letztendlich beruht der große Erfolg von `R` darauf durch eigene Funktionen die Funktionalität von `R` ständig erweitern zu können. Daher ist ein zumindest rudimentäres Verständnis der Semantik von Funktionen in `R` enorm hilfreich. 
+Eine zentrale Tätigkeit im Umgang mit jeder Programmiersprache ist das schreiben von eigenen Funktionen. Es ist zwar möglich relativ weit zu kommen ohne eigene Funktionen zu schreiben aber es ergeben sich um Umgang mit Daten immer wieder Situationen in denen immer wieder die gleichen Schritte durchgeführt werden. Dies führt dann oft zu copy-and-paste von Anweisungen. In solchen Fällen ist es oft hilfreich in der Lage zu sein eigene Funktionen schreiben zu können. Eine Funktion ist eine Block von Code der einmal definiert wird und dann immer wieder verwendet werden kann. Funktionen bieten somit die Möglichkeit eigenen Code in verschiedene logische Einheiten zu strukturieren und dadurch leichter lesbar und robuster zu machen. Letztendlich beruht der große Erfolg von `R` darauf, dass durch neue Funktionen die Funktionalität von `R` ständig erweitert werden kann. Daher ist ein zumindest rudimentäres Verständnis der Semantik von Funktionen in `R` enorm hilfreich. 
 
 Ein erstes, hilfreiches mentales Template für Funktionen in Programmiersprachen sind Funktionen wie wir sie in der Mathematik kennengelernt haben.
 
@@ -27,15 +27,23 @@ f(x) = x^2
 
 D.h. der Funktion $f()$ wird der Parameter $x$ übergeben. Dieser Wert wird anschließend quadriert und das Ergebnis der Berechnung wird zurück gegeben.
 
-In `R` werden Funktionen nach dem Muster <NAME>(<PAR1>,<PAR2>,...,<PARk>) aufgerufen (die Zeichen <> stehen für einen beliebigen Bezeichner). D.h. sobald ein rundes Klammerpaar auf einen Bezeichner folgt, geht `R` davon aus, dass die Anwenderin eine Funktion aufrufen möchte. Über <PAR1>,<PAR2>,...,<PARk> können der Funktion durch Komma getrennte Parameter übergeben werden. Die Anzahl der Parameter hängt dabei von der Definition der Funktion ab. In der Mathematik wäre ein Beispiel eine Funktion mit zwei Argumenten.
+In `R` werden Funktionen nach dem Muster <NAME>(<PAR1>,<PAR2>,...,<PARk>) aufgerufen (die Zeichen <> stehen für einen beliebigen Bezeichner). D.h. sobald ein rundes Klammerpaar auf einen Bezeichner folgt, geht `R` davon aus, dass die Anwenderin eine Funktion aufrufen möchte. Über <PAR1>,<PAR2>,...,<PARk> können der Funktion durch Komma getrennte Argumente, auch als Parameter bezeichnet, übergeben werden. Die Anzahl der Parameter hängt dabei von der Definition der Funktion ab. In der Mathematik wäre ein Beispiel für eine Funktion mit zwei Argumenten.
 
 \begin{equation*}
 f(x,y) = x^2 + y^2
 \end{equation*}
 
+D.h. der Funktion $f()$ werden nun zwei Argumente $x$ und $y$ übergeben. In diesem Fall würde es tatsächlich auch keinen Unterschied machen, in welcher Reihenfolge die Argument übergeben werden, da die Operation innerhalb der Funktion symmetrisch auf beiden Argumenten ist. Rufen wir zum Beipiel $f(2,3)$ auf, erhalten wir den gleichen Wert wie bei $f(3,2) = 25$. Dies ist bei der folgenden Funktion nicht mehr der Fall:
+
+\begin{equation*}
+f(x,y) = x^2 + 3y
+\end{equation*}
+
+Hier erhalten wir unterschiedliche Ergebnisse je nachdem ob wir die Funktion mit $f(2,3) = 13$ oder mit $f(3,2) = 15$ aufrufen. Das gleiche Problem entsteht auch wenn wir Funktion in `R` anwenden.
+
 ## Funktionen anwenden
 
-Ein einfaches Beispiel ist die Anwendung der Wurzelfunktion auf einen numerischen Wert. In `R` gibt es schon eine vordefinierte Funktion mit dem Bezeichner `sqrt()`, welche die Wurzel des übergebenen Parameters berechnet.
+Wie wir bereits gesehen haben, gibt es in `R` ein Vielzahl von bereits vordefinierten Funktionen. Ein einfaches Beispiel ist die Wurzelfunktion. In `R` ist die Funktion mit dem Bezeichner `sqrt()` definiert.
 
 ```{r}
 #| echo: true
@@ -44,9 +52,9 @@ y <- 9
 sqrt(y)
 ```
 
-Im Beispiel wird zunächst dem Wert $9$ der Bezeichner `y` zugewiesen. Dieser wird dann an die Wurzelfunktion `sqrt()` übergeben.
+Im Beispiel wird zunächst der Wert $9$ der Bezeichner `y` zugewiesen. Im zweiten Schritt wird der Bezeichnet `y` an die Wurzelfunktion `sqrt()` übergeben. D.h. der Bezeichner `y` wird ein Parameter der Funktion. Für uns nicht einsehbar holt sich die `sqrt()`-Funktion den Wert aus `y`, berechnet den Wurzelwert und gibt diesen als Rückgabewert zurück. 
 
-Ein etwas näher an der Anwendung liegendes Beispiel wäre beispielsweise die Berechnung des Mittelwerts oder die Summe der Datenreihe $(3, 5, 7)$ sein. In `R` wird eine solche geordnete Reihe von Zahlen als Vektor repräsentiert. Um einen solchen Vektor zu erstellen wird wiederum eine Funktion `c()` (für concatenation) verwendet.
+Ein weiteres Beispiel könnte beispielsweise die Berechnung des Mittelwerts oder die Summe der Datenreihe $(3, 5, 7)$ sein. Wie wir bereits gesehen haben, wird in `R` eine geordnete Reihe von Zahlen als Vektor repräsentiert. Um den Vektor zu erstellen wird die Funktion `c()` (kurz für concatenation) verwendet.
 
 ```{r}
 #| echo: true
@@ -54,7 +62,7 @@ Ein etwas näher an der Anwendung liegendes Beispiel wäre beispielsweise die Be
 z <- c(3, 5, 7)
 ```
 
-Mit dieser Anweisung hat `R` einen Vektor mit den drei Einträgen erstellt. Wir können jetzt den Mittelwert $\bar{z} = \frac{1}{3}\sum_{i=1}^3z_i$ mittels der Funktion `mean()` berechnen.
+Mit dieser Anweisung hat `R` einen Vektor mit den drei Einträgen erstellt. Um den Mittelwert $\bar{z} = \frac{1}{3}\sum_{i=1}^3z_i$ zu berechnen kann nun die Funktion `mean()` verwendet werden.
 
 ```{r}
 #| echo: true
@@ -62,7 +70,7 @@ Mit dieser Anweisung hat `R` einen Vektor mit den drei Einträgen erstellt. Wir 
 mean(z)
 ```
 
-Vielleicht interessiert uns jetzt nicht der Mittelwert sondern die Summe $\bar{z} = \sum_{i=1}^3z_i$. Dafür können wir die `sum()` Funktion verwenden.
+Vielleicht interessiert aber auch die Summe $\bar{z} = \sum_{i=1}^3z_i$ der Vektorelemente. Dafür kann die `sum()` Funktion verwenden.
 
 ```{r}
 #| echo: true
@@ -70,19 +78,19 @@ Vielleicht interessiert uns jetzt nicht der Mittelwert sondern die Summe $\bar{z
 sum(z)
 ```
 
-Dies sind jetzt nur einige wenige Beispiele und einer der Skills im Umgang mit `R` besteht darin die Namen der Funktion sich zu merken. Dies kann am schnellesten durch den täglichen Umgang mit `R` erlernt werden. Am Besten ab heute.
+Dies sind jetzt nur einige wenige Beispiele und einer der Skills im Umgang mit `R` besteht nun darin die Namen der Funktion sich zu merken. Dies kann am schnellsten durch den täglichen Umgang mit `R` erreicht werden. Am Besten ab heute.
 
 ## Eigene Funktionen schreiben
 
-Im folgenden wird nur kurz examplarisch das Schreiben eigener Funktionen gezeigt, da damit deutlich tiefer in die Programmierung mit `R` eingestiegen werden muss, als dass zum jetzigen Zeitpunkt notwendig ist.
+Im Folgenden wird die Syntax für die Definition eigenen Funktionen gezeigt. Dabei wird nur die wichtigsten Elemente angesprochen, da um ein umfassendes Verständnis zu erlangen, deutlich tiefer in die Programmierung mit `R` eingestiegen werden müsste, als dass zum jetzigen Zeitpunkt notwendig ist.
 
-Wollen wir zum Beispiel eine Funktion schreiben die den gewichteten Mittelwert aus zwei Werten berechnet mit den Gewichten $(\frac{1}{3},\frac{2}{3})$:
+Wollen wir zum Beispiel eine Funktion schreiben die den gewichteten Mittelwert aus zwei Werten $x$ und $y$ berechnet. Die Gewichten $w$ seien Gewichten $(w_x = \frac{1}{3},w_y = \frac{2}{3})$. Mathematisch würde dies folgende Definition nach sich ziehen.
 
 \begin{equation*}
 f(x,y) = \frac{1}{3}x + \frac{2}{3}y
 \end{equation*}
 
-Dann könnten wir das in `R` wie folgt ausdrücken.
+In `R` kann diese Funktion wie folgt ausgedrückt werden:
 
 ```{r}
 #| echo: true
@@ -92,9 +100,13 @@ mein_gewichteter_mittelwert <- function(x,y) {
 }
 ```
 
-Um eine eigene Funktion zu defineren, muss das *Schlüsselworts* `function()` verwendet werden. Wenn `R` den Ausdruck `function` sieht, dann interpretiert es den Ausdruck als Definition einer neuen Funktion. Auf das Schlüsselwort folgen runde Klammern `()` die die benötigten Parameter der Funktion umschließen. Im Beispiel werden zwei Parameter definiert $x$ und $y$. Die Namen der Parameter sind dabei vollkommen willkürlich und müssen lediglich zu späteren Ausdruck in der Funktion passen. Es folgen dann zwei geschweifte Klammern `{}` die den sogenannten Funktionskörper definieren. Im Funktionskörper ist die Funktionalität der Funktion hinterlegt. Konkret stehen hier die Ausdrücke mit derer die Funktion ihren Ergebniswert berechnen kann. Um die Funktion aufrufbar zu machen, braucht sie wieder einen Bezeichner. Dieser wird mittels des Zuweisungsoperators  `<-` definiert. In R-Studio sollte in der **Environment** nach dem Ausführen der Anweisung nun ein Eintrag mit dem Namen `mein_gewichteter_mittelwert` stehen. Der Name ist wiederum vollkommen willkürlich und es `R` kontrolliert nicht ob mein Bezeichner semantisch dem entspricht was die Funktion berechnet.
+Um eine eigene Funktion zu definieren, muss das *Schlüsselwort* `function()` verwendet werden. Wenn `R` den Ausdruck `function` auf der Eingabe sieht, dann interpretiert es den Ausdruck als Definition einer neuen Funktion. Auf das Schlüsselwort folgen runde Klammern `()` die die benötigten Parameter der Funktion umschließen. Im Beispiel werden zwei Parameter definiert $x$ und $y$. Die Namen der Parameter sind dabei vollkommen willkürlich und müssen lediglich zu späteren Ausdruck in der Funktion passen. Es folgen dann zwei geschweifte Klammern `{}` die den sogenannten Funktionskörper definieren. Im Funktionskörper sind die Anweisungen hinterlegt, welche die Funktionalität der Funktion bestimmen und die gewollten Berechnungen ausführen. Konkret stehen hier die Ausdrücke mit denen die Funktion ihren Ergebniswert berechnen kann. Um die Funktion aufrufbar zu machen, braucht sie wieder einen Bezeichner. Der Bezeichner wird bereits bekannt mittels des Zuweisungsoperators  `<-` definiert.
 
-Nachdem ich die Funktion definiert habe, kann ich sie wie jeder andere Funktion aufrufen. Bei Aufrufen der Funktion werden die Parameter entsprechend der übergegebenen Werte in den Klammern im Funktionskörper ersetzt. Und `R` führt die Anweisungen im Funktionskörper aus. Der Rückgabewert der Funktion ist die letzte Anweisung des Funktionskörpers. Im vorliegenden Beispiel, da es nur eine Anweisung gibt, wird dieser Wert zurück gegeben.
+In R-Studio sollte in der **Environment** nach dem Ausführen der Anweisung nun ein Eintrag mit dem Namen `mein_gewichteter_mittelwert` stehen. Der Name ist wiederum vollkommen willkürlich und es `R` kontrolliert nicht ob mein Bezeichner semantisch dem entspricht was die Funktion berechnet.
+
+Nachdem die Funktion definiert und ausgeführt wurde, kann die neue Funktion wie jeder andere Funktion in `R` aufgerufen werden. Bei Aufrufen der Funktion werden die Parameter entsprechend der übergebenen Werte in den Klammern im Funktionskörper ersetzt. Und `R` führt die Anweisungen im Funktionskörper aus.
+
+Der Rückgabewert der Funktion, also deren Ergebnis ist die **letzte Anweisung** des Funktionskörpers. Im vorliegenden Beispiel, da es nur eine Anweisung gibt, wird dieser Wert zurück gegeben.
 
 ```{r}
 #| echo: true
@@ -120,15 +132,239 @@ Hier haben wir mit `a` und `b` zunächst zwei Zwischenberechnung durchgeführt u
 
 :::
 
-Wer tiefer in die Programmierung von Funktion in `R` einsteigen möchte, sollte sich [R4DS](https://r4ds.hadley.nz/functions.html) und [Advanced R](https://adv-r.hadley.nz/functions.html) anschauen.
+In anderen Programmiersprachen wird der Rückgabe explizit durch ein Schlüsselwort `return` gekennzeichnet. Dies ist in `R` möglich aber nicht zwingend notwendig. Daher sind die beiden folgenden Funktionen gleichwertig.
+
+```{r}
+#| echo: true
+
+foo_1 <- function(x) {
+  x + 2
+}
+
+foo_2 <- function(x) {
+  ergebnis <- x + 2 
+  return(ergebnis)
+}
+
+foo_1(1)
+foo_2(1)
+```
+
+### Benennung der Argumente 
+
+Ein Umstand der Programmierneulinge immer wieder Probleme bereitet ist die Benennung der Parameter. Wie immer in `R` sind die konkreten Namen der Bezeichner willkürlich und was nur beachtet werden muss ist, dass die Bezeichner zu den Anweisungen passen. Hier wieder zweimal die gleiche Funktion in unterschiedlichen Versionen.
+
+```{r}
+#| echo: true
+
+f_1 <- function(aa_bb) {
+  aa_bb + 2
+}
+
+f_2 <- function(langer_parameter_name) {
+  langer_parameter_name + 2
+}
+
+f_1(1)
+f_2(1)
+```
+
+Was zu einem Fehler führen würde, wenn die Bezeichner und die Parameter nicht zueinander passen.
+
+
+```{r}
+#| echo: true
+#| error: true
+#| output: true
+
+f_3 <- function(aa_bb) {
+  langer_parameter_name + 2
+}
+
+f_3(1)
+```
+
+In diesem Fall beschwert sich `R`, dass es den Bezeichner `langer_parameter_name` nicht kennt und dementsprechend die Anweisung nicht ausführen kann. D.h. bei der Definition der Funktion müssen die Bezeichner zu den Anweisungen.
+
+Wenn eine Funktion mehrere Argumente hat, dann müssen die übergebenen Argumente zu den definierten Argumenten passen.
+
+```{r}
+#| echo: true
+
+f_4 <- function(a,b,c) {
+  a + b * c
+}
+
+f_4(1,2,3)
+```
+
+Dementsprechend, wenn Argumente beim Aufruf fehlen kommt es zu einem Fehler.
+
+```{r}
+#| echo: true
+#| error: true
+
+f_4(1,2)
+```
+
+Die Definition der Funktionsargumente wird auch als **Signatur** der Funktion bezeichnet. Die **Signatur** kann mittels der Funktion `formals()` abgefragt werden.
+
+```{r}
+#| echo: true
+
+formals(f_4)
+```
+
+
+### Auflösen der Argumente
+
+Im einfachsten Fall, werden die übergebenen Argumente einfach der Reihenfolge nach durch an die jeweiligen Bezeichner geknüpft. Es besteht aber die Möglichkeit über das sogenannte **named matching** die Argumente in einer beliebigen Reihenfolge zu übergeben. In diesem Fall müssen die Argumentnamen explizit mit angegeben werden.
+
+```{r}
+#| echo: true
+
+f_4(c = 3, a = 1, b = 2)
+```
+
+Dies kann auch gemischt gemacht werden, z.B.:
+
+```{r}
+#| echo: true
+
+f_4(c = 3, 1, 2)
+```
+
+Hier wurde der Parameter `c` über **named matching** definiert und die verbleibenden Argumente wurden dann der Reihenfolge nach übergeben. Was passiert im folgenden Beispiel?
+
+```{r}
+#| echo: true
+#| eval: false
+
+f_4(b=2, 1, 3)
+```
+
+Es besteht auch die Möglichkeit Funktionsargumenten ein Standardwerte (**default values**) bei der Definition der Funktion zu übergeben.
+
+```{r}
+#| echo: true
+
+f_5 <- function(a = 1, b = 2, c = 3) {
+  a + b * c
+}
+```
+
+In diesem Fall kann die Funktion sogar ganz ohne Argument aufgerufen werden.
+
+```{r}
+#| echo: true
+
+f_5()
+```
+
+Oder es können einzelne Argument übergeben werden. Hier muss aber darauf geachtet werden, dass zunächst immer die Position verwendet wird, wenn nicht **named matching** verwendet wird.
+
+```{r}
+#| echo: true
+
+f_5(3)
+f_5(b=3)
+```
+
+Zusammengenommen ergeben sich die folgenden Regeln bei der Übergabe von Argumenten:
+
+1. **Positionale Argumente** werden der Reihenfolge nach zugewiesen.
+2. **named matching** werden explizit den Parametern zugeordnet, unabhängig von der Reihenfolge.
+3. **Standardwerte** werden verwendet, wenn keine Argumente für die entsprechenden Parameter übergeben wurden.
+
+### Scoping
+
+In `R` gibt es Regeln, die festlegen, wie und wo Variablen in einer Funktion "sichtbar" sind oder verwendet werden können. Diese Regeln nennt man **Scoping-Regeln**. Sie bestimmen, wo `R` nach Variablen sucht, wenn sie innerhalb einer Funktion verwendet werden. 
+
+Wenn du eine Funktion in R aufrufst und darin auf eine Variable zugreifen möchtest, muss `R` wissen, wo es nach dieser Variable suchen soll. Scoping beschreibt also die **Regeln**, nach denen `R` entscheidet, **wo** es nach dem Wert einer Variable sucht, wenn du sie innerhalb einer Funktion verwendest.
+
+`R` verwendet hauptsächlich das sogenannte **Lexical Scoping**. Lexical Scoping bedeutet, dass `R` nach Variablen in der Umgebung der Funktion sucht, basierend darauf, wo die Funktion definiert wurde und nicht wo sie aufgerufen wird. Das bedeutet, dass `R` beim Suchen nach einer Variable von **innen nach außen** schaut. Dabei beginnt `R` bei der Funktion selbst um dann in der äußeren Umgebungen zu suchen, bis es die Variable findet. Wird die Variable nicht gefunden, dann wird ein Fehler geworfen.
+
+Wenn innerhalb einer Funktion eine Variable definiert wird, wird diese Variable nur in dieser Funktion verwendet. Die Variable hat keinen Einfluss auf Variablen außerhalb der Funktion. Die wird als **local Scope** bezeichnet. In der folgenden Funktion wird im Funktionskörper eine Variable $x$ definiert und deren Wert ausgegeben.
+
+```{r}
+#| echo: true
+#| error: true
+
+f_6 <- function() {
+  x <- 10
+  print(x)
+}
+
+f_6() 
+```
+
+Die Variable `x` existiert **nur innerhalb der Funktion**. Sobald die Ausführung der Funktion beendet ist, "verschwindet" `x` wieder. Auf den Bezeichner `x` kann dann von außerhalb der Funktion nicht zugegriffen werden. Es wurde vorher schon gezeigt, dass wenn ein Bezeichner verwendet wird, der nicht definiert ist, dass `R` dann einen Fehler wirft.
+
+```{r}
+#| echo: true
+#| error: true
+
+f_7 <- function() {
+  print(x)
+}
+```
+
+Das war allerdings nur die halbe Wahrheit, denn der folgende Code wirft keinen Fehler mehr.
+
+```{r}
+#| echo: true
+
+x <- 5
+f_8 <- function() {
+  print(x)
+}
+f_8()
+```
+
+Was ist hier passiert? Bei Aufruf von `f_8()` trifft die Funktion auf den Bezeichner `x`, dieser ist weder innerhalb des Funktionskörpers noch als Funktionsargument definiert. Jetzt greift die von innen-nach-außen Regel. `R` schaut jetzt in der Umgebung in der die Funktion definiert wurde nach, ob es dort ein `x` gibt (tatsächlich ist es etwas komplizierter, aber dieses einfache Modell reicht erst mal). Diese Art der Variablenauflösung hat einen entscheidenden Nachteil, nämlich, dass wenn sich der Wert von `x` in der Umgebung ändert, dann ändert sich auch der zurückgegebene Wert der Funktion trotzdem die Funktion mit den gleichen Argumenten aufgerufen wurde.
+
+```{r}
+#| echo: true
+
+x <- 5
+f_8()
+x <- 10
+f_8()
+```
+
+::: {.callout-caution}
+Solcher Code führt praktisch immer zu fehleranfälligen und sehr schwer zu berichtigenden Programmen. Daher sollte dies möglichst immer vermieden werden und die Funktion sollte **alle Informationen** die sie zur Ausführung braucht in Form von Argumenten übergeben bekommen.
+:::
+
+Wenn ein Bezeichner in der Umgebung und innerhalb der Funktion den gleichen Namen haben, dann wird immer der Wert des in der Funktion definierten Bezeichners verwendet. Dies gilt egal ob der Wert als Argument oder innerhalb des Funktionskörpers definiert wurde.
+
+```{r}
+#| echo: true
+
+x <- 5
+f_9 <- function() {
+ x <- 10
+ x
+}
+f_9()
+
+f_10 <- function(x) {
+  x + 2
+}
+f_10(10)
+```
+
+In beiden Fällen verwenden die Funktionen `f_9()` und `f_10()` das im Funktionskörper bzw. in der Argumentliste definierte `x` und nicht das in der umschließenden Umgebung.
+
+Dies sollte für jetzt reichen. Wer tiefer in die Programmierung von Funktion in `R` einsteigen möchte, sollte sich [R4DS](https://r4ds.hadley.nz/functions.html) und [Advanced R](https://adv-r.hadley.nz/functions.html) anschauen.
 
 ## Funktionen in `R`-Paketen
 
 Sollte sich der Fall ergeben, dass keine geeignete Funktion mit `R` mitgeliefert wird, dann können Zusatzfunktionen mittels sogenannter Pakete installiert werden. Ein Paket kann dabei als eine Sammlung von Funktionen und Anweisungen angesehen werden mit deren Hilfe die Funktionalität von `R` erweitert werden kann. Daher wird zunächst Information darüber benötigt, in welchem Paket die gewünschte Funktionalität vorhanden ist. Hierfür reicht meistens eine kurze Suche mittels Google aus.
 
-Ist das Paket nun bekannt, dann sind zwei Schritte zunächst durchzuführen. Wobei der 1. Schritt nur beim ersten Mal durchgeführt werden muss. Zunächst muss das benötigte Paket in der lokalen, d.h. derjenigen auf dem Rechner laufenden, `R`-Umgebung installiert werden, wenn es noch nicht bereits vorher installiert wurde (in R-Studio: Reiter unten-links **Packages**).
+Ist das Paket nun bekannt, dann sind zwei Schritte zunächst durchzuführen. Wobei der 1. Schritt nur beim ersten Mal durchgeführt werden muss. Zunächst muss das benötigte Paket in der lokalen, d.h. derjenigen auf dem Rechner laufenden, `R`-Umgebung **installiert** werden, wenn es noch nicht bereits vorher installiert wurde (in R-Studio: Reiter unten-links **Packages**).
 
-Ein Paket kann mittels des Befehlt `install.packages()` installiert werden. Der Name des Paket muss in Gänsefüßchen an die Funktion übergeben werden. Wollen wir beispielsweise das Paket `performance` installieren, führen wir den folgenden Befehl aus.
+Ein Paket kann mittels des Befehlt `install.packages()` installiert werden. Der Name des Paket muss Zeichenkette an die Funktion übergeben werden. Wollen wir beispielsweise das Paket `performance` installieren, führen wir den folgenden Befehl aus.
 
 ```{r}
 #| echo: true
@@ -137,9 +373,18 @@ Ein Paket kann mittels des Befehlt `install.packages()` installiert werden. Der 
 install.packages("performance")
 ```
 
-`R` kontaktiert im Hintergrund den CRAN-Server und lädt das Paket sowie benötigte Abhängigkeiten automatisch herunter. Wenn alles gut läuft, dann ist das Paket nun in der lokalen Umgebung *installiert*. Die Funktionalität des Paket steht jedoch noch nicht direkt zur Verfügung! Sondern, das Paket muss mit einem weiteren Befehl in die derzeit aktive Arbeitsumgebung geladen werden.
+Wenn mehrere Pakte in einem Schwung installiert werden sollen, dann übergibt man `install.packages()` einen Vektor mit den Namen der Paketen als Zeichenketten. Sollen zum Beispiel die Pakete `performance` und `ggplot2` installiert werden, dann kann die folgende Anweisung verwendet werden.
 
-Um das Paket in die aktive Arbeitsumgebung zu laden wird gibt es zwei Befehle in `R`, `library()` und `require()`. Bei `require()` überprüft `R` zunächst ob das Paket schon geladen wurde, während bei `library()` das Paket einfach geladen wird. Um die Funktionalität von `performance` jetzt in der aktiven Session zu nutzen, kann dementsprechend `library()` benutzt werden.
+```{r}
+#| echo: true
+#| eval: false
+
+install.packages(c("performance","ggplot2"))
+```
+
+`R` kontaktiert im Hintergrund einen sogenannten CRAN-Server im Internet und lädt das Paket sowie benötigte Abhängigkeiten automatisch herunter. Wenn alles gut läuft, dann ist das Paket nun in der lokalen Umgebung, als auf dem Rechner, *installiert*. Die Funktionalität des Paket steht jedoch noch nicht direkt zur Verfügung! Sondern, das Paket muss mit einem weiteren Befehl in die derzeit aktive Arbeitsumgebung geladen werden.
+
+Um das Paket in die aktive Arbeitsumgebung zu laden, gibt es zwei Befehle in `R`, `library()` und `require()`. Bei `require()` überprüft `R` zunächst ob das Paket schon geladen wurde, während bei `library()` das Paket einfach geladen wird unabhängig davon ob das Paket schon geladen ist. Um die Funktionalität von `performance` jetzt in der aktiven Session zu nutzen, kann dementsprechend `library()` benutzt werden.
 
 ```{r}
 #| echo: true
@@ -148,9 +393,16 @@ Um das Paket in die aktive Arbeitsumgebung zu laden wird gibt es zwei Befehle in
 library(performance)
 ```
 
-Dieser zweite Schritt des Paket laden, muss jedes mal nach einen Neustart von `R` wieder durchgeführt werden. Zusatzpakete werden durch `R` beim Start nicht automatisch geladen.
+Hier muss der Name des Pakets nicht als Zeichenkette übergeben werden, sondern kann einfach als Bezeichner übergeben werden. Dieser zweite Schritt des laden des Pakets, muss jedes mal nach einen Neustart von `R` wieder durchgeführt werden. Wenn `R` startet sind immer nur eine kleine Anzahl von Standardpaketen geladen und Zusatzpakete werden durch `R` beim Start nicht automatisch geladen.
 
 ::: {.callout-tip}
 Neue Pakete müssen nur beim ersten Mal neu installiert werden. Danach immer nur noch entweder mit `library()` oder `require()` geladen werden.
 :::
 
+::: {.callout-tip}
+Mit dem Befehl `search()` können die aktuell geladenen Pakete eingesehen werden und mit dem Befehl `detach()` können Pakete auch wieder entladen werden.
+:::
+
+::: {.callout-tip}
+Beim Erstellen von Skripten ist es meistens sinnvoll alle benötigten Pakete ganz nach oben ins Skript zu schreiben, so dass die Pakete vor der Ausführung der anderen Anweisungen im Skript zur Verfügung stehen. So kann sichergestellt werden, dass der Code auch alle benötigten Pakete zur Verfügung hat. D.h. Pakete über die GUI in R-Studio zu laden sollte eher vermieden werden.
+:::

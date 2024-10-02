@@ -28,6 +28,14 @@ Und das Distributivgesetz zum ausmultiplizieren bzw. zusammenfassen von Klammern
   (a + b)\times (a - b) &= a^2 - b^2
 \end{align*}
 
+Was auch noch bekannt sein sollte, sind die **Binomischen Formeln**.
+
+\begin{align*}
+(a+b)^2 &= a^2 + 2ab + b^2 \\
+(a-b)^2 &= a^2 - 2ab + b^2 \\
+(a+b)(a-b) &= a^2 - b^2
+\end{align*}
+
 Ein immer wiederkehrender Operator in der Statistik ist das Summenzeichen $\sum$. Das Summenzeichen hat üblicherweise einen Laufindex der unter dem Summenzeichen steht zusammen mit einem Anfangswert. Über dem Summenzeichen steht der Endwert. Für den Laufindex werden meistens die Buchstaben $i,j,k$ verwendet. Dies ist aber keine feste Regel sondern jeder Buchstabe ist möglich. Für jeden Wert des Laufindex wird ein Summand erstellt. Zum Beispiel.
 
 \begin{equation*}
@@ -65,6 +73,28 @@ Neben dem Summenzeichen, kommt auch immer wieder mal das Produktzeichen zur Anwe
 \prod_{i=0}^n x_i = x_1 \times x_2 \times \cdots \times x_n
 \end{equation}
 
+Im Umgang mit **Exponentialfunktionen** sind die folgenden Rechenregeln zu beachten.
+
+\begin{align*}
+a^m \cdot a^n &= a^{m+n} \\
+\frac{a^m}{a^n} &= a^{m-n}, \quad (a \neq 0) \\
+(a^m)^n &= a^{m \cdot n} \\
+(a \cdot b)^n &= a^n \cdot b^n \\
+\left(\frac{a}{b}\right)^n &= \frac{a^n}{b^n}, \quad (b \neq 0) \\
+a^0 &= 1, \quad (a \neq 0) \\
+a^{-n} &= \frac{1}{a^n}, \quad (a \neq 0) \\
+a^1 &= a
+\end{align*}
+
+Dazu auch die Rechenregeln für den **Logarithmus**.
+
+\begin{align*}
+\log_b (x \cdot y) &= \log_b (x) + \log_b (y) \\
+\log_b \left(\frac{x}{y}\right) &= \log_b (x) - \log_b (y) \\
+\log_b (x^n) &= n \cdot \log_b (x) \\
+\log_b (1) &= 0
+\end{align*}
+
 ## Funktionen
 
 ### Lineare Funktion
@@ -93,7 +123,94 @@ Die Gerade kann als eine Funktion angesehen welche $x$-Werte auf $y$-Werte abbil
 
 ### Polynome
 
+Ein Polynom ist ein mathematischer Ausdruck, der aus einer Summe von mehreren Termen besteht, wobei jeder Term aus einer Konstanten (dem Koeffizienten) und einer oder mehreren Variablen, die mit einer Potenz versehen sind, besteht. Ein Beispiel ist die Funktion: 
+
+\begin{equation*}
+3x^2 + 2x - 5
+\end{equation*}
+
+Die höchste Potenz der Variable bestimmt den **Grad des Polynoms**; in diesem Fall ist der Grad 2, da $x^2$ die höchste Potenz ist. Polynome der ersten drei Grade haben eigene Bezeichnungen.
+
+- **Lineares Polynom**: Ein Polynom vom Grad 1, z.B. $2x + 3$. Der Graph ist immer eine Gerade und daher ist eine lineare Funktion auch ein Polynom 1. Grades.
+- **Quadratisches Polynom**: Ein Polynom vom Grad 2, z.B. $x^2 - 4x + 4$. Der Graph ist eine Parabel.
+- **Kubisches Polynom**: Ein Polynom vom Grad 3, z.B. $x^3 + x - 6$. Der Graph hat eine geschwungene Form mit möglichen Wendepunkten.
+
+```{r}
+#| label: fig-app-math-polynom
+#| layout-ncol: 3
+#| fig-cap: "Beispiel für Polynomfunktionen"
+#| fig-subcap:
+#|   - "Beispiel für ein Polynom 1. Grades $f(x) = 3 + 2x$"
+#|   - "Beispiel für ein Polynom 2. Grades $f(x) = x^2 + 1$"
+#|   - "Beispiel für ein Polynom 3. Grades $f(x) = x^3 + \\frac{1}{2}x^2 + 1$"
+
+df_poly <- tibble(
+  x = seq(-1, 1, length.out=100),
+  y1 = 3 + 2*x,
+  y2 = x**2 + 1,
+  y3 = x**3 + 0.5*x**2 + 1
+)
+ggplot(df_poly, aes(x,y1)) + geom_line() + labs(x='X',y='Y')
+ggplot(df_poly, aes(x,y2)) + geom_line() + labs(x='X',y='Y')
+ggplot(df_poly, aes(x,y3)) + geom_line() + labs(x='X',y='Y')
+```
+
 ### Exponentialfunktion
+
+Eine Exponentialfunktion ist eine mathematische Funktion der Form:
+
+\begin{equation*}
+f(x) = a \cdot b^x 
+\end{equation*}
+
+Der Term $a$ ist eine Konstante während $b$ als Basis bezeichnet wird. Die Basis $b$ ist eine positive Zahl, die größer als null ist und bestimmt, wie schnell die Funktion wächst oder abnimmt. Wenn $b>1$ gilt, dann wächst die Funktion exponentiell, was bedeutet, dass die Funktion immer schneller ansteigt. Wenn $0< b<1$, sinkt die Funktion exponentiell, was bedeutet, dass die Funktion immer langsamer abnimmt.
+
+Exponentialfunktionen werden oft verwendet, um Wachstum oder Zerfall zu beschreiben, wie z. B. das Wachstum einer Bakterienkultur, das Bevölkerungswachstum oder den radioaktiven Zerfall. Ein charakteristisches Merkmal von Exponentialfunktionen ist, dass sich der Wert bei einem festen Abstand auf der x-Achse immer um den gleichen Faktor ändert, was zu einem sehr schnellen Anstieg oder Abfall führen kann. Bei Beispiel für eine exponentiellen Funktion könnte z.B. $f(x) = 2 \cdot 4^x$ sein.
+
+```{r}
+#| label: fig-app-math-exp-1
+#| fig-cap: "Beispiel für die Exponentialfunktion $f(x) = 2\\cdot4^x$."
+df_exp <- tibble(x = seq(0,4,length.out=50), y = 2*4**x)
+ggplot(df_exp, aes(x,y)) + geom_line() + labs(x='X', y='Y')
+```
+
+Eine zentrale Rolle in der Statistik, wie auch in der restlichen Mathematik, spielt die Exponentialfunktion zur Basis $e$. $e$ ist die sogenannte Euler'sche Zahl und hat ungefähr den Wert $e \approx 2,718$. Die Umkehrfunktion der $e$-Funktion $f(x) = e^x$ wird als der natürliche Logarithmus $f(x) = ln(x) = log_{e}(x)$. Es gilt.
+
+\begin{equation*}
+ln(e^x) = x
+\end{equation*}
+
+In der Statistik kommen die $e$-Funktion oft in der folgenden Form vor:
+
+\begin{equation*}
+f(x) a \cdot e^{bx}
+\end{equation*}
+
+Hierbei ist $a$ der Wert den die Funktion für $x = 0$ einnimmt, also der $y$-Achsenabschnitt während die konstante $b$ die Steigung verändert und $b$ positive und negative Werte annehmen kann.
+
+```{r}
+#| label: fig-app-math-exp-2
+#| layout-ncol: 3
+#| fig-cap: "Beispiele für Varianten von Exponentialfunktionen mit der Basis $e$."
+#| fig-subcap:
+#|   - $f(x) = e^x$
+#|   - $f(x) = 3e^{2x}$
+#|   - $f(x) = 2e^{-x}$
+
+df_exp <- tibble(
+  x = seq(-3, 3, length.out=100),
+  y1 = exp(x),
+  y2 = 3*exp(2*x),
+  y3 = 2*exp(-x)
+)
+ggplot(df_exp, aes(x,y1)) + geom_line() + labs(x='X', y='Y')
+ggplot(df_exp, aes(x,y2)) + geom_line() + labs(x='X', y='Y')
+ggplot(df_exp, aes(x,y3)) + geom_line() + labs(x='X', y='Y')
+```
+
+## Extremwerte einer Funktion
+
+## Vektoren
 
 ## Matrizen
 
