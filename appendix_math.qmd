@@ -23,9 +23,7 @@ Und das Distributivgesetz zum ausmultiplizieren bzw. zusammenfassen von Klammern
 \begin{align*}
   a \times (b + c) &= a\times b + a\times c \\
   2 \times (3 + 4) &= 2 \times 3 + 2 \times 4 \\
-  10 a + a b &= a (10 + b) \\
-  (a + b)^2 &= a^2 + 2ab + b^2 \\
-  (a + b)\times (a - b) &= a^2 - b^2
+  10 a + a b &= a (10 + b) 
 \end{align*}
 
 Was auch noch bekannt sein sollte, sind die **Binomischen Formeln**.
@@ -36,7 +34,7 @@ Was auch noch bekannt sein sollte, sind die **Binomischen Formeln**.
 (a+b)(a-b) &= a^2 - b^2
 \end{align*}
 
-Ein immer wiederkehrender Operator in der Statistik ist das Summenzeichen $\sum$. Das Summenzeichen hat üblicherweise einen Laufindex der unter dem Summenzeichen steht zusammen mit einem Anfangswert. Über dem Summenzeichen steht der Endwert. Für den Laufindex werden meistens die Buchstaben $i,j,k$ verwendet. Dies ist aber keine feste Regel sondern jeder Buchstabe ist möglich. Für jeden Wert des Laufindex wird ein Summand erstellt. Zum Beispiel.
+Ein immer wiederkehrender Operator in der Statistik ist das **Summenzeichen** \index{Summenzeichen} $\sum$. Das Summenzeichen hat üblicherweise einen Laufindex der unter dem Summenzeichen steht zusammen mit einem Anfangswert. Über dem Summenzeichen steht der Endwert. Für den Laufindex werden meistens die Buchstaben $i,j,k$ verwendet. Dies ist aber keine feste Regel sondern jeder Buchstabe ist möglich. Für jeden Wert des Laufindex wird ein Summand erstellt. Zum Beispiel.
 
 \begin{equation*}
   \sum_{i=0}^{2} i = (i=0) + (i=1) + (i=2) = 0 + 1 + 2 = 6 
@@ -210,13 +208,127 @@ ggplot(df_exp, aes(x,y3)) + geom_line() + labs(x='X', y='Y')
 
 ## Extremwerte einer Funktion
 
-## Vektoren
+Extremwerte sind die höchsten oder tiefsten Punkte einer Funktion. In der Mathematik unterscheidet man zwischen **Hochpunkten** (Maxima) und **Tiefpunkten** (Minima).  Um Extremwerte zu finden, wird zunächst die Ableitung der Funktion gebildet. Die Ableitung gibt die Steigung der Funktion an. Punkte an denen die Steigung gleich null ist, könnten potentiell einen Extremwert darstellen. Dementsprechend wird die Ableitung der Funktion gleich null gesetzt und die entstehende Gleichung wird gelöst.
+
+\begin{equation*}
+f'(x) = 0
+\end{equation*}
+
+Die Lösungen dieser Gleichung sind die **Kandidaten** für Extremwerte. Um herauszufinden, ob die gefundenen Punkte Hoch- oder Tiefpunkte sind, muss dann die zweite Ableitung der Funktion betrachtet werden. Die folgenden Fälle können unterschieden werden:
+
+- Wenn $f''(x) > 0$ an einem Punkt $x$, dann handelt es sich um ein Minimum (Tiefpunkt).
+- Wenn $f''(x) < 0$, dann ist es ein Maximum (Hochpunkt).
+- Wenn $f''(x) = 0$, ist der Test nicht eindeutig und du musst andere Methoden verwenden.
+
+Um die Extremwerte zu bekommen müssen dann die Werte der Funktion $f(x)$ an den gefundenen Extrempunkten berechnet werden, um herauszufinden, wo die höchsten und tiefsten Punkte liegen.
+
+::: {#exm-app-math-extrema}
+Wir wollen den Extremwert der Funktion $f(x) = 3x^2+2$ finden.
+
+```{r}
+#| label: fig-app-math-extrema
+#| fig-cap: "Graph der Funktion $f(x) = 3x^2+2$"
+
+tibble(x = seq(-1,1,length.out=100), y = 3*x**2+2) |> 
+  ggplot(aes(x,y)) + geom_line() + labs(x='X', y='Y')
+```
+
+Dazu werden zunächst die ersten und zweite Ableitung gebildet:
+
+\begin{align*}
+f(x) &= 3x^2 + 2 \\
+f'(x) &= 6x \\
+f''(x) &= 6
+\end{align*}
+
+Die erste Ableitung wird gleich null gesetzt und gelöst:
+
+\begin{equation*}
+6x = 0 \Rightarrow x = 0
+\end{equation*}
+
+Da die zweite Ableitung eine positive Konstante ist, haben wir bei $x=0$ den einzigen Extremwert, ein Minimum, gefunden, wie in @fig-app-math-extrema auch zu erkennen ist.
+:::
+
+## Vektoren \index{Vektor}
+
+Ein Vektor ist eine mathematische Größe, die sowohl eine Richtung als auch eine Länge (Magnitude) hat. Man kann sich einen Vektor als einen Pfeil vorstellen, der von einem Punkt zu einem anderen zeigt. Zum Beispiel könnte ein Vektor in der Geometrie die Bewegung von einem Punkt A zu einem Punkt B darstellen.
+
+Vektoren werden oft in der Form $\mathbf{v} = (x, y)$ dargestellt, wobei $x$ und $y$ die Komponenten des Vektors sind. In einem dreidimensionalen Raum könnte ein Vektor auch so aussehen: $\mathbf{v} = (x, y, z)$. Daraus folgt das ein Vektor eine geordnete Menge von Element ist. D.h. es gilt mit $x\neq y$:
+
+\begin{equation*}
+\mathbf{a} = (x,y) \neq \mathbf{b} = (y,x)
+\end{equation*}
+
+Vektoren werden üblicherweise als Spaltenvektoren dargestellt.
+
+\begin{equation*}
+\mathbf{a} = \begin{pmatrix}x\\y \end{pmatrix}
+\end{equation*}
+
+Oftmals werden die Elemente mittels eines Index z.B. $i$ gekennzeichnet. Sei zum Beispiel $\mathbf{a}$ ein Vektor mit $n$ Elementen, dann ist die folgende Darstellung ebenfalls üblich.
+
+\begin{equation*}
+\mathbf{a} = \begin{pmatrix} a_1\\ a_2 \\ \vdots \\ a_n \end{pmatrix}
+\end{equation*}
+
+Zwei Vektoren mit der gleichen Anzahl von Elementen können mit einander addiert werden. Die Addition findet Komponenteweise statt indem die entsprechenden Komponenten der beiden Vektoren miteinander addiert werden. Daraus folgt mit zwei Vektoren $\mathbf{a} = (a_1, a_2)$ und $\mathbf{b} = (b_1, b_2)$: 
+
+\begin{equation*}
+\mathbf{c} = \mathbf{a} + \mathbf{b} = (a_1 + b_1, a_2 + b_2)
+\end{equation*}
+
+Die Subtraktion funktioniert ähnlich:
+
+\begin{equation*}
+\mathbf{c} = \mathbf{a} - \mathbf{b} = (a_1 - b_1, a_2 - b_2)
+\end{equation*}
+
+Wenn ein Vektor mit einer Zahl (einem Skalar) multiplizierst wird, dann wird jede Komponente des Vektors mit dieser Zahl multipliziert. Zum Beispiel:
+
+\begin{equation*}
+k \cdot \mathbf{v} = k \cdot (x, y) = (k \cdot x, k \cdot y)
+\end{equation*}
+
+Dies wird als **Skalarmultiplikation** bezeichnet. Die Länge eines Vektors $\mathbf{v} = (x, y)$ kann mit dem Satz des Pythagoras berechnet werden und wird durch Betragsstriche $||$ gekennzeichnet:
+
+\begin{equation*}
+|\mathbf{v}| = \sqrt{x^2 + y^2}
+\end{equation*}
+
+Allgemein gilt für einen Vektor mit $n$ Elementen, dass die Länge wie folgt berechnet wird.
+
+\begin{equation*}
+|\mathbf{v}| = \sqrt{\sum_{i=1}^n v_i^2}
+\end{equation*}
+
+D.h. Elemente werden quadriert, aufsummiert und die Wurzel wird aus der Summe gezogen.
+
+Eine weitere wichtige Operation mit Vektoren ist dass **Skalarprodukt**. Seien zwei Vektoren $\mathbf{a}$ und $\mathbf{b}$ mit $n$ Elemente gegeben, dann ist dass Skalarprodukt wie folgt definiert.
+
+\begin{equation*}
+\mathbf{a} \cdot \mathbf{b} = \sum_{i=1}^n a_i\cdot b_i
+\end{equation*}
+
+Konkret mit den beiden Vektoren $\mathbf{a} = (1,2,3)$ und $\mathbf{b} = (11,12,13)$ folgt:
+
+\begin{equation*}
+\mathbf{a} \cdot \mathbf{b} = 1\cdot 11 + 2\cdot 12 + 3\cdot 13 = 74
+\end{equation*}
+
+Mittels des Skalarprodukts lässt sich die Länge eines Vektors wie folgt definierten:
+
+\begin{equation*}
+|\mathbf{a}| = \sqrt{a \cdot a}
+\end{equation*}
+
+Vektoren spielen in der Statistik in der Anwendung wie auch der Theorie eine wichtige Rolle. Aus Anwendungssicht lassen sich Datenreihen als Vektoren realisieren und werden daher auch direkt als Datentyp in `R` unterstützt.
 
 ## Matrizen
 
 Eine Matrix ist eine rechteckige Anordnung von Zahlen die in Zeilen und Spalten angeordnet sind. Matrizen werden häufig in der Statistik, verwendet, um lineare Gleichungssysteme darzustellen, Transformationen durchzuführen oder Daten zu organisieren.
 
-Eine Matrix mit $m$ Zeilen und $n$ Spalten wird als $m \times n$-Matrix bezeichnet. Dies wird als die Dimension der Matrix bezeichent. Die Elemente einer Matrix werden durch zwei Indizes angegeben: der erste Index steht für die Zeile, der zweite für die Spalte. Ein Beispiel für eine $2 \times 2$-Matrix könnte zum Beispiel sein:
+Eine Matrix mit $m$ Zeilen und $n$ Spalten wird als $m \times n$-Matrix bezeichnet. Dies wird als die Dimension der Matrix bezeichnet. Die Elemente einer Matrix werden durch zwei Indizes angegeben: der erste Index steht für die Zeile, der zweite für die Spalte. Ein Beispiel für eine $2 \times 2$-Matrix könnte zum Beispiel sein:
 
 \begin{equation*}
 A = \begin{pmatrix}
@@ -225,7 +337,7 @@ a_{21} & a_{22}
 \end{pmatrix}
 \end{equation*}
 
-Matrizen können mittels spezieller Operatoren verarbeitet werden. Den einfachste Operation stellt die Addition dar. Zwei Matrizen gleicher Dimensionen, d.h. mit der gleichen Anzahl von Zeilen und Spalten können elementweise addiert werden. Elementweise bedeutet das jedes Element in der einen Matrize mit dem Element an der gleichen Position der anderen Matrix addiert wird.
+In dieser Darstellung können wir Vektoren auch als degenerierte Matrizen betrachten. Ein Vektor wäre in diesem Sinne eine Matrize mit nur $n=1$ einer Spalte. Matrizen können mittels spezieller Operatoren verarbeitet werden. Den einfachste Operation stellt die Addition dar. Zwei Matrizen gleicher Dimensionen, d.h. mit der gleichen Anzahl von Zeilen und Spalten können elementweise addiert werden. Elementweise bedeutet das jedes Element in der einen Matrize mit dem Element an der gleichen Position der anderen Matrix addiert wird.
 
 \begin{equation*} 
 A + B = \begin{pmatrix} a_{11} + b_{11} & a_{12} + b_{12} \\ a_{21} + b_{21} & a_{22} + b_{22} \end{pmatrix}
