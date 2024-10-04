@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.56">
+<meta name="generator" content="quarto-1.5.53">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -760,19 +760,38 @@ Ausdruck wird ausgeführt
 i = son </code></pre>
 </div>
 </div>
+<div id="exm-r-flow-02" class="theorem example">
+<p><span class="theorem-title"><strong>Beispiel 3.1</strong></span> Sei der folgende Anwendungsfall gegeben. Wir haben Daten von drei Sprungen bezüglich der vertikalen Höhe des COM und wollen aus den drei Kurven jeweils die maximale Höhe extrahieren. Seien die folgenden drei Kurven gegeben die wir alle in einer Liste hinterlegt haben.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> com_kurven <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">s1 =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">2</span>,<span class="dv">1</span>),</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>                    <span class="at">s2 =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">3</span>,<span class="dv">2</span>,<span class="dv">1</span>),</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>                    <span class="at">s3 =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">5</span>,<span class="dv">4</span>,<span class="dv">3</span>,<span class="dv">2</span>,<span class="dv">1</span>))</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Wir verwenden hier nur sehr “übersichtliche” Kurven um uns auf das Programm konzentrieren zu können. Da die Signale in einer Liste hinterlegt sind, können wir durch die einzelnen Elemente mittels dese <code>[[]]</code>-Operator iterieren. Wir definieren uns zunächst einen Vektor der die Maximalhöhen aufnimmt die wir mittels der <code>max()</code>-Funktion bestimmen. Mit einer <code>for</code>-Schleife führen wir die Iteration durch.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> com_max_hoehen <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="dv">3</span>)</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>) {</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   com_max_hoehen[i] <span class="ot">&lt;-</span> <span class="fu">max</span>(com_kurven[[i]])</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> com_max_hoehen</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3 4 5</code></pre>
+</div>
+</div>
+</div>
 <p>Tatsächlich ist die Anwendung der <code>for</code>-Schleifen seltener als in anderen Programmiersprachen, da für viele Anweisungen <strong>vektorisierte Funktionen</strong> zur Verfügung stehen. D.h. soll ein Vektor von Werten bearbeitet werden, dann arbeitet eine vektorisierte Funktionen alle Elemente gleichzeitig statt und ist dabei meistens noch schneller. Im Hintergrund kann dann zwar immer noch eine <code>for</code>-Schleife zur Anwendung kommen, dies ist jedoch für die Benutzerin transparent. Ein Beispiel könnte ein Vektor mit Zeichenketten sein von denen nur immer der letzte Buchstabe benötigt wird.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> vec <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"P1"</span>,<span class="st">"P2"</span>,<span class="st">"P3"</span>)</span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> vec</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> vec <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"P1"</span>,<span class="st">"P2"</span>,<span class="st">"P3"</span>)</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> vec</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "P1" "P2" "P3"</code></pre>
 </div>
 </div>
 <p>Dies könnte wieder mit einer <code>for</code>-Schleife und der <code>substr()</code>-Funktion erreicht werden.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="cf">for</span> (s <span class="cf">in</span> vec) {</span>
-<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   <span class="fu">print</span>(<span class="fu">substr</span>(s, <span class="dv">2</span>, <span class="dv">3</span>))</span>
-<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="cf">for</span> (s <span class="cf">in</span> vec) {</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   <span class="fu">print</span>(<span class="fu">substr</span>(s, <span class="dv">2</span>, <span class="dv">3</span>))</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "1"
 [1] "2"
@@ -781,7 +800,7 @@ i = son </code></pre>
 </div>
 <p>Die <code>substr()</code>-Funktion ist aber vektorisiert und kann schon direkt auf Zeichenkettenvektoren arbeiten. Daher wird mit der folgenden Anweisung das gleiche Ergebnis erreicht.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">substr</span>(vec, <span class="dv">1</span>, <span class="dv">3</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">substr</span>(vec, <span class="dv">1</span>, <span class="dv">3</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "P1" "P2" "P3"</code></pre>
 </div>
@@ -806,47 +825,47 @@ Tipp
 <p>Zur Vertiefung schauen wir uns ein längeres Beispiel für eine <code>for</code>-Schleifen.</p>
 <p>Problemstellung: Wir wollen eine Abschätzung darüber welche Unterschiede zwischen zwei Gruppen zu erwarten sind bei unterschiedlichen Treatments. Die Gruppen haben beide eine Größe von <span class="math inline">\(n_1 = n_2 = n = 20\)</span>. Aus der Literatur wissen wir, dass die Gruppe unter Treatment 1 einen Mittelwert von <span class="math inline">\(\mu_1 = 10\)</span> während unter Treatment 2 im Mittel ein Mittelwert von <span class="math inline">\(\mu_2 = 15\)</span> zu erwarten sind. Das Beispiel ist abstrakt aber die Mittelwert könnten zum Beispiel Weiten beim Medizinball repräsentieren. Wir wollen jetzt abschätzen welche Unterschied wir zwischen den Gruppen erwarten würden wenn beide Gruppen eine Standardabweichung von <span class="math inline">\(\sigma = 2\)</span> aufweisen. D.h. wir definieren uns erst mal die Randwerte unserer Simulation.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> n <span class="ot">&lt;-</span> <span class="dv">20</span></span>
-<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> mu_1 <span class="ot">&lt;-</span> <span class="dv">10</span></span>
-<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> mu_2 <span class="ot">&lt;-</span> <span class="dv">15</span></span>
-<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> sigma <span class="ot">&lt;-</span> <span class="dv">2</span></span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> n <span class="ot">&lt;-</span> <span class="dv">20</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> mu_1 <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> mu_2 <span class="ot">&lt;-</span> <span class="dv">15</span></span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> sigma <span class="ot">&lt;-</span> <span class="dv">2</span></span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Die Werte in den Gruppen folgen einer Normalverteilung. In <code>R</code> können wir Zufallsstichproben der Größe <span class="math inline">\(n\)</span> aus einer Normalverteilung mit Mittelwert <span class="math inline">\(\mu\)</span> und Standardabweichung <span class="math inline">\(\sigma\)</span> mittels der Funktion <code>rnorm(n, mu, sigma)</code> erzeugen. D.h. ein Durchgang der Simulation würde wie folgt aussehen.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> stichprobe_1 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, mu_1, sigma)</span>
-<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> stichprobe_2 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, mu_2, sigma)</span>
-<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> delta <span class="ot">&lt;-</span> <span class="fu">mean</span>(stichprobe_1) <span class="sc">-</span> <span class="fu">mean</span>(stichprobe_2)</span>
-<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> delta</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> stichprobe_1 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, mu_1, sigma)</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> stichprobe_2 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, mu_2, sigma)</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> delta <span class="ot">&lt;-</span> <span class="fu">mean</span>(stichprobe_1) <span class="sc">-</span> <span class="fu">mean</span>(stichprobe_2)</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> delta</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] -4.919333</code></pre>
+<pre><code>[1] -4.857021</code></pre>
 </div>
 </div>
 <p>Nun, wollen wir diese Simulation nicht nur einmal sondern ganz oft, z.B. <span class="math inline">\(n_sim = 1000\)</span> wiederholen um eine realistische Abschätzung über die zu erwartenden Werte zu bekommen. Dafür setzen wir eine <code>for</code>-Schleife ein.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> n_sim <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
-<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_sim) {</span>
-<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   stichprobe_1 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, mu_1, sigma)</span>
-<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   stichprobe_2 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, mu_2, sigma)</span>
-<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   delta <span class="ot">&lt;-</span> <span class="fu">mean</span>(stichprobe_1) <span class="sc">-</span> <span class="fu">mean</span>(stichprobe_2) </span>
-<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> n_sim <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_sim) {</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   stichprobe_1 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, mu_1, sigma)</span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   stichprobe_2 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, mu_2, sigma)</span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   delta <span class="ot">&lt;-</span> <span class="fu">mean</span>(stichprobe_1) <span class="sc">-</span> <span class="fu">mean</span>(stichprobe_2) </span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Jetzt ergibt sich das Problem, dass wir noch einen Platz brauchen um die jeweiligen Ergebnisse abzuspeichern. Dafür wird ein Vektor erstellt der ausreichend bzw. genau so vielen Einträgen wie abzuspeichernde Werte hat. Mit der Funktion <code>numeric(n)</code> können wir einen numerischen Vektor der Länge <code>n</code> erstellen, der nur <span class="math inline">\(0\)</span> als Einträge hat. Kombiniert mit unserem Programm ergibt sich:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> n_sim <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
-<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> delta_s <span class="ot">&lt;-</span> <span class="fu">numeric</span>(n_sim)</span>
-<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_sim) {</span>
-<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   stichprobe_1 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, mu_1, sigma)</span>
-<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   stichprobe_2 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, mu_2, sigma)</span>
-<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   delta_s[i] <span class="ot">&lt;-</span> <span class="fu">mean</span>(stichprobe_1) <span class="sc">-</span> <span class="fu">mean</span>(stichprobe_2) </span>
-<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> n_sim <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> delta_s <span class="ot">&lt;-</span> <span class="fu">numeric</span>(n_sim)</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_sim) {</span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   stichprobe_1 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, mu_1, sigma)</span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   stichprobe_2 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, mu_2, sigma)</span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   delta_s[i] <span class="ot">&lt;-</span> <span class="fu">mean</span>(stichprobe_1) <span class="sc">-</span> <span class="fu">mean</span>(stichprobe_2) </span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Jetzt sind alle Zwischenergebnisse in dem Vektor <code>delta_s</code> gespeichert und wir können uns die Verteilung der Unterschiede z.B. mit Hilfe eines Histogramm anschauen.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">hist</span>(delta_s)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">hist</span>(delta_s)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="r_flowcontrol_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="r_flowcontrol_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -859,42 +878,42 @@ Tipp
 <p>Eine weitere Möglichkeit <code>R</code> eine Gruppe von Anweisungen wiederholt durchführen zu lassen, kann mittels der Funktion <code>replicate()</code> erreicht werden. In den meisten Fällen wird <code>replicate()</code> verwendet um eine Simulation durchzuführen. D.h. das Beispiel von eben könnte ebenfalls mittels <code>replicate()</code> programmiert werden. <code>replicate()</code> hat zwei Hauptargumente. Das erste <code>n</code> bestimmt die Anzahl der Wiederholungen während das zweite Argument eine Anweisung, in den meisten Fällen eine Funktion ist.</p>
 <p>Nehmen wir als Anwendungsfall, dass wir wiederholt Mittelwerte <span class="math inline">\(\bar{x}\)</span> aus einer Zufallsstichprobe erzeugen wollen. Wir ziehen beispielsweise eine Stichprobe von <span class="math inline">\(n = 20\)</span> Werten aus einer Normalverteilung mit den Parametern <span class="math inline">\(\mu = 3, \sigma = .7\)</span>. Und wir wollen uns die Stichprobenverteilung der Mittelwerte ansehen. Wir beginnen mit einem einfach proof-of-concept.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> mu <span class="ot">&lt;-</span> <span class="dv">3</span></span>
-<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> sigma <span class="ot">&lt;-</span> <span class="fl">0.7</span></span>
-<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> n <span class="ot">&lt;-</span> <span class="dv">20</span></span>
-<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> </span>
-<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a><span class="er">&gt;</span> x_bar <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">rnorm</span>(n, mu, sigma))</span>
-<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">cat</span>(<span class="st">'Der beobachtete Mittelwert ist: '</span>, x_bar, <span class="st">'</span><span class="sc">\n</span><span class="st">'</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> mu <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> sigma <span class="ot">&lt;-</span> <span class="fl">0.7</span></span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> n <span class="ot">&lt;-</span> <span class="dv">20</span></span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> </span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a><span class="er">&gt;</span> x_bar <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">rnorm</span>(n, mu, sigma))</span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">cat</span>(<span class="st">'Der beobachtete Mittelwert ist: '</span>, x_bar, <span class="st">'</span><span class="sc">\n</span><span class="st">'</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Der beobachtete Mittelwert ist:  3.092545 </code></pre>
+<pre><code>Der beobachtete Mittelwert ist:  3.078335 </code></pre>
 </div>
 </div>
 <p>Sollen die Anweisung nun nicht nur einmal sondern wie im vorherigen Beispiel für die <code>for</code>-Schleife <span class="math inline">\(1000\)</span>mal durchgeführt werden, dann müssen die Anweisungen in Form einer eigenen Funktion gebündelt werden (Die Syntax für die Definition einer Funktion ist wahrscheinlich etwas undurchsichtig und wird erst im nächsten Kapitel genauer erklärt).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> x_bar_func <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">n =</span> <span class="dv">20</span>, <span class="at">mu =</span> <span class="dv">3</span>, <span class="at">sigma =</span> <span class="fl">0.7</span>) {</span>
-<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   <span class="fu">mean</span>(<span class="fu">rnorm</span>(n, mu, sigma))</span>
-<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> x_bar_func <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">n =</span> <span class="dv">20</span>, <span class="at">mu =</span> <span class="dv">3</span>, <span class="at">sigma =</span> <span class="fl">0.7</span>) {</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   <span class="fu">mean</span>(<span class="fu">rnorm</span>(n, mu, sigma))</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Mit dieser Anweisung wird eine neue Funktion <code>x_bar_func()</code> definiert. Diese Funktion kann nun wie jede andere Fuktion in <code>R</code> aufgerufen werden. Wenn <code>x_bar_func()</code> ausgeführt wird, erhalten wir wie oben einen zufälligen Mittelwert aus einer Stichrprobe der Größe <span class="math inline">\(n = 20\)</span> aus der Normalverteilung <span class="math inline">\(\mathcal{N}(3, 0.7)\)</span>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">x_bar_func</span>()</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">x_bar_func</span>()</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 2.990036</code></pre>
+<pre><code>[1] 3.372559</code></pre>
 </div>
 </div>
 <p>Die Funktion <code>x_bar_func()</code> kann nun an <code>replicate()</code> als zweites Argument übergeben werden, während mit dem ersten Argument der Anzahl der Wiederholungen spezifiziert wird. Starten wir erst mal nur mit <span class="math inline">\(N_{sim} = 5\)</span> Wiederholungen, um den Überblick zu behalten.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> N_sim <span class="ot">&lt;-</span> <span class="dv">5</span></span>
-<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">replicate</span>(N_sim, <span class="fu">x_bar_func</span>())</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> N_sim <span class="ot">&lt;-</span> <span class="dv">5</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">replicate</span>(N_sim, <span class="fu">x_bar_func</span>())</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 2.800736 3.063502 3.006752 2.941351 2.992338</code></pre>
+<pre><code>[1] 2.782486 2.612105 2.891056 3.011729 2.965972</code></pre>
 </div>
 </div>
 <p>Als Rückgabewert von <code>x_bar_func()</code> erhalten wir einen Vektor dessen Elemente die einzelnen Rückgabewerten der Aufrufe von <code>x_bar_func()</code> sind. Dieser Vektor mit den Rückgabewert kann nun ganz normal an eine Variable zugewiesen werden. Mittels der Variable kann dann zum Beispiel ein Histogramm der Mittelwerte erzeugt werden.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> N_sim <span class="ot">&lt;-</span> <span class="dv">100</span></span>
-<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> x_bar_s <span class="ot">&lt;-</span> <span class="fu">replicate</span>(N_sim, <span class="fu">x_bar_func</span>())</span>
-<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">hist</span>(x_bar_s)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> N_sim <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> x_bar_s <span class="ot">&lt;-</span> <span class="fu">replicate</span>(N_sim, <span class="fu">x_bar_func</span>())</span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">hist</span>(x_bar_s)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-flow-replicate" class="quarto-float quarto-figure quarto-figure-center anchored" width="672">
 <figure class="quarto-float quarto-float-fig figure">
@@ -902,7 +921,6 @@ Tipp
 <img src="r_flowcontrol_files/figure-html/fig-flow-replicate-1.png" id="fig-flow-replicate" class="img-fluid figure-img" width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-flow-replicate-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Abbildung&nbsp;3.2
 </figcaption>
 </figure>
 </div>
@@ -911,15 +929,15 @@ Abbildung&nbsp;3.2
 <p>In <a href="#fig-flow-replicate" class="quarto-xref">Abbildung&nbsp;<span>3.2</span></a> ist zu erkennen, dass der Großteil der Mittelwerte um den Wert <span class="math inline">\(3\)</span> schwankt, was auch den Erwartungen entspricht, da wir Stichproben aus einer Normalverteilung mit dem Mittelwert <span class="math inline">\(\mu = 3\)</span> ziehen.</p>
 <p>Zusammenfassend lässt sich daher zur Verwendung von <code>replicate()</code> sagen, dass zunächst eine Funktion mit den benötigten Anweisungen definiert werden muss und diese dann an <code>replicate()</code> übergeben wird. Der Vollständigkeit halber eine Ausführung mit einer <code>for</code>-Schleife.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> x_bar_s2 <span class="ot">&lt;-</span> <span class="fu">numeric</span>(N_sim)</span>
-<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N_sim) {</span>
-<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   x_bar_s2[i] <span class="ot">&lt;-</span> <span class="fu">x_bar_func</span>()</span>
-<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span>
-<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">hist</span>(x_bar_s2)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> x_bar_s2 <span class="ot">&lt;-</span> <span class="fu">numeric</span>(N_sim)</span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N_sim) {</span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   x_bar_s2[i] <span class="ot">&lt;-</span> <span class="fu">x_bar_func</span>()</span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span>
+<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">hist</span>(x_bar_s2)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="r_flowcontrol_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="r_flowcontrol_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
