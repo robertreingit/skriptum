@@ -138,35 +138,6 @@ div.csl-indent {
 
 </script>
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 </head>
 
@@ -240,7 +211,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./r_functions.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Eigene Funktionen in <code>R</code></span></span></a>
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Funktionen in <code>R</code></span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -468,8 +439,8 @@ window.Quarto = {
   </ul></li>
   <li><a href="#daten-in-r-prozessieren-mit-tidyverse" id="toc-daten-in-r-prozessieren-mit-tidyverse" class="nav-link" data-scroll-target="#daten-in-r-prozessieren-mit-tidyverse"><span class="header-section-number">5.2</span> Daten in <code>R</code> prozessieren mit <code>tidyverse</code></a>
   <ul class="collapse">
-  <li><a href="#der-pipe-operator" id="toc-der-pipe-operator" class="nav-link" data-scroll-target="#der-pipe-operator"><span class="header-section-number">5.2.1</span> Der Pipe operator <code>|&gt;</code></a></li>
-  <li><a href="#tidy-data" id="toc-tidy-data" class="nav-link" data-scroll-target="#tidy-data"><span class="header-section-number">5.2.2</span> tidy-Data</a></li>
+  <li><a href="#der-pipe-operator" id="toc-der-pipe-operator" class="nav-link" data-scroll-target="#der-pipe-operator"><span class="header-section-number">5.2.1</span> Der Pipe-Operator <code>|&gt;</code></a></li>
+  <li><a href="#tidy-data" id="toc-tidy-data" class="nav-link" data-scroll-target="#tidy-data"><span class="header-section-number">5.2.2</span> Tidy-Data</a></li>
   <li><a href="#filter" id="toc-filter" class="nav-link" data-scroll-target="#filter"><span class="header-section-number">5.2.3</span> <code>filter()</code></a></li>
   <li><a href="#select" id="toc-select" class="nav-link" data-scroll-target="#select"><span class="header-section-number">5.2.4</span> <code>select()</code></a></li>
   <li><a href="#mutate" id="toc-mutate" class="nav-link" data-scroll-target="#mutate"><span class="header-section-number">5.2.5</span> <code>mutate()</code></a></li>
@@ -506,27 +477,27 @@ window.Quarto = {
 </header>
 
 
-<p>Im Folgenden werden wir verschiedene Funktion zur Bearbeitung und Visualisierung von Daten kennenlernen. Die verwendeten Funktionen sind alle in einer großen Sammlung von Funktionen in der Paketsammlung <code>tidyverse</code> zusammengefasst. Pakete aus dem <code>tidyverse</code> folgen alle einer einheitlichen Syntax und Idee der Datenverarbeitung. Die Paket verfügen über eine ausgezeichnete Dokumentation. Daher werden die jeweiligen Funktionen hier nur kurz angeschnitten. Weitergehende Informationen und vor allem jede Menge Beispielanwendungen findet ihr in der <code>tidyerverse</code> <a href="https://tidyvers.org">Dokumention</a>.</p>
+<p>Im Folgenden werden wir verschiedene Funktionen zur Bearbeitung und Visualisierung von Daten kennenlernen. Die verwendeten Funktionen sind alle in einer großen Sammlung von Funktionen in der Paketsammlung <code>tidyverse</code> zusammengefasst. Pakete aus dem <code>tidyverse</code> folgen alle einer einheitlichen Syntax und Idee der Datenverarbeitung. Die Pakete verfügen über eine ausgezeichnete Dokumentation. Daher werden die jeweiligen Funktionen hier nur kurz angeschnitten. Weitergehende Informationen und vor allem jede Menge Beispielanwendungen findet ihr in der <code>tidyverse</code> <a href="https://tidyverse.org">Dokumentation</a>.</p>
 <section id="daten-in-r-einlesen" class="level2" data-number="5.1">
 <h2 data-number="5.1" class="anchored" data-anchor-id="daten-in-r-einlesen"><span class="header-section-number">5.1</span> Daten in <code>R</code> einlesen</h2>
-<p>Um Daten von der Festplatte oder anderen Speichermedien in <code>R</code> einzulesen benötigen wir spezielle Funktionen. In Abhängigkeit von der Formatierung der Daten werden unterschiedliche, spezialisierte Funktionen verwendet. Daher müssen wir uns zunächst über die Dateiformatierung im Klaren sein, um die Daten erfolgreich in <code>R</code> einzulesen. In <code>R</code> decken drei Pakete den Großteil der in Frage kommenden Dateitypen ab. Die Pakete sind <code>readr</code> für Textdateien, <code>readxl</code> für Excel-Dateien und <code>haven</code> für SPSS- und weitere Binäredatenformate aus anderen Statistikprogrammen.</p>
+<p>Um Daten von der Festplatte oder anderen Speichermedien in <code>R</code> einzulesen, benötigen wir spezielle Funktionen. In Abhängigkeit von der Formatierung der Daten werden unterschiedliche, spezialisierte Funktionen verwendet. Daher müssen wir uns zunächst über die Dateiformatierung im Klaren sein, um die Daten erfolgreich in <code>R</code> einzulesen. In <code>R</code> decken drei Pakete den Großteil der in Frage kommenden Dateitypen ab. Die Pakete sind <code>readr</code> für Textdateien, <code>readxl</code> für Excel-Dateien und <code>haven</code> für SPSS- und weitere Binärdatenformate aus anderen Statistikprogrammen.</p>
 <section id="readr" class="level3" data-number="5.1.1">
 <h3 data-number="5.1.1" class="anchored" data-anchor-id="readr"><span class="header-section-number">5.1.1</span> readr</h3>
-<p>Im Paket <code>readr</code> sind eine Reihe von Funktionen enthalten um rechteckige Textdateien einzulesen. Rechteckig bezieht sich in diesem Zusammenhang auf die Anordnung der Daten in der Datei ähnlich einer Tabelle. Um die Daten korrekt einzulesen, ist es notwendig die Trennzeichen (im engl. als delimiter bezeichnet) zwischen Datenwerten zu kennen. Oft verwendete Trennzeichen sind Kommas <code>,</code>, Semikolons <code>;</code>, Leerzeichen oder das Einrückungszeichen <kbd aria-hidden="true">TAB</kbd><span class="visually-hidden">TAB</span>. Durch die Kombination von Daten die jeweils durch ein Trennzeichen voneinander getrennt sind und über mehrere Zeilen verteilt sind, kommt die rechteckige Anordnung zustande.</p>
-<p>Die flexibelste Funktion um solche Textdateien einzulesen ist <code>read_delim()</code>. <code>read_delim()</code> benötigt die Angabe des Trennzeichens zwischen den einzelnen Spalteneinträgen über den Parameter <code>delim</code>. Seien z.B. die folgenden Daten in einer Datei <code>example_01.txt</code> in dem Ordner <code>data</code> gespeichert.</p>
+<p>Im Paket <code>readr</code> sind eine Reihe von Funktionen enthalten, um rechteckige Textdateien einzulesen. Rechteckig bezieht sich in diesem Zusammenhang auf die Anordnung der Daten in der Datei, ähnlich einer Tabelle. Um die Daten korrekt einzulesen, ist es notwendig, die Trennzeichen (im Englischen als delimiter bezeichnet) zwischen Datenwerten zu kennen. Oft verwendete Trennzeichen sind Kommas <code>,</code>, Semikolons <code>;</code>, Leerzeichen oder das Einrückungszeichen <kbd aria-hidden="true">TAB</kbd><span class="visually-hidden">TAB</span>. Durch die Kombination von Daten, die jeweils durch ein Trennzeichen voneinander getrennt sind und über mehrere Zeilen verteilt sind, kommt die rechteckige Anordnung zustande.</p>
+<p>Die flexibelste Funktion, um solche Textdateien einzulesen, ist <code>read_delim()</code>. <code>read_delim()</code> benötigt die Angabe des Trennzeichens zwischen den einzelnen Spalteneinträgen über den Parameter <code>delim</code>. Seien z. B. die folgenden Daten in einer Datei <code>example_01.txt</code> in dem Ordner <code>data</code> gespeichert:</p>
 <div class="line-block">id grp value<br>
 p1 CON 1<br>
 p2 CON 2<br>
 p3 TRT 3<br>
 p4 TRT 4</div>
-<p>Das Trennzeichen zwischen den Eintragen ist ein <kbd aria-hidden="true">TAB</kbd><span class="visually-hidden">TAB</span>. Die Datei kann dann mittels des folgenden Befehls einlesen werden.</p>
+<p>Das Trennzeichen zwischen den Einträgen ist ein <kbd aria-hidden="true">TAB</kbd><span class="visually-hidden">TAB</span>. Die Datei kann dann mittels des folgenden Befehls eingelesen werden.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_delim</span>(</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">file =</span> <span class="st">"data/example_01.txt"</span>,</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">delim =</span> <span class="st">"</span><span class="sc">\t</span><span class="st">"</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Der Parameter <code>delim="\t"</code> spezifiziert das verwendete Trennzeichen während <code>file</code> den Pfad und den Namen zur Datei angibt.</p>
+<p>Der Parameter <code>delim="\t"</code> spezifiziert das verwendete Trennzeichen, während <code>file</code> den Pfad und den Namen zur Datei angibt.</p>
 <div class="callout callout-style-default callout-caution callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -537,8 +508,8 @@ Vorsicht
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Der Pfad zur Datei ist immer entweder relativ zum akutellen Arbeitsverzeichnis (<code>getwd()</code>) oder absolut z.B. <code>C:/X/Y/Z/example_01.txt</code> anzugeben. Das Arbeitsverzeichnis ist das Verzeichnis von dem <code>R</code> aus gerade arbeitet (In R-Studio mit <kbd aria-hidden="true">CTRL+SHIFT+h</kbd><span class="visually-hidden">CTRL+SHIFT+h</span> wechseln).</p>
-<p>Befinden wir uns beispielsweise in einem Verzeichnis <em>stats</em> und müssen eine Hierarchiestufe nach oben gehen um dann im Verzeichnis <em>data</em> die Datei <code>example_01.txt</code> einzulesen. Dann können wir entweder den vollständigen Pfad benutzen oder einen relativen Pfad mit <code>../data/example_01.txt</code>. Dabei bedeuten die <code>..</code> eine Hierarchiestufe nach oben zu springen.</p>
+<p>Der Pfad zur Datei ist immer entweder relativ zum aktuellen Arbeitsverzeichnis (<code>getwd()</code>) oder absolut, z. B. <code>C:/X/Y/Z/example_01.txt</code>, anzugeben. Das Arbeitsverzeichnis ist das Verzeichnis, von dem <code>R</code> aus gerade arbeitet (In RStudio mit <kbd aria-hidden="true">CTRL+SHIFT+h</kbd><span class="visually-hidden">CTRL+SHIFT+h</span> wechseln).</p>
+<p>Befinden wir uns beispielsweise in einem Verzeichnis <em>stats</em> und müssen eine Hierarchiestufe nach oben gehen, um dann im Verzeichnis <em>data</em> die Datei <code>example_01.txt</code> einzulesen, dann können wir entweder den vollständigen Pfad benutzen oder einen relativen Pfad mit <code>../data/example_01.txt</code>. Dabei bedeuten die <code>..</code> eine Hierarchiestufe nach oben zu springen.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -550,7 +521,7 @@ Vorsicht
 </div>
 </div>
 </div>
-<p><code>read_delim()</code> verwendet eine Reihe von Heuristiken um den jeweiligen Datentyp (numerisch, Zeichenkette, etc.) der Spalten zu bestimmen. Der Rückgabewert von <code>read_delim()</code> ist ein <code>tibble()</code> der Daten. In unserem Beispiel weisen wir dem <code>tibble()</code> den Variabllennamen <code>df</code> zu und können somit in der weiteren Analyse mit dem Bezeichner <code>df</code> auf die Daten zugreifen.</p>
+<p><code>read_delim()</code> verwendet eine Reihe von Heuristiken, um den jeweiligen Datentyp (numerisch, Zeichenkette, etc.) der Spalten zu bestimmen. Der Rückgabewert von <code>read_delim()</code> ist ein <code>tibble()</code> der Daten. In unserem Beispiel weisen wir dem <code>tibble()</code> den Variablennamen <code>df</code> zu und können somit in der weiteren Analyse mit dem Bezeichner <code>df</code> auf die Daten zugreifen.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -563,15 +534,15 @@ Vorsicht
 4 p4    TRT       4</code></pre>
 </div>
 </div>
-<p>Im Beispieldaten sind die ersten beiden Spalten als Zeichenketten (<code>&lt;char&gt;</code>) erkannt worden, während die dritte Spalte als Zahl (<code>&lt;dbl&gt;</code>) erkannt wurde. Manchmal funktioniert die automatische Erkennung der Datentypen nicht korrekt. In dem Falle können mit dem Parameter <code>col_types</code> die Spaltentypen direkt angegeben werden. Wenn keine Kopfzeile in den Daten vorhanden ist, kann diese über den Parameter <code>col_names</code> spezifiziert werden. Mit <code>skip</code> können Zeilen zu Beginn der Datei übersprungen werden.</p>
+<p>In den Beispieldaten sind die ersten beiden Spalten als Zeichenketten (<code>&lt;char&gt;</code>) erkannt worden, während die dritte Spalte als Zahl (<code>&lt;dbl&gt;</code>) erkannt wurde. Manchmal funktioniert die automatische Erkennung der Datentypen nicht korrekt. In dem Fall können mit dem Parameter <code>col_types</code> die Spaltentypen direkt angegeben werden. Wenn keine Kopfzeile in den Daten vorhanden ist, kann diese über den Parameter <code>col_names</code> spezifiziert werden. Mit <code>skip</code> können Zeilen zu Beginn der Datei übersprungen werden.</p>
 <div id="exm-readr-01" class="theorem example">
-<p><span class="theorem-title"><strong>Beispiel 5.1</strong></span> Wollen wir zum Beispiel andere Spaltennamen haben, dann können wir die erste Zeile beim einlesen überspringen und andere Spaltennamen angeben.</p>
+<p><span class="theorem-title"><strong>Beispiel 5.1</strong></span> Wollen wir zum Beispiel andere Spaltennamen haben, dann können wir die erste Zeile beim Einlesen überspringen und andere Spaltennamen angeben.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>readr<span class="sc">::</span><span class="fu">read_delim</span>(</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">file =</span> <span class="st">'data/example_01.txt'</span>,</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">delim =</span> <span class="st">'</span><span class="sc">\t</span><span class="st">'</span>,</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">skip =</span> <span class="dv">1</span>,</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">col_names =</span> <span class="fu">c</span>(<span class="st">'ID'</span>, <span class="st">'Gruppe'</span>,<span class="st">'Wert'</span>),</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">col_names =</span> <span class="fu">c</span>(<span class="st">'ID'</span>, <span class="st">'Gruppe'</span>, <span class="st">'Wert'</span>),</span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">col_types =</span> <span class="st">'ccd'</span></span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -584,13 +555,13 @@ Vorsicht
 4 p4    TRT        4</code></pre>
 </div>
 </div>
-<p>Wenn ihr das Paket <code>readr</code> vorher mit <code>library(readr)</code> geladen habt, ist die Qualifizierung der Funktion mit <code>readr::</code> nicht notwendig und ihr könnt direkt den Funktionsnamen verwenden. Hier überspringen wir mit <code>skip=1</code> die erste Zeile in der Datei und geben mit <code>col_names=c('ID','Gruppe','Wert')</code> eigene Spaltennamen an und spezifizieren direkt mit <code>col_types</code> die Dateitypen der Spalten mit <code>c</code> <span class="math inline">\(=\)</span> <code>character</code> und <code>d</code> = <code>double</code>.</p>
+<p>Wenn ihr das Paket <code>readr</code> vorher mit <code>library(readr)</code> geladen habt, ist die Qualifizierung der Funktion mit <code>readr::</code> nicht notwendig, und ihr könnt direkt den Funktionsnamen verwenden. Hier überspringen wir mit <code>skip=1</code> die erste Zeile in der Datei und geben mit <code>col_names=c('ID', 'Gruppe', 'Wert')</code> eigene Spaltennamen an und spezifizieren direkt mit <code>col_types</code> die Datentypen der Spalten mit <code>c</code> = <code>character</code> und <code>d</code> = <code>double</code>.</p>
 </div>
-<p>Die weiteren Funktionen in <code>readr</code> wie <code>read_csv</code>, <code>read_tsv</code> usw. sind in den meisten Fällen Spezialversionen von <code>read_delim</code> bei denen der Parameter <code>delim</code> schon voreingestellt ist. Schaut euch etwas in der <a href="https://readr.tidyverse.org/reference/index.html">Dokumentation</a> um, um einen Überblick über die verschiedenen Varianten und Funktionalitäten zu bekommen.</p>
+<p>Die weiteren Funktionen in <code>readr</code> wie <code>read_csv</code>, <code>read_tsv</code> usw. sind in den meisten Fällen Spezialversionen von <code>read_delim</code>, bei denen der Parameter <code>delim</code> schon voreingestellt ist. Schaut euch etwas in der <a href="https://readr.tidyverse.org/reference/index.html">Dokumentation</a> um, um einen Überblick über die verschiedenen Varianten und Funktionalitäten zu bekommen.</p>
 </section>
 <section id="readxl" class="level3" data-number="5.1.2">
 <h3 data-number="5.1.2" class="anchored" data-anchor-id="readxl"><span class="header-section-number">5.1.2</span> readxl</h3>
-<p>Die gleichen Daten in einer Excel-Datei können wir mit der Funktion <code>read_xlsx()</code> aus dem Paket <code>readxl</code> in <code>R</code> laden. Wenn die Daten die folgende Form hat:</p>
+<p>Die gleichen Daten in einer Excel-Datei können wir mit der Funktion <code>read_xlsx()</code> aus dem Paket <code>readxl</code> in <code>R</code> laden. Wenn die Daten die folgende Form haben:</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-r-basics-excel" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -623,7 +594,7 @@ Abbildung&nbsp;5.1: Beispieldatei in Excel
 4 p4    TRT       4</code></pre>
 </div>
 </div>
-<p>Ähnlich wie bei <code>read_delim()</code> geben wir mit <code>path</code> den Pfad zur Datei an. Der Parameter <code>sheet</code> spezifiziert aus welchem Excelblatt die Daten einlesen werden sollen, während der Parameter <code>range</code> den Datenbereich auf dem Blatt definieren. Je nachdem wie kompliziert eure Exceldatei aussieht müssen <code>sheet</code> und <code>range</code> oft gar nicht angegeben werden da <code>read_xlsx()</code> auch über heuristische Regeln versucht zu erraten welche Daten ihr einlesen wollt. Allerdings ist dies eher eine fragile Annahme und daher im Sinne einer robusten Datenanalyse ist zu empfehlen beide Parameter immer anzugeben und sicherzugehen das auch wirklich die gewollten Daten eingelesen werden.</p>
+<p>Ähnlich wie bei <code>read_delim()</code> geben wir mit <code>path</code> den Pfad zur Datei an. Der Parameter <code>sheet</code> spezifiziert, aus welchem Excel-Blatt die Daten eingelesen werden sollen, während der Parameter <code>range</code> den Datenbereich auf dem Blatt definiert. Je nachdem, wie kompliziert eure Excel-Datei aussieht, müssen <code>sheet</code> und <code>range</code> oft gar nicht angegeben werden, da <code>read_xlsx()</code> auch über heuristische Regeln versucht zu erraten, welche Daten ihr einlesen wollt. Allerdings ist dies eher eine fragile Annahme, und daher ist es im Sinne einer robusten Datenanalyse zu empfehlen, beide Parameter immer anzugeben und sicherzugehen, dass auch wirklich die gewollten Daten eingelesen werden.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -634,13 +605,13 @@ Hinweis
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Bei Parameter <code>range</code> darauf achten, das dieser bei Veränderung der Excel-Datei, z.B. wenn neue Daten dazukommen entsprechend angepasst wird.</p>
+<p>Beim Parameter <code>range</code> darauf achten, dass dieser bei Veränderung der Excel-Datei, z. B. wenn neue Daten dazukommen, entsprechend angepasst wird.</p>
 </div>
 </div>
 </section>
 <section id="haven" class="level3" data-number="5.1.3">
 <h3 data-number="5.1.3" class="anchored" data-anchor-id="haven"><span class="header-section-number">5.1.3</span> haven</h3>
-<p>Im Paket <code>haven</code> haben wir Funktionen um mit SPSS-Dateien (siehe <a href="#fig-r-basics-spss" class="quarto-xref">Abbildung&nbsp;<span>5.2</span></a>) zu arbeiten.</p>
+<p>Im Paket <code>haven</code> haben wir Funktionen, um mit SPSS-Dateien (siehe <a href="#fig-r-basics-spss" class="quarto-xref">Abbildung&nbsp;<span>5.2</span></a>) zu arbeiten.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-r-basics-spss" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -655,7 +626,7 @@ Abbildung&nbsp;5.2: Beispieldatei in SPSS
 </div>
 </div>
 </div>
-<p>Die Funktionen funktionen zum Glück selbst wenn SPSS auf dem Rechner nicht installiert ist. Allerdings kann hier nicht nachkontrolliert werden ob das Einlesen korrekt stattgefunden hat, wenn keine Dokumentation zu den Daten vorhanden ist. In SPSS werden Datein üblicherweise in einem binären <code>sav</code>-Dateikontainer gespeichert. In <code>R</code> können die Daten mittels der Funktion <code>read_sav()</code> aus dem Paket <code>haven</code> eingelesen werden.</p>
+<p>Die Funktionen funktionieren zum Glück selbst, wenn SPSS auf dem Rechner nicht installiert ist. Allerdings kann hier nicht nachkontrolliert werden, ob das Einlesen korrekt stattgefunden hat, wenn keine Dokumentation zu den Daten vorhanden ist. In SPSS werden Dateien üblicherweise in einem binären <code>sav</code>-Dateicontainer gespeichert. In <code>R</code> können die Daten mittels der Funktion <code>read_sav()</code> aus dem Paket <code>haven</code> eingelesen werden.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> haven<span class="sc">::</span><span class="fu">read_sav</span>(<span class="st">'data/example_01.sav'</span>)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -669,7 +640,7 @@ Abbildung&nbsp;5.2: Beispieldatei in SPSS
 4     4 2 [TRT]   4 [p4]   </code></pre>
 </div>
 </div>
-<p>Da SPSS eigene Datentypen, insbesondere im Zusammenhang mit nominalen bzw. ordinalen Variablen hat, sind im Paket <code>haven</code> spezielle Datentypen definiert. Im Beispiel hier ersichtlich am Datentyp für <code>grp</code> mit <code>&lt;dbl+lbl&gt;</code>. Es handelt sich hier um den Datentypen <code>labelled</code>. In der Dokumentation von <code>read_sav()</code> gibt es hierzu weiter Informationen.</p>
+<p>Da SPSS eigene Datentypen, insbesondere im Zusammenhang mit nominalen bzw. ordinalen Variablen, hat, sind im Paket <code>haven</code> spezielle Datentypen definiert. Im Beispiel hier ersichtlich am Datentyp für <code>grp</code> mit <code>&lt;dbl+lbl&gt;</code>. Es handelt sich hier um den Datentyp <code>labelled</code>. In der Dokumentation von <code>read_sav()</code> gibt es hierzu weitere Informationen.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -680,18 +651,18 @@ Tipp
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Mit der Funktion <code>as_factor()</code> aus dem Paket <code>haven</code> können die <code>labelled</code> Daten in den <code>R</code> Dateityp <code>factor</code> umgewandelt werden.</p>
+<p>Mit der Funktion <code>as_factor()</code> aus dem Paket <code>haven</code> können die <code>labelled</code> Daten in den <code>R</code>-Datentyp <code>factor</code> umgewandelt werden.</p>
 </div>
 </div>
-<p>Wenn wir die Daten in <code>R</code> eingelesen haben, können wir nun als nächstes die Daten verarbeiten und so strukturieren wie wir sie für die weitere Analyse benötigen. Dazu stehen uns eine Reihe von weiteren Funktionen aus dem <code>tidyverse</code> zur verfügung.</p>
+<p>Wenn wir die Daten in <code>R</code> eingelesen haben, können wir nun als nächstes die Daten verarbeiten und so strukturieren, wie wir sie für die weitere Analyse benötigen. Dazu stehen uns eine Reihe von weiteren Funktionen aus dem <code>tidyverse</code> zur Verfügung.</p>
 </section>
 </section>
 <section id="daten-in-r-prozessieren-mit-tidyverse" class="level2" data-number="5.2">
 <h2 data-number="5.2" class="anchored" data-anchor-id="daten-in-r-prozessieren-mit-tidyverse"><span class="header-section-number">5.2</span> Daten in <code>R</code> prozessieren mit <code>tidyverse</code></h2>
-<p>Die Art der Programmierung im <code>tidyverse</code> verwendet oft eine eigene Herangehensweise die sich vonderjenigen die wir bisher kennengelernt haben etwas unterscheidet. Um den Code leserlich zu halten werden mehrere Funktionen in sogenannten <em>pipes</em> aneinandergehängt ohne zwischendrin temporäre Variablen zu erstellen. Dies führt zu Code der fast wie Prosa gelesen werden kann. Dazu müssenw wir aber zunächst einen neuen Operator kennenlernen.</p>
+<p>Die Art der Programmierung im <code>tidyverse</code> verwendet oft eine eigene Herangehensweise, die sich von derjenigen, die wir bisher kennengelernt haben, etwas unterscheidet. Um den Code leserlich zu halten, werden mehrere Funktionen in sogenannten <em>pipes</em> aneinandergehängt, ohne zwischendrin temporäre Variablen zu erstellen. Dies führt zu Code, der fast wie Prosa gelesen werden kann. Dazu müssen wir aber zunächst einen neuen Operator kennenlernen.</p>
 <section id="der-pipe-operator" class="level3" data-number="5.2.1">
-<h3 data-number="5.2.1" class="anchored" data-anchor-id="der-pipe-operator"><span class="header-section-number">5.2.1</span> Der Pipe operator <code>|&gt;</code></h3>
-<p>In <code>R</code> gibt es den sogenannten pipe-operator <code>|&gt;</code>. Der <code>|&gt;</code> hat die Eigenschaft, dass ein vorangestellter Wert (dies kann auch der Rückgabewert einer Funktion sein) als das erste Argument an eine nachfolgende Funktion übergeben wird. Dies ermöglicht es Code zu schreiben der sich wie gesprochener Text liest. Schauen wir uns ein einfaches Beispiel an. Wir wollen den Mittelwert eines Zahlenvektors berechnen und anschließend das Ergebnis auf die zweite Nachkommastelle runden. Normalerweise würden wir das wie folgt formulieren wenn wir keine Zwischenvariablen definieren wollen.</p>
+<h3 data-number="5.2.1" class="anchored" data-anchor-id="der-pipe-operator"><span class="header-section-number">5.2.1</span> Der Pipe-Operator <code>|&gt;</code></h3>
+<p>In <code>R</code> gibt es den sogenannten Pipe-Operator <code>|&gt;</code>. Der <code>|&gt;</code> hat die Eigenschaft, dass ein vorangestellter Wert (dies kann auch der Rückgabewert einer Funktion sein) als das erste Argument an eine nachfolgende Funktion übergeben wird. Dies ermöglicht es, Code zu schreiben, der sich wie gesprochener Text liest. Schauen wir uns ein einfaches Beispiel an. Wir wollen den Mittelwert eines Zahlenvektors berechnen und anschließend das Ergebnis auf die zweite Nachkommastelle runden. Normalerweise würden wir das wie folgt formulieren, wenn wir keine Zwischenvariablen definieren wollen.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>vec <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">7</span>, <span class="dv">3</span>, <span class="sc">-</span><span class="fl">5.22</span>, <span class="dv">5</span>, <span class="fl">6.3</span>)</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">mean</span>(vec), <span class="dv">2</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -699,30 +670,30 @@ Tipp
 <pre><code>[1] 2.85</code></pre>
 </div>
 </div>
-<p>D.h. wir haben ein Schachtelung (nesting) der Funktionen. Die <code>mean()</code> Funktion ist innerhalb der <code>round()</code> Funktion geschachtelt bzw. der Rückgabewert von <code>mean()</code> wird als erstes Argument an <code>round()</code> übergeben. Schauen wir uns nun an, wie wir das gleiche Programm mit dem pipe-operator <code>|&gt;</code> formulieren.</p>
+<p>D. h. wir haben eine Schachtelung (nesting) der Funktionen. Die <code>mean()</code>-Funktion ist innerhalb der <code>round()</code>-Funktion geschachtelt, bzw. der Rückgabewert von <code>mean()</code> wird als erstes Argument an <code>round()</code> übergeben. Schauen wir uns nun an, wie wir das gleiche Programm mit dem Pipe-Operator <code>|&gt;</code> formulieren.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>vec <span class="sc">|&gt;</span> <span class="fu">mean</span>() <span class="sc">|&gt;</span> <span class="fu">round</span>(<span class="dv">2</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 2.85</code></pre>
 </div>
 </div>
-<p>Was ist hier passiert? Die erste pipe <code>|&gt;</code> übergibt ihr links stehendes Argument, den Vektor <code>vec</code> and das erste Argument der rechts stehenden Funktion <code>mean()</code>. Aus <code>vec |&gt; mean()</code> wird <code>mean(vec)</code>. <code>mean()</code> ist happy und berechnet den Mittelwert des Vektors der nun als Rückgabewert zur Verfügung steht. Der zweite pipe-Operator und nimmt nun wieder diesen <em>linke</em> Wert, der berechnete Mittelwert, und übergibt diesen an das erste Argument der nachfolgenden <code>round(2)</code>-Funktion. Wenn ihr euch die Hilfe von <code>round()</code> anschaut, dann seht ihr, dass dere erste Parmeter der zu rundende Wert ist. Was macht jetzt aber die <code>2</code> in <code>round(2)</code>. Nun, <code>|&gt;</code> stellt den links stehenden Wert an die erste Stelle der rechts stehenden Funktion, dadurch rutscht die <code>2</code> an die zweite Argumentenstelle in <code>round()</code> und bestimmt somit die Anzahl der zu runden Stellen.</p>
-<p>Der Vorteil des pipe-Operators ist, dass ihr das Program nun einfach von links nach rechts lesen könnt. Nimm <code>vec</code>, stecke es in <code>mean()</code> und stecke das was rauskommt in <code>round(2)</code>. Bei dem ursprünglichen Programm musstet ihr euch von innen nach außen arbeiten und dabei immer im Blick behalten auf welcher Stufe ihr seid um die Parameterzuordnung richtig interpretieren zu können.</p>
-<p>Noch ein Beispiel, wir wollen den Mittelwert auf den Absolutwerten des Vektors berechnen. Nach der Standardmethode.</p>
+<p>Was ist hier passiert? Die erste Pipe <code>|&gt;</code> übergibt ihr links stehendes Argument, den Vektor <code>vec</code>, an das erste Argument der rechts stehenden Funktion <code>mean()</code>. Aus <code>vec |&gt; mean()</code> wird <code>mean(vec)</code>. <code>mean()</code> ist zufrieden und berechnet den Mittelwert des Vektors, der nun als Rückgabewert zur Verfügung steht. Der zweite Pipe-Operator nimmt nun wieder diesen <em>linken</em> Wert, den berechneten Mittelwert, und übergibt diesen an das erste Argument der nachfolgenden <code>round(2)</code>-Funktion. Wenn ihr euch die Hilfe von <code>round()</code> anschaut, dann seht ihr, dass der erste Parameter der zu rundende Wert ist. Was macht jetzt aber die <code>2</code> in <code>round(2)</code>? Nun, <code>|&gt;</code> stellt den links stehenden Wert an die erste Stelle der rechts stehenden Funktion, dadurch rutscht die <code>2</code> an die zweite Argumentstelle in <code>round()</code> und bestimmt somit die Anzahl der zu rundenden Stellen.</p>
+<p>Der Vorteil des Pipe-Operators ist, dass ihr das Programm nun einfach von links nach rechts lesen könnt: Nimm <code>vec</code>, stecke es in <code>mean()</code>, und stecke das, was rauskommt, in <code>round(2)</code>. Bei dem ursprünglichen Programm musstet ihr euch von innen nach außen arbeiten und dabei immer im Blick behalten, auf welcher Stufe ihr seid, um die Parameterzuordnung richtig interpretieren zu können.</p>
+<p>Noch ein Beispiel: Wir wollen den Mittelwert auf den Absolutwerten des Vektors berechnen. Nach der Standardmethode:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">mean</span>(<span class="fu">abs</span>(vec)), <span class="dv">2</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 4.59</code></pre>
 </div>
 </div>
-<p>Mit dem pipe-Operator</p>
+<p>Mit dem Pipe-Operator:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>vec <span class="sc">|&gt;</span> <span class="fu">abs</span>() <span class="sc">|&gt;</span> <span class="fu">mean</span>() <span class="sc">|&gt;</span> <span class="fu">round</span>(<span class="dv">2</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 4.59</code></pre>
 </div>
 </div>
-<p>Wenn die pipe Anfängt zu lang zu werden, dann hat es sich einbürgert nach der pipe eine neue Zeile anzufangen.</p>
+<p>Wenn die Pipe anfängt, zu lang zu werden, dann hat es sich eingebürgert, nach der Pipe eine neue Zeile anzufangen.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>vec <span class="sc">|&gt;</span> <span class="fu">abs</span>() <span class="sc">|&gt;</span> </span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean</span>() <span class="sc">|&gt;</span> <span class="fu">round</span>(<span class="dv">2</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -730,75 +701,74 @@ Tipp
 <pre><code>[1] 4.59</code></pre>
 </div>
 </div>
-<p>Der pipe-Operator <code>|&gt;</code> ist so alltäglich, dass ihr in RStudio einen short-cut für ihn habt <kbd aria-hidden="true">STRG+SHIFT+m</kbd><span class="visually-hidden">STRG+SHIFT+m</span>.</p>
-<p>Bei der Vewendung der pipe dabei nicht vergessen das Ergebnis der pipe dann letztendlich doch wieder eine Variable zuzuweisen. Ansonsten berechnet <code>R</code> den Wert und schmeißt ihn gleich wieder weg.</p>
+<p>Der Pipe-Operator <code>|&gt;</code> ist so alltäglich, dass ihr in RStudio einen Shortcut für ihn habt: <kbd aria-hidden="true">STRG+SHIFT+m</kbd><span class="visually-hidden">STRG+SHIFT+m</span>.</p>
+<p>Bei der Verwendung der Pipe nicht vergessen, das Ergebnis der Pipe dann letztendlich doch wieder einer Variable zuzuweisen. Ansonsten berechnet <code>R</code> den Wert und schmeißt ihn gleich wieder weg.</p>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 4.59</code></pre>
 </div>
 </div>
-<p>Der pipe-Operator <code>|&gt;</code> ist im alltäglichen Umgang mit Datenprozessierung im Zusammenhang mit <code>tidyverse</code> praktisch unabkömmlich und praktisch jegliche Codeschnipsel die ihr im Netz dazu findet verwenden pipes. Tatsächlich ist die dahinterliegende Idee in der Informatik <span class="citation" data-cites="kernighan1984">(siehe <a href="references.html#ref-kernighan1984" role="doc-biblioref">Kernighan und Pike 1984</a>)</span> schon relativ lange bekannt. Die darüberliegende Idee ist nämlich Anstatt große, komplizierte Funktionen zu schreiben die eine Vielzahl von Argumenten haben und mehrere unterschiedliche Aufgaben erledigen, werden lieber viele kleine, spezialisierte Programme zu erstellen. Die spezialisierten Programme können dann zusamengesetzt werden um komplizierte Aufgaben zu erfüllen. Der pipe-operator ist dabei zentral für diese Idee, da er es ermöglicht die spezialisierten, kleinen Programmen einfach aneinander zu hängen. Ähnlich wie zum Beispiel bei einen Kinderwasserspielzeug mit Rohren, Schaufeln und Filtern können durchumordnung der Einzelfunktion beliebig komplexe Mechanismen abgebildet werden. Unter Linux bash ist daher auch ein pipe-Operator <code>|</code> zu finden.</p>
+<p>Der Pipe-Operator <code>|&gt;</code> ist im alltäglichen Umgang mit Datenprozessierung im Zusammenhang mit <code>tidyverse</code> praktisch unabkömmlich, und praktisch jegliche Codeschnipsel, die ihr im Netz dazu findet, verwenden Pipes. Tatsächlich ist die dahinterliegende Idee in der Informatik <span class="citation" data-cites="kernighan1984">(siehe <a href="references.html#ref-kernighan1984" role="doc-biblioref">Kernighan und Pike 1984</a>)</span> schon relativ lange bekannt. Die darüberliegende Idee ist nämlich: Anstatt große, komplizierte Funktionen zu schreiben, die eine Vielzahl von Argumenten haben und mehrere unterschiedliche Aufgaben erledigen, werden lieber viele kleine, spezialisierte Programme erstellt. Die spezialisierten Programme können dann zusammengesetzt werden, um komplizierte Aufgaben zu erfüllen. Der Pipe-Operator ist dabei zentral für diese Idee, da er es ermöglicht, die spezialisierten, kleinen Programme einfach aneinander zu hängen. Ähnlich wie bei einem Kinderwasserspielzeug mit Rohren, Schaufeln und Filtern können durch Umordnung der Einzelfunktionen beliebig komplexe Mechanismen abgebildet werden. Unter Linux bash ist daher auch ein Pipe-Operator <code>|</code> zu finden.</p>
 <p>Nach diesem Ausflug zurück zur Datenbearbeitung mit dem <code>tidyverse</code>. Um die Daten möglichst einfach mit dem <code>tidyverse</code> verarbeiten zu können, sollten die Daten im <code>tibble()</code> einer bestimmten Struktur folgen. Im <code>tidyverse</code> wird diese Anordnung als <em>tidy-Data</em> bezeichnet.</p>
 </section>
 <section id="tidy-data" class="level3" data-number="5.2.2">
-<h3 data-number="5.2.2" class="anchored" data-anchor-id="tidy-data"><span class="header-section-number">5.2.2</span> tidy-Data</h3>
-<p>Zu tidy-Data gibt es in der einfachsten Form nur drei Regeln die zu beachten sind:</p>
+<h3 data-number="5.2.2" class="anchored" data-anchor-id="tidy-data"><span class="header-section-number">5.2.2</span> Tidy-Data</h3>
+<p>Zu tidy-Data gibt es in der einfachsten Form nur drei Regeln, die zu beachten sind:</p>
 <ol type="1">
-<li>Jede Spalte ist eine Variable</li>
-<li>Jede Zeile ist eine Beobachtung</li>
-<li>Jede Zelle ist ein einzelner Eintrag</li>
+<li>Jede Spalte ist eine Variable.</li>
+<li>Jede Zeile ist eine Beobachtung.</li>
+<li>Jede Zelle ist ein einzelner Eintrag.</li>
 </ol>
 <p>Schauen wir uns wieder ein einfaches, fiktives Beispiel mit Sprunghöhen an.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">time =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">'pre'</span>,<span class="st">'post'</span>), <span class="dv">4</span>),</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">gender =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">'m'</span>,<span class="st">'f'</span>), <span class="at">each=</span><span class="dv">4</span>),</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">age =</span> <span class="fu">rep</span>(<span class="fu">round</span>(<span class="fu">runif</span>(<span class="dv">4</span>, <span class="dv">20</span>, <span class="dv">40</span>)),<span class="at">each=</span><span class="dv">2</span>),</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">cmj =</span> <span class="fu">round</span>(<span class="fu">rnorm</span>(<span class="dv">8</span>, <span class="fu">c</span>(<span class="dv">25</span>,<span class="dv">20</span>), <span class="dv">2</span>), <span class="dv">1</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">time =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">'pre'</span>, <span class="st">'post'</span>), <span class="dv">4</span>),</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">gender =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">'m'</span>, <span class="st">'f'</span>), <span class="at">each =</span> <span class="dv">4</span>),</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">age =</span> <span class="fu">rep</span>(<span class="fu">round</span>(<span class="fu">runif</span>(<span class="dv">4</span>, <span class="dv">20</span>, <span class="dv">40</span>)), <span class="at">each =</span> <span class="dv">2</span>),</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">cmj =</span> <span class="fu">round</span>(<span class="fu">rnorm</span>(<span class="dv">8</span>, <span class="fu">c</span>(<span class="dv">25</span>, <span class="dv">20</span>), <span class="dv">2</span>), <span class="dv">1</span>)</span>
 <span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 8 × 4
   time  gender   age   cmj
   &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt;
-1 pre   m         24  28.5
-2 post  m         24  23.2
-3 pre   m         38  28.7
-4 post  m         38  22.4
-5 pre   f         30  25.3
-6 post  f         30  20.4
-7 pre   f         25  29.7
-8 post  f         25  20  </code></pre>
+1 pre   m         27  27.6
+2 post  m         27  21.6
+3 pre   m         25  23.7
+4 post  m         25  22.9
+5 pre   f         36  24.2
+6 post  f         36  21  
+7 pre   f         36  24.2
+8 post  f         36  23.6</code></pre>
 </div>
 </div>
-<p>Wir haben vier Spalten, <code>time</code>, <code>gender</code>, <code>age</code> und <code>cmj</code> die jeweils eine Variable darstellen. In jeder Zeile ist eine Beobachtung eine Sprunghöhe <code>cmj</code> einer Person eines Alters <code>age</code> und <code>gender</code> zu einem bestimmten Zeitpunkt <code>time</code>. Schaut also tidy aus.</p>
-<p>Diese Darstellung ist aber wahrscheinlich unterschiedlich zu derjenigen wie ihr solche Daten schon öfter gesehen habt. Wahrscheinlich nämlich eher so.</p>
+<p>Wir haben vier Spalten: <code>time</code>, <code>gender</code>, <code>age</code> und <code>cmj</code>, die jeweils eine Variable darstellen. In jeder Zeile ist eine Beobachtung eine Sprunghöhe <code>cmj</code> einer Person eines Alters <code>age</code> und <code>gender</code> zu einem bestimmten Zeitpunkt <code>time</code>. Schaut also tidy aus.</p>
+<p>Diese Darstellung ist aber wahrscheinlich unterschiedlich zu derjenigen, wie ihr solche Daten schon öfter gesehen habt. Wahrscheinlich nämlich eher so:</p>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 4 × 4
-  gender   age   pre  post
-  &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-1 m         24  28.5  23.2
-2 m         38  28.7  22.4
-3 f         30  25.3  20.4
-4 f         25  29.7  20  </code></pre>
+<pre><code># A tibble: 3 × 4
+  gender   age pre       post     
+  &lt;chr&gt;  &lt;dbl&gt; &lt;list&gt;    &lt;list&gt;   
+1 m         27 &lt;dbl [1]&gt; &lt;dbl [1]&gt;
+2 m         25 &lt;dbl [1]&gt; &lt;dbl [1]&gt;
+3 f         36 &lt;dbl [2]&gt; &lt;dbl [2]&gt;</code></pre>
 </div>
 </div>
-<p>Diese Darstellung ist zwar kompakter aber entspricht nicht mehr den tidy-Anforderungen, da wir nun nicht mehr nur eine Beobachtung pro Zeile haben. Wir haben für jede Person die Sprunghöhe zu zwei Zeitpunkten in einer Zeile. Die Daten sind in dieser Darstellung also <em>untidy</em>. Die <em>tidy</em>-Version ist etwas länger und enthält redundante Informationen aber wir werden im Folgenden sehen, dass diese Darstellung in der Verarbeitung zahlreiche Vorteile hat. Dazu werden wir auch Funktionen kennenlernen mit denen wir zwischen diesen beiden Formaten hin- und herwechseln können. Die <em>tidy</em>-Darstellung wird als long-Format bezeichnet, während die <em>untidy</em>-Darstellung als wide-Format bezeichnet wird.</p>
+<p>Diese Darstellung ist zwar kompakter, entspricht aber nicht mehr den tidy-Anforderungen, da wir nun nicht mehr nur eine Beobachtung pro Zeile haben. Wir haben für jede Person die Sprunghöhe zu zwei Zeitpunkten in einer Zeile. Die Daten sind in dieser Darstellung also <em>untidy</em>. Die <em>tidy</em>-Version ist etwas länger und enthält redundante Informationen, aber wir werden im Folgenden sehen, dass diese Darstellung in der Verarbeitung zahlreiche Vorteile hat. Dazu werden wir auch Funktionen kennenlernen, mit denen wir zwischen diesen beiden Formaten hin- und herwechseln können. Die <em>tidy</em>-Darstellung wird als Long-Format bezeichnet, während die <em>untidy</em>-Darstellung als Wide-Format bezeichnet wird.</p>
 </section>
 <section id="filter" class="level3" data-number="5.2.3">
 <h3 data-number="5.2.3" class="anchored" data-anchor-id="filter"><span class="header-section-number">5.2.3</span> <code>filter()</code></h3>
-<p>Lernen wir jezt unseren ersten <code>tidyverse()</code> Befehl zur Datenmanipulation kennen. Die Befehle werden als Verben bezeichnet und die Regel für die Funktionennahmen ist zum Glück ziemlich einfach:“was im Namen draufsteht ist auch in der Packung drin”. Der Befehl <code>filter</code> filtert Daten, d.h. wir geben einen Sack Daten rein und wollen nur einen Teil wieder raus haben der bestimmte Eigenschaften hat. Dazu können wir einfache Regel mittels der Vergleichsoperatoren in <code>filter()</code> zusammen mit den Spaltennahmen im <code>tibble()</code> verwenden. Wollen wir aus unserem Datensatz nur alle weiblichen Datenpunkte herausfiltern und wir wissen, dass die Information über das Gender in der Spalte <code>gender</code> steht und mit <code>f</code> für weiblich kodiert ist, dann können wir mit dem Vergleich `gender == ‘f’ die Daten entsprechen filtern.</p>
+<p>Lernen wir jetzt unseren ersten <code>tidyverse</code>-Befehl zur Datenmanipulation kennen. Die Befehle werden als Verben bezeichnet, und die Regel für die Funktionsnamen ist zum Glück ziemlich einfach: “Was im Namen draufsteht, ist auch in der Packung drin.” Der Befehl <code>filter</code> filtert Daten, d.&nbsp;h. wir geben einen Sack Daten rein und wollen nur einen Teil wieder herausbekommen, der bestimmte Eigenschaften hat. Dazu können wir einfache Regeln mittels der Vergleichsoperatoren in <code>filter()</code> zusammen mit den Spaltennamen im <code>tibble()</code> verwenden. Wollen wir aus unserem Datensatz nur alle weiblichen Datenpunkte herausfiltern, und wir wissen, dass die Information über das Geschlecht in der Spalte <code>gender</code> steht und mit <code>f</code> für weiblich kodiert ist, dann können wir mit dem Vergleich <code>gender == 'f'</code> die Daten entsprechend filtern.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">|&gt;</span> <span class="fu">filter</span>(gender <span class="sc">==</span> <span class="st">'f'</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 4 × 4
   time  gender   age   cmj
   &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt;
-1 pre   f         30  25.3
-2 post  f         30  20.4
-3 pre   f         25  29.7
-4 post  f         25  20  </code></pre>
+1 pre   f         36  24.2
+2 post  f         36  21  
+3 pre   f         36  24.2
+4 post  f         36  23.6</code></pre>
 </div>
 </div>
 <p>Wollen wir dagegen auf das Alter mit <code>age &lt; 30</code> filtern, verwenden wir:</p>
@@ -808,13 +778,13 @@ Tipp
 <pre><code># A tibble: 4 × 4
   time  gender   age   cmj
   &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt;
-1 pre   m         24  28.5
-2 post  m         24  23.2
-3 pre   f         25  29.7
-4 post  f         25  20  </code></pre>
+1 pre   m         27  27.6
+2 post  m         27  21.6
+3 pre   m         25  23.7
+4 post  m         25  22.9</code></pre>
 </div>
 </div>
-<p>Wenn die Daten mehrere Konditionen erfüllen müssen, verwenden wir entsprechend mehrere Filteranweisungen. Die Vergleiche werden intern mittels einer Und-Operation zusammengesetzt.</p>
+<p>Wenn die Daten mehrere Bedingungen erfüllen müssen, verwenden wir entsprechend mehrere Filteranweisungen. Die Vergleiche werden intern mittels einer Und-Operation zusammengesetzt.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">|&gt;</span> <span class="fu">filter</span>(age <span class="sc">&lt;</span> <span class="dv">25</span>, gender <span class="sc">==</span> <span class="st">'f'</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -822,7 +792,7 @@ Tipp
 # ℹ 4 variables: time &lt;chr&gt;, gender &lt;chr&gt;, age &lt;dbl&gt;, cmj &lt;dbl&gt;</code></pre>
 </div>
 </div>
-<p><code>filter()</code> gibt uns in diesem Bespiel also alle Datenpunkte zurück bei denen <code>age &lt; 25</code> und <code>gender == 'f'</code> gilt. Durch die Kombination von mehreren Vergleichen können relativ einfach komplexe Bedingungen formuliert werden.</p>
+<p><code>filter()</code> gibt uns in diesem Beispiel also alle Datenpunkte zurück, bei denen <code>age &lt; 25</code> und <code>gender == 'f'</code> gilt. Durch die Kombination von mehreren Vergleichen können relativ einfach komplexe Bedingungen formuliert werden.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -833,9 +803,10 @@ Tipp
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Manchmal möchte wir nur alle vollständigen Zeilen aus einen Datensatz weiterverwenden. Dies könnten wir mit <code>filter()</code> erreichen, dazu müssten wir aber für jede Spalte einen Vergleich mit <code>is.na()</code> schreiben wenn die fehlenden Werte <code>NA</code> über mehrere Spalten verteilt sind. Schneller geht dies mit dem Befehlt <code>drop_na()</code>.</p>
+<p>Manchmal möchten wir nur alle vollständigen Zeilen aus einem Datensatz</p>
+<p>weiterverwenden. Dies könnten wir mit <code>filter()</code> erreichen, dazu müssten wir aber für jede Spalte einen Vergleich mit <code>is.na()</code> schreiben, wenn die fehlenden Werte <code>NA</code> über mehrere Spalten verteilt sind. Schneller geht dies mit dem Befehl <code>drop_na()</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>df_missing <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">x =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="at">y =</span> <span class="fu">c</span>(<span class="dv">11</span>,<span class="cn">NA</span>,<span class="dv">13</span>,<span class="dv">14</span>), <span class="at">z =</span> <span class="fu">c</span>(<span class="dv">21</span>,<span class="dv">22</span>,<span class="dv">23</span>,<span class="cn">NA</span>))</span>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>df_missing <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">x =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="at">y =</span> <span class="fu">c</span>(<span class="dv">11</span>, <span class="cn">NA</span>, <span class="dv">13</span>, <span class="dv">14</span>), <span class="at">z =</span> <span class="fu">c</span>(<span class="dv">21</span>, <span class="dv">22</span>, <span class="dv">23</span>, <span class="cn">NA</span>))</span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>df_missing</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 4 × 3
@@ -878,59 +849,61 @@ Tipp
 8 post  f     </code></pre>
 </div>
 </div>
-<p>Der Rückgabewert von <code>select()</code> ist entsprechend ein <code>tibble</code> das nur die selektierten Spalten enthält. Ähnlich wie das auch bei der Indexierung von Elementen in Vektoren funktioniert versteht <code>select()</code> auch eine Ausschlusssyntax mit <code>-</code>. Wollen wir z.B. alle Spalten aus <code>gender</code> formulieren wir dies wie folgt:</p>
+<p>Der Rückgabewert von <code>select()</code> ist entsprechend ein <code>tibble</code>, das nur die selektierten Spalten enthält. Ähnlich wie das auch bei der Indexierung von Elementen in Vektoren funktioniert, versteht <code>select()</code> auch eine Ausschlusssyntax mit <code>-</code>. Wollen wir z. B. alle Spalten außer <code>gender</code> auswählen, formulieren wir dies wie folgt:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span>gender)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 8 × 3
   time    age   cmj
   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt;
-1 pre      24  28.5
-2 post     24  23.2
-3 pre      38  28.7
-4 post     38  22.4
-5 pre      30  25.3
-6 post     30  20.4
-7 pre      25  29.7
-8 post     25  20  </code></pre>
+1 pre      27  27.6
+2 post     27  21.6
+3 pre      25  23.7
+4 post     25  22.9
+5 pre      36  24.2
+6 post     36  21  
+7 pre      36  24.2
+8 post     36  23.6</code></pre>
 </div>
 </div>
 <div id="exm-select-01" class="theorem example">
-<p><span class="theorem-title"><strong>Beispiel 5.2</strong></span> Da wir jetzt schon zwei Verben kennen, können wir auch direkt sehen wie wir durch die Kombination der Befehle komplexere Anweisungen relativ einfach in Code übersetzen können. Wollen wir zum Beispiel alle Datenpunkte von Frauen die älter als 28 sind verwenden und brauch dann nicht mehr die <code>gender</code> Variable könen wir dies wie folgt übersetzen:</p>
+<p><span class="theorem-title"><strong>Beispiel 5.2</strong></span> Da wir jetzt schon zwei Verben kennen, können wir auch direkt sehen, wie wir durch die Kombination der Befehle komplexere Anweisungen relativ einfach in Code übersetzen können. Wollen wir zum Beispiel alle Datenpunkte von Frauen, die älter als 28 sind, verwenden und brauchen dann die <code>gender</code>-Variable nicht mehr, können wir dies wie folgt übersetzen:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">|&gt;</span> <span class="fu">filter</span>(gender <span class="sc">==</span> <span class="st">'f'</span>, age <span class="sc">&gt;</span> <span class="dv">27</span>) <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span>gender)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 2 × 3
+<pre><code># A tibble: 4 × 3
   time    age   cmj
   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt;
-1 pre      30  25.3
-2 post     30  20.4</code></pre>
+1 pre      36  24.2
+2 post     36  21  
+3 pre      36  24.2
+4 post     36  23.6</code></pre>
 </div>
 </div>
 </div>
-<p>Insgesamt führt <code>select()</code> dazu, dass wir ein <code>tibble</code> erhalten, dass weniger Spalten als ursprünglich enthält.</p>
+<p>Insgesamt führt <code>select()</code> dazu, dass wir ein <code>tibble</code> erhalten, das weniger Spalten als ursprünglich enthält.</p>
 </section>
 <section id="mutate" class="level3" data-number="5.2.5">
 <h3 data-number="5.2.5" class="anchored" data-anchor-id="mutate"><span class="header-section-number">5.2.5</span> <code>mutate()</code></h3>
-<p>In den beiden vorhergehenden Fällen, haben wir die Daten nicht wirklich verändert sondern entweder nur bestimmte Fälle mit <code>filter()</code> oder bestimmte Variablen mit <code>select()</code> ausgewählt. Oft kommt es aber vor, dass wir aus den bestehenden Daten neue Daten erstellen wollen. Um neue Daten zu berechnen verwenden wir im <code>tidyverse</code> das Verb <code>mutate()</code>.</p>
-<p>In unserem Datensatz liegen die Sprunhöhen in Zentimeter vor, wir benötigen aber für weitere Berechnungen die Sprunghöhen in Metern. Dazu wollen wir eine neue Spalte erstellen, die wir, um sie von der anderen Spalte abzugrenzen, mit <code>cmj_m</code> bezeichnen wollen. Dazu setzen wir <code>mutate()</code> wie folgt ein.</p>
+<p>In den beiden vorhergehenden Fällen haben wir die Daten nicht wirklich verändert, sondern entweder nur bestimmte Fälle mit <code>filter()</code> oder bestimmte Variablen mit <code>select()</code> ausgewählt. Oft kommt es aber vor, dass wir aus den bestehenden Daten neue Daten erstellen wollen. Um neue Daten zu berechnen, verwenden wir im <code>tidyverse</code> das Verb <code>mutate()</code>.</p>
+<p>In unserem Datensatz liegen die Sprunghöhen in Zentimetern vor, wir benötigen aber für weitere Berechnungen die Sprunghöhen in Metern. Dazu wollen wir eine neue Spalte erstellen, die wir, um sie von der anderen Spalte abzugrenzen, mit <code>cmj_m</code> bezeichnen wollen. Dazu setzen wir <code>mutate()</code> wie folgt ein:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">cmj_m =</span> cmj <span class="sc">/</span> <span class="dv">100</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 8 × 5
   time  gender   age   cmj cmj_m
   &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-1 pre   m         24  28.5 0.285
-2 post  m         24  23.2 0.232
-3 pre   m         38  28.7 0.287
-4 post  m         38  22.4 0.224
-5 pre   f         30  25.3 0.253
-6 post  f         30  20.4 0.204
-7 pre   f         25  29.7 0.297
-8 post  f         25  20   0.2  </code></pre>
+1 pre   m         27  27.6 0.276
+2 post  m         27  21.6 0.216
+3 pre   m         25  23.7 0.237
+4 post  m         25  22.9 0.229
+5 pre   f         36  24.2 0.242
+6 post  f         36  21   0.21 
+7 pre   f         36  24.2 0.242
+8 post  f         36  23.6 0.236</code></pre>
 </div>
 </div>
-<p>Wie sehen, dass eine neue Spalte in dem <code>tibble</code> erstellt wurde mit eben der Namen <code>cmj_m</code>.</p>
+<p>Wir sehen, dass eine neue Spalte in dem <code>tibble</code> erstellt wurde, eben mit dem Namen <code>cmj_m</code>.</p>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -941,84 +914,84 @@ Warnung
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><code>mutate()</code> verhindert nicht, Variablen mit neuen Werten zu überschreiben. Würden wir die Sprunghöhen in Zentimeter später nicht mehr benötigen, könnten wir die Spalte <code>cmj</code> auch überschreiben.</p>
+<p><code>mutate()</code> verhindert nicht, Variablen mit neuen Werten zu überschreiben. Würden wir die Sprunghöhen in Zentimetern später nicht mehr benötigen, könnten wir die Spalte <code>cmj</code> auch überschreiben.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">cmj =</span> cmj <span class="sc">/</span> <span class="dv">100</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 8 × 4
   time  gender   age   cmj
   &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt;
-1 pre   m         24 0.285
-2 post  m         24 0.232
-3 pre   m         38 0.287
-4 post  m         38 0.224
-5 pre   f         30 0.253
-6 post  f         30 0.204
-7 pre   f         25 0.297
-8 post  f         25 0.2  </code></pre>
+1 pre   m         27 0.276
+2 post  m         27 0.216
+3 pre   m         25 0.237
+4 post  m         25 0.229
+5 pre   f         36 0.242
+6 post  f         36 0.21 
+7 pre   f         36 0.242
+8 post  f         36 0.236</code></pre>
 </div>
 </div>
 </div>
 </div>
-<p>Der große Vorteil von <code>mutate()</code> ist hier auch wieder, das wir direkt auf die Spaltenahmen zugreifen können und nicht wie sonst notwendig den <code>$</code>-Operator.</p>
+<p>Der große Vorteil von <code>mutate()</code> ist hier auch wieder, dass wir direkt auf die Spaltennamen zugreifen können und nicht wie sonst notwendig den <code>$</code>-Operator.</p>
 <p>Durch <code>mutate()</code> werden insgesamt also zusätzliche Spalten an das ursprüngliche <code>tibble</code> angehängt.</p>
 <div id="exm-mutate-01" class="theorem example">
-<p><span class="theorem-title"><strong>Beispiel 5.3</strong></span> Aufbauend auf dem Beispiel von eben, wollen wir zum Beispiel die Spalte mit Sprunghöhen nicht beibehalten aber einen neuen Namen verwenden damit wir später nachvollziehen können, dass wir die Sprunghöhen bearbeitet haben, könnten wir wieder mit einer Kombination der Verben <code>mutate()</code> und <code>select()</code> in einer pipe vorgehen:</p>
+<p><span class="theorem-title"><strong>Beispiel 5.3</strong></span> Aufbauend auf dem Beispiel von eben: Wollen wir zum Beispiel die Spalte mit den Sprunghöhen nicht beibehalten, aber einen neuen Namen verwenden, damit wir später nachvollziehen können, dass wir die Sprunghöhen bearbeitet haben, könnten wir wieder mit einer Kombination der Verben <code>mutate()</code> und <code>select()</code> in einer Pipe vorgehen:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">cmj_m =</span> cmj <span class="sc">/</span> <span class="dv">100</span>) <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span>cmj)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 8 × 4
   time  gender   age cmj_m
   &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt;
-1 pre   m         24 0.285
-2 post  m         24 0.232
-3 pre   m         38 0.287
-4 post  m         38 0.224
-5 pre   f         30 0.253
-6 post  f         30 0.204
-7 pre   f         25 0.297
-8 post  f         25 0.2  </code></pre>
+1 pre   m         27 0.276
+2 post  m         27 0.216
+3 pre   m         25 0.237
+4 post  m         25 0.229
+5 pre   f         36 0.242
+6 post  f         36 0.21 
+7 pre   f         36 0.242
+8 post  f         36 0.236</code></pre>
 </div>
 </div>
 </div>
 </section>
 <section id="summarize" class="level3" data-number="5.2.6">
 <h3 data-number="5.2.6" class="anchored" data-anchor-id="summarize"><span class="header-section-number">5.2.6</span> <code>summarize()</code></h3>
-<p>Mit der <code>summarize()</code> Funktion werden alle Beobachtung (Zeilen) in eine Zeile zusammengefasst. Wollen wir zum Beispiel die durchschnittliche Sprunghöhe über alle Beobachtung berechnen.</p>
+<p>Mit der <code>summarize()</code>-Funktion werden alle Beobachtungen (Zeilen) in eine Zeile zusammengefasst. Wollen wir zum Beispiel die durchschnittliche Sprunghöhe über alle Beobachtungen berechnen:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">|&gt;</span> <span class="fu">summarize</span>(<span class="at">cmj_bar =</span> <span class="fu">mean</span>(cmj))</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 1
   cmj_bar
     &lt;dbl&gt;
-1    24.8</code></pre>
+1    23.6</code></pre>
 </div>
 </div>
-<p><code>summarize()</code> kann auch mehrere Werte berechnen.</p>
+<p><code>summarize()</code> kann auch mehrere Werte berechnen:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">|&gt;</span> <span class="fu">summarize</span>(<span class="at">cmj_bar =</span> <span class="fu">mean</span>(cmj), <span class="at">age_bar =</span> <span class="fu">mean</span>(age))</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 2
   cmj_bar age_bar
     &lt;dbl&gt;   &lt;dbl&gt;
-1    24.8    29.2</code></pre>
+1    23.6      31</code></pre>
 </div>
 </div>
 </section>
 <section id="group_by" class="level3" data-number="5.2.7">
 <h3 data-number="5.2.7" class="anchored" data-anchor-id="group_by"><span class="header-section-number">5.2.7</span> <code>group_by()</code></h3>
-<p>Die <code>summarize()</code> Funktion wird tatsächlich erst richtig mächtig im Zusammenhang mit der <code>group_by()</code> Funktion. Mit <code>group_by()</code> kann ein Datensatz anhand der Werte einer Variable in Untergruppen geschnitten werden. Wollen wir in unserem Beispiel die Mittelwerte für verschiedenen Zeitpunkte berechnen.</p>
+<p>Die <code>summarize()</code>-Funktion wird tatsächlich erst richtig mächtig im Zusammenhang mit der <code>group_by()</code>-Funktion. Mit <code>group_by()</code> kann ein Datensatz anhand der Werte einer Variable in Untergruppen geschnitten werden. Wollen wir in unserem Beispiel die Mittelwerte für verschiedene Zeitpunkte berechnen:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">|&gt;</span> <span class="fu">group_by</span>(time) <span class="sc">|&gt;</span> <span class="fu">summarize</span>(<span class="at">cmj_bar =</span> <span class="fu">mean</span>(cmj))</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 2 × 2
   time  cmj_bar
   &lt;chr&gt;   &lt;dbl&gt;
-1 post     21.5
-2 pre      28.0</code></pre>
+1 post     22.3
+2 pre      24.9</code></pre>
 </div>
 </div>
-<p>Das gruppieren funktioniert auch über mehrere Variablen.</p>
+<p>Das Gruppieren funktioniert auch über mehrere Variablen:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">|&gt;</span> <span class="fu">group_by</span>(time, gender) <span class="sc">|&gt;</span> <span class="fu">summarize</span>(<span class="at">cmj_bar =</span> <span class="fu">mean</span>(cmj))</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -1026,17 +999,17 @@ Warnung
 # Groups:   time [2]
   time  gender cmj_bar
   &lt;chr&gt; &lt;chr&gt;    &lt;dbl&gt;
-1 post  f         20.2
-2 post  m         22.8
-3 pre   f         27.5
-4 pre   m         28.6</code></pre>
+1 post  f         22.3
+2 post  m         22.2
+3 pre   f         24.2
+4 pre   m         25.6</code></pre>
 </div>
 </div>
-<p>Die Kombination aus <code>filter()</code>, <code>group_by()</code> und <code>summarize()</code> deckt wahrscheinlich mehr als die Hälfte der Anwendungen bei der Datenanalyse ab. Die folgenden Befehle sind etwas spezialisiert.</p>
+<p>Die Kombination aus <code>filter()</code>, <code>group_by()</code> und <code>summarize()</code> deckt wahrscheinlich mehr als die Hälfte der Anwendungen bei der Datenanalyse ab. Die folgenden Befehle sind etwas spezialisierter.</p>
 </section>
 <section id="separate" class="level3" data-number="5.2.8">
 <h3 data-number="5.2.8" class="anchored" data-anchor-id="separate"><span class="header-section-number">5.2.8</span> <code>separate()</code></h3>
-<p>Mit dem <code>separate()</code> Befehle kann eine Variable in der mehrere Informationen gespeichert sind, in mehrere Variablen separiert werden.</p>
+<p>Mit dem <code>separate()</code>-Befehl kann eine Variable, in der mehrere Informationen gespeichert sind, in mehrere Variablen separiert werden.</p>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 4 × 2
@@ -1048,9 +1021,9 @@ Warnung
 4 post_con      4</code></pre>
 </div>
 </div>
-<p>Die Variable Kondition hat zwei Variablen in einer kodiert (<em>untidy</em>). Mit <code>separate()</code> können wir Kondition aufteilen. <code>separate()</code> benötigt als Parameter neben dem Spaltennamen eine Vector der neuen Spaltennamen übergeben an das Funktionsargument <code>into</code>.</p>
+<p>Die Variable <code>Kondition</code> hat zwei Variablen in einer kodiert (<em>untidy</em>). Mit <code>separate()</code> können wir <code>Kondition</code> aufteilen. <code>separate()</code> benötigt als Parameter neben dem Spaltennamen einen Vektor der neuen Spaltennamen, übergeben an das Funktionsargument <code>into</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>df_2 <span class="sc">|&gt;</span> <span class="fu">separate</span>(Kondition, <span class="at">into=</span><span class="fu">c</span>(<span class="st">'time'</span>,<span class="st">'group'</span>))</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>df_2 <span class="sc">|&gt;</span> <span class="fu">separate</span>(Kondition, <span class="at">into =</span> <span class="fu">c</span>(<span class="st">'time'</span>, <span class="st">'group'</span>))</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 4 × 3
   time  group  wert
@@ -1064,18 +1037,17 @@ Warnung
 </section>
 <section id="pivot_wider" class="level3" data-number="5.2.9">
 <h3 data-number="5.2.9" class="anchored" data-anchor-id="pivot_wider"><span class="header-section-number">5.2.9</span> <code>pivot_wider()</code></h3>
-<p>Mit <code>pivot_wider()</code> können <em>tidy</em>-Datensätze von der long-Version in die wide-version umkodiert werden. Im einfachsten Fall benötigt <code>pivot_wider()</code> zwei Argumente. <code>names_from</code> wird der Variablenname übergeben, der einzelne <code>wide</code>-Variablen kodieren. <code>values_from</code> spezifiziert die einzutragenden Variablen.</p>
+<p>Mit <code>pivot_wider()</code> können <em>tidy</em>-Datensätze von der Long-Version in die Wide-Version umkodiert werden. Im einfachsten Fall benötigt <code>pivot_wider()</code> zwei Argumente. <code>names_from</code> wird der Variablenname übergeben, der einzelne <code>wide</code>-Variablen kodiert. <code>values_from</code> spezifiziert die einzutragenden Variablen.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>df_w <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span> <span class="fu">pivot_wider</span>(<span class="at">names_from=</span>time, <span class="at">values_from=</span>cmj)</span>
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>df_w <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span> <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> time, <span class="at">values_from =</span> cmj)</span>
 <span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>df_w</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 4 × 4
-  gender   age   pre  post
-  &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-1 m         24  28.5  23.2
-2 m         38  28.7  22.4
-3 f         30  25.3  20.4
-4 f         25  29.7  20  </code></pre>
+<pre><code># A tibble: 3 × 4
+  gender   age pre       post     
+  &lt;chr&gt;  &lt;dbl&gt; &lt;list&gt;    &lt;list&gt;   
+1 m         27 &lt;dbl [1]&gt; &lt;dbl [1]&gt;
+2 m         25 &lt;dbl [1]&gt; &lt;dbl [1]&gt;
+3 f         36 &lt;dbl [2]&gt; &lt;dbl [2]&gt;</code></pre>
 </div>
 </div>
 </section>
@@ -1085,24 +1057,22 @@ Warnung
 <div class="cell">
 <div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>df_w <span class="sc">|&gt;</span> <span class="fu">pivot_longer</span>(<span class="fu">c</span>(pre, post), <span class="at">names_to =</span> <span class="st">"time"</span>, <span class="at">values_to =</span> <span class="st">"cmj"</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 8 × 4
-  gender   age time    cmj
-  &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt;
-1 m         24 pre    28.5
-2 m         24 post   23.2
-3 m         38 pre    28.7
-4 m         38 post   22.4
-5 f         30 pre    25.3
-6 f         30 post   20.4
-7 f         25 pre    29.7
-8 f         25 post   20  </code></pre>
+<pre><code># A tibble: 6 × 4
+  gender   age time  cmj      
+  &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt; &lt;list&gt;   
+1 m         27 pre   &lt;dbl [1]&gt;
+2 m         27 post  &lt;dbl [1]&gt;
+3 m         25 pre   &lt;dbl [1]&gt;
+4 m         25 post  &lt;dbl [1]&gt;
+5 f         36 pre   &lt;dbl [2]&gt;
+6 f         36 post  &lt;dbl [2]&gt;</code></pre>
 </div>
 </div>
-<p>Zusammenfassend ist das hier nur eine schnelle Übersicht über die möglichen Befehle gewesen. Um die ins und outs der Funktionen zu verstehen, ist natürlich mehr Übung notwendig. Meistens hilft es aber schon zu wissen welche der Funktionen ungefähr helfen könnte um dann zusammen mit der Dokumentation eine Lösung zu finden. Eine exzellente Quelle für eine umfassendere Auseinandersetzung mit dem <code>tidyverse</code> ist das Buch <em>R for Data Science</em> von <span class="citation" data-cites="wickham2023">Wickham, Çetinkaya-Rundel, und Grolemund (<a href="references.html#ref-wickham2023" role="doc-biblioref">2023</a>)</span> das ihr auch kostenlos in der aktuellsten Form <a href="https://r4ds.had.co.nz">online</a> findet.</p>
+<p>Zusammenfassend ist das hier nur eine schnelle Übersicht über die möglichen Befehle gewesen. Um die Details der Funktionen zu verstehen, ist natürlich mehr Übung notwendig. Meistens hilft es aber schon zu wissen, welche der Funktionen ungefähr helfen könnte, um dann zusammen mit der Dokumentation eine Lösung zu finden. Eine exzellente Quelle für eine umfassendere Auseinandersetzung mit dem <code>tidyverse</code> ist das Buch <em>R for Data Science</em> von <span class="citation" data-cites="wickham2023">Wickham, Çetinkaya-Rundel, und Grolemund (<a href="references.html#ref-wickham2023" role="doc-biblioref">2023</a>)</span>, das ihr auch kostenlos in der aktuellsten Form <a href="https://r4ds.had.co.nz">online</a> findet.</p>
 </section>
 <section id="joins" class="level3" data-number="5.2.11">
 <h3 data-number="5.2.11" class="anchored" data-anchor-id="joins"><span class="header-section-number">5.2.11</span> Joins</h3>
-<p>Manchmal möchten wir Informationen aus mehreren Tabellen zusammenfügen. Sei zum Beispiel der folgende Fall gegeben. Wir haben in einer Tabelle <code>anthro</code> anthropometrische Merkmale unserer Probanden und in einer Tabelle <code>df_exp</code> die Experimentaldaten.</p>
+<p>Manchmal möchten wir Informationen aus mehreren Tabellen zusammenfügen. Sei zum Beispiel der folgende Fall gegeben: Wir haben in einer Tabelle <code>anthro</code> anthropometrische Merkmale unserer Probanden und in einer Tabelle <code>df_exp</code> die Experimentaldaten.</p>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 2 × 3
@@ -1120,8 +1090,8 @@ Warnung
 3 P3       13</code></pre>
 </div>
 </div>
-<p>Um Daten aus verschiedenen Tabellen zusammen zu fügen gibt es eine Familie von Funktion die unter <code>join</code> zusammengefasst sind (<code>left_join()</code>, <code>right_join()</code>, <code>full_join()</code>). Die Unterschied bestehen darin was mit Daten gemacht wird die in einer der Tabelle fehlen. Wir fokussieren uns hier auf <code>left_join()</code>, wenn das Prinzip allerdings verstanden wurde, dann ist die Herleitung der beiden anderen Varianten einfach (siehe Dokumentation dazu).</p>
-<p>Um die Tabellen zusammen zu fügen, brauchen wir eine Variable die die einzelnen Fälle indiziert und in beiden Tabellen vorhanden ist. Oben haben wir dazu die Variable <code>pid</code> definiert. Damit können wir den join einfach durchführen</p>
+<p>Um Daten aus verschiedenen Tabellen zusammenzufügen, gibt es eine Familie von Funktionen, die unter <code>join</code> zusammengefasst sind (<code>left_join()</code>, <code>right_join()</code>, <code>full_join()</code>). Der Unterschied besteht darin, was mit Daten gemacht wird, die in einer der Tabellen fehlen. Wir fokussieren uns hier auf <code>left_join()</code>. Wenn das Prinzip allerdings verstanden wurde, dann ist die Herleitung der beiden anderen Varianten einfach (siehe Dokumentation dazu).</p>
+<p>Um die Tabellen zusammenzufügen, brauchen wir eine Variable, die die einzelnen Fälle indiziert und in beiden Tabellen vorhanden ist. Oben haben wir dazu die Variable <code>pid</code> definiert. Damit können wir den Join einfach durchführen:</p>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 4
@@ -1132,8 +1102,8 @@ Warnung
 3 P3       13    NA     NA</code></pre>
 </div>
 </div>
-<p>Wir erhalten eine Tabelle bei der für jede Zeile aus der <em>linken</em> Tabelle <code>df_exp</code> die <code>pid</code> entsprechende Zeile aus <code>anthro</code> hinzugefügt wurde. Wenn der entsprechende Wert aus der <em>rechten</em> Tabelle fehlt, dann werden entsprechend fehlende Werte <code>NA</code> eingesetzt.</p>
-<p>Manchmal kommt es vor, dass die Namen der Indexvariable in den beiden Tabellen unterschiedlich sind. Mit der Funktion <code>join_by(x == y)</code> kann die Zusammenfügung trotzdem durchgeführt werden.</p>
+<p>Wir erhalten eine Tabelle, bei der für jede Zeile aus der <em>linken</em> Tabelle <code>df_exp</code> die <code>pid</code>-entsprechende Zeile aus <code>anthro</code> hinzugefügt wurde. Wenn der entsprechende Wert aus der <em>rechten</em> Tabelle fehlt, dann werden entsprechend fehlende Werte <code>NA</code> eingesetzt.</p>
+<p>Manchmal kommt es vor, dass die Namen der Indexvariablen in den beiden Tabellen unterschiedlich sind. Mit der Funktion <code>join_by(x == y)</code> kann die Zusammenfügung trotzdem durchgeführt werden.</p>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 3
@@ -1149,64 +1119,64 @@ Warnung
 <h3 data-number="5.2.12" class="anchored" data-anchor-id="spezialthemen"><span class="header-section-number">5.2.12</span> Spezialthemen</h3>
 <section id="rowid_to_column-und-row_number" class="level4" data-number="5.2.12.1">
 <h4 data-number="5.2.12.1" class="anchored" data-anchor-id="rowid_to_column-und-row_number"><span class="header-section-number">5.2.12.1</span> <code>rowid_to_column()</code> und <code>row_number()</code></h4>
-<p>Manchmal ist es von Vorteil wenn eine Variable vorhanden ist, die die Zeilen eindeutige identiziert. Eine einfache Lösung ist die Funktion <code>rowid_to_column()</code> mit der ein fortlaufender Zähler an der ersten Stelle eingefügt wird.</p>
+<p>Manchmal ist es von Vorteil, wenn eine Variable vorhanden ist, die die Zeilen eindeutig identifiziert. Eine einfache Lösung ist die Funktion <code>rowid_to_column()</code>, mit der ein fortlaufender Zähler an der ersten Stelle eingefügt wird.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">|&gt;</span> <span class="fu">rowid_to_column</span>(<span class="at">var =</span> <span class="st">"rid"</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 8 × 5
     rid time  gender   age   cmj
   &lt;int&gt; &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt;
-1     1 pre   m         24  28.5
-2     2 post  m         24  23.2
-3     3 pre   m         38  28.7
-4     4 post  m         38  22.4
-5     5 pre   f         30  25.3
-6     6 post  f         30  20.4
-7     7 pre   f         25  29.7
-8     8 post  f         25  20  </code></pre>
+1     1 pre   m         27  27.6
+2     2 post  m         27  21.6
+3     3 pre   m         25  23.7
+4     4 post  m         25  22.9
+5     5 pre   f         36  24.2
+6     6 post  f         36  21  
+7     7 pre   f         36  24.2
+8     8 post  f         36  23.6</code></pre>
 </div>
 </div>
-<p>Eine weitere Möglichkeit ist über die Funktion <code>row_number()</code> innerhalb von <code>mutate()</code></p>
+<p>Eine weitere Möglichkeit ist die Verwendung der Funktion <code>row_number()</code> innerhalb von <code>mutate()</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">rid =</span> <span class="fu">row_number</span>(), <span class="at">.before=</span><span class="dv">1</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">rid =</span> <span class="fu">row_number</span>(), <span class="at">.before =</span> <span class="dv">1</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 8 × 5
     rid time  gender   age   cmj
   &lt;int&gt; &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt;
-1     1 pre   m         24  28.5
-2     2 post  m         24  23.2
-3     3 pre   m         38  28.7
-4     4 post  m         38  22.4
-5     5 pre   f         30  25.3
-6     6 post  f         30  20.4
-7     7 pre   f         25  29.7
-8     8 post  f         25  20  </code></pre>
+1     1 pre   m         27  27.6
+2     2 post  m         27  21.6
+3     3 pre   m         25  23.7
+4     4 post  m         25  22.9
+5     5 pre   f         36  24.2
+6     6 post  f         36  21  
+7     7 pre   f         36  24.2
+8     8 post  f         36  23.6</code></pre>
 </div>
 </div>
-<p>Dieser Ansatz hat auch noch den Vorteil, das wir eine eindeutige ID nach einem beliebigen Muster erstellen können. Würde zum Beispiel ein identifier für Probanden fehlen.</p>
+<p>Dieser Ansatz hat auch noch den Vorteil, dass wir eine eindeutige ID nach einem beliebigen Muster erstellen können. Würde zum Beispiel ein Identifier für Probanden fehlen:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">pid =</span> <span class="fu">paste0</span>(<span class="st">'Proband_'</span>, <span class="fu">row_number</span>()), <span class="at">.before=</span><span class="dv">1</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">pid =</span> <span class="fu">paste0</span>(<span class="st">'Proband_'</span>, <span class="fu">row_number</span>()), <span class="at">.before =</span> <span class="dv">1</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 8 × 5
   pid       time  gender   age   cmj
   &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt;
-1 Proband_1 pre   m         24  28.5
-2 Proband_2 post  m         24  23.2
-3 Proband_3 pre   m         38  28.7
-4 Proband_4 post  m         38  22.4
-5 Proband_5 pre   f         30  25.3
-6 Proband_6 post  f         30  20.4
-7 Proband_7 pre   f         25  29.7
-8 Proband_8 post  f         25  20  </code></pre>
+1 Proband_1 pre   m         27  27.6
+2 Proband_2 post  m         27  21.6
+3 Proband_3 pre   m         25  23.7
+4 Proband_4 post  m         25  22.9
+5 Proband_5 pre   f         36  24.2
+6 Proband_6 post  f         36  21  
+7 Proband_7 pre   f         36  24.2
+8 Proband_8 post  f         36  23.6</code></pre>
 </div>
 </div>
 </section>
 <section id="pull" class="level4" data-number="5.2.12.2">
 <h4 data-number="5.2.12.2" class="anchored" data-anchor-id="pull"><span class="header-section-number">5.2.12.2</span> <code>pull()</code></h4>
-<p>Manchmal möchte ich die Werte einer Variablen aus der Tabelle extrahieren. Dies kann mit dem Befehl <code>pull()</code> dirchgeführt werden. Möchte ich zum Beispiel nur die Einträge für das Alter extrahieren kann ich den folgenden Befehl benutzen:</p>
+<p>Manchmal möchte man die Werte einer Variablen aus der Tabelle extrahieren. Dies kann mit dem Befehl <code>pull()</code> durchgeführt werden. Möchte ich zum Beispiel nur die Einträge für das Alter extrahieren, kann ich den folgenden Befehl benutzen:</p>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 24 24 38 38 30 30 25 25</code></pre>
+<pre><code>[1] 27 27 25 25 36 36 36 36</code></pre>
 </div>
 </div>
 <p>Wir erhalten in diesem Fall einen Vektor mit den Einträgen.</p>
@@ -1647,8 +1617,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./r_functions.html" class="pagination-link" aria-label="Eigene Funktionen in `R`">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Eigene Funktionen in <code>R</code></span></span>
+      <a href="./r_functions.html" class="pagination-link" aria-label="Funktionen in `R`">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Funktionen in <code>R</code></span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">

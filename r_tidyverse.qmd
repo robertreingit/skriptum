@@ -11,17 +11,17 @@ source('_common.R')
 library(tibble)
 ```
 
-Im Folgenden werden wir verschiedene Funktion zur Bearbeitung und Visualisierung von Daten kennenlernen. Die verwendeten Funktionen sind alle in einer großen Sammlung von Funktionen in der Paketsammlung `tidyverse` zusammengefasst. Pakete aus dem `tidyverse` folgen alle einer einheitlichen Syntax und Idee der Datenverarbeitung. Die Paket verfügen über eine ausgezeichnete Dokumentation. Daher werden die jeweiligen Funktionen hier nur kurz angeschnitten. Weitergehende Informationen und vor allem jede Menge Beispielanwendungen findet ihr in der `tidyerverse` [Dokumention](https://tidyvers.org).
+Im Folgenden werden wir verschiedene Funktionen zur Bearbeitung und Visualisierung von Daten kennenlernen. Die verwendeten Funktionen sind alle in einer großen Sammlung von Funktionen in der Paketsammlung `tidyverse` zusammengefasst. Pakete aus dem `tidyverse` folgen alle einer einheitlichen Syntax und Idee der Datenverarbeitung. Die Pakete verfügen über eine ausgezeichnete Dokumentation. Daher werden die jeweiligen Funktionen hier nur kurz angeschnitten. Weitergehende Informationen und vor allem jede Menge Beispielanwendungen findet ihr in der `tidyverse` [Dokumentation](https://tidyverse.org).
 
 ## Daten in `R` einlesen
 
-Um Daten von der Festplatte oder anderen Speichermedien in `R` einzulesen benötigen wir spezielle Funktionen. In Abhängigkeit von der Formatierung der Daten werden unterschiedliche, spezialisierte Funktionen verwendet. Daher müssen wir uns zunächst über die Dateiformatierung im Klaren sein, um die Daten erfolgreich in `R` einzulesen. In `R` decken drei Pakete den Großteil der in Frage kommenden Dateitypen ab. Die Pakete sind `readr` für Textdateien, `readxl` für Excel-Dateien und `haven` für SPSS- und weitere Binäredatenformate aus anderen Statistikprogrammen. 
+Um Daten von der Festplatte oder anderen Speichermedien in `R` einzulesen, benötigen wir spezielle Funktionen. In Abhängigkeit von der Formatierung der Daten werden unterschiedliche, spezialisierte Funktionen verwendet. Daher müssen wir uns zunächst über die Dateiformatierung im Klaren sein, um die Daten erfolgreich in `R` einzulesen. In `R` decken drei Pakete den Großteil der in Frage kommenden Dateitypen ab. Die Pakete sind `readr` für Textdateien, `readxl` für Excel-Dateien und `haven` für SPSS- und weitere Binärdatenformate aus anderen Statistikprogrammen.
 
 ### readr
 
-Im Paket `readr` sind eine Reihe von Funktionen enthalten um rechteckige Textdateien einzulesen. Rechteckig bezieht sich in diesem Zusammenhang auf die Anordnung der Daten in der Datei ähnlich einer Tabelle. Um die Daten korrekt einzulesen, ist es notwendig die Trennzeichen (im engl. als delimiter bezeichnet) zwischen Datenwerten zu kennen. Oft verwendete Trennzeichen sind Kommas `,`, Semikolons `;`, Leerzeichen oder das Einrückungszeichen {{< kbd TAB >}}. Durch die Kombination von Daten die jeweils durch ein Trennzeichen voneinander getrennt sind und über mehrere Zeilen verteilt sind, kommt die rechteckige Anordnung zustande.
+Im Paket `readr` sind eine Reihe von Funktionen enthalten, um rechteckige Textdateien einzulesen. Rechteckig bezieht sich in diesem Zusammenhang auf die Anordnung der Daten in der Datei, ähnlich einer Tabelle. Um die Daten korrekt einzulesen, ist es notwendig, die Trennzeichen (im Englischen als delimiter bezeichnet) zwischen Datenwerten zu kennen. Oft verwendete Trennzeichen sind Kommas `,`, Semikolons `;`, Leerzeichen oder das Einrückungszeichen {{< kbd TAB >}}. Durch die Kombination von Daten, die jeweils durch ein Trennzeichen voneinander getrennt sind und über mehrere Zeilen verteilt sind, kommt die rechteckige Anordnung zustande.
 
-Die flexibelste Funktion um solche Textdateien einzulesen ist `read_delim()`.  `read_delim()` benötigt die Angabe des Trennzeichens zwischen den einzelnen Spalteneinträgen über den Parameter `delim`. Seien z.B. die folgenden Daten in einer Datei `example_01.txt` in dem Ordner `data` gespeichert.
+Die flexibelste Funktion, um solche Textdateien einzulesen, ist `read_delim()`. `read_delim()` benötigt die Angabe des Trennzeichens zwischen den einzelnen Spalteneinträgen über den Parameter `delim`. Seien z. B. die folgenden Daten in einer Datei `example_01.txt` in dem Ordner `data` gespeichert:
 
 | id	grp	value
 | p1	CON	1
@@ -29,7 +29,7 @@ Die flexibelste Funktion um solche Textdateien einzulesen ist `read_delim()`.  `
 | p3	TRT	3
 | p4	TRT	4
 
-Das Trennzeichen zwischen den Eintragen ist ein {{< kbd TAB >}}. Die Datei kann dann mittels des folgenden Befehls einlesen werden.
+Das Trennzeichen zwischen den Einträgen ist ein {{< kbd TAB >}}. Die Datei kann dann mittels des folgenden Befehls eingelesen werden.
 
 ```{r}
 #| echo: true
@@ -40,12 +40,12 @@ df <- readr::read_delim(
 )
 ```
 
-Der Parameter `delim="\t"` spezifiziert das verwendete Trennzeichen während `file` den Pfad und den Namen zur Datei angibt. 
+Der Parameter `delim="\t"` spezifiziert das verwendete Trennzeichen, während `file` den Pfad und den Namen zur Datei angibt.
 
 :::{.callout-caution}
-Der Pfad zur Datei ist immer entweder relativ zum akutellen Arbeitsverzeichnis (`getwd()`) oder absolut z.B. `C:/X/Y/Z/example_01.txt` anzugeben. Das Arbeitsverzeichnis ist das Verzeichnis von dem `R` aus gerade arbeitet (In R-Studio mit {{< kbd CTRL+SHIFT+h >}} wechseln).
+Der Pfad zur Datei ist immer entweder relativ zum aktuellen Arbeitsverzeichnis (`getwd()`) oder absolut, z. B. `C:/X/Y/Z/example_01.txt`, anzugeben. Das Arbeitsverzeichnis ist das Verzeichnis, von dem `R` aus gerade arbeitet (In RStudio mit {{< kbd CTRL+SHIFT+h >}} wechseln).
 
-Befinden wir uns beispielsweise in einem Verzeichnis *stats* und müssen eine Hierarchiestufe nach oben gehen um dann im Verzeichnis *data* die Datei `example_01.txt` einzulesen. Dann können wir entweder den vollständigen Pfad benutzen oder einen relativen Pfad mit `../data/example_01.txt`. Dabei bedeuten die `..` eine Hierarchiestufe nach oben zu springen.
+Befinden wir uns beispielsweise in einem Verzeichnis *stats* und müssen eine Hierarchiestufe nach oben gehen, um dann im Verzeichnis *data* die Datei `example_01.txt` einzulesen, dann können wir entweder den vollständigen Pfad benutzen oder einen relativen Pfad mit `../data/example_01.txt`. Dabei bedeuten die `..` eine Hierarchiestufe nach oben zu springen.
 
 ```{r}
 knitr::include_graphics("pics/relative_pfad.png")
@@ -53,7 +53,7 @@ knitr::include_graphics("pics/relative_pfad.png")
 
 :::
 
-`read_delim()` verwendet eine Reihe von Heuristiken um den jeweiligen Datentyp (numerisch, Zeichenkette, etc.) der Spalten zu bestimmen. Der Rückgabewert von `read_delim()` ist ein `tibble()` der Daten. In unserem Beispiel weisen wir dem `tibble()` den Variabllennamen `df` zu und können somit in der weiteren Analyse mit dem Bezeichner `df` auf die Daten zugreifen.
+`read_delim()` verwendet eine Reihe von Heuristiken, um den jeweiligen Datentyp (numerisch, Zeichenkette, etc.) der Spalten zu bestimmen. Der Rückgabewert von `read_delim()` ist ein `tibble()` der Daten. In unserem Beispiel weisen wir dem `tibble()` den Variablennamen `df` zu und können somit in der weiteren Analyse mit dem Bezeichner `df` auf die Daten zugreifen.
 
 ```{r}
 #| echo: true
@@ -61,10 +61,10 @@ knitr::include_graphics("pics/relative_pfad.png")
 df
 ```
 
-Im Beispieldaten sind die ersten beiden Spalten als Zeichenketten (`<char>`) erkannt worden, während die dritte Spalte als Zahl (`<dbl>`) erkannt wurde. Manchmal funktioniert die automatische Erkennung der Datentypen nicht korrekt. In dem Falle können mit dem Parameter `col_types` die Spaltentypen direkt angegeben werden. Wenn keine Kopfzeile in den Daten vorhanden ist, kann diese über den Parameter `col_names` spezifiziert werden. Mit `skip` können Zeilen zu Beginn der Datei übersprungen werden.
+In den Beispieldaten sind die ersten beiden Spalten als Zeichenketten (`<char>`) erkannt worden, während die dritte Spalte als Zahl (`<dbl>`) erkannt wurde. Manchmal funktioniert die automatische Erkennung der Datentypen nicht korrekt. In dem Fall können mit dem Parameter `col_types` die Spaltentypen direkt angegeben werden. Wenn keine Kopfzeile in den Daten vorhanden ist, kann diese über den Parameter `col_names` spezifiziert werden. Mit `skip` können Zeilen zu Beginn der Datei übersprungen werden.
 
 ::: {#exm-readr-01}
-Wollen wir zum Beispiel andere Spaltennamen haben, dann können wir die erste Zeile beim einlesen überspringen und andere Spaltennamen angeben.
+Wollen wir zum Beispiel andere Spaltennamen haben, dann können wir die erste Zeile beim Einlesen überspringen und andere Spaltennamen angeben.
 
 ```{r}
 #| echo: true
@@ -74,19 +74,19 @@ readr::read_delim(
   file = 'data/example_01.txt',
   delim = '\t',
   skip = 1,
-  col_names = c('ID', 'Gruppe','Wert'),
+  col_names = c('ID', 'Gruppe', 'Wert'),
   col_types = 'ccd'
 )
 ```
 
-Wenn ihr das Paket `readr` vorher mit `library(readr)` geladen habt, ist die Qualifizierung der Funktion mit `readr::` nicht notwendig und ihr könnt direkt den Funktionsnamen verwenden. Hier überspringen wir mit `skip=1` die erste Zeile in der Datei und geben mit `col_names=c('ID','Gruppe','Wert')` eigene Spaltennamen an und spezifizieren direkt mit `col_types` die Dateitypen der Spalten mit `c` $=$ `character` und `d` = `double`.
+Wenn ihr das Paket `readr` vorher mit `library(readr)` geladen habt, ist die Qualifizierung der Funktion mit `readr::` nicht notwendig, und ihr könnt direkt den Funktionsnamen verwenden. Hier überspringen wir mit `skip=1` die erste Zeile in der Datei und geben mit `col_names=c('ID', 'Gruppe', 'Wert')` eigene Spaltennamen an und spezifizieren direkt mit `col_types` die Datentypen der Spalten mit `c` = `character` und `d` = `double`.
 :::
 
-Die weiteren Funktionen in `readr`  wie `read_csv`, `read_tsv` usw. sind in den meisten Fällen Spezialversionen von `read_delim` bei denen der Parameter `delim` schon voreingestellt ist. Schaut euch etwas in der [Dokumentation](https://readr.tidyverse.org/reference/index.html) um, um einen Überblick über die verschiedenen Varianten und Funktionalitäten zu bekommen.
+Die weiteren Funktionen in `readr` wie `read_csv`, `read_tsv` usw. sind in den meisten Fällen Spezialversionen von `read_delim`, bei denen der Parameter `delim` schon voreingestellt ist. Schaut euch etwas in der [Dokumentation](https://readr.tidyverse.org/reference/index.html) um, um einen Überblick über die verschiedenen Varianten und Funktionalitäten zu bekommen.
 
 ### readxl
 
-Die gleichen Daten in einer Excel-Datei können wir mit der Funktion `read_xlsx()` aus dem Paket `readxl` in `R` laden. Wenn die Daten die folgende Form hat:
+Die gleichen Daten in einer Excel-Datei können wir mit der Funktion `read_xlsx()` aus dem Paket `readxl` in `R` laden. Wenn die Daten die folgende Form haben:
 
 ```{r}
 #| label: fig-r-basics-excel 
@@ -108,15 +108,15 @@ df <- readxl::read_xlsx(
 df
 ```
 
-Ähnlich wie bei `read_delim()` geben wir mit `path` den Pfad zur Datei an. Der Parameter `sheet` spezifiziert aus welchem Excelblatt die Daten einlesen werden sollen, während der Parameter `range` den Datenbereich auf dem Blatt definieren. Je nachdem wie kompliziert eure Exceldatei aussieht müssen `sheet` und `range` oft gar nicht angegeben werden da `read_xlsx()` auch über heuristische Regeln versucht zu erraten welche Daten ihr einlesen wollt. Allerdings ist dies eher eine fragile Annahme und daher im Sinne einer robusten Datenanalyse ist zu empfehlen beide Parameter immer anzugeben und sicherzugehen das auch wirklich die gewollten Daten eingelesen werden.
+Ähnlich wie bei `read_delim()` geben wir mit `path` den Pfad zur Datei an. Der Parameter `sheet` spezifiziert, aus welchem Excel-Blatt die Daten eingelesen werden sollen, während der Parameter `range` den Datenbereich auf dem Blatt definiert. Je nachdem, wie kompliziert eure Excel-Datei aussieht, müssen `sheet` und `range` oft gar nicht angegeben werden, da `read_xlsx()` auch über heuristische Regeln versucht zu erraten, welche Daten ihr einlesen wollt. Allerdings ist dies eher eine fragile Annahme, und daher ist es im Sinne einer robusten Datenanalyse zu empfehlen, beide Parameter immer anzugeben und sicherzugehen, dass auch wirklich die gewollten Daten eingelesen werden.
 
 :::{.callout-note}
-Bei Parameter `range` darauf achten, das dieser bei Veränderung der Excel-Datei, z.B. wenn neue Daten dazukommen entsprechend angepasst wird.
+Beim Parameter `range` darauf achten, dass dieser bei Veränderung der Excel-Datei, z. B. wenn neue Daten dazukommen, entsprechend angepasst wird.
 :::
 
 ### haven
 
-Im Paket `haven` haben wir Funktionen um mit SPSS-Dateien (siehe @fig-r-basics-spss) zu arbeiten.
+Im Paket `haven` haben wir Funktionen, um mit SPSS-Dateien (siehe @fig-r-basics-spss) zu arbeiten.
 
 ```{r}
 #| label: fig-r-basics-spss
@@ -125,7 +125,7 @@ Im Paket `haven` haben wir Funktionen um mit SPSS-Dateien (siehe @fig-r-basics-s
 knitr::include_graphics('pics/spss_example.png')
 ```
 
-Die Funktionen funktionen zum Glück selbst wenn SPSS auf dem Rechner nicht installiert ist. Allerdings kann hier nicht nachkontrolliert werden ob das Einlesen korrekt stattgefunden hat, wenn keine Dokumentation zu den Daten vorhanden ist. In SPSS werden Datein üblicherweise in einem binären `sav`-Dateikontainer gespeichert. In `R` können die Daten mittels der Funktion `read_sav()` aus dem Paket `haven` eingelesen werden.
+Die Funktionen funktionieren zum Glück selbst, wenn SPSS auf dem Rechner nicht installiert ist. Allerdings kann hier nicht nachkontrolliert werden, ob das Einlesen korrekt stattgefunden hat, wenn keine Dokumentation zu den Daten vorhanden ist. In SPSS werden Dateien üblicherweise in einem binären `sav`-Dateicontainer gespeichert. In `R` können die Daten mittels der Funktion `read_sav()` aus dem Paket `haven` eingelesen werden.
 
 ```{r}
 #| echo: true
@@ -134,21 +134,21 @@ df <- haven::read_sav('data/example_01.sav')
 df
 ```
 
-Da SPSS eigene Datentypen, insbesondere im Zusammenhang mit nominalen bzw. ordinalen Variablen hat, sind im Paket `haven` spezielle Datentypen definiert. Im Beispiel hier ersichtlich am Datentyp für `grp` mit `<dbl+lbl>`. Es handelt sich hier um den Datentypen `labelled`. In der Dokumentation von `read_sav()` gibt es hierzu weiter Informationen. 
+Da SPSS eigene Datentypen, insbesondere im Zusammenhang mit nominalen bzw. ordinalen Variablen, hat, sind im Paket `haven` spezielle Datentypen definiert. Im Beispiel hier ersichtlich am Datentyp für `grp` mit `<dbl+lbl>`. Es handelt sich hier um den Datentyp `labelled`. In der Dokumentation von `read_sav()` gibt es hierzu weitere Informationen.
 
 :::{.callout-tip}
-Mit der Funktion `as_factor()` aus dem Paket `haven` können die `labelled` Daten in den `R` Dateityp `factor` umgewandelt werden.
+Mit der Funktion `as_factor()` aus dem Paket `haven` können die `labelled` Daten in den `R`-Datentyp `factor` umgewandelt werden.
 :::
 
-Wenn wir die Daten in `R` eingelesen haben, können wir nun als nächstes die Daten verarbeiten und so strukturieren wie wir sie für die weitere Analyse benötigen. Dazu stehen uns eine Reihe von weiteren Funktionen aus dem `tidyverse` zur verfügung.
+Wenn wir die Daten in `R` eingelesen haben, können wir nun als nächstes die Daten verarbeiten und so strukturieren, wie wir sie für die weitere Analyse benötigen. Dazu stehen uns eine Reihe von weiteren Funktionen aus dem `tidyverse` zur Verfügung.
 
 ## Daten in `R` prozessieren mit `tidyverse`
 
-Die Art der Programmierung im `tidyverse` verwendet oft eine eigene Herangehensweise die sich vonderjenigen die wir bisher kennengelernt haben etwas unterscheidet. Um den Code leserlich zu halten werden mehrere Funktionen in sogenannten *pipes* aneinandergehängt ohne zwischendrin temporäre Variablen zu erstellen. Dies führt zu Code der fast wie Prosa gelesen werden kann. Dazu müssenw wir aber zunächst einen neuen Operator kennenlernen.
+Die Art der Programmierung im `tidyverse` verwendet oft eine eigene Herangehensweise, die sich von derjenigen, die wir bisher kennengelernt haben, etwas unterscheidet. Um den Code leserlich zu halten, werden mehrere Funktionen in sogenannten *pipes* aneinandergehängt, ohne zwischendrin temporäre Variablen zu erstellen. Dies führt zu Code, der fast wie Prosa gelesen werden kann. Dazu müssen wir aber zunächst einen neuen Operator kennenlernen.
 
-### Der Pipe operator `|>`
+### Der Pipe-Operator `|>`
 
-In `R` gibt es den sogenannten pipe-operator `|>`. Der `|>` hat die Eigenschaft, dass ein vorangestellter Wert (dies kann auch der Rückgabewert einer Funktion sein) als das erste Argument an eine nachfolgende Funktion übergeben wird. Dies ermöglicht es Code zu schreiben der sich wie gesprochener Text liest. Schauen wir uns ein einfaches Beispiel an. Wir wollen den Mittelwert eines Zahlenvektors berechnen und anschließend das Ergebnis auf die zweite Nachkommastelle runden. Normalerweise würden wir das wie folgt formulieren wenn wir keine Zwischenvariablen definieren wollen.
+In `R` gibt es den sogenannten Pipe-Operator `|>`. Der `|>` hat die Eigenschaft, dass ein vorangestellter Wert (dies kann auch der Rückgabewert einer Funktion sein) als das erste Argument an eine nachfolgende Funktion übergeben wird. Dies ermöglicht es, Code zu schreiben, der sich wie gesprochener Text liest. Schauen wir uns ein einfaches Beispiel an. Wir wollen den Mittelwert eines Zahlenvektors berechnen und anschließend das Ergebnis auf die zweite Nachkommastelle runden. Normalerweise würden wir das wie folgt formulieren, wenn wir keine Zwischenvariablen definieren wollen.
 
 ```{r}
 #| echo: true
@@ -157,7 +157,7 @@ vec <- c(1, 7, 3, -5.22, 5, 6.3)
 round(mean(vec), 2)
 ```
 
-D.h. wir haben ein Schachtelung (nesting) der Funktionen. Die `mean()` Funktion ist innerhalb der `round()` Funktion geschachtelt bzw. der Rückgabewert von `mean()` wird als erstes Argument an `round()` übergeben. Schauen wir uns nun an, wie wir das gleiche Programm mit dem pipe-operator `|>` formulieren.
+D. h. wir haben eine Schachtelung (nesting) der Funktionen. Die `mean()`-Funktion ist innerhalb der `round()`-Funktion geschachtelt, bzw. der Rückgabewert von `mean()` wird als erstes Argument an `round()` übergeben. Schauen wir uns nun an, wie wir das gleiche Programm mit dem Pipe-Operator `|>` formulieren.
 
 ```{r}
 #| echo: true
@@ -165,11 +165,11 @@ D.h. wir haben ein Schachtelung (nesting) der Funktionen. Die `mean()` Funktion 
 vec |> mean() |> round(2)
 ```
 
-Was ist hier passiert? Die erste pipe `|>` übergibt ihr links stehendes Argument, den Vektor `vec` and das erste Argument der rechts stehenden Funktion `mean()`. Aus `vec |> mean()` wird `mean(vec)`. `mean()` ist happy und berechnet den Mittelwert des Vektors der nun als Rückgabewert zur Verfügung steht. Der zweite pipe-Operator und nimmt nun wieder diesen *linke* Wert, der berechnete Mittelwert, und übergibt diesen an das erste Argument der nachfolgenden `round(2)`-Funktion. Wenn ihr euch die Hilfe von `round()` anschaut, dann seht ihr, dass dere erste Parmeter der zu rundende Wert ist. Was macht jetzt aber die `2` in `round(2)`. Nun, `|>` stellt den links stehenden Wert an die erste Stelle der rechts stehenden Funktion, dadurch rutscht die `2` an die zweite Argumentenstelle in `round()` und bestimmt somit die Anzahl der zu runden Stellen. 
+Was ist hier passiert? Die erste Pipe `|>` übergibt ihr links stehendes Argument, den Vektor `vec`, an das erste Argument der rechts stehenden Funktion `mean()`. Aus `vec |> mean()` wird `mean(vec)`. `mean()` ist zufrieden und berechnet den Mittelwert des Vektors, der nun als Rückgabewert zur Verfügung steht. Der zweite Pipe-Operator nimmt nun wieder diesen *linken* Wert, den berechneten Mittelwert, und übergibt diesen an das erste Argument der nachfolgenden `round(2)`-Funktion. Wenn ihr euch die Hilfe von `round()` anschaut, dann seht ihr, dass der erste Parameter der zu rundende Wert ist. Was macht jetzt aber die `2` in `round(2)`? Nun, `|>` stellt den links stehenden Wert an die erste Stelle der rechts stehenden Funktion, dadurch rutscht die `2` an die zweite Argumentstelle in `round()` und bestimmt somit die Anzahl der zu rundenden Stellen.
 
-Der Vorteil des pipe-Operators ist, dass ihr das Program nun einfach von links nach rechts lesen könnt. Nimm `vec`, stecke es in `mean()` und stecke das was rauskommt in `round(2)`. Bei dem ursprünglichen Programm musstet ihr euch von innen nach außen arbeiten und dabei immer im Blick behalten auf welcher Stufe ihr seid um die Parameterzuordnung richtig interpretieren zu können.
+Der Vorteil des Pipe-Operators ist, dass ihr das Programm nun einfach von links nach rechts lesen könnt: Nimm `vec`, stecke es in `mean()`, und stecke das, was rauskommt, in `round(2)`. Bei dem ursprünglichen Programm musstet ihr euch von innen nach außen arbeiten und dabei immer im Blick behalten, auf welcher Stufe ihr seid, um die Parameterzuordnung richtig interpretieren zu können.
 
-Noch ein Beispiel, wir wollen den Mittelwert auf den Absolutwerten des Vektors berechnen. Nach der Standardmethode.
+Noch ein Beispiel: Wir wollen den Mittelwert auf den Absolutwerten des Vektors berechnen. Nach der Standardmethode:
 
 ```{r}
 #| echo: true
@@ -177,7 +177,7 @@ Noch ein Beispiel, wir wollen den Mittelwert auf den Absolutwerten des Vektors b
 round(mean(abs(vec)), 2)
 ```
 
-Mit dem pipe-Operator
+Mit dem Pipe-Operator:
 
 ```{r}
 #| echo: true
@@ -185,7 +185,7 @@ Mit dem pipe-Operator
 vec |> abs() |> mean() |> round(2)
 ```
 
-Wenn die pipe Anfängt zu lang zu werden, dann hat es sich einbürgert nach der pipe eine neue Zeile anzufangen.
+Wenn die Pipe anfängt, zu lang zu werden, dann hat es sich eingebürgert, nach der Pipe eine neue Zeile anzufangen.
 
 ```{r}
 #| echo: true
@@ -195,9 +195,9 @@ vec |> abs() |>
 ```
 
 
-Der pipe-Operator `|>` ist so alltäglich, dass ihr in RStudio einen short-cut für ihn habt {{< kbd STRG+SHIFT+m >}}.
+Der Pipe-Operator `|>` ist so alltäglich, dass ihr in RStudio einen Shortcut für ihn habt: {{< kbd STRG+SHIFT+m >}}.
 
-Bei der Vewendung der pipe dabei nicht vergessen das Ergebnis der pipe dann letztendlich doch wieder eine Variable zuzuweisen. Ansonsten berechnet `R` den Wert und schmeißt ihn gleich wieder weg.
+Bei der Verwendung der Pipe nicht vergessen, das Ergebnis der Pipe dann letztendlich doch wieder einer Variable zuzuweisen. Ansonsten berechnet `R` den Wert und schmeißt ihn gleich wieder weg.
 
 ```{r}
 var_abs <- vec |> abs() |> 
@@ -205,17 +205,17 @@ var_abs <- vec |> abs() |>
 var_abs
 ```
 
-Der pipe-Operator `|>` ist im alltäglichen Umgang mit Datenprozessierung im Zusammenhang mit `tidyverse` praktisch unabkömmlich und praktisch jegliche Codeschnipsel die ihr im Netz dazu findet verwenden pipes. Tatsächlich ist die dahinterliegende Idee in der Informatik [siehe @kernighan1984] schon relativ lange bekannt. Die darüberliegende Idee ist nämlich Anstatt große, komplizierte Funktionen zu schreiben die eine Vielzahl von Argumenten haben und mehrere unterschiedliche Aufgaben erledigen, werden lieber viele kleine, spezialisierte Programme zu erstellen. Die spezialisierten Programme können dann zusamengesetzt werden um komplizierte Aufgaben zu erfüllen. Der pipe-operator ist dabei zentral für diese Idee, da er es ermöglicht die spezialisierten, kleinen Programmen einfach aneinander zu hängen. Ähnlich wie zum Beispiel bei einen Kinderwasserspielzeug mit Rohren, Schaufeln und Filtern können durchumordnung der Einzelfunktion beliebig komplexe Mechanismen abgebildet werden. Unter Linux bash ist daher auch ein pipe-Operator `|` zu finden.  
+Der Pipe-Operator `|>` ist im alltäglichen Umgang mit Datenprozessierung im Zusammenhang mit `tidyverse` praktisch unabkömmlich, und praktisch jegliche Codeschnipsel, die ihr im Netz dazu findet, verwenden Pipes. Tatsächlich ist die dahinterliegende Idee in der Informatik [siehe @kernighan1984] schon relativ lange bekannt. Die darüberliegende Idee ist nämlich: Anstatt große, komplizierte Funktionen zu schreiben, die eine Vielzahl von Argumenten haben und mehrere unterschiedliche Aufgaben erledigen, werden lieber viele kleine, spezialisierte Programme erstellt. Die spezialisierten Programme können dann zusammengesetzt werden, um komplizierte Aufgaben zu erfüllen. Der Pipe-Operator ist dabei zentral für diese Idee, da er es ermöglicht, die spezialisierten, kleinen Programme einfach aneinander zu hängen. Ähnlich wie bei einem Kinderwasserspielzeug mit Rohren, Schaufeln und Filtern können durch Umordnung der Einzelfunktionen beliebig komplexe Mechanismen abgebildet werden. Unter Linux bash ist daher auch ein Pipe-Operator `|` zu finden.
 
 Nach diesem Ausflug zurück zur Datenbearbeitung mit dem `tidyverse`. Um die Daten möglichst einfach mit dem `tidyverse` verarbeiten zu können, sollten die Daten im `tibble()` einer bestimmten Struktur folgen. Im `tidyverse` wird diese Anordnung als *tidy-Data* bezeichnet.
 
-### tidy-Data
+### Tidy-Data
 
-Zu tidy-Data gibt es in der einfachsten Form nur drei Regeln die zu beachten sind:
+Zu tidy-Data gibt es in der einfachsten Form nur drei Regeln, die zu beachten sind:
 
-1. Jede Spalte ist eine Variable
-2. Jede Zeile ist eine Beobachtung
-3. Jede Zelle ist ein einzelner Eintrag
+1. Jede Spalte ist eine Variable.
+2. Jede Zeile ist eine Beobachtung.
+3. Jede Zelle ist ein einzelner Eintrag.
 
 Schauen wir uns wieder ein einfaches, fiktives Beispiel mit Sprunghöhen an.
 
@@ -223,27 +223,27 @@ Schauen wir uns wieder ein einfaches, fiktives Beispiel mit Sprunghöhen an.
 #| echo: true
 
 df <- tibble(
-  time = rep(c('pre','post'), 4),
-  gender = rep(c('m','f'), each=4),
-  age = rep(round(runif(4, 20, 40)),each=2),
-  cmj = round(rnorm(8, c(25,20), 2), 1)
+  time = rep(c('pre', 'post'), 4),
+  gender = rep(c('m', 'f'), each = 4),
+  age = rep(round(runif(4, 20, 40)), each = 2),
+  cmj = round(rnorm(8, c(25, 20), 2), 1)
 )
 df
 ```
 
-Wir haben vier Spalten, `time`, `gender`, `age` und `cmj` die jeweils eine Variable darstellen. In jeder Zeile ist eine Beobachtung eine Sprunghöhe `cmj` einer Person eines Alters `age` und `gender` zu einem bestimmten Zeitpunkt `time`. Schaut also tidy aus.
+Wir haben vier Spalten: `time`, `gender`, `age` und `cmj`, die jeweils eine Variable darstellen. In jeder Zeile ist eine Beobachtung eine Sprunghöhe `cmj` einer Person eines Alters `age` und `gender` zu einem bestimmten Zeitpunkt `time`. Schaut also tidy aus.
 
-Diese Darstellung ist aber wahrscheinlich unterschiedlich zu derjenigen wie ihr solche Daten schon öfter gesehen habt. Wahrscheinlich nämlich eher so.
+Diese Darstellung ist aber wahrscheinlich unterschiedlich zu derjenigen, wie ihr solche Daten schon öfter gesehen habt. Wahrscheinlich nämlich eher so:
 
 ```{r}
-df |> pivot_wider(names_from=time, values_from=cmj)
+df |> pivot_wider(names_from = time, values_from = cmj)
 ```
 
-Diese Darstellung ist zwar kompakter aber entspricht nicht mehr den tidy-Anforderungen, da wir nun nicht mehr nur eine Beobachtung pro Zeile haben. Wir haben für jede Person die Sprunghöhe zu zwei Zeitpunkten in einer Zeile. Die Daten sind in dieser Darstellung also *untidy*. Die *tidy*-Version ist etwas länger und enthält redundante Informationen aber wir werden im Folgenden sehen, dass diese Darstellung in der Verarbeitung zahlreiche Vorteile hat. Dazu werden wir auch Funktionen kennenlernen mit denen wir zwischen diesen beiden Formaten hin- und herwechseln können. Die *tidy*-Darstellung wird als long-Format bezeichnet, während die *untidy*-Darstellung als wide-Format bezeichnet wird.
+Diese Darstellung ist zwar kompakter, entspricht aber nicht mehr den tidy-Anforderungen, da wir nun nicht mehr nur eine Beobachtung pro Zeile haben. Wir haben für jede Person die Sprunghöhe zu zwei Zeitpunkten in einer Zeile. Die Daten sind in dieser Darstellung also *untidy*. Die *tidy*-Version ist etwas länger und enthält redundante Informationen, aber wir werden im Folgenden sehen, dass diese Darstellung in der Verarbeitung zahlreiche Vorteile hat. Dazu werden wir auch Funktionen kennenlernen, mit denen wir zwischen diesen beiden Formaten hin- und herwechseln können. Die *tidy*-Darstellung wird als Long-Format bezeichnet, während die *untidy*-Darstellung als Wide-Format bezeichnet wird.
 
 ### `filter()`
 
-Lernen wir jezt unseren ersten `tidyverse()` Befehl zur Datenmanipulation kennen. Die Befehle werden als Verben bezeichnet und die Regel für die Funktionennahmen ist zum Glück ziemlich einfach:"was im Namen draufsteht ist auch in der Packung drin". Der Befehl `filter` filtert Daten, d.h. wir geben einen Sack Daten rein und wollen nur einen Teil wieder raus haben der bestimmte Eigenschaften hat. Dazu können wir einfache Regel mittels der Vergleichsoperatoren in `filter()` zusammen mit den Spaltennahmen im `tibble()` verwenden. Wollen wir aus unserem Datensatz nur alle weiblichen Datenpunkte herausfiltern und wir wissen, dass die Information über das Gender in der Spalte `gender` steht und mit `f` für weiblich kodiert ist, dann können wir mit dem Vergleich `gender == 'f' die Daten entsprechen filtern.
+Lernen wir jetzt unseren ersten `tidyverse`-Befehl zur Datenmanipulation kennen. Die Befehle werden als Verben bezeichnet, und die Regel für die Funktionsnamen ist zum Glück ziemlich einfach: "Was im Namen draufsteht, ist auch in der Packung drin." Der Befehl `filter` filtert Daten, d. h. wir geben einen Sack Daten rein und wollen nur einen Teil wieder herausbekommen, der bestimmte Eigenschaften hat. Dazu können wir einfache Regeln mittels der Vergleichsoperatoren in `filter()` zusammen mit den Spaltennamen im `tibble()` verwenden. Wollen wir aus unserem Datensatz nur alle weiblichen Datenpunkte herausfiltern, und wir wissen, dass die Information über das Geschlecht in der Spalte `gender` steht und mit `f` für weiblich kodiert ist, dann können wir mit dem Vergleich `gender == 'f'` die Daten entsprechend filtern.
 
 ```{r}
 #| echo: true
@@ -259,7 +259,7 @@ Wollen wir dagegen auf das Alter mit `age < 30` filtern, verwenden wir:
 df |> filter(age < 30)
 ```
 
-Wenn die Daten mehrere Konditionen erfüllen müssen, verwenden wir entsprechend mehrere Filteranweisungen. Die Vergleiche werden intern mittels einer Und-Operation zusammengesetzt.
+Wenn die Daten mehrere Bedingungen erfüllen müssen, verwenden wir entsprechend mehrere Filteranweisungen. Die Vergleiche werden intern mittels einer Und-Operation zusammengesetzt.
 
 ```{r}
 #| echo: true
@@ -267,15 +267,17 @@ Wenn die Daten mehrere Konditionen erfüllen müssen, verwenden wir entsprechend
 df |> filter(age < 25, gender == 'f')
 ```
 
-`filter()` gibt uns in diesem Bespiel also alle Datenpunkte zurück bei denen `age < 25` und `gender == 'f'` gilt. Durch die Kombination von mehreren Vergleichen können relativ einfach komplexe Bedingungen formuliert werden.
+`filter()` gibt uns in diesem Beispiel also alle Datenpunkte zurück, bei denen `age < 25` und `gender == 'f'` gilt. Durch die Kombination von mehreren Vergleichen können relativ einfach komplexe Bedingungen formuliert werden.
 
 ::: {.callout-tip}
-Manchmal möchte wir nur alle vollständigen Zeilen aus einen Datensatz weiterverwenden. Dies könnten wir mit `filter()` erreichen, dazu müssten wir aber für jede Spalte einen Vergleich mit `is.na()` schreiben wenn die fehlenden Werte `NA` über mehrere Spalten verteilt sind. Schneller geht dies mit dem Befehlt `drop_na()`.
+Manchmal möchten wir nur alle vollständigen Zeilen aus einem Datensatz
+
+ weiterverwenden. Dies könnten wir mit `filter()` erreichen, dazu müssten wir aber für jede Spalte einen Vergleich mit `is.na()` schreiben, wenn die fehlenden Werte `NA` über mehrere Spalten verteilt sind. Schneller geht dies mit dem Befehl `drop_na()`.
 
 ```{r}
 #| echo: true
 
-df_missing <- tibble(x = 1:4, y = c(11,NA,13,14), z = c(21,22,23,NA))
+df_missing <- tibble(x = 1:4, y = c(11, NA, 13, 14), z = c(21, 22, 23, NA))
 df_missing
 df_missing |> drop_na()
 ```
@@ -293,7 +295,7 @@ Das nächste Verb aus dem `tidyverse` ist `select()`. Mit `select()` können wir
 df |> select(time, gender)
 ```
 
-Der Rückgabewert von `select()` ist entsprechend ein `tibble` das nur die selektierten Spalten enthält. Ähnlich wie das auch bei der Indexierung von Elementen in Vektoren funktioniert versteht `select()` auch eine Ausschlusssyntax mit `-`. Wollen wir z.B. alle Spalten aus `gender` formulieren wir dies wie folgt:
+Der Rückgabewert von `select()` ist entsprechend ein `tibble`, das nur die selektierten Spalten enthält. Ähnlich wie das auch bei der Indexierung von Elementen in Vektoren funktioniert, versteht `select()` auch eine Ausschlusssyntax mit `-`. Wollen wir z. B. alle Spalten außer `gender` auswählen, formulieren wir dies wie folgt:
 
 ```{r}
 #| echo: true
@@ -302,7 +304,7 @@ df |> select(-gender)
 ```
 
 ::: {#exm-select-01}
-Da wir jetzt schon zwei Verben kennen, können wir auch direkt sehen wie wir durch die Kombination der Befehle komplexere Anweisungen relativ einfach in Code übersetzen können. Wollen wir zum Beispiel alle Datenpunkte von Frauen die älter als 28 sind verwenden und brauch dann nicht mehr die `gender` Variable könen wir dies wie folgt übersetzen:
+Da wir jetzt schon zwei Verben kennen, können wir auch direkt sehen, wie wir durch die Kombination der Befehle komplexere Anweisungen relativ einfach in Code übersetzen können. Wollen wir zum Beispiel alle Datenpunkte von Frauen, die älter als 28 sind, verwenden und brauchen dann die `gender`-Variable nicht mehr, können wir dies wie folgt übersetzen:
 
 ```{r}
 #| echo: true
@@ -312,13 +314,13 @@ df |> filter(gender == 'f', age > 27) |> select(-gender)
 
 :::
 
-Insgesamt führt `select()` dazu, dass wir ein `tibble` erhalten, dass weniger Spalten als ursprünglich enthält.
+Insgesamt führt `select()` dazu, dass wir ein `tibble` erhalten, das weniger Spalten als ursprünglich enthält.
 
 ### `mutate()`
 
-In den beiden vorhergehenden Fällen, haben wir die Daten nicht wirklich verändert sondern entweder nur bestimmte Fälle mit `filter()` oder bestimmte Variablen mit `select()` ausgewählt. Oft kommt es aber vor, dass wir aus den bestehenden Daten neue Daten erstellen wollen. Um neue Daten zu berechnen verwenden wir im `tidyverse` das Verb `mutate()`.
+In den beiden vorhergehenden Fällen haben wir die Daten nicht wirklich verändert, sondern entweder nur bestimmte Fälle mit `filter()` oder bestimmte Variablen mit `select()` ausgewählt. Oft kommt es aber vor, dass wir aus den bestehenden Daten neue Daten erstellen wollen. Um neue Daten zu berechnen, verwenden wir im `tidyverse` das Verb `mutate()`.
 
-In unserem Datensatz liegen die Sprunhöhen in Zentimeter vor, wir benötigen aber für weitere Berechnungen die Sprunghöhen in Metern. Dazu wollen wir eine neue Spalte erstellen, die wir, um sie von der anderen Spalte abzugrenzen, mit `cmj_m` bezeichnen wollen. Dazu setzen wir `mutate()` wie folgt ein.
+In unserem Datensatz liegen die Sprunghöhen in Zentimetern vor, wir benötigen aber für weitere Berechnungen die Sprunghöhen in Metern. Dazu wollen wir eine neue Spalte erstellen, die wir, um sie von der anderen Spalte abzugrenzen, mit `cmj_m` bezeichnen wollen. Dazu setzen wir `mutate()` wie folgt ein:
 
 ```{r}
 #| echo: true
@@ -326,10 +328,10 @@ In unserem Datensatz liegen die Sprunhöhen in Zentimeter vor, wir benötigen ab
 df |> mutate(cmj_m = cmj / 100)
 ```
 
-Wie sehen, dass eine neue Spalte in dem `tibble` erstellt wurde mit eben der Namen `cmj_m`.
+Wir sehen, dass eine neue Spalte in dem `tibble` erstellt wurde, eben mit dem Namen `cmj_m`.
 
 ::: {.callout-warning}
-`mutate()` verhindert nicht, Variablen mit neuen Werten zu überschreiben. Würden wir die Sprunghöhen in Zentimeter später nicht mehr benötigen, könnten wir die Spalte `cmj` auch überschreiben.
+`mutate()` verhindert nicht, Variablen mit neuen Werten zu überschreiben. Würden wir die Sprunghöhen in Zentimetern später nicht mehr benötigen, könnten wir die Spalte `cmj` auch überschreiben.
 
 ```{r}
 #| echo: true
@@ -338,12 +340,12 @@ df |> mutate(cmj = cmj / 100)
 ```
 :::
 
-Der große Vorteil von `mutate()` ist hier auch wieder, das wir direkt auf die Spaltenahmen zugreifen können und nicht wie sonst notwendig den `$`-Operator.
+Der große Vorteil von `mutate()` ist hier auch wieder, dass wir direkt auf die Spaltennamen zugreifen können und nicht wie sonst notwendig den `$`-Operator.
 
 Durch `mutate()` werden insgesamt also zusätzliche Spalten an das ursprüngliche `tibble` angehängt.
 
 ::: {#exm-mutate-01}
-Aufbauend auf dem Beispiel von eben, wollen wir zum Beispiel die Spalte mit Sprunghöhen nicht beibehalten aber einen neuen Namen verwenden damit wir später nachvollziehen können, dass wir die Sprunghöhen bearbeitet haben, könnten wir wieder mit einer Kombination der Verben `mutate()` und `select()` in einer pipe vorgehen:
+Aufbauend auf dem Beispiel von eben: Wollen wir zum Beispiel die Spalte mit den Sprunghöhen nicht beibehalten, aber einen neuen Namen verwenden, damit wir später nachvollziehen können, dass wir die Sprunghöhen bearbeitet haben, könnten wir wieder mit einer Kombination der Verben `mutate()` und `select()` in einer Pipe vorgehen:
 
 ```{r}
 #| echo: true
@@ -354,7 +356,7 @@ df |> mutate(cmj_m = cmj / 100) |> select(-cmj)
 
 ### `summarize()`
 
-Mit der `summarize()` Funktion werden alle Beobachtung (Zeilen) in eine Zeile zusammengefasst. Wollen wir zum Beispiel die durchschnittliche Sprunghöhe über alle Beobachtung berechnen.
+Mit der `summarize()`-Funktion werden alle Beobachtungen (Zeilen) in eine Zeile zusammengefasst. Wollen wir zum Beispiel die durchschnittliche Sprunghöhe über alle Beobachtungen berechnen:
 
 ```{r}
 #| echo: true
@@ -362,7 +364,7 @@ Mit der `summarize()` Funktion werden alle Beobachtung (Zeilen) in eine Zeile zu
 df |> summarize(cmj_bar = mean(cmj))
 ```
 
-`summarize()` kann auch mehrere Werte berechnen.
+`summarize()` kann auch mehrere Werte berechnen:
 
 ```{r}
 #| echo: true
@@ -373,7 +375,7 @@ df |> summarize(cmj_bar = mean(cmj), age_bar = mean(age))
 
 ### `group_by()`
 
-Die `summarize()` Funktion wird tatsächlich erst richtig mächtig im Zusammenhang mit der `group_by()` Funktion. Mit `group_by()` kann ein Datensatz anhand der Werte einer Variable in Untergruppen geschnitten werden. Wollen wir in unserem Beispiel die Mittelwerte für verschiedenen Zeitpunkte berechnen.
+Die `summarize()`-Funktion wird tatsächlich erst richtig mächtig im Zusammenhang mit der `group_by()`-Funktion. Mit `group_by()` kann ein Datensatz anhand der Werte einer Variable in Untergruppen geschnitten werden. Wollen wir in unserem Beispiel die Mittelwerte für verschiedene Zeitpunkte berechnen:
 
 ```{r}
 #| echo: true
@@ -381,7 +383,7 @@ Die `summarize()` Funktion wird tatsächlich erst richtig mächtig im Zusammenha
 df |> group_by(time) |> summarize(cmj_bar = mean(cmj))
 ```
 
-Das gruppieren funktioniert auch über mehrere Variablen.
+Das Gruppieren funktioniert auch über mehrere Variablen:
 
 ```{r}
 #| echo: true
@@ -389,36 +391,36 @@ Das gruppieren funktioniert auch über mehrere Variablen.
 df |> group_by(time, gender) |> summarize(cmj_bar = mean(cmj))
 ```
 
-Die Kombination aus `filter()`, `group_by()` und `summarize()` deckt wahrscheinlich mehr als die Hälfte der Anwendungen bei der Datenanalyse ab. Die folgenden Befehle sind etwas spezialisiert.
+Die Kombination aus `filter()`, `group_by()` und `summarize()` deckt wahrscheinlich mehr als die Hälfte der Anwendungen bei der Datenanalyse ab. Die folgenden Befehle sind etwas spezialisierter.
 
 ### `separate()`
 
-Mit dem `separate()` Befehle kann eine Variable in der mehrere Informationen gespeichert sind, in mehrere Variablen separiert werden.
+Mit dem `separate()`-Befehl kann eine Variable, in der mehrere Informationen gespeichert sind, in mehrere Variablen separiert werden.
 
 ```{r}
 df_2 <- tibble(
-  Kondition = c('pre_trt','post_trt','pre_con','post_con'),
+  Kondition = c('pre_trt', 'post_trt', 'pre_con', 'post_con'),
   wert = 1:4
 )
 df_2
 ```
 
-Die Variable Kondition hat zwei Variablen in einer kodiert (*untidy*). Mit `separate()` können wir Kondition aufteilen. `separate()` benötigt als Parameter neben dem Spaltennamen eine Vector der neuen Spaltennamen übergeben an das Funktionsargument `into`.
+Die Variable `Kondition` hat zwei Variablen in einer kodiert (*untidy*). Mit `separate()` können wir `Kondition` aufteilen. `separate()` benötigt als Parameter neben dem Spaltennamen einen Vektor der neuen Spaltennamen, übergeben an das Funktionsargument `into`.
 
 ```{r}
 #| echo: true
 
-df_2 |> separate(Kondition, into=c('time','group'))
+df_2 |> separate(Kondition, into = c('time', 'group'))
 ```
 
 ### `pivot_wider()`
 
-Mit `pivot_wider()` können *tidy*-Datensätze von der long-Version in die wide-version umkodiert werden. Im einfachsten Fall benötigt `pivot_wider()` zwei Argumente. `names_from` wird der Variablenname übergeben, der einzelne `wide`-Variablen kodieren. `values_from` spezifiziert die einzutragenden Variablen.
+Mit `pivot_wider()` können *tidy*-Datensätze von der Long-Version in die Wide-Version umkodiert werden. Im einfachsten Fall benötigt `pivot_wider()` zwei Argumente. `names_from` wird der Variablenname übergeben, der einzelne `wide`-Variablen kodiert. `values_from` spezifiziert die einzutragenden Variablen.
 
 ```{r}
 #| echo: true
 
-df_w <- df |> pivot_wider(names_from=time, values_from=cmj)
+df_w <- df |> pivot_wider(names_from = time, values_from = cmj)
 df_w
 ```
 
@@ -432,34 +434,34 @@ Die Umkehrfunktion von `pivot_wider()` ist `pivot_longer()`. Wieder im einfachst
 df_w |> pivot_longer(c(pre, post), names_to = "time", values_to = "cmj")
 ```
 
-Zusammenfassend ist das hier nur eine schnelle Übersicht über die möglichen Befehle gewesen. Um die ins und outs der Funktionen zu verstehen, ist natürlich mehr Übung notwendig. Meistens hilft es aber schon zu wissen welche der Funktionen ungefähr helfen könnte um dann zusammen mit der Dokumentation eine Lösung zu finden. Eine exzellente Quelle für eine umfassendere Auseinandersetzung mit dem `tidyverse` ist das Buch *R for Data Science* von @wickham2023 das ihr auch kostenlos in der aktuellsten Form [online](https://r4ds.had.co.nz) findet.
+Zusammenfassend ist das hier nur eine schnelle Übersicht über die möglichen Befehle gewesen. Um die Details der Funktionen zu verstehen, ist natürlich mehr Übung notwendig. Meistens hilft es aber schon zu wissen, welche der Funktionen ungefähr helfen könnte, um dann zusammen mit der Dokumentation eine Lösung zu finden. Eine exzellente Quelle für eine umfassendere Auseinandersetzung mit dem `tidyverse` ist das Buch *R for Data Science* von @wickham2023, das ihr auch kostenlos in der aktuellsten Form [online](https://r4ds.had.co.nz) findet.
 
 ### Joins
 
-Manchmal möchten wir Informationen aus mehreren Tabellen zusammenfügen. Sei zum Beispiel der folgende Fall gegeben. Wir haben in einer Tabelle `anthro` anthropometrische Merkmale unserer Probanden und in einer Tabelle `df_exp` die Experimentaldaten.
+Manchmal möchten wir Informationen aus mehreren Tabellen zusammenfügen. Sei zum Beispiel der folgende Fall gegeben: Wir haben in einer Tabelle `anthro` anthropometrische Merkmale unserer Probanden und in einer Tabelle `df_exp` die Experimentaldaten.
 
 ```{r}
-anthro <- tibble(pid = paste0('P',1:2), BMI = c(18,25), height=c(170,180))
+anthro <- tibble(pid = paste0('P', 1:2), BMI = c(18, 25), height = c(170, 180))
 anthro
 df_exp <- tibble(pid = paste0('P', 1:3), speed = 11:13)
 df_exp
 ```
 
-Um Daten aus verschiedenen Tabellen zusammen zu fügen gibt es eine Familie von Funktion die unter `join` zusammengefasst sind (`left_join()`, `right_join()`, `full_join()`). Die Unterschied bestehen darin was mit Daten gemacht wird die in einer der Tabelle fehlen. Wir fokussieren uns hier auf `left_join()`, wenn das Prinzip allerdings verstanden wurde, dann ist die Herleitung der beiden anderen Varianten einfach (siehe Dokumentation dazu).
+Um Daten aus verschiedenen Tabellen zusammenzufügen, gibt es eine Familie von Funktionen, die unter `join` zusammengefasst sind (`left_join()`, `right_join()`, `full_join()`). Der Unterschied besteht darin, was mit Daten gemacht wird, die in einer der Tabellen fehlen. Wir fokussieren uns hier auf `left_join()`. Wenn das Prinzip allerdings verstanden wurde, dann ist die Herleitung der beiden anderen Varianten einfach (siehe Dokumentation dazu).
 
-Um die Tabellen zusammen zu fügen, brauchen wir eine Variable die die einzelnen Fälle indiziert und in beiden Tabellen vorhanden ist. Oben haben wir dazu die Variable `pid` definiert. Damit können wir den join einfach durchführen
+Um die Tabellen zusammenzufügen, brauchen wir eine Variable, die die einzelnen Fälle indiziert und in beiden Tabellen vorhanden ist. Oben haben wir dazu die Variable `pid` definiert. Damit können wir den Join einfach durchführen:
 
 ```{r}
 df_exp |> left_join(anthro, by = 'pid')
 ```
 
-Wir erhalten eine Tabelle bei der für jede Zeile aus der *linken* Tabelle `df_exp` die `pid` entsprechende Zeile aus `anthro` hinzugefügt wurde. Wenn der entsprechende Wert aus der *rechten* Tabelle fehlt, dann werden entsprechend fehlende Werte `NA` eingesetzt.
+Wir erhalten eine Tabelle, bei der für jede Zeile aus der *linken* Tabelle `df_exp` die `pid`-entsprechende Zeile aus `anthro` hinzugefügt wurde. Wenn der entsprechende Wert aus der *rechten* Tabelle fehlt, dann werden entsprechend fehlende Werte `NA` eingesetzt.
 
-Manchmal kommt es vor, dass die Namen der Indexvariable in den beiden Tabellen unterschiedlich sind.  Mit der Funktion `join_by(x == y)` kann die Zusammenfügung trotzdem durchgeführt werden. 
+Manchmal kommt es vor, dass die Namen der Indexvariablen in den beiden Tabellen unterschiedlich sind. Mit der Funktion `join_by(x == y)` kann die Zusammenfügung trotzdem durchgeführt werden.
 
 ```{r}
-anthro_2 <- tibble(id = paste0('P',1:2), BMI = c(18,25))
-df_exp |> left_join(anthro_2, by=join_by(pid == id))
+anthro_2 <- tibble(id = paste0('P', 1:2), BMI = c(18, 25))
+df_exp |> left_join(anthro_2, by = join_by(pid == id))
 ```
 
 
@@ -467,7 +469,7 @@ df_exp |> left_join(anthro_2, by=join_by(pid == id))
 
 #### `rowid_to_column()` und `row_number()`
 
-Manchmal ist es von Vorteil wenn eine Variable vorhanden ist, die die Zeilen eindeutige identiziert. Eine einfache Lösung ist die Funktion `rowid_to_column()` mit der ein fortlaufender Zähler an der ersten Stelle eingefügt wird.
+Manchmal ist es von Vorteil, wenn eine Variable vorhanden ist, die die Zeilen eindeutig identifiziert. Eine einfache Lösung ist die Funktion `rowid_to_column()`, mit der ein fortlaufender Zähler an der ersten Stelle eingefügt wird.
 
 ```{r}
 #| echo: true
@@ -475,25 +477,25 @@ Manchmal ist es von Vorteil wenn eine Variable vorhanden ist, die die Zeilen ein
 df |> rowid_to_column(var = "rid")
 ```
 
-Eine weitere Möglichkeit ist über die Funktion `row_number()` innerhalb von `mutate()`
+Eine weitere Möglichkeit ist die Verwendung der Funktion `row_number()` innerhalb von `mutate()`.
 
 ```{r}
 #| echo: true
 
-df |> mutate(rid = row_number(), .before=1)
+df |> mutate(rid = row_number(), .before = 1)
 ```
 
-Dieser Ansatz hat auch noch den Vorteil, das wir eine eindeutige ID nach einem beliebigen Muster erstellen können. Würde zum Beispiel ein identifier für Probanden fehlen.
+Dieser Ansatz hat auch noch den Vorteil, dass wir eine eindeutige ID nach einem beliebigen Muster erstellen können. Würde zum Beispiel ein Identifier für Probanden fehlen:
 
 ```{r}
 #| echo: true
 
-df |> mutate(pid = paste0('Proband_', row_number()), .before=1)
+df |> mutate(pid = paste0('Proband_', row_number()), .before = 1)
 ```
 
 #### `pull()`
 
-Manchmal möchte ich die Werte einer Variablen aus der Tabelle extrahieren. Dies kann mit dem Befehl `pull()` dirchgeführt werden. Möchte ich zum Beispiel nur die Einträge für das Alter extrahieren kann ich den folgenden Befehl benutzen:
+Manchmal möchte man die Werte einer Variablen aus der Tabelle extrahieren. Dies kann mit dem Befehl `pull()` durchgeführt werden. Möchte ich zum Beispiel nur die Einträge für das Alter extrahieren, kann ich den folgenden Befehl benutzen:
 
 ```{r}
 df |> pull(age)
