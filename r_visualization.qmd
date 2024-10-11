@@ -448,7 +448,7 @@ df_hi <- tibble(x = rnorm(100))
 In `df_hi` haben wir jetzt eine Zufallsstichprobe aus $N = 100$ Datenpunkten aus der $\mathcal{N}(0,1)$ gezogen. Erstellen wir nun mit Hilfe von `geom_histogram()` das dazugehörende Histogramm (siehe @fig-r-viz-hist-01).
 
 ```{r}
-#| fig-cap: "Beispiel für ein Histogram mit `geom_histogram()`"
+#| fig-cap: "Beispiel für ein Histogramm mit `geom_histogram()`"
 #| label: fig-r-viz-hist-01
 #| echo: true
 
@@ -459,7 +459,7 @@ ggplot(df_hi, aes(x)) +
 Standardmäßig verwendet `geom_histogram()` $30$ Intervalle um das Histogramm zu berechnen. Mit dem Parameter `bins` die Anzahl der Intervallunterteilungen direkt bestimmt werden werden. Alternativ kann auch über den Parameter `binwidth` die Breite der Intervalle angegeben werden und `ggplot()` bestimmt die Anzahl selbststädig (siehe @fig-r-viz-hist-02).
 
 ```{r}
-#| fig-cap: "Beispiel für ein Histogram mit Angabe der Anzahl der verwendeten Intervalle" 
+#| fig-cap: "Beispiel für ein Histogramm mit Angabe der Anzahl der verwendeten Intervalle" 
 #| label: fig-r-viz-hist-02
 #| echo: true
 
@@ -470,13 +470,41 @@ ggplot(df_hi, aes(x)) +
 Standardmäßig gibt `geom_histogram()` auf der $y$-Achse die Anzahl der Datenpunkte in dem jeweiligen Intervall an. Möchten wir lieber die relative Häufigkeit angezeigt haben, also die Anzahl der Datenpunkte in jedem Intervall geteilt durch die Gesamtanzahl an Punkten, dann müssen wir auf die berechneten Werte der `geom_histogram()` zugrundeliegenden `stat_`-Funktion zurückgreifen. Hinter den Kulissen sendet `geom_histogram()` die Daten an eine `stat_bin()`-Funktion. `stat_bin()` berechnet zunächst die Intervalle, dann die Anzahl der Punkte in den Intervallen und gibt diese intern in Form eines `tibble`s zurück. Gleichzeitig berechnet `stat_bin()` noch die relative Häufigkeit und schreibt diese als Variable `density` in das `tibble`. Um auf die Variable `density` zugreifen zu können, muss eine spezielle Funktion `after_stat()` verwendet und in `aes()` zugewiesen werden (siehe @fig-r-viz-hist-03).
 
 ```{r}
-#| fig-cap: "Beispiel für ein Histogram der relativen Häufigkeiten" 
+#| fig-cap: "Beispiel für ein Histogramm der relativen Häufigkeiten" 
 #| label: fig-r-viz-hist-03
 #| echo: true
 
 ggplot(df_hi, aes(x)) + 
   geom_histogram(aes(y = after_stat(density)), bins = 20)
 ```
+
+### `geom_density()`
+
+Eine Alternative zu einem Histogramm ist ein Dichtediagramm der eine geglättete Variante eines Histogramms darstellt.
+
+```{r}
+#| fig-cap: "Beispiel für einen Dichtediagramm."
+#| label: fig-r-viz-density-01
+#| echo: true
+
+ggplot(df_hi, aes(x)) +
+  geom_density()
+```
+
+In @fig-r-viz-density-01 sind die gleichen Daten wie in @fig-r-viz-hist-03 dargestellt. `geom_density()` berechnet eine sogenannte Kernel-Dichteschätzung. D.h. ein Fenster mit einer gegebenen Breite läuft über die Daten und eine lokale Abschätzungen der Daten wird für jedes einzelne Fenster berechnet. Es resultiert eine flexible Abschätzung der Daten.
+
+Eine beliebte Variante für Diagramme kombiniert ein Histogramm mit einem Dichtediagramm (siehe @fig-r-viz-density-02).
+
+```{r}
+#| fig-cap: "Kombiniertes Histogramm und Dichtediagramm"
+#| label: fig-r-viz-density-02
+#| echo: true
+
+ggplot(df_hi, aes(x)) + 
+  geom_histogram(aes(y = after_stat(density))) +
+  geom_density(color = 'red')
+```
+
 
 ### `facet_grid()` und `facet_wrap()`
 
