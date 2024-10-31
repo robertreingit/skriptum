@@ -732,26 +732,27 @@ Tipp
 <pre><code># A tibble: 8 × 4
   time  gender   age   cmj
   &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt;
-1 pre   m         27  27.6
-2 post  m         27  21.6
-3 pre   m         25  23.7
-4 post  m         25  22.9
-5 pre   f         36  24.2
-6 post  f         36  21  
-7 pre   f         36  24.2
-8 post  f         36  23.6</code></pre>
+1 pre   m         27  24.3
+2 post  m         27  21.1
+3 pre   m         38  26.2
+4 post  m         38  19.8
+5 pre   f         31  24.2
+6 post  f         31  19.4
+7 pre   f         27  26.5
+8 post  f         27  18.2</code></pre>
 </div>
 </div>
 <p>Wir haben vier Spalten: <code>time</code>, <code>gender</code>, <code>age</code> und <code>cmj</code>, die jeweils eine Variable darstellen. In jeder Zeile ist eine Beobachtung eine Sprunghöhe <code>cmj</code> einer Person eines Alters <code>age</code> und <code>gender</code> zu einem bestimmten Zeitpunkt <code>time</code>. Schaut also tidy aus.</p>
 <p>Diese Darstellung ist aber wahrscheinlich unterschiedlich zu derjenigen, wie ihr solche Daten schon öfter gesehen habt. Wahrscheinlich nämlich eher so:</p>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 3 × 4
-  gender   age pre       post     
-  &lt;chr&gt;  &lt;dbl&gt; &lt;list&gt;    &lt;list&gt;   
-1 m         27 &lt;dbl [1]&gt; &lt;dbl [1]&gt;
-2 m         25 &lt;dbl [1]&gt; &lt;dbl [1]&gt;
-3 f         36 &lt;dbl [2]&gt; &lt;dbl [2]&gt;</code></pre>
+<pre><code># A tibble: 4 × 4
+  gender   age   pre  post
+  &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1 m         27  24.3  21.1
+2 m         38  26.2  19.8
+3 f         31  24.2  19.4
+4 f         27  26.5  18.2</code></pre>
 </div>
 </div>
 <p>Diese Darstellung ist zwar kompakter, entspricht aber nicht mehr den tidy-Anforderungen, da wir nun nicht mehr nur eine Beobachtung pro Zeile haben. Wir haben für jede Person die Sprunghöhe zu zwei Zeitpunkten in einer Zeile. Die Daten sind in dieser Darstellung also <em>untidy</em>. Die <em>tidy</em>-Version ist etwas länger und enthält redundante Informationen, aber wir werden im Folgenden sehen, dass diese Darstellung in der Verarbeitung zahlreiche Vorteile hat. Dazu werden wir auch Funktionen kennenlernen, mit denen wir zwischen diesen beiden Formaten hin- und herwechseln können. Die <em>tidy</em>-Darstellung wird als Long-Format bezeichnet, während die <em>untidy</em>-Darstellung als Wide-Format bezeichnet wird.</p>
@@ -765,10 +766,10 @@ Tipp
 <pre><code># A tibble: 4 × 4
   time  gender   age   cmj
   &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt;
-1 pre   f         36  24.2
-2 post  f         36  21  
-3 pre   f         36  24.2
-4 post  f         36  23.6</code></pre>
+1 pre   f         31  24.2
+2 post  f         31  19.4
+3 pre   f         27  26.5
+4 post  f         27  18.2</code></pre>
 </div>
 </div>
 <p>Wollen wir dagegen auf das Alter mit <code>age &lt; 30</code> filtern, verwenden wir:</p>
@@ -778,10 +779,10 @@ Tipp
 <pre><code># A tibble: 4 × 4
   time  gender   age   cmj
   &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt;
-1 pre   m         27  27.6
-2 post  m         27  21.6
-3 pre   m         25  23.7
-4 post  m         25  22.9</code></pre>
+1 pre   m         27  24.3
+2 post  m         27  21.1
+3 pre   f         27  26.5
+4 post  f         27  18.2</code></pre>
 </div>
 </div>
 <p>Wenn die Daten mehrere Bedingungen erfüllen müssen, verwenden wir entsprechend mehrere Filteranweisungen. Die Vergleiche werden intern mittels einer Und-Operation zusammengesetzt.</p>
@@ -856,14 +857,14 @@ Tipp
 <pre><code># A tibble: 8 × 3
   time    age   cmj
   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt;
-1 pre      27  27.6
-2 post     27  21.6
-3 pre      25  23.7
-4 post     25  22.9
-5 pre      36  24.2
-6 post     36  21  
-7 pre      36  24.2
-8 post     36  23.6</code></pre>
+1 pre      27  24.3
+2 post     27  21.1
+3 pre      38  26.2
+4 post     38  19.8
+5 pre      31  24.2
+6 post     31  19.4
+7 pre      27  26.5
+8 post     27  18.2</code></pre>
 </div>
 </div>
 <div id="exm-select-01" class="theorem example">
@@ -871,13 +872,11 @@ Tipp
 <div class="cell">
 <div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">|&gt;</span> <span class="fu">filter</span>(gender <span class="sc">==</span> <span class="st">'f'</span>, age <span class="sc">&gt;</span> <span class="dv">27</span>) <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span>gender)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 4 × 3
+<pre><code># A tibble: 2 × 3
   time    age   cmj
   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt;
-1 pre      36  24.2
-2 post     36  21  
-3 pre      36  24.2
-4 post     36  23.6</code></pre>
+1 pre      31  24.2
+2 post     31  19.4</code></pre>
 </div>
 </div>
 </div>
@@ -893,14 +892,14 @@ Tipp
 <pre><code># A tibble: 8 × 5
   time  gender   age   cmj cmj_m
   &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-1 pre   m         27  27.6 0.276
-2 post  m         27  21.6 0.216
-3 pre   m         25  23.7 0.237
-4 post  m         25  22.9 0.229
-5 pre   f         36  24.2 0.242
-6 post  f         36  21   0.21 
-7 pre   f         36  24.2 0.242
-8 post  f         36  23.6 0.236</code></pre>
+1 pre   m         27  24.3 0.243
+2 post  m         27  21.1 0.211
+3 pre   m         38  26.2 0.262
+4 post  m         38  19.8 0.198
+5 pre   f         31  24.2 0.242
+6 post  f         31  19.4 0.194
+7 pre   f         27  26.5 0.265
+8 post  f         27  18.2 0.182</code></pre>
 </div>
 </div>
 <p>Wir sehen, dass eine neue Spalte in dem <code>tibble</code> erstellt wurde, eben mit dem Namen <code>cmj_m</code>.</p>
@@ -921,14 +920,14 @@ Warnung
 <pre><code># A tibble: 8 × 4
   time  gender   age   cmj
   &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt;
-1 pre   m         27 0.276
-2 post  m         27 0.216
-3 pre   m         25 0.237
-4 post  m         25 0.229
-5 pre   f         36 0.242
-6 post  f         36 0.21 
-7 pre   f         36 0.242
-8 post  f         36 0.236</code></pre>
+1 pre   m         27 0.243
+2 post  m         27 0.211
+3 pre   m         38 0.262
+4 post  m         38 0.198
+5 pre   f         31 0.242
+6 post  f         31 0.194
+7 pre   f         27 0.265
+8 post  f         27 0.182</code></pre>
 </div>
 </div>
 </div>
@@ -943,14 +942,14 @@ Warnung
 <pre><code># A tibble: 8 × 4
   time  gender   age cmj_m
   &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt;
-1 pre   m         27 0.276
-2 post  m         27 0.216
-3 pre   m         25 0.237
-4 post  m         25 0.229
-5 pre   f         36 0.242
-6 post  f         36 0.21 
-7 pre   f         36 0.242
-8 post  f         36 0.236</code></pre>
+1 pre   m         27 0.243
+2 post  m         27 0.211
+3 pre   m         38 0.262
+4 post  m         38 0.198
+5 pre   f         31 0.242
+6 post  f         31 0.194
+7 pre   f         27 0.265
+8 post  f         27 0.182</code></pre>
 </div>
 </div>
 </div>
@@ -964,7 +963,7 @@ Warnung
 <pre><code># A tibble: 1 × 1
   cmj_bar
     &lt;dbl&gt;
-1    23.6</code></pre>
+1    22.5</code></pre>
 </div>
 </div>
 <p><code>summarize()</code> kann auch mehrere Werte berechnen:</p>
@@ -974,7 +973,7 @@ Warnung
 <pre><code># A tibble: 1 × 2
   cmj_bar age_bar
     &lt;dbl&gt;   &lt;dbl&gt;
-1    23.6      31</code></pre>
+1    22.5    30.8</code></pre>
 </div>
 </div>
 </section>
@@ -987,8 +986,8 @@ Warnung
 <pre><code># A tibble: 2 × 2
   time  cmj_bar
   &lt;chr&gt;   &lt;dbl&gt;
-1 post     22.3
-2 pre      24.9</code></pre>
+1 post     19.6
+2 pre      25.3</code></pre>
 </div>
 </div>
 <p>Das Gruppieren funktioniert auch über mehrere Variablen:</p>
@@ -999,10 +998,10 @@ Warnung
 # Groups:   time [2]
   time  gender cmj_bar
   &lt;chr&gt; &lt;chr&gt;    &lt;dbl&gt;
-1 post  f         22.3
-2 post  m         22.2
-3 pre   f         24.2
-4 pre   m         25.6</code></pre>
+1 post  f         18.8
+2 post  m         20.5
+3 pre   f         25.4
+4 pre   m         25.2</code></pre>
 </div>
 </div>
 <p>Die Kombination aus <code>filter()</code>, <code>group_by()</code> und <code>summarize()</code> deckt wahrscheinlich mehr als die Hälfte der Anwendungen bei der Datenanalyse ab. Die folgenden Befehle sind etwas spezialisierter.</p>
@@ -1042,12 +1041,13 @@ Warnung
 <div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>df_w <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span> <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> time, <span class="at">values_from =</span> cmj)</span>
 <span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>df_w</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 3 × 4
-  gender   age pre       post     
-  &lt;chr&gt;  &lt;dbl&gt; &lt;list&gt;    &lt;list&gt;   
-1 m         27 &lt;dbl [1]&gt; &lt;dbl [1]&gt;
-2 m         25 &lt;dbl [1]&gt; &lt;dbl [1]&gt;
-3 f         36 &lt;dbl [2]&gt; &lt;dbl [2]&gt;</code></pre>
+<pre><code># A tibble: 4 × 4
+  gender   age   pre  post
+  &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1 m         27  24.3  21.1
+2 m         38  26.2  19.8
+3 f         31  24.2  19.4
+4 f         27  26.5  18.2</code></pre>
 </div>
 </div>
 </section>
@@ -1057,15 +1057,17 @@ Warnung
 <div class="cell">
 <div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>df_w <span class="sc">|&gt;</span> <span class="fu">pivot_longer</span>(<span class="fu">c</span>(pre, post), <span class="at">names_to =</span> <span class="st">"time"</span>, <span class="at">values_to =</span> <span class="st">"cmj"</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 4
-  gender   age time  cmj      
-  &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt; &lt;list&gt;   
-1 m         27 pre   &lt;dbl [1]&gt;
-2 m         27 post  &lt;dbl [1]&gt;
-3 m         25 pre   &lt;dbl [1]&gt;
-4 m         25 post  &lt;dbl [1]&gt;
-5 f         36 pre   &lt;dbl [2]&gt;
-6 f         36 post  &lt;dbl [2]&gt;</code></pre>
+<pre><code># A tibble: 8 × 4
+  gender   age time    cmj
+  &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt;
+1 m         27 pre    24.3
+2 m         27 post   21.1
+3 m         38 pre    26.2
+4 m         38 post   19.8
+5 f         31 pre    24.2
+6 f         31 post   19.4
+7 f         27 pre    26.5
+8 f         27 post   18.2</code></pre>
 </div>
 </div>
 <p>Zusammenfassend ist das hier nur eine schnelle Übersicht über die möglichen Befehle gewesen. Um die Details der Funktionen zu verstehen, ist natürlich mehr Übung notwendig. Meistens hilft es aber schon zu wissen, welche der Funktionen ungefähr helfen könnte, um dann zusammen mit der Dokumentation eine Lösung zu finden. Eine exzellente Quelle für eine umfassendere Auseinandersetzung mit dem <code>tidyverse</code> ist das Buch <em>R for Data Science</em> von <span class="citation" data-cites="wickham2023">Wickham, Çetinkaya-Rundel, und Grolemund (<a href="references.html#ref-wickham2023" role="doc-biblioref">2023</a>)</span>, das ihr auch kostenlos in der aktuellsten Form <a href="https://r4ds.had.co.nz">online</a> findet.</p>
@@ -1126,14 +1128,14 @@ Warnung
 <pre><code># A tibble: 8 × 5
     rid time  gender   age   cmj
   &lt;int&gt; &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt;
-1     1 pre   m         27  27.6
-2     2 post  m         27  21.6
-3     3 pre   m         25  23.7
-4     4 post  m         25  22.9
-5     5 pre   f         36  24.2
-6     6 post  f         36  21  
-7     7 pre   f         36  24.2
-8     8 post  f         36  23.6</code></pre>
+1     1 pre   m         27  24.3
+2     2 post  m         27  21.1
+3     3 pre   m         38  26.2
+4     4 post  m         38  19.8
+5     5 pre   f         31  24.2
+6     6 post  f         31  19.4
+7     7 pre   f         27  26.5
+8     8 post  f         27  18.2</code></pre>
 </div>
 </div>
 <p>Eine weitere Möglichkeit ist die Verwendung der Funktion <code>row_number()</code> innerhalb von <code>mutate()</code>.</p>
@@ -1143,14 +1145,14 @@ Warnung
 <pre><code># A tibble: 8 × 5
     rid time  gender   age   cmj
   &lt;int&gt; &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt;
-1     1 pre   m         27  27.6
-2     2 post  m         27  21.6
-3     3 pre   m         25  23.7
-4     4 post  m         25  22.9
-5     5 pre   f         36  24.2
-6     6 post  f         36  21  
-7     7 pre   f         36  24.2
-8     8 post  f         36  23.6</code></pre>
+1     1 pre   m         27  24.3
+2     2 post  m         27  21.1
+3     3 pre   m         38  26.2
+4     4 post  m         38  19.8
+5     5 pre   f         31  24.2
+6     6 post  f         31  19.4
+7     7 pre   f         27  26.5
+8     8 post  f         27  18.2</code></pre>
 </div>
 </div>
 <p>Dieser Ansatz hat auch noch den Vorteil, dass wir eine eindeutige ID nach einem beliebigen Muster erstellen können. Würde zum Beispiel ein Identifier für Probanden fehlen:</p>
@@ -1160,14 +1162,14 @@ Warnung
 <pre><code># A tibble: 8 × 5
   pid       time  gender   age   cmj
   &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt;
-1 Proband_1 pre   m         27  27.6
-2 Proband_2 post  m         27  21.6
-3 Proband_3 pre   m         25  23.7
-4 Proband_4 post  m         25  22.9
-5 Proband_5 pre   f         36  24.2
-6 Proband_6 post  f         36  21  
-7 Proband_7 pre   f         36  24.2
-8 Proband_8 post  f         36  23.6</code></pre>
+1 Proband_1 pre   m         27  24.3
+2 Proband_2 post  m         27  21.1
+3 Proband_3 pre   m         38  26.2
+4 Proband_4 post  m         38  19.8
+5 Proband_5 pre   f         31  24.2
+6 Proband_6 post  f         31  19.4
+7 Proband_7 pre   f         27  26.5
+8 Proband_8 post  f         27  18.2</code></pre>
 </div>
 </div>
 </section>
@@ -1175,8 +1177,9 @@ Warnung
 <h4 data-number="5.2.12.2" class="anchored" data-anchor-id="pull"><span class="header-section-number">5.2.12.2</span> <code>pull()</code></h4>
 <p>Manchmal möchte man die Werte einer Variablen aus der Tabelle extrahieren. Dies kann mit dem Befehl <code>pull()</code> durchgeführt werden. Möchte ich zum Beispiel nur die Einträge für das Alter extrahieren, kann ich den folgenden Befehl benutzen:</p>
 <div class="cell">
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">|&gt;</span> <span class="fu">pull</span>(age)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 27 27 25 25 36 36 36 36</code></pre>
+<pre><code>[1] 27 27 38 38 31 31 27 27</code></pre>
 </div>
 </div>
 <p>Wir erhalten in diesem Fall einen Vektor mit den Einträgen.</p>
