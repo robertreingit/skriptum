@@ -65,4 +65,8 @@ rplot <- function(df, text_size = 11, point_size = 1.5) {
     theme(text = element_text(size = text_size))
 }
 
+
+r_2 <- function(x) round(x, 2)
+r_3 <- function(x) round(x, 3)
+paste_com <- function(x) paste(x, collapse=',')
 ncol_text <- theme(text = element_text(size=20))

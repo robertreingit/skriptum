@@ -305,7 +305,39 @@ Hätten wir im vorhergehenden Beispiel keine Information über die Standardabwei
 \end{equation*}
 :::
 
-:::{#exm-ci-calc-3}
+::: {#exm-ci-calc-3}
+In @grant1996 ist die Handkraft von $N=10$ Elite Kletterer der dominanten Hand in Newton $N$ ermittelt. Dabei wurden die folgenden Werte ermittelt worden (siehe @tbl-stats-est-ci-climb). 
+
+```{r}
+#| tbl-cap: "Deskriptive Werte der Kletterdaten."
+#| label: tbl-stats-est-ci-climb
+
+climb <- readr::read_csv('data/grip_strength_and_mass.csv') |> dplyr::filter(level == 'Elite')
+q_t <- r_2(qt(0.975, 9))
+climb_sum <- climb |> dplyr::summarize(m = r_2(mean(strength_N)),
+                                       sd = r_2(sd(strength_N)),
+                                       se = r_2(sd/dplyr::n()))
+ci <- r_2(climb_sum$m + c(-1,1)*q_t*climb_sum$se)
+climb_sum |> kable(col.names=c('Mittelwert','STD','se'), digits=2)
+```
+
+Das $95\%$ Konfidenzintervall für die Handkraft berechnet sich unter Verwendung der $t$-Verteilung mit $df = 9$ entsprechend nach:
+
+\begin{equation*}
+\text{CI}_{95\%} = `r climb_sum$m` \pm `r q_t` \cdot `r climb_sum$se` = [`r paste_com(ci)`]
+\end{equation*}
+
+Oder in `R` entsprechend mittels:
+
+```{r}
+#| echo: true
+
+555.06 + c(-1,1) * qt(0.975, 9) * 9.65 
+```
+
+:::
+
+:::{#exm-ci-calc-4}
 Bezogen auf das Eingangsbeispiel mit den beiden Arbeitsgruppen "Glück" und "Pech" lässt sich für die beiden Konfidenzintervalle ergeben sich die beiden folgenden Konfidenzintervalle:
 ```{r}
 lucky_d <- 3.61
