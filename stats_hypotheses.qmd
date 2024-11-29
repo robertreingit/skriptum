@@ -7,11 +7,11 @@
 source('_common.R')
 ```
 
-Im Folgenden setzen wir uns mit verschiedenen Konzepten der Statistik etwas eingehender auseinander. Im weiteren Verlauf des Skripts werden wir auf die hergeleiteten Eigenschaften immer wieder zurückgreifen.
+Im diesem Kapitel werden ein paar übergeordnete Konzepte der Statistik auf die im späteren Verlauf immer wieder zurück gegriffen wird noch einmal etwas eingehender eingegangen. Dies ist vor allem der Begriff des Erwartungswerts und auch noch mal die Varianz. Dazu wird kurz der Begriff eines Schätzers formalisiert. Am des Kapitels werden in einer Art Liste verschiedene Varianten von Hypothesentests kurz vorgestellt.
 
 ## Der Erwartungswert $\mu$ einer Zufallsvariable
 
-Für eine diskrete Zufallsvariable $X$ auf einer endlichen Menge $\{x_i, i = 1, \ldots, n\}$ mit $n$ Elementen ist der Erwartungswert definiert mit:
+Bisher wurde oft der Begriff **Mittelwert** verwendet und zum Beispiel vom Mittelwert $\mu$ einer Normalverteilung gesprochen. Eigentlich ist der $\mu$ nicht *nur* der Mittelwert sondern wird als Erwartungswert bezeichnet. Bei einer diskrete Zufallsvariable $X$, d.h. einer Zufallsvariable die auf einer endlichen Menge von Ereignissen $\{x_i, i = 1, \ldots, n\}$ mit $n$ Elementen definiert ist, ist der Erwartungswert wie folgt definiert:
 
 ::: {.def-erwartungswert}
 ### Erwarungswert $\mu$
@@ -24,54 +24,93 @@ E[X] = \sum_{i=1}^n x_i P(x_i)
 Der Erwartungswert\index{Erwartungswert} wird üblicherweise mit dem Symbol $\mu$ bezeichnet. 
 :::
 
-D.h. jedes mögliche Ereignis wird mit seiner Wahrscheinlichkeit multipliziert und die Summe über alle diese Möglichkeiten wird gebildet um den Erwartungswert $\mu$ zu bestimmen. Wenn wir es mit mehreren Zufallsvariablen zu tun haben, dann verwenden wir die folgende Schreibweise um die Erwartungwerte voneinander abzugrenzen:
+D.h. jedes mögliche Ereignis wird mit seiner Wahrscheinlichkeit multipliziert und die Summe über alle diese Möglichkeiten wird gebildet um den Erwartungswert $\mu$ zu bestimmen.
+
+::: {#exm-stats-hypo-cube}
+## Erwartungswert eines Würfels
+
+Sei ein normaler Würfel mit sechs Seiten geben und die Zufallsvariable $X$ ist die jeweilige Augenanzahl der Würfelseiten. Da bei einem fairen Würfel alle Seiten gleichwahrscheinlich sind, hat jedes Ereignis $x_i \in \{1,2,3,4,5,6\}$ eine Wahrscheinlichkeit vom $P(X = x) = \frac{1}{6}$ somit errechnet sich der Erwartungswert.
+
+\begin{equation*}
+E[X] = \sum_{i=1}^6 x_i P(x_i) = 1\cdot\frac{1}{6} + 2\cdot\frac{1}{6} +3\cdot\frac{1}{6} +4\cdot\frac{1}{6} +5\cdot\frac{1}{6} +6\cdot\frac{1}{6} = 3.5
+\end{equation*}
+
+:::
+
+::: {.callout-tip}
+Wenn der Fall auftritt, dass mehrere Zufallsvariablen verwendet werden, z.B. $X$ und $Y$, dann wird die folgende Schreibweise verwendet um die Erwartungswerte voneinander abzugrenzen. Zum Beispiel der Erwarungswert der Zufallsvariable $X$:
 
 $$
 E[X] = \mu_X
 $$
-Der Erwarungswert der Zufallsvariable $X$ wird mit $\mu_X$ bezeichnet. Wenn der Zusammenhang klar ist und nur von einer bestimmten Zufallsvariablen gesprochen wird, dann auch nur $\mu$.
+Der Erwartungswert der Zufallsvariable $X$ wird mit $\mu_X$ bezeichnet. Wenn der Zusammenhang klar ist und nur von einer bestimmten Zufallsvariablen gesprochen wird, dann auch nur $\mu$.
+:::
 
-Es hat sich eingebürgert, die Größe $\mu$ als den Mittelwert der Population zu bezeichnen auch wenn es sich dabei nicht unbedingt um den Mittelwert handelt wie er üblicherweise verstanden wird und z.B. bei der Stichprobe berechnet wird ($\bar{x} = \frac{1}{n}\sum_{i=1}^n x_i$). Bei dem Erwartungswert handelt es sich um den gewichteten Mittelwert. Es wird unterschieden zwischen dem Mittelwert in der Population $\mu$, der theoretisch ist, dem Mittelwert der Stichprobe $\bar{X}$ als Zufallswert, ebenfalls theoretisch, und dem tatsächlich beobachtet Mittelwert $\bar{x}$ in der Stichprobe. 
+In der statistischen Literatur ist es üblich, die Größe $\mu$ als den Mittelwert der Population zu bezeichnen auch wenn es sich dabei nicht unbedingt um den Mittelwert handelt wie er üblicherweise verstanden wird und z.B. bei der Stichprobe berechnet wird ($\bar{x} = \frac{1}{n}\sum_{i=1}^n x_i$). Bei dem Erwartungswert $\mu$ handelt es sich um den gewichteten Mittelwert. Es wird unterschieden zwischen dem Mittelwert in der Population $\mu$, der theoretisch ist, und dem Mittelwert der Stichprobe $\bar{X}$ der eine Zufallsvariable darstellt und ebenfalls von theoretischer Natur ist, und dem tatsächlich **beobachteten Mittelwert** $\bar{x}$ in der Stichprobe. In den meisten Fällen im alltäglichen Umgang ist diese Unterscheidung nicht von Bedeutung sondern wird oft erst bei der Herleitung von theoretischen Zusammenhängen wichtig.
 
-Im folgenden werden verschiedene Rechenregeln mit dem Erwartungswert aufgelistet. Diesen Regeln werden wir immer wieder begegnen wenn wir später Erwarungswerte für Statistiken berechnen. Die erste Regel bezieht sich darauf, wenn eine Zufallsvariable mit einer Konstanten $a$ multipliziert wird. Konstant heißt, bei $a$ handelt es sich nicht um eine Zufallsvariable und $a$ hat immer den gleichen Wert. Der Erwartungswert berechnet sich dann mittels:
+Für den späteren Umgang mit dem Erwartungswert ist die Kenntnis von ein paar Rechenregeln notwendig. Diese werden im Folgenden aufgelistet. 
+
+Die erste Regel behandelt denn Fall, wenn eine Zufallsvariable $X$ mit einer Konstanten $a$ multipliziert wird. Konstant bedeutet, dass es sich bei $a$ nicht um eine Zufallsvariable handelt und $a$ immer den gleichen Wert hat. D.h. es soll der Erwartungswert von $aX$ berechnet werden:
 
 \begin{equation}
 E[aX] = \sum_{i=1}^n a x_i P(x_i) = a \sum_{i=1}^n x_i P(x_i) = a E[X]
 \label{eq-stats-hypo-expected-mult}
 \end{equation}
 
-In den meisten Fällen sind wir nicht an einer einzelnen Zufallsvariablen interessiert, sondern, beispielsweise wenn wir eine Stichprobe untersuchen, es liegen mehrere Zufallsvariablen vor. Im einfachsten Fall starten wir mit zwei unabhängigen Zufallsvariablen $X$ und $Y$. Die beiden Variablen können auf der gleichen Ereignismenge definiert sein, können aber auch auf unterschiedlichen Ereignismengen, z.B. $\{x_i, i = 1, \ldots, n\}$ und $\{y_j, j = 1, \ldots, m\}$ definiert sein. Wollen wir den Mittelwert von $X$ und $Y$ berechnen und davon den Erwartungswert berechnen, müssen wir verstehen wie sich die Addition unabhängiger Zufallsvariblen auf den Erwartungswert auswirkt. Tatsächlich ist diese Operation relativ einfach zu verstehen, der Erwartungswert von $E[X + Y]$ berechnet sich mittels:
+
+::: {#exm-stats-hypo-mult}
+### Erwartungswert der Summe der Augenzahl mal $100$
+
+Es soll nicht die Augenzahl des Würfels, sondern die Augenzahl mal $100$ berechnet werden, und davon der Erwartungswert. Somit gilt $a = 100$ und mit Formel \eqref{eq-stats-hypo-expected-mult}:
 
 \begin{equation*}
-E[X + Y] = \sum_{i=1}^n x_i P(x_i) + \sum_{j=1}^m y_j P(x_j) = E[X] + E[Y]
+E[aX] = a E[X] = 100 \cdot 3.5 = 35
 \end{equation*}
+:::
 
-Diese Formel generalisiert für unabhängige $X_i, i = 1, \ldots, n$ zu:
+In vielen Fällen ist nicht nur eine einzelne Zufallsvariablen beteiligt, sondern, beispielsweise wenn eine Stichprobe untersuchen wird, liegen mehrere Zufallsvariablen vor. Der einfachsten Fall ist dabei natürlich wenn nur zwei unabhängigen Zufallsvariablen $X$ und $Y$ benötigt werden. Der allgemeine Fall, lässt sich dann aus diesem Spezialfall herleiten. Die beiden Variablen können auf der gleichen Ereignismenge definiert sein, können aber auch auf unterschiedlichen Ereignismengen, z.B. $\{x_i, i = 1, \ldots, n\}$ und $\{y_j, j = 1, \ldots, m\}$ definiert sein. Soll der Erwartungswert des Mittelwerts der beiden Zufallsvariablen $X$ und $Y$ berechnet, kann eine Regel angewendet werden die die Addition unabhängiger Zufallsvariablen regelt. Tatsächlich ist diese Operation relativ einfach nachzuvollziehen, der Erwartungswert von $E[X + Y]$ berechnet sich mittels:
+
+\begin{equation}
+E[X + Y] = \sum_{i=1}^n x_i P(x_i) + \sum_{j=1}^m y_j P(x_j) = E[X] + E[Y]
+\label{eqn-stat-hypo-expected-add2}
+\end{equation}
+
+::: {#exm-stats-hypo-addmu}
+## Erwartungswert der Summe der Augenzahl zweier Würfel
+
+Sei $X$ die Augenzahl des einen Würfels (z.B. ein blauer Würfel) und $Y$ die Augenzahl eines weiteren Würfels (z.B. ein roter Würfel). Dann gilt nach Formel \eqref{eq-stats-hypo-expected-add2}:
+
+\begin{equation*}
+E[X + Y] = E[X] + E[Y] = 3.5 + 3.5 = 7
+\end{equation*}
+:::
+
+Die Formel \eqref{eq-stats-hypo-expected-add2} als Spezialfall mit nur zwei Zufallsvariablen lässt sich relativ direkt für den Fall von $n$ unabhängigen Zufallsvariablen $X_i, i = 1, \ldots, n$ generalisieren. Seien zum Beispiel drei Zufallsvariablen $X, Y$ und $Z$ gegeben und der Erwartungswert der Summe $M = X + Y + Z$ soll berechnet werden, dann lässt sich eine Zwischenvariable, z.B. $A = Y + Z$ definieren und es gilt $M = X + Y$ ist wieder der bereits bekannte Fall. Wiederholte Anwendung führt dann zur folgenden allgemeinen Regel:
 
 \begin{equation}
 E[X_1 + X_2 + \ldots + X_n] = E[X_1] + E[X_2] + \ldots + E[X_n]
 \label{eq-stats-hypo-expected-add}
 \end{equation}
 
-In Kombination mit der Regel für konstante Terme mit den Konstanten $a_1, a_2, \ldots, a_n$ folgt:
+In Kombination mit der Regel für konstante Terme (Formel \eqref{eq-stats-hypo-expected-mult}) mit den Konstanten $a_1, a_2, \ldots, a_n$ folgt dann eine weitere Verallgemeinerung:
 
-$$
+\begin{equation}
 E[a_1 X_1 + a_2 X_2 + \ldots + a_n X_n] = a_1 E[X_1] + a_2 E[X_2] + \ldots + a_n E[X_n]
-$$
+\label{eq-stats-hypo-expected-lo}
+\end{equation}
 
-Der Erwartungswert ist daher ein linearer Operator.
+Diese Eigenschaft, dass der Erwartungswert einer gewichteten Summe von Zufallsvariablen (eine lineare Operation) gleich der gewichteten Summe der einzelnen Erwartungswerte ist, macht den Erwartungswert zu einem **linearen Operator**.
 
-Nur der Vollständigkeit halber auch noch kurz die Definition des Erwartungswertes für reelle Verteilungen, bei der das Summenzeichen durch ein Integral ersetzt wird.
+Nur der Vollständigkeit halber sei auch noch kurz die Definition des Erwartungswertes für reelle Verteilungen erwähnt. Hier ist die Zufallsvariable nicht mehr auf einer endlichen Menge sondern auf einem Intervall definiert. Auf die Herleitung wird nicht eingegangen, sondern er reicht das Summenzeichen durch ein Integral zu ersetzen.
 
 \begin{equation*}
 E[X] = \int_{x=-\infty}^\infty x f(x) dx
 \end{equation*}
 
-Das Integral geht über den gesamten Definitionsbereich von $X$ und die Wahrscheinlichkeitsfunktion wird durch die Dichtefunktion $f(x)$ ersetzt. Die Linearität bleibt für alle uns interessierenden Fälle erhalten (keine Panik, es werden im Weiteren keine Integrale berechnet).
+Das Integral geht über den gesamten Definitionsbereich von $X$ und die Wahrscheinlichkeitsfunktion wird durch die Dichtefunktion $f(x)$ ersetzt. Die Linearität der Operation bleibt für alle im weiteren interessierenden Fälle erhalten (keine Panik, es werden im Weiteren keine Integrale berechnet).
 
-### Beispiele {-}
-
-Nehmen wir zur Veranschaulichung ein einfaches Beispiel mit einer Zufallsvariable $X$ die nur vier verschiedene Werte annehmen kann, die die folgenden Wahrscheinlichkeiten haben (siehe @tbl-stats-hypo-px):
+::: {#exm-hypo-stat-simple}
+Sein eine Zufallsvariable $X$ geben, die nur vier verschiedene Werte annehmen kann $x \in \{0,1,2,3\}$. Diese Ereignisse haben die folgenden Wahrscheinlichkeiten (siehe @tbl-stats-hypo-px):
 
 | x | 0 | 1 | 2 | 3 |
 | --- | --- | --- | --- | --- |
@@ -84,9 +123,9 @@ Anwendung von Formel \eqref{eq-stats-hypo-expected-01} führt zu der Berechnung 
 $$
 E[X] = \sum_{i=1}^4 x_i P(x_i) = 0 \cdot \frac{1}{8}  + 1 \cdot \frac{5}{8} + 2\cdot \frac{1}{8} + 3\cdot \frac{1}{8} = 1.75
 $$
+:::
 
-Hier kann auch eine interessante Eigenschaft des Erwartungswerts beobachtet werden, nämlich das der berechnete Wert gar nicht in der Menge der möglichen Werte der Zufallsvariablen vorkommen muss. In der Ereignismenge von $X$ sind nur ganzzahlige Werte.
-
+::: {#exm-hypo-stats-simple-02}
 Haben wir eine zweite Zufallsvariable $Y$ mit der Verteilung (siehe @tbl-stats-hypo-py)
 
 
@@ -113,7 +152,10 @@ Definieren wir dagegen $Z$ mit $Z := a \cdot X$ mit der Konstanten $a := 2$. Dan
 $$
 E[Z] = E[aX] = aE[X] = 2 \cdot 1.25 = 2.5
 $$
+:::
 
+::: {#exm-hypo-stats-chuckaluck}
+### Chuck-a-Luck
 Ein ganz anderes Beispiel, welches noch mal den Begriff Erwartungswert veranschaulicht, bezieht sich auf ein Glückspiel mit dem Namen Chuck-a-Luck. Das Beispiel ist @gross2019 entnommen. Chucia-Luck wird mit einem Einsatz von 1 € gespielt. Es werden drei Würfel geworfen und die folgende Regeln bestimmen den Gewinn (siehe @tbl-chuck-a-luck). 
 
 | Ausgang | Gewinn |
@@ -153,7 +195,9 @@ E[X] = \frac{125}{216}\times 0 + \frac{90}{216}\times 2 + \frac{1}{216}\times27 
 $$
 
 Im Mittel erwarten wir bei dem Spiel einen Gewinn von $0.958$€ bei einem Einsatz von $1$ €. Daher wird im Mittel ein Verlust bei dem Spiel gemacht. 
+:::
 
+::: {#exm-hypo-stats-expected-simple-03}
 Als letztes Beispiel betrachten wir den Erwartungswert des Mittelwerts $\bar{X}$ von $n$ identisch verteilten Zufallsvariablen $X_i$. Dadurch das für alle $X_i, E[X_i] = \mu$ gilt ist dies letztendlich nur eine direkte Anwendung der obigen Rechenregeln.
 
 \begin{equation}
@@ -162,6 +206,7 @@ E[\bar{X}] = E\left[\frac{1}{n}\sum_{i=1}^n X_i\right] = \frac{1}{n}E\left[\sum_
 \end{equation}
 
 D.h. der Erwartungswert des Mittelwerts ist tatsächlich auch der Erwartungswert $\mu$ der Verteilung.
+:::
 
 ## Die Varianz $\sigma^2$ einer Zufallsvariablen
 
