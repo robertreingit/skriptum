@@ -1,4 +1,4 @@
-# Hypothesen testen 
+# Weitere Grundlagen der Statistik 
 
 ```{r}
 #| echo: false
@@ -72,7 +72,7 @@ In vielen Fällen ist nicht nur eine einzelne Zufallsvariablen beteiligt, sonder
 
 \begin{equation}
 E[X + Y] = \sum_{i=1}^n x_i P(x_i) + \sum_{j=1}^m y_j P(x_j) = E[X] + E[Y]
-\label{eqn-stat-hypo-expected-add2}
+\label{eq-stats-hypo-expected-add2}
 \end{equation}
 
 ::: {#exm-stats-hypo-addmu}
@@ -261,15 +261,16 @@ Var\left(\sum_{i=1}^n a_i X_i\right) = \sum_{i=1}^n a_i^2 Var(X_i)
 \end{equation}
 
 ::: {#exm-ed-hypo-var-sum}
-Für zwei unabhängige Zufallsvariablen $X$ und $Y$ gilt:
+Für zwei **unabhängige** Zufallsvariablen $X$ und $Y$ gilt:
 
 \begin{equation*}
 Var(X + Y) = Var(X) + Var(Y)
 \end{equation*}
 :::
+In der Rechenregel wurde der Begriff unabhängig verwendet der bisher noch nicht definiert wurde. Da die Unabhängigkeit ein zentrales Konzept in der Statistik ist, wird dies etwas weiter unten noch einmal spezifischer aufgegriffen. Zunächst reicht jedoch eine intuitives Verständnis von Unabhängigkeit, im Sinne von wenn Variablen keinen Einfluss aufeinander haben.
 
 ::: {#exm-ed-hypo-var-diff}
-Eine überraschende Eigenschaft aus den Rechenregeln für die Varianz ist, dass die Varianz der Differenz zweier unabhängigen Variablen gleich der Varianz ist, wenn die beiden Variablen addiert werden.
+Eine überraschende Eigenschaft aus den Rechenregeln für die Varianz ist, dass die Varianz der Differenz zweier unabhängigen Variablen gleich der Varianz ist, wie wenn die beiden Variablen miteinander addiert werden.
 
 \begin{equation}
 \begin{split}
@@ -281,7 +282,7 @@ Var(X - Y) &= Var( 1\cdot X + (-1)\cdot Y) \\
 \label{eq-stats-hypo-vardiff}
 \end{equation}
 
-Das Ergebnis in Formel \eqref{eq-stats-hypo-vardiff} wird uns später wieder begegnen, wenn wir uns mit experimentellen Designs beschäftigen und in diesem Zusammenhang den Unterschied zwischen Gruppenmittelwerten berechnen wollen.
+Das Ergebnis in Formel \eqref{eq-stats-hypo-vardiff} wird im späteren Verlauf immer wieder auftauchen, beispielsweise im Rahmen von experimentellen Untersuchungsdesigns.
 :::
 
 ::: {#exm-ed-hypo-mean-se}
@@ -307,23 +308,250 @@ Wie beim Erwartungswert auch noch mal kurz die kontinuierliche Version der Defin
 Var(X) = \int_{-\infty}^{\infty}(X-\mu)^2 f(x) dx
 \end{equation}
 
+## Kovarianz $Cov(X,Y)$
+
+Die Kovarianz ist ein weiteres zentrales Konzept in der Statistik. Wie die sprachliche Nähe zur Varianz ausdrückt, sind die beiden Konzepte miteinander verwandt. 
+
+::: {#def-covarianz}
+
+### Kovarianz 
+Die Kovarianz $Cov(X,Y)$ ist statistisches Maß, das die lineare Beziehung zwischen zwei Zufallsvariablen beschreibt $X$ und $Y$. Die Kovarianz gibt an, wie stark und in welche Richtung sich die beiden Zufallsvariablen gemeinsam verändern.
+
+In der Population wird für die Kovarianz das Symbol $\sigma_{xy}$ verwendet.
+:::
+
+Ist die Kovarianz positiv, bedeutet dies, dass hohe Werte der einen Variablen tendenziell mit hohen Werten der anderen Variablen einhergehen. Eine negative Kovarianz hingegen weist darauf hin, dass hohe Werte einer Variablen mit niedrigen Werten der anderen Variable zusammenhängen. Liegt die Kovarianz bei null, gibt es keine lineare Abhängigkeit zwischen den Variablen, was jedoch nicht ausschließt, dass andere (z. B. nicht-lineare) Beziehungen bestehen können.
+
+Mathematisch wird die Kovarianz durch den Erwartungswert des Produkts der Abweichungen der Variablen von ihren jeweiligen Erwartungswerten berechnet. Seien zwei Zufallsvariablen $X$ und $Y$ gegeben, dann berechnet sich die Kovarianz $Cov(X,Y)$ nach: 
+
+\begin{equation}
+\text{Cov}(X, Y) = \sigma_{xy} = E[(X - \mu_X)(Y - \mu_Y)],
+\label{eq-stats-hypo-cov-def}
+\end{equation}
+
+Ausmultiplizieren der Terme und Anwendung der Rechenregeln zum Erwartungswert führt zu folgender alternativen Darstellung mit der oft einfacher zu arbeiten ist.
+
+\begin{equation*}
+\sigma_{xy} = E[XY] - E[X]E[Y]
+\end{equation*}
+
+Die Kovarianz hat die Einheit des Produkts der Variablen, was sie oft schwer interpretierbar macht, wenn die Variablen unterschiedliche Skalen haben. In der allgemeinen Anwendung spielt die Kovarianz ähnlich wie die Varianz eher eine untergeordnete Rolle ist aber in der Herleitung von Gesetzmäßigkeiten zentral.
+
+Die Kovarianz einer Variable $X$ mit sich selbst ist die Varianz.
+
+\begin{equation*}
+\text{Cov(X,X)} = E[(X-\mu_x)(X-\mu_x)] = E[(X-\mu_x)^2] = \text{Var}(X)
+\end{equation*}
+
+Die Kovarianz zwischen Variablen wird oft in Form einer Kovarianzmatrix dargestellt. Seien wieder die beiden Zufallsvariablen $X$ und $Y$ gegeben dann kann die folgende Kovarianzmatrix erstellt werden.
+
+\begin{equation*}
+\text{Cov(X,Y)} = \begin{pmatrix} \sigma_x^2 & \sigma_{xy} \\ \sigma_{xy} & \sigma_y^2 \end{pmatrix}
+\end{equation*}
+
+D.h. auf der Hauptdiagonalen sind die Varianz der beiden Variablen eingetragen während die anderen beiden Elemente jeweils die Kovarianz angeben. Da $Cov(X,Y) = Cov(X,Y)$ gilt, sind die beiden Elemente gleich und es handelt sich um eine symmetrische Matrize. Kovarianzmatrizen werden oft mit dem Symbol $\Sigma$ bezeichnet.
+
+Wenn mehr als zwei Zufallsvariablen beteiligt sind, dann erweitert sich die Kovarianzmatrix entsprechend. Zum Beispiel bei drei Zufallsvariablen $X,Y$ und $Z$.
+
+\begin{equation*}
+\Sigma = \begin{pmatrix}
+\sigma_x^2 & \sigma_{xy} & \sigma_{xz} \\
+\sigma_{xy} & \sigma_{y}^2 & \sigma_{yz} \\
+\sigma_{xz} & \sigma_{yz} & \sigma_{z}^2 
+\end{pmatrix}
+\end{equation*}
+
+### Kovarianz in `R`
+
+In `R` kann die Kovarianz von Variablen mittels der Funktion `cov()` berechnet werden.
+
+```{r}
+#| echo: true
+
+x <- rnorm(10) 
+y <- rnorm(10) 
+cov(x,y)
+```
+
+Um eine Kovarianzmatrix zu erhalten müssen die Daten in Form einer Matrix an die Funktion übergeben werden.
+
+```{r}
+#| echo: true
+
+cov(cbind(x,y))
+```
+
+Sollen dagegen multivariate Zufallsvariablen mit einer gegebene Kovarianzstruktur erzeugt werden, dann kann für normalverteilte Variablen die Funktion `mvrnorm()` aus dem package `MASS` verwendet werden.
+
+```{r}
+#| echo: true
+
+mu_s <- 1:2
+sigma <- matrix(c(0.4,0.2,0.2,0.5), nr=2)
+MASS::mvrnorm(n = 3, mu = mu_s, Sigma = sigma)
+```
+
+Hier wurden drei Zufallsstichproben mit jeweils zwei Elementen erzeugt, basierend auf einer multivariaten Normalverteilung mit $\mu = [1,2]$ und der Kovarianzmatrix.
+
+\begin{equation*}
+\Sigma = \begin{pmatrix}
+`r sigma[1,1]` & `r sigma[1,2]` \\
+`r sigma[2,1]` & `r sigma[2,2]` \\
+\end{pmatrix}
+\end{equation*}
+
+## Statistische Unabhängigkeit 
+
+Unabhängigkeit\index{Unabhängigkeit} ist ein fundamentales Konzept in der Statistik und beschreibt eine vollständige Abwesenheit eines Zusammenhangs zwischen zwei Zufallsvariablen. Zwei Variablen $X$ und $Y$ sind unabhängig, wenn das Eintreten eines bestimmten Wertes oder Ereignisses der einen Variablen keinen Einfluss auf die Wahrscheinlichkeitsverteilung der anderen Variablen hat.
+
+::: {#def-stats-hypo-indenpdence}
+
+### Statistische Unabhängigkeit
+
+Statistische Unabhängigkeit beschreibt eine Beziehung zwischen zwei Ereignissen oder Zufallsvariablen. Zwei Ereignisse bzw. Zufallsvariablen sind unabhängig voneinander wenn das Eintreten des einen Ereignisses oder der Wert der einen Variablen keinen Einfluss auf das Eintreten oder den Wert des anderen Ereignisses bzw. der anderen Zufallsvariable hat.
+:::
+
+Formal ausgedrückt bedeutet dies, dass ihre gemeinsame Verteilung durch das Produkt ihrer einzelnen (marginalen) Verteilungen dargestellt werden kann:
+
+\begin{equation}
+P(X  \cap Y ) = P(X) \cdot P(Y)
+\label{eq-stats-hypo-independence}
+\end{equation}
+
+::: {#exm-stats-hypo-ind-01}
+Wenn ein Experiment mit zwei Würfel durchgeführt wird, dann hat der Ausgang des einen Würfelwurfs keinen Einfluss auf das Ergebnis des anderen Würfelwurfs. Seien die Würfel farblich zu unterscheiden, z.B. blau ($X$) und grün ($Y$), dann ist die Wahrscheinlichkeit mit dem blauen Würfel eine Sechs zu würfeln, vollkommen unbeeinflusst vom Ausgang des anderen Würfels. Anders herum die Wahrscheinlichkeit mit dem grünen Würfel eine eins zu Würfel ist unbeeinflusst vom Ausgang des anderen Würfels. Formal:
+
+\begin{equation*}
+P(X = 6 \cap Y = 1) = P(X=6) \cdot P(Y=1) = \frac{1}{6} \cdot \frac{1}{6} = \frac{1}{36}
+\end{equation*}
+:::
+
+Unabhängigkeit ist eine stärkere Bedingung als die Abwesenheit linearer Beziehungen, wie sie durch eine Kovarianz von null ausgedrückt wird. Tatsächlich impliziert Unabhängigkeit, dass die Kovarianz zwischen $X$ und $Y$ gleich null ist. Das Umgekehrte gilt jedoch nicht: Eine Kovarianz von null bedeutet lediglich, dass keine lineare Beziehung besteht; es könnten dennoch komplexere, nicht-lineare Abhängigkeiten vorliegen.
+
+In der Praxis spielt Unabhängigkeit eine zentrale Rolle, da viele statistische Methoden und Modelle auf der Annahme beruhen, dass Zufallsvariablen unabhängig voneinander sind.
+
+Die Unabhängigkeit zwischen Variablen wirkt sich auf die Form der Kovarianzmatrix $\Sigma$ aus. Seien drei Zufallsvariablen $X,Y$ und $Z$ gegeben, die voneinander unabhängig sind. Die Kovarianzmatrix $\Sigma$ nimmt dann die folgende, besondere Form an.
+
+\begin{equation*}
+\Sigma = \begin{pmatrix}
+\sigma_x^2 & 0 & 0 \\
+0 & \sigma_{y}^2 & 0  \\
+0 & 0  & \sigma_{z}^2 
+\end{pmatrix}
+\end{equation*}
+
+Alle Elemente abseits der Hauptdiagonalen, also alle Kovarianzen sind null.
+
+::: {#exm-hypo-stats-id-02}
+Sei eine normalverteilte Stichprobe von Körpergrößen mit $N = 3$ gegeben. Die Stichprobe ist aus einer Verteilung mit $\mu = 178$ und $\sigma = 6$ gezogen worden (Populationswerte). Dann wir die Stichprobe $X$ folgendermaßen Dargestellt.
+
+\begin{equation*}
+X = \begin{pmatrix} X_1 \\ X_2 \\ X_3 \end{pmatrix} \sim \mathcal{N}(\mu = 178, \Sigma), \quad \Sigma =  \begin{pmatrix} \sigma^2 & 0 & 0 \\ 0 & \sigma^2 & 0 \\ 0 & 0 & \sigma^2 \end{pmatrix}
+\end{equation*}
+
+Die Variablen $X_i, i=1,2,3$ sind somit unabhängig und gleichverteilt (im Englischen idependent identical distributed (IID)).
+:::
+
+Mittels der Kovarianz können nun auch Varianzen von Variablen berechnet werden wenn, die beteiligten Variablen nicht mehr unabhängig voneinander sind. Es gilt für die Zufallsvariablen $X$ und $Y$:
+
+\begin{align*}
+\text{Var}(aX + bY) = a^2 \text{Var}(X) + b^2 \text{Var}(Y) + 2ab \text{Cov}(X,Y)
+\end{align*}
+
+Im Fall der Unabhängigkeit von $X$ und $Y$ vereinfacht sich die Rechenregel auf den Fall von oben.
+
+Die Unabhängigkeit ist im weiteren Verlauf zentral, da sie eine der Voraussetzungen für die Inferenz im Rahmen der einfachen und multiplen Regressionsanalyse ist. Im späteren Verlauf wird diese Annahme dann jedoch wieder gelockert. 
+
 ## Schätzer
 
-Schätzer sind uns bereits in verschiedenen Varianten begegnet. Als ein Schätzer wird eine Funktion bezeichnet mit deren Hilfe anhand einer Stichprobe ein Wert, ein Schätzwert, berechnet wird, der ermöglicht Rückschlüsse über unbekannte Parameter $\phi$ in der Population zu erhalten. D.h wir haben zum Beispiel eine Population mit den Parametern $\mu$ und $\sigma^2$ und wollen anhand der beobachteten Werte der Stichprobe aussagen über diese beiden Parameter machen. Dazu benutzen wir Schätzer.
+Schätzer sind bereits in verschiedenen Varianten verwendet werden. Als ein Schätzer wird eine Funktion bezeichnet mit deren Hilfe anhand einer Stichprobe ein Wert, ein **Schätzwert**, berechnet wird. Der Schätzwert ermöglicht Rückschlüsse über unbekannte Parameter $\phi$ in der Population zu erhalten. D.h es sei zum Beispiel eine Population mit den Parametern $\mu$ und $\sigma^2$ gegeben und es soll anhand der beobachteten Werte der Stichprobe eine Aussage über die Werte der beiden Parameter gemacht werden. Dazu kann Schätzer verwendet werden.
 
 ::: {.def-schaetzer}
 ### Schätzer
 
-Ein Schätzer\index{Schäzter} oder eine Schätzfunktion ist eine Statistik auf einer Stichprobe die dazu verwendet wird Information über unbekannte Parameter einer Population zu erhalten. Ein Schätzer $t$ für den Parameter $\theta$ (belieber Parameter) aus der Population wird oft mit einem Hut gekennzeichnet $t = \hat{\theta}$. Da $t$ mittels der Stichprobe $X_i, i = 1, \ldots, n$ ermittelt wird, kann manchmal auch die Schreibweise $t = h(X_1, \ldots, X_n)$ verwendet werden. $h()$ ist dabei eine Funktion (z.B. Mittelwert) auf der Stichprobe.
+Ein Schätzer\index{Schäzter} oder eine Schätzfunktion ist eine Statistik auf einer Stichprobe die dazu verwendet wird Information über unbekannte Parameter einer Population zu erhalten. Ein Schätzer $t$ für den Parameter $\theta$ (belieber Parameter) aus der Population wird oft mit einem **Hut** gekennzeichnet $t = \hat{\theta}$. Da $t$ mittels der Stichprobe $X_i, i = 1, \ldots, n$ ermittelt wird, kann manchmal auch die Schreibweise $t = h(X_1, \ldots, X_n)$ verwendet werden. $h()$ ist dabei eine Funktion (z.B. Mittelwert) auf der Stichprobe.
 :::
 
 Beispielsweise ist der Mittelwert einer Stichprobe $\bar{x}$ ein Schätzer für den Mittelwert $\mu$ in der Population. Die Standardabweichung $s$ der Stichprobe ist ein Schätzer für die Standardabweichung $\sigma$ in der Population $s = \hat{\sigma}$.
 
-Es gibt nun immer eine Reihe von möglichen Schätzern auf einer gegebenen Stichprobe. Zum Beispiel, könnte ich anstatt den Mittelwert über alle Stichprobenwerte zu rechnen, könnte ich nur die drei kleinsten Werte nehmen. Oder jeden zweiten Wert usw.. D.h. nicht alle Schätzer sind gleich gut. Manche sind besser als andere. Das Konzept des Schätzer erlaubt Unterschiede zwischen verschiedenen Schätzer zu formalisieren.
+Es gibt nun immer eine Reihe von möglichen Schätzern auf einer gegebenen Stichprobe. Zum Beispiel, soll eine Aussage über einen Populationsmittelwert $\mu$ getroffen werden. So könnte nun der Mittelwert der drei kleinsten Werte $\bar{x}_{123}$ anstatt des Mittelwerts über alle Stichprobenwerte verwendet werden $\bar{x}$. Oder es könnte der Mittelwert über jeden zweiten Wert $\bar{x}_{1,3,...n}$ berechnet werden. D.h. in diesem Fall wäre drei verschiedene Schätzer für den Populationsmittelwert $\mu$ bestimmt worden.
 
-Eine wichtige Eigenschaft von Schätzern ist die sogenannte Erwartungstreue. Die Erwartungstreue ist eng mit dem Erwartungswerts einer Statistik verknüpft. Wir hatten oben gesehen, dass für den Erwartungwert des Mittelwerts $E[\bar{x}] = \mu$ gilt. Dies zeigt, dass der Mittelwert der Stichprobe ein erwartungstreuer Schätzer für den Populationsparameter $\mu$ ist.
+\begin{align*}
+\bar{x}_{123} &\rightarrow \hat{\mu}? \\
+\bar{x} &\rightarrow \hat{\mu}? \\
+\bar{x}_{1,3,...n} &\rightarrow \hat{\mu}?
+\end{align*}
 
-Mit $\sigma^2 = E[X^2] - E[X]^2 = E[X^2] - \mu^2 \Rightarrow E[X^2] = \sigma^2 + \mu^2$ und den Rechenregeln für den Erwartungswert können wir zeigen warum die Standardabweichung $s$ bzw. die Varianz $s^2$ einer Stichprobe sich als Schätzer für $\sigma$ bzw. $\sigma^2$ eignen, also $s = \hat{\sigma}$ bzw. $s^2 = \hat{\sigma}^2$.
+Allerdings tritt nun der Fall ein, dass nicht alle Schätzer sind gleich gut. Das Konzept des Schätzers erlaubt nun Unterschiede zwischen verschiedenen Schätzer zu formalisieren. Eine wichtige Eigenschaft von Schätzern ist die sogenannte **Erwartungstreue** \index{Erwartungstreue}. Die Erwartungstreue ist eng mit dem Erwartungswerts einer Statistik verknüpft. Wir hatten oben gesehen, dass für den Erwartungwert des Mittelwerts $E[\bar{x}] = \mu$ gilt. Dies zeigt, dass der Mittelwert der Stichprobe ein erwartungstreuer Schätzer für den Populationsparameter $\mu$ ist. Im Englischen wird die Erwartungstreue als *unbiased* bezeichnet. Damit folgt formal.
+
+::: {.def-bias}
+### Bias
+
+Der Bias\index{Bias} ist definiert als die Abweichung zwischen dem Erwartungswert $\hat{\theta}_{t}$ eines Schätzers $t$ vom wahren Wert $\theta$ in der Population.
+
+\begin{equation}
+\text{bias}(\hat{\theta}_t) = E[\hat{\theta}_t - \theta]
+\label{eq-stats-hypo-bias}
+\end{equation}
+
+Der Bias wird auch als systematischer Fehler bezeichnet.
+:::
+
+Der Einfluss der Wahl eines Schätzers kann anhand des Beispiels mit den drei Schätzern mittels einer Simulation in `R` verdeutlicht werden. Sei die Population eine Standardnormalverteilung aus der Stichproben der Größe $N = 10$ gezogen werden. Der *wahre* Populationsparameter ist somit $\mu = 0$.
+
+```{r}
+#| echo: true
+#| layout-nrow: 3
+#| fig-cap: "Erwartungstreu der drei Schätzer"
+#| fig-subcap:
+#|   - "Schätzer $\\bar{x}_{123}$"
+#|   - "Schätzer $\\bar{x}$"
+#|   - "Schätzer $\\bar{x}_{1,3,...n}$"
+#| label: fig-stats-hypo-expec-3
+
+n_sim <- 1000
+n <- 10
+mu <- 0
+schaetzer <- function() {
+  stich <- rnorm(n, mu)
+  x_123 <- mean(sort(stich)[1:3])
+  x_bar <- mean(stich)
+  x_13n <- mean(stich[seq(1,10,2)])
+  c(x_123, x_bar, x_13n)
+}
+x_bar_s <- replicate(n_sim, schaetzer())
+
+hist(x_bar_s[1,], xlim=c(-2, 2), breaks=13)
+hist(x_bar_s[2,], xlim=c(-2, 2), breaks=13)
+hist(x_bar_s[3,], xlim=c(-2, 2), breaks=13)
+```
+
+In @fig-stats-hypo-expec-3 ist zu erkennen, dass der Schätzer $\bar{x}_{123}$ im Gegensatz zu den anderen beidern Schätzern **nicht** erwartungstreu ist. D.h. $\bar{x}_{123}$ ist ein biased Schätzer. Der Mittelwert der Werte ist nicht auf den tatsächlichen Populationsmittelwert $\mu=0$ zentriert. Die beiden anderen Schätzer $\bar{x}$ und $\bar{x}_{1,3,...n}$  sind dagegen auf null zentriert. Daher sind diese beiden Schätzer erwartungstreu. Anwendung von Formel \eqref{eq-stats-hypo-bias} führt zu:
+
+```{r}
+#| echo: true
+
+apply(x_bar_s, 1, mean) - mu
+```
+
+Wird die Streuung der Histogramme betrachtet, dann ist weiterhin zu erkennen, dass der Schätzer $\bar{x}$ eine geringere Streuung als $\bar{x}_{1,3,...n}$ aufweist. Die Standardabweichung von $\bar{x}$ und somit der Standardfehler ist geringer als diejenige von $\bar{x}_{1,3,...n}$. Generell versucht man Schätzer zu finden die möglichst wenig streuen bzw. optimal im Sinne ihrer Varianz sind, d.h. Schätzer deren Standardfehler möglichst klein sind damit der Schätzer möglichst wenig um den gesuchten tatsächlichen Populationswert streut.
+
+Zum gleichen Ergebnis kommt eine formale Herleitung der Varianzen der beiden Schätzer $\bar{X}$ und $\bar{X}_{1,3,...n}$. Es wurde vorher bereits gezeigt, dass der Standardfehler des Mittelwerts den bekannten Wert $\frac{\sigma}{\sqrt{n}}$ hat. Da der Schätzer $\bar{X}_{1,3,...n}$ nur die halbe Stichprobe verwendet resultiert daraus anhand der gleichen Herleitung der Standardfehler $\frac{\sigma}{\sqrt{n/2}} = \frac{\sigma\sqrt{2}}{\sqrt{n}}$. D.h. der Standardfehler des Schätzers $\bar{x}_{1,3,...n}$ ist um den Faktor $\sqrt{2}$ größer als derjenige von $\bar{x}$. 
+
+```{r}
+#| echo: true
+
+s_es <- apply(x_bar_s, 1, sd)
+s_es
+s_es[2]*sqrt(2)
+```
+
+Wieder ist zu erkennen, dass im Rahmen der Stichprobenvariabilität der korrekte Wert erhalten wird.
+
+::: {#exm-hypo-stats-expec-sigma}
+### Erwartungstreue von $s$
+
+Eine wiederkehrende Frage in der Statistikvorlesung ist die Frage nach dem Dividenten $n-1$ bei der Berechnung der Standardabweichung in der Stichprobe. Mit $\sigma^2 = E[X^2] - E[X]^2 = E[X^2] - \mu^2 \Rightarrow E[X^2] = \sigma^2 + \mu^2$ und den Rechenregeln für den Erwartungswert können wir zeigen warum die Standardabweichung $s$ bzw. die Varianz $s^2$ einer Stichprobe sich als Schätzer für $\sigma$ bzw. $\sigma^2$ eignen, also $s = \hat{\sigma}$ bzw. $s^2 = \hat{\sigma}^2$.
 
 \begin{equation}
 s^2 = \frac{\sum_{i=1}^n (x_i - \bar{x})^2}{n-1}
@@ -354,23 +582,13 @@ E\left[\frac{\sum_{i=1}^n (x_i - \bar{x})^2}{n}\right] = \frac{1}{n}E\left[\sum_
 \end{equation*}
 
 Würden wir durch $n$ teilen, dann würden wir die Varianz unterschätzen, da $\frac{n-1}{n}<1$ gilt. Der Schätzer weist in diesem Fall einen bias (systematischen Fehler) auf.
-
-::: {.def-bias}
-### Bias
-
-Der Bias\index{Bias} ist definiert als die Abweichung zwischen dem Erwartungswert $\hat{\theta}_{t}$ des Schätzers $t$ vom wahren Wert $\theta$ in der Population.
-
-\begin{equation}
-\text{bias}(\hat{\theta}_t) = E[\hat{\theta}_t - \theta]
-\end{equation}
-
 :::
 
-Zusammenfassend, benötigen wir erwartungstreue Schätzer um die Verknüpfung zwischen unserer Stichprobe und den Parametern einer theoretischen Stichprobenverteilung zu bilden.
+Zusammenfassend, werden möglichst erwartungstreue Schätzer benötigt um die Verknüpfung zwischen einer Stichprobe und den Parametern einer theoretischen Stichprobenverteilung zu bilden.
 
 ## Hypothesentestungszoo
 
-Es folgt noch eine kurze Übersicht über verschiedenen Teststatistiken die uns immer wieder begegnen wird.
+Es folgt noch eine kurze Übersicht über verschiedenen Teststatistiken die im weiteren Verlauf des Skripts immer wieder auftauchen werden.
 
 ### Der t-Test
 
@@ -404,4 +622,4 @@ $$
 
 Die beiden Varianzen folgen dabei jeweils einer $\chi^2$ Verteilung mit Freiheistgraden $df_A$ und $df_B$. Daher folgt  die Statistik $T$ unter der $H_0$ einer $F$-Verteilung mit $(df_A, df_B)$ Freiheitsgeraden. Die $H_0$ wird daher wiederum abgelehnt wenn $T > q_{F,\text{df}_A,\text{df}_B, 1-\alpha}$ (einseitig) gilt.
 
-Zusammenfassend ist wie schon bei der Auflistung der theoretischen Verteilung ist es zunächst einmal das Wichtigste zur Kenntnis zu nehmen, dass es diese unterschiedlichen Tests gibt. Deren Herleitung ist natürlich mit den gegebenen Informationen nicht nachvollziehbar und maximal undurchsichtig. Die Liste ist daher mehr im Sinne einer Mustererkennungsaufgabe für später zu interpretieren, dass wenn die Tests im weitern Verlauf in konkreten Zusammenhängen auftauchen ein Wiedererkennungswert ersteht. Letztendlich ist das anzuwendende Prinzip immer das Gleiche, Teststatistik $\rightarrow$ theoretische Verteilung $\rightarrow$ kritischer Wert unter der $H_0$ über die Quantile $\alpha$ $\rightarrow$ Testentscheidung und Unsicherheit bestimmen. Was sich ändert sind die Tests und deren Parameter.
+Zusammenfassend, wie schon bei der Auflistung der theoretischen Verteilung, ist es zunächst einmal wichtig zur Kenntnis zu nehmen, dass es diese unterschiedlichen Tests gibt. Deren Herleitung ist natürlich mit den gegebenen Informationen nicht nachvollziehbar und maximal undurchsichtig. Die Liste ist daher mehr im Sinne einer Mustererkennungsaufgabe für später zu interpretieren. D.h. wenn die Tests im weitern Verlauf des Skripts in konkreten Zusammenhängen auftauchen sollte ein Wiedererkennungswert ersteht. Letztendlich ist das anzuwendende Prinzip immer das Gleiche, Teststatistik $\rightarrow$ theoretische Verteilung $\rightarrow$ kritischer Wert unter der $H_0$ über die Quantile $\alpha$ $\rightarrow$ Testentscheidung und Unsicherheit bestimmen. Was sich ändert sind die Tests und deren Parameter.
