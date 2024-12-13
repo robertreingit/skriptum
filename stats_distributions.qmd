@@ -434,6 +434,16 @@ In der Anwendung könnten wir beispielsweise $\alpha = 0.2$ ansetzen. Dann würd
 Die Quantilfunktion ist die Umkehrfunktion der Verteilungsfunktion. Die Quantilfunktion gibt für eine gegebene Wahrscheinlichkeit den Wert der Zufallsvariablen an.
 :::
 
+Die verschiedenen Funktionen, die Wahrscheinlichkeitsfunktion, die Verteilungsfunktion und die Quantilfunktion liefern somit unterschiedliche Informationen über eine Verteilung. Dies wird auch noch einmal klarer, wenn man sich die Defintionsmengen und Zielmengen der Funktionen anschaut. Die Wahrscheinlichkeitsfunktion bildet die Wertemenge auf Wahrscheinlichkeiten ab, dass gleiche gilt für die Verteilungsfunktion. Die Quantilfunktion bildet dagegen Wahrscheinlichkeiten auf Werte ab.
+
+| Funktion | Definitionsmenge | Zielmenge |
+| --- | --- | --- |
+| Wahrscheinlichkeit | Werte | Wahrscheinlichkeiten |
+| Verteilung | Werte | Wahrscheinlichkeiten |
+| Quantil | Wahrscheinlichkeiten | Werte |
+
+: Abbildungen der Wahrscheinlichkeits-, Verteilungs- und der Quantilfunktion
+
 ## Übergang von diskreten zur kontinuierlichen Verteilungen
 
 Das Beispiel der Binomialverteilung sollte dazu dienen, die Herleitung der verschiedenen Funktionen im Zusammenhang mit Zufallsvariablen einmal von Grund auf aufzubauen und damit hoffentlich nachvollziehbar zu machen. In den Fällen, die wir im Weiteren untersuchen, betrachten wir jedoch meistens kontinuierliche Verteilungen. D.h. die Zufallsvariable kann nicht nur eine endliche Menge von Werten annehmen, sondern in vielen Fällen zumindest theoretisch, alle Werte auf dem reellen Zahlenstrahl von $[-\infty, \infty]$, bzw. alle Werte in einem Intervall $[a,b]$. Konzeptionell ändert sich beim Übergang zu kontinuierlichen Zahlen zunächst einmal nichts. Die Herleitung ist allerdings etwas komplizierter, sodass wir die Ergebnisse hier nur zur *Kenntnis* nehmen.
@@ -459,7 +469,7 @@ Die Wahrscheinlichkeit, den Wert $x = 1$ zu beobachten, ist null. Da dies kein s
 Allerdings ist es trotzdem notwendig, auch mit Hilfe von Dichtefunktionen Wahrscheinlichkeiten zu bestimmen. Um aus der Dichtefunktion Wahrscheinlichkeiten zu berechnen, ist der Übergang von einzelnen Werten zu Intervallen erforderlich. Zum Beispiel stellt sich die Frage: "Was ist die Wahrscheinlichkeit, unter der Dichtefunktion in @fig-stats-dist-cdist Werte zwischen $0 \leq x \leq 1$ zu beobachten?" Im Modell der diskreten Wahrscheinlichkeitsfunktion wurden dazu die Wahrscheinlichkeiten aller Werte $f(x)$ zwischen $0 \leq x \leq 1$ aufsummiert (siehe @fig-stats-dist-cdist-02).
 
 ```{r}
-#| fig-cap: Beispiel für die Dichtefunktion einer kontinuierlichen Verteilung und der Fläche der Werte im Intervall $0 \leq x \leq 1$.
+#| fig-cap: "Dichtefunktion einer kontinuierlichen Verteilung und der Fläche der Werte im Intervall $0 \\leq x \\leq 1$."
 #| label: fig-stats-dist-cdist-02
 
 dnorm_plot() +
@@ -474,6 +484,35 @@ P(0 \leq X \leq 1) = \int_{0}^{1} f(x) \, dx
 \end{equation*}
 
 Bei kontinuierlichen Verteilungen, und das wird meistens der Fall sein, muss das Integral über ein Intervall der Dichtefunktion berechnet werden. Einzelne Werte haben bei einer kontinuierlichen Funktion die Wahrscheinlichkeit $P(X = x) = 0$. In den meisten Fällen ist es dennoch hilfreich, das mentale Modell der Binomialverteilung anzuwenden, wobei bewusst sein sollte, dass Integrale statt Summen gebildet werden. Glücklicherweise spielen diese Feinheiten in der Praxis selten eine Rolle, da Berechnungen dieser Art fast immer über `R`-Funktionen durchgeführt werden.
+
+::: {.callout-tip}
+Es ist oft hilfreich den Zusammenhang zwischen den drei Funktionen: Dichtefunktion, Verteilungsfunktion und Quantilfunktion im Hinterkopf zu behalten. Bei einer Normalverteilung ergibt sich auch ein *relativ* einprägsames dreier Bild.
+
+```{r}
+#| layout-ncol: 3
+#| fig-height: 3
+#| fig-cap: 
+#|   - Dichtefunktion
+#|   - Verteilungsfunktion
+#|   - Quantilfunktion
+
+df_d <- tibble(
+  x = seq(-3,3,length.out=100),
+  d = dnorm(x),
+  p = pnorm(x)
+)
+df_p <- tibble(
+  x = seq(0,1,length.out=100),
+  q = qnorm(x)
+)
+ggplot(df_d, aes(x,d)) + 
+  geom_line() + labs(x = 'Werte', y = 'Dichte')
+ggplot(df_d, aes(x,p)) +
+  geom_line() + labs(x = 'Werte', y = 'Wahrscheinlichkeit')
+ggplot(df_p, aes(x,q)) +
+  geom_line() + labs(x = 'Wahrscheinlichkeit', y = 'Werte')
+```
+:::
 
 Im Folgenden werden neben der Binomialverteilung noch fünf weitere theoretische Verteilungen etwas genauer vorgestellt. Diese Verteilung spielen immer wieder im weiteren Verlauf des Kureses eine Rolle. Die Verteilungen sind die Normalverteilung, die $t$-Verteilung, die $\chi^2$-Verteilung, die $F$-Verteilung und die Gleichverteilung. Dabei ist es, außer bei der Normalverteilung, weniger wichtig, sich die Formeln einzuprägen. Es soll vielmehr darum gehen, die Form der Verteilung, den Wertebereich und die Parameter der Verteilung zu kennen. Zum Beispiel wird die Normalverteilung durch zwei Parameter $\mu$ und $\sigma^2$ spezifiziert, während die $\chi^2$-Verteilung nur über einen einzelnen Parameter, den Freiheitsgrad $df$, bestimmt wird. Streng genommen handelt es sich nicht um vier einzelne Verteilungen, sondern um Verteilungsfamilien, da es beispielsweise nicht die eine Normalverteilung gibt, sondern die Form von den genannten Parametern abhängt. Dies gilt ebenso für die anderen behandelten Verteilungen.
 
@@ -774,7 +813,7 @@ Der $\chi^2$-Test tritt oft im Zusammenhang mit Testungen von Varianzen auf. Die
 Q = \sum_{i=1}^n X_i^2 \sim \chi^2(n \text{ Freiheitsgraden})
 \end{equation*}
 
-Der Erwartungswert einer $\chi^2$-verteilten Zufallsvariable mit $df = k$ Freiheitsgraden ist $X$ ist $E[X] = k$ mit einer Varianz $Var(X) = 2k$.
+Der Erwartungswert einer $\chi^2$-verteilten Zufallsvariable mit $df = k$ Freiheitsgraden ist $X$ ist $E[X] = k$ bei einer Varianz von $Var(X) = 2k$.
 
 ### $\chi^2$-Verteilung in `R`
 
@@ -920,6 +959,15 @@ Wenig überraschend heißen die Funktion für die $F$-Verteilung in `R` `df()`, 
 qf(0.95, 2, 3)
 ```
 
+Während eine Zufallsstichprobe von $N = 5$ aus einer $F$-Verteilung mit den Freiheitsgrade $3,7$ mittels des folgenden Programms erhalten wird:
+
+```{r}
+#| echo: true
+
+rf(5, 3, 7)
+```
+
+
 ## Gleichverteilung
 
 Die letzte Verteilung die später noch eine Rolle spielt. Ist die Gleichverteilung. Die Gleichverteilung hat eine untere Grenze $a$ und eine obere Grenze $b$. In diesem Intervall ist die Wahrscheinlichkeit der Werte konstant, während $P(X) = 0$ für $X < a$ und $X > b$ gilt. Die Definition der Dichtefunktion ist:
@@ -944,9 +992,18 @@ tibble(x = seq(0,4,0.01), y = dunif(x,1,3)) |>
   labs(x = 'Werte', y = 'Dichte')
 ```
 
+Der Erwartungswert der Gleichverteilung ist $E[X] = \frac{1}{2}(a+b)$ während die Varianz mittels $\sigma^2 = \frac{1}{12}(b-a)^2$ berechnet wird.
+
 ### Gleichverteilung in `R`
 
-Die zu der Gleichverteilung gehörenden `R` Funktionen heißen `dunif()`, `punif()`, `qunif()` und `runif()`.
+Die zu der Gleichverteilung gehörenden `R` Funktionen heißen `dunif()`, `punif()`, `qunif()` und `runif()`. Soll zum Beispiel das $95\%$-Quantil einer Gleichverteilung mit $a = 1, b = 3$ berechnet werden. Kann der folgende Code verwendet werden.
+
+```{r}
+#| echo: true
+
+qunif(0.95, 1, 3)
+```
+
 
 ## Zusammenfassung
 
