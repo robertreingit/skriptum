@@ -98,7 +98,21 @@ y_i = \beta_0 + \beta_1 x_i
 \label{eq-slm-psform-beta}
 \end{equation}
 
-Formel \eqref{eq-slm-psform-beta} ist immer noch unsere einfache Punkt-Steigungsform. Wir haben lediglich den Index $i$ eingeführt, um unterschiedliche $y-x$-Wertepaare zu bezeichnen, und wir haben den $y$-Achsenabschnitt und die Steigung mit neuen Symbolen versehen. Wenn wir uns später mit der multiplen linearen Regression beschäftigen und nicht mehr nur eine einzige $x$-Variable haben, vereinfacht die Benutzung von $\beta$s die Schreibweise, da wir einfach zusätzliche $\beta$s anhängen und mit einem fortlaufenden Index (z. B. $\beta_2, \beta_3, \ldots$) versehen.
+Formel \eqref{eq-slm-psform-beta} ist immer noch die einfache Punkt-Steigungsform. Es wurde lediglich der Index $i$ eingeführt, um unterschiedliche $x-y$-Wertepaare zu identifizieren. Weiterhin wurde der $y$-Achsenabschnitt und die Steigung mit neuen Symbolen versehen. Wenn im späteren Verlauf des Skripts die die multiple linearen Regression eingeführt wird, hat diese Nomenklatur große Vorteile, da nicht mehr nur eine einzige $x$-Variable vorhanden ist sondern mehrere. Hier vereinfacht die Benutzung von $\beta$s die Schreibweise, da zusätzliche $\beta$s nach Bedarf angehängt werden können und mit einem fortlaufenden Index (z. B. $\beta_2, \beta_3, \ldots$) versehen werden können.
+
+Bezogen auf die Datenpunkte, nochmal jeder Datenpunkt besteht aus zwei Koordinaten, einem $x$-Wert und einem $y$-Wert. Um die Datenpunkte voneinander auseinander zu halten verwenden wir den Index $i$ (siehe @fig-slm-basic-index-2). 
+
+```{r}
+#| fig-cap: "$x-y$-Werte und ihr Index $i$"
+#| label: fig-slm-basic-index-2
+
+ggplot(tib_psf, aes(x,y)) +
+  geom_point(size=4) +
+  geom_text(aes(label = paste0('(x[', x+1, ']~y[', x+1, '])')),
+             parse=T, nudge_x=.35)
+```
+
+
 
 ## Funktionaler versus stochastischer Zusammenhang zwischen zwei Variablen
 
@@ -163,7 +177,7 @@ jump |> select(i, jump_m, v_ms) |>
 
 Daher hat zum Beispiel der dritte Datenpunkt $i = 3$ die Datenwerte $\text{jump}_3 = `r round(jump[["jump_m"]][2],2)`$ und $\text{v}_3 = `r round(jump[["v_ms"]][3],2)`$.
 
-Das waren bisher aber nur Formalitäten. Wir wollen jetzt den Zusammenhang zwischen den beiden Variablen modellieren. Wir könnten wahrscheinlich auch einfach Pi-mal-Daumen abschätzen, wie groß der Zusammenhang ist. Wenn wir jetzt aber einen unserer Läufer haben, der z. B. etwa $9m/s$ anläuft, welchen Vergleichswert nehmen wir dann aus @fig-slm-basics-jump-1? Den unteren oder den oberen der beiden roten Werte? Oder vielleicht den Mittelwert? Welchen Wert nehmen wir, wenn unser Athlet mit $v=9.7m/s$ anläuft? Da haben wir leider keinen Vergleichswert in unserer Tabelle. Daher wäre es schon ganz praktisch, eine Formel nach dem Muster von Formel \eqref{eq-slm-psform-beta} zu haben. Wie wir allerdings schon festgestellt haben, geht dies nicht so einfach, da wir eben das Problem mit den Einflussfaktoren haben, die dazu führen, dass die Werte nicht präzise auf einer Geraden liegen. Somit liegt die Herausforderung nun darin, eine Gerade zu finden, die möglichst *genau* die Daten widerspiegelt.
+Das waren bisher aber nur Formalitäten. Wir wollen jetzt den Zusammenhang zwischen den beiden Variablen modellieren. Wir könnten wahrscheinlich auch einfach Pi-mal-Daumen abschätzen, wie groß der Zusammenhang ist. Wenn wir jetzt aber einen unserer Läufer haben, der z.B. etwa $9m/s$ anläuft, welchen Vergleichswert nehmen wir dann aus @fig-slm-basics-jump-1? Den unteren oder den oberen der beiden roten Werte? Oder vielleicht den Mittelwert? Welchen Wert nehmen wir, wenn unser Athlet mit $v=9.7m/s$ anläuft? Da haben wir leider keinen Vergleichswert in unserer Tabelle. Daher wäre es schon ganz praktisch, eine Formel nach dem Muster von Formel \eqref{eq-slm-psform-beta} zu haben. Wie wir allerdings schon festgestellt haben, geht dies nicht so einfach, da wir eben das Problem mit den Einflussfaktoren haben, die dazu führen, dass die Werte nicht präzise auf einer Geraden liegen. Somit liegt die Herausforderung nun darin, eine Gerade zu finden, die möglichst *genau* die Daten widerspiegelt.
 
 
 ```{r}
@@ -361,6 +375,24 @@ kable(ab_ii,
 
 Wir können in @tbl-slm-basics-gradient erkennen, das das Wertepaar für $\beta_0$ und $\beta_1$, welches wir mit Hilfe der Normalengleichung bestimmt haben, denn kleinesten Abweichungswert hat. Also im Sinne unseres Kriteriums ein Optimum darstellt.
 
+::: {#exm-slm-hursh}
+### Nervenleitgeschwindigkeit
+
+In einem klassischen Artikel von @hursh1939 wurde der Zusammenhang zwischen der Leitungsgeschwindigkeit eines Neurons und dem Durchmesser seines Axons bei erwachsenen Katzen untersucht. Es wurde die maximale Geschwindigkeit der Nervenfasern in verschiedenen Nervenbündeln sowie der Durchmesser der größten Faser in jedem Bündel bestimmt. 
+
+```{r}
+#| fig-cap: "Leitungsgeschwindigkeit gegen die Nervenfaserdicke bei erwachsenen Katzen adaptiert nach Hursh (1939). Die Regressionsgerade ist in blau eingezeichnet."
+#| label: fig-slm-basics-hursh
+
+readr::read_delim('data/hursh.csv') |>  
+  ggplot(aes(diameter, velocity)) +
+  geom_smooth(method = 'lm', se=F, linetype='dashed') +
+  geom_point() +
+  labs(x = 'Durchmesser [microns]', y = 'Geschwindigkeit [m/s]')
+```
+
+Wie in @fig-slm-basics-hursh zu sehen ist, zeigen die Daten eine nahezu lineare Beziehung zwischen der maximalen Geschwindigkeit und dem Nervendurchmesser. Der $y$-Achsenabschnitt liegt bei nahezu null. Dies kann dahingehend interpretiert werden, dass eine Verdoppelung des Faserdurchmessers für den beobachteten Berech der Nervendurchmesser nahezu zu einer verdoppelung der Leitungsgeschwindigkeit führt. Die eingezeichnet Regressionsgerade modelliert die Daten entsprechend gut.
+:::
 
 ## Was bedeuten die Koeffizienten?
 
