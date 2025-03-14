@@ -13,6 +13,7 @@ require(dplyr)
 require(tidyr)
 require(knitr)
 require(emmeans)
+require(patchwork)
 
 ####################################
 # helper functions

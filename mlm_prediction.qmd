@@ -12,14 +12,16 @@ source('_common.R')
 
 ## Vorhersage versus Inferenz
 
-## Test error versus training error
+### Bias-Variance Trade-off
+
+### Test error versus training error
 
 - The **test error** is the average error that results from using a statistical learning method to predict the response on a new observation, one that was not used in training the method.
 - The **training error** is the average error that results from applying the statistical learning method to the observations used in its training.
 
 The training error rate often is quite different from the test error rate, and in particular the former can dramatically underestimate the latter.
 
-## Training- versus Test-Set Performance
+### Training- versus Test-Set Performance
 
 ```{r}
 
@@ -34,13 +36,13 @@ ggplot(tibble(x=c(0,1), y=c(0,1)), aes(x,y)) +
 - The model is fit on the training set, and the fitted model is used to predict the responses for the observations in the validation set.
 - The resulting validation-set error provides an estimate of the test error. This is typically assessed using MSE in the case of a quantitative response and misclassification rate in the case of a qualitative (discrete) response.
 
-## K-fold Cross-validation
+### K-fold Cross-validation
 
 - Estimates can be used to select best model, and to give an idea of the test error of the final chosen model.
 - Randomly divide the data into K equal-sized parts. We leave out part $k$, fit the model to the other $K-1$ parts (combined), and then obtain predictions for the left-out $k$th part.
 - This is done in turn for each part $k = 1, 2, \ldots K$, and then the results are combined.
 
-## Implementation details
+### Implementierungs details
 
 - Let the $K$ parts be $C_1, C_2, \ldots, C_K$ with $n_k = n/K$ observations each
 - Compute
@@ -49,45 +51,107 @@ CV_{(K)} = \sum_{i=1}^K \frac{n_k}{n}MSE_k
 $$
 - Setting $K =  n$ yields leave-one out cross-validation (LOOCV)
 
-## Cross-validation for Classification problems
-
-$$
-CV_{(K)} = \sum_{i=1}^K \frac{n_k}{n}Err_k
-$$
-
-$$
-Err_k = \sum_{i\in C_k}I(y_i\neq \hat{y}_i)/n_k
-$$
-
 ## Bootstrap
 
-- Flexible statistical tool that can be used to quantify the uncertainty associated with a given estimator or statistical learning method.
-- Primarily used to obtain standard errors of an estimate
-- Application of the **plug-in principle**: *To estimate a parameter, a quantity that describes the population, use the statistic that is the corresponding quantity for the sample.*
+In vielen Fällen ist die Annahme einer bestimmten Verteilung für eine Statistik nur sehr schwer zu begründen. Da aber die gesamte Maschinerie der Inferenz darauf beruht Aussagen über die Stichprobenverteilung zu machen hat man sich auf die Suche nach alternativen Möglichkeiten gemacht. Eine Lösung für dieses Problem ist der *Bootstrap*. Der Bootstrap ist dabei eine flexibles statistisches Tool um eine Aussage über die Unsicherheit auf Basis einer Stichprobe zu machen ohne zu restriktive Annahme über die Verteilung der Population zu machen. Hauptziel des Bootstraps ist es einen Schätzer für den Standardfehler zu erhalten. Das Prinzip das beim Bootstrap zur Anwendung kommt, ist das sogenannte *plug-in principle*.
 
-## Implementation
+::: {#def-plug-in}
+## Plug-in principle
 
-- Repeatedly sample with replacement $n$ objects from the data
-- Each bootstrap data set is the same size like the original data
+To estimate a parameter, a quantity that describes the population, use the statistic that is the corresponding quantity for the sample.
+:::
 
-## Bootstrap
+Die Effiziente Anwendung des Bootstrap ist dabei erst mit allgemeinen Verfügbarkeit von schneller Rechenleistung möglich gemacht worden. Beim Bootstrap wird eine wiederholte Stichprobenziehung der Daten aus der vorliegenden *Stichprobe* durchgeführt. Diese Stichprobe wird als Bootstrap-Stichprobe bezeichnet. Die Bootstrap-Stichprobe hat die gleiche Größe $N$ wie die ursprüngliche Verteilung. Damit nicht die genau gleiche Strichprobe entsteht, wird die Bootstrap-Stichprobe durch *Ziehen mit Zulegen* generiert. D.h. jeder Datenpunkt in der Originalstichprobe kann mehrmals in der Bootstrap-Stichprobe landen. Die Annahme beim Bootstrapverfahren, ohne geht es auch hier nicht, ist, das die beobachtete Stichprobe die Population repräsentiert. In diesem Fall, ist kann die Stichprobe als drop-in replacement für die eigentliche Population verwendet werden. D.h. aber auch das nicht wirklich *neue* Daten durch den Bootstrap generiert werden. Die Bootstrap-Stichprobe wird lediglich dazu verwendet Informationen über die Varianz der gewünschten Statistik zu erhalten, ähnlich wie dies auch beim Standardfehler $s_{e} = \frac{s}{\sqrt{n}}$ des Mittelwerts $\bar{x}$ gemacht wird.
+
+In @fig-mlm-pred-bootstrap sind die Unterschied zwischen diesen beiden Prozessen noch einmal verdeutlicht.
 
 ```{r}
-#| fig-cap: Adapted from Hesterberg (2015)
-#| out-height: 80%
-#| label: fig-bootstrap
+#| fig-cap: Adaptiert nach Hesterberg (2015)
+#| label: fig-mlm-pred-bootstrap
+#| fig-height: 8
 
-knitr::include_graphics('pics/hesterberg_bootstrap.png')
+bootstrap_graph <- function() {
+  x_0 <- -4
+  x_1 <- 4
+  my_theme <- theme(
+      axis.line.x = element_line(colour = 'black', linewidth=1),
+      panel.background = element_blank(),
+      axis.title.y = element_blank(),
+      axis.ticks.y = element_blank(),
+      axis.text.y = element_blank(),
+      axis.text.x = element_text(size=12),
+      axis.ticks.x = element_line(linewidth=1),
+      axis.ticks.length = unit(0.4,"cm")
+    )
+  foo <- function(n=20, x0=x_0, x1=x_1, df = tibble(x = rnorm(n)), star=FALSE) {
+    x_bar <- mean(df$x)
+    breaks <- sort(c(x0, x1, 0, x_bar))
+    if (star) {
+      ex <- expression(bar(x)^"*")
+      lt <- 'dotted'
+    } else {
+      ex <- expression(bar(x))
+      lt <- 'dashed'
+    }
+    if (x_bar <= 0) {
+      labels <- c(x0, ex, "", x1)
+    } else {
+      labels <- c(x0, "", ex, x1)
+    }
+    ggplot(df, aes(x)) + 
+      geom_histogram(fill='grey') +
+      geom_vline(xintercept = x_bar, linetype=lt, linewidth=1) +
+      scale_x_continuous("", breaks=breaks,
+                         labels=labels,
+                         limits = c(x0, x1)) +
+      guides(x = guide_axis(cap = 'both')) +
+      my_theme
+  } 
+  df <- tibble(
+    x = seq(-3, 3, length.out=100),
+    y = dnorm(x))
+  
+  set.seed(2)
+  p1 <- ggplot(df, aes(x,y)) + 
+    geom_line(linewidth=1) + 
+    scale_x_continuous("", 
+                       limits=c(-10,10), 
+                       breaks=c(x_0,0,x_1),
+                       labels=c(x_0,expression(mu), x_1)) + 
+    geom_vline(xintercept = 0, linewidth=1) +
+    guides(x = guide_axis(cap = 'both')) +
+    labs(title = 'Zufallsstichproben aus der Population') +
+    my_theme
+  p2 <- foo() + annotate(geom = 'segment', x = 4, y = 4, xend = 3, yend = 3, arrow = arrow(type='closed'))
+  p3 <- foo() + annotate(geom = 'segment', x = 0, y = 4, xend = 0, yend = 3, arrow = arrow(type='closed'))
+  p4 <- foo() + annotate(geom = 'segment', x = -4, y = 4, xend = -3, yend = 3, arrow = arrow(type='closed'))
+  set.seed(7)
+  df_2 <- tibble(x = rnorm(30, 0.3)) 
+  x_bar <- mean(df_2$x)
+  p5 <- ggplot(df_2, aes(x)) + 
+    geom_histogram(fill='grey') +
+    scale_x_continuous("", 
+                       limits=c(-10,10), 
+                       breaks=c(x_0,0,x_bar,x_1),
+                       labels=c(x_0,"",expression(bar(x)^"*"), x_1)) + 
+    geom_vline(xintercept = 0, linewidth=1) +
+    geom_vline(xintercept = x_bar, linetype='dashed', linewidth=1) +
+    guides(x = guide_axis(cap = 'both')) +
+    labs(title = 'Bootstrap-Stichproben aus der Zufallsstichprobe ') +
+    my_theme
+  p6 <- foo(df = tibble(x = sample(df_2$x, 20, replace=TRUE)), star=T) +
+    annotate(geom = 'segment', x = 4, y = 4, xend = 3, yend = 3, arrow = arrow(type='closed'))
+  p7 <- foo(df = tibble(x = sample(df_2$x, 20, replace=TRUE)), star=T) +
+    annotate(geom = 'segment', x = 0, y = 4, xend = 0, yend = 3, arrow = arrow(type='closed'))
+  p8 <- foo(df = tibble(x = sample(df_2$x, 20, replace=TRUE)), star=T) +
+    annotate(geom = 'segment', x = -4, y = 4, xend = -3, yend = 3, arrow = arrow(type='closed'))
+  p1 / (p2 + p3 + p4) / p5 / (p6 + p7 + p8)
+}
+bootstrap_graph()
 ```
 
 
-## Comments
-
-- The bootstrap does not really create new data
-- The bootstrap sample is used to obtain information about the variation about a statistic of interest similar to using $\bar{x}$ and $s_{e} = \frac{s}{\sqrt{n}}$
-
-
-## Bootstrap t-Interval (compare @hesterberg2015)
+Bootstrap t-Interval (compare @hesterberg2015)
 
 - Calculate a bootstrap t-statistics
 $$
