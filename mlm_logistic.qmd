@@ -1,0 +1,324 @@
+# Logistische Regression
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+source('_common.R')
+```
+
+
+```{r defs}
+require(tidyverse)
+require(knitr)
+require(MASS)
+library(pROC)
+library(CalibrationCurves)
+```
+
+## Set-up
+
+```{r}
+#| fig-cap: "Klassifikation"
+#| fig-height: 2
+
+include_graphics('pics/duck_goal.jpg')
+```
+
+## Logistische Funktion
+
+$$
+f(z) = \frac{1}{1 + e^{-z}} 
+$$
+
+```{r}
+#| fig-cap: "Logistische Funktion" 
+
+z <- seq(-20, 20, length.out = 200)
+y <- 1/(1 + exp(-z))
+df_1 <- tibble(z,y)
+ggplot(df_1, aes(z,y)) +
+  geom_line() +
+  labs(x = 'z', y = expression(frac(1,1+e^(-z))))
+```
+
+## Alternative Formulierung der logistischen Funktion
+
+\begin{align*}
+f(z) &= \frac{1}{1 + e^{-z}} \\
+ &= \frac{e^z}{e^z + e^{-z}e^z} \\
+ &= \frac{e^z}{e^z + e^{-z+z}} \\
+ &= \frac{e^z}{e^z + 1}
+\end{align*}
+
+## logistic function $f(z,a) = \frac{1}{1+e^{-az}}$
+
+```{r}
+#| fig-cap: "Variations of the logistic function"
+
+logistic <- function(z,a=1) 1/(1+exp(-a*z))
+tibble(z,
+               f_1 = logistic(z),
+               f_2 = logistic(z,0.2),
+               f_3 = logistic(z,5)) |> 
+  pivot_longer(cols = -z) |> 
+  ggplot(aes(z,value, color=name)) +
+  geom_line() +
+  scale_x_continuous("z") +
+  scale_y_continuous(expression(frac(1,1+e^(-az)))) +
+  scale_color_discrete("a", labels=c(expression(a==1.0),expression(a==.2),expression(a==5.0)))
+```
+
+
+
+## Logistic function to model probabilities
+
+\begin{align*}
+p(X) = f(\beta_0 + \beta_1 X) &= \frac{e^{\beta_0+\beta_1 X}}{1 + e^{\beta_0 + \beta_1 X}} \\
+&= \frac{1}{1+e^{-(\beta_0 + \beta_1 X)}}
+\end{align*}
+
+$p(X)$ as the probability of scoring a goal, or the risk of developing a disease, etc.
+
+$$
+P(Y = 1|X) = \frac{1}{1 + e^{-(\beta_0 + \beta_1 X)}}
+$$
+
+## Logistische Regression in `R` 
+
+```{r}
+#| echo: true
+
+```
+
+## Vorhersage
+
+```{r}
+#| fig-cap: "Model predictions"
+
+
+```
+
+## Chance 
+
+```{r}
+
+include_graphics('pics/comic_horse_and_duck.jpg')
+```
+
+\begin{align*}
+\text{odds}  &= \frac{P(\text{Event})}{P(\text{Not Event})} \\
+&= \frac{p}{1-p} \\
+\end{align*}
+
+## odds and the logistic model
+
+\begin{align*}
+p(X) &= \frac{e^{\beta_0 + \beta_1X}}{1 + e^{\beta_0 + \beta_1 X}}  \\
+\Leftrightarrow p(X)(1 + e^{\beta_0 + \beta_1 X}) &= e^{\beta_0 + \beta_1X}  \\
+\Leftrightarrow p(X) + p(X)e^{\beta_0 + \beta_1 X} &= e^{\beta_0 + \beta_1X} \\
+\Leftrightarrow p(X) &= e^{\beta_0 + \beta_1X} - p(X)e^{\beta_0 + \beta_1 X} \\
+\Leftrightarrow p(X) &= e^{\beta_0 + \beta_1X}(1 - p(X)) \\
+\Leftrightarrow \frac{p(X)}{1 - p(X)} &= e^{\beta_0 + \beta_1X} \\
+\end{align*}
+
+## Logit function
+
+$$
+\text{logit}(x) = \text{log}\left(\frac{x}{1-x}\right)
+$$
+
+```{r}
+#| fig-cap: "Logit function"
+#| fig-width: 3
+
+z <- seq(0, 1, length.out = 400)
+y <- log(z/(1-z))
+df_2 <- tibble(z,y)
+ggplot(df_2, aes(z,y)) +
+  geom_line() +
+  labs(x = 'z', y = expression(frac(x,1-x))) 
+```
+
+## log-odds or logit
+
+$$
+\text{logit}\left(\frac{p(X)}{1-p(X)} \right) = \beta_0 + \beta_1 X
+$$
+
+The logistic regression model is linear for $X$ in the **log-odds**.
+\begin{align*}
+\left(\frac{p(X)}{1-p(X)} \right) &= e^{\beta_0 + \beta_1 (X + \Delta)} = e^{\beta_0 + \beta_1X}e^{\beta_1 \Delta} \\
+log\left(\frac{p(X)}{1-p(X)} \right) &= log\left(e^{\beta_0 + \beta_1X}e^{\beta_1\Delta}\right)  = \beta_0 + \beta_1 X + \beta_1 \Delta
+\end{align*}
+
+## Changes in $Y$ according to $X$
+
+
+```{r}
+#| fig-cap: "$f(x) = \\frac{e^{0.5+0.2x}}{1+e^{0.5+0.2x}}$"
+#| layout-ncol: 2
+#| fig-height: 3 
+#| fig-subcap:
+#|   - Logit
+#|   - Logistic
+
+logistic_2 <- function(z,b0,b1) 1/(1+exp(-(b0 + b1*z)))
+df <- tibble(
+  x = seq(-20,20,length.out=50),
+  p = logistic_2(x, 0.5, 0.2),
+  odds = exp(0.5 + 0.2*x)
+)
+ggplot(df, aes(x,odds)) + geom_line() +
+  scale_x_continuous(expression(X), breaks=seq(-20,20,2))
+ggplot(df, aes(x,p)) + geom_line() +
+  scale_x_continuous(expression(X), breaks=seq(-20,20,2))
+```
+
+## Konfusionsmatrize
+
+|                        | Predicted: Positive | Predicted: Negative |
+|------------------------|---------------------|---------------------|
+| **Actual: Positive**   | True Positive (TP)  | False Negative (FN) |
+| **Actual: Negative**   | False Positive (FP) | True Negative (TN)  |
+
+- **Accuracy:** $(TP + TN) / \text{Total Samples}$
+- **Precision (Positive Predictive Value):** $TP / (TP + FP)$
+- **Recall (Sensitivity):** $TP / (TP + FN)$
+- **F1 Score:** $\frac{2}{\frac{1}{\text{Precision}} + \frac{1}{\text{Sensitivity}}} \in [0,1]$
+
+## Welche Eigenschaften sind wichtig für einen Klassifikationsalgorithmus?
+
+- Discrimination
+- Calibration
+
+## Discrimination 
+
+### Definition
+Discrimination refers to a model's ability to distinguish between positive and negative cases. Discrimination assesses how well a model separates different outcome classes.  
+
+**Intuition**:
+Discrimination tells us *how well* the model differentiates between classes, regardless of the predicted probability values being perfectly aligned with real-world outcomes.  
+
+
+## Kalibrierung 
+
+### Definition:
+Calibration refers to the agreement between predicted probabilities and the observed proportions of outcomes. A well-calibrated model outputs probabilities that reflect the true likelihood of an event.  
+
+**Intuition**:
+Calibration ensures that the model's predictions are not just *accurate* in classification but also *reliable* as probability estimates.  
+
+
+## Receiver Operator Characteristic (ROC) 
+
+$$
+\text{True Positive Rate (TPR, Sensitivity)} = \frac{\text{True Positives}}{\text{True Positives + False Negatives}}
+$$
+
+$$
+\text{False Positive Rate (FPR)} = \frac{\text{False Positives}}{\text{False Positives + True Negatives}}
+$$
+
+$$
+\text{Specificity} = \frac{\text{True Negatives}}{\text{True Negatives + False Positives}}
+$$
+
+$$
+\text{FPR} = 1 - \text{Specificity}}
+$$
+
+## ROC 
+
+```{r}
+set.seed(125)
+df <- tibble(
+  x = seq(-20,20,length.out=50),
+  p = logistic_2(x, 0.5, 0.4),
+  odds = exp(0.5 + 0.2*x))
+df_pts <- tibble(
+    x = c(runif(20,-20,5), runif(20, -4, 20)),
+    p = c(rbinom(20,1,0.2), rbinom(20, 1, 0.9)))
+
+ggplot(df, aes(x,p)) + geom_line() +
+  scale_x_continuous(expression(X), breaks=seq(-20,20,2)) +
+  scale_y_continuous(expression(hat(p))) +
+  geom_point(data=df_pts, size=2)
+```
+
+
+## ROC curve
+```{r}
+#| fig-cap: "Example of a ROC curve"
+
+roc_data <- tibble(
+  FPR = seq(0.01, 1, length.out=100),
+  TPR = (log(FPR) - log(0.01))/4.605
+)
+ggplot(roc_data, aes( FPR, TPR)) +
+  geom_line(color = "blue", linewidth = 1) + 
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "grey") + # Random chance line
+  scale_x_continuous("False Positive Rate\n(FPR)") +
+  scale_y_continuous("True Positive Rate\n(TPR)") +
+  coord_equal() 
+
+# Print AUC value
+```
+
+## Area under the curve (AUC) 
+
+```{r}
+#| fig-cap: "Example of AUC"
+
+ggplot(roc_data, aes(FPR, TPR)) +
+  geom_ribbon(aes(ymax=TPR, ymin=0), alpha=.5, fill='blue') + 
+  geom_line(color = "blue", linewidth = 1) + 
+  scale_x_continuous("False Positive Rate\n(FPR)") +
+  scale_y_continuous("True Positive Rate\n(TPR)") +
+  coord_equal() 
+```
+
+## Calibration curve
+
+```{r}
+#| fig-cap: "Example of a calibration curve (red) and perfect calibration (black)"
+df_cb <-tibble(
+  x = seq(0, 1, length.out=100),
+  y = (10*x+ 300*(x-0.5)**3+ 0.5)/100+.5
+)
+lab <- seq(0,1,.2)
+ggplot(tibble(x=0:1, y=0:1), aes(x,y)) +
+  geom_line(linetype='dashed') +
+  geom_line(data = df_cb, color='red') +
+  scale_x_continuous('Predicted\nprobability', breaks=lab, labels=lab) +
+  scale_y_continuous('Observed\nprobability', breaks=seq(0,1,.2)) +
+  coord_equal()
+```
+
+## Calculating a prediction curve
+
+
+## `CalibrationCurves`
+
+```{r}
+#| fig-height: 3
+
+df <- read_csv('data/Hecht_1942_SR1.csv') |> 
+  mutate(logQuanta = log(Quanta))
+mod <- glm(response ~ logQuanta, df, family=binomial())
+
+pHat <- predict(mod, type='response')
+odds <- predict(mod)
+y <- mod$y
+cc <- valProbggplot(pHat, y)
+print(cc$ggPlot)
+```
+
+
+## Take-aways Diskriminierung vs. Kalibrierung 
+
+| **Aspect**        | **Discrimination**                      | **Calibration**                      |
+|-------------------|-----------------------------------------|--------------------------------------|
+| **Focus**         | Ability to distinguish classes          | Accuracy of predicted probabilities  |
+| **Measurement**   | AUC, ROC curves                         | Calibration curves                   |
+| **Key Question**  | "How well does the model rank cases?"   | "Are the probabilities realistic?"   |
