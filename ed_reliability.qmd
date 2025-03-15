@@ -1,5 +1,7 @@
 # Reliabilität
 
+Diese Kapitel beschäftigt sich mit der Güte von Messinstrumenten. Trotzdem eigentlich ein zentrales Thema bei der Erhebung von Messdaten wird es in den meisten Fällen gar nicht betrachtet.
+
 ```{r}
 #| echo: false
 #| warning: false
@@ -19,15 +21,54 @@ lil_w <- lil |> tidyr::pivot_longer(-Subject,
                                     values_to = 'emg')
 ```
 
-## Accuracy vs. Precision
+## Genauigkeit versus Präzision
+
+Die ersten beiden wichtigen Eigenschaften eines Messinstruments sind die Genauigkeit und die Präzision. Beide sind Eigenschaften sind zentrale zur Beurteilung der Qualität eines Messinstruments. **Genauigkeit** beschreibt, wie nahe eine Messung am tatsächlichen oder wahren Wert liegt. Ein Messinstrument mit hoher Genauigkeit liefert Werte, die nur eine geringe Abweichung vom *realen Wert* aufweisen. **Präzision** hingegen bezieht sich auf die Wiederholbarkeit von Messungen: Ein präzises Instrument liefert bei mehrfacher Messung ähnliche oder identische Werte, unabhängig davon, ob diese dem wahren Wert nahekommen. Ein Messinstrument kann also präzise, aber ungenau sein, wenn die Werte zwar eng beieinanderliegen, jedoch systematisch vom tatsächlichen Wert abweichen. Idealerweise sollte ein Messinstrument sowohl genau als auch präzise sein, um verlässliche Ergebnisse zu liefern.
+
+In @fig-ed-rel-precision sind Präzision und Genauigkeit anhang einer Zielscheibe noch einmal verdeutlicht.
 
 ```{r}
-#| fig-cap: "Genauigkeit vs. Präzision"
+#| fig-cap: "Genauigkeit versus Präzision"
+#| label: fig-ed-rel-precision
 
-knitr::include_graphics('pics/accuracy_precision.png')
+plot_precision_accuracy <- function() {
+  bull <- function(x=0,y=0,r=1,n=100,n_rings=3) {
+    theta <- seq(0, 2*pi, length.out=n)
+    tibble(
+      x = x + sin(theta) * rep(seq(1, r/(n_rings+1), length.out=3), each=n),
+      y = y + cos(theta) * rep(seq(1, r/(n_rings+1), length.out=3), each=n),
+      g = rep(1:n_rings, each=n)
+    )
+  }
+  pts <- function(x=0,y=0,s=0.1,n=10) {
+    tibble(
+      x = rnorm(n,x,s),
+      y = rnorm(n,y,s)
+    )
+  }
+  set.seed(1)
+  ggplot() +
+    geom_path(data = bull(), aes(x,y,group=g)) +
+    geom_path(data = bull(0,3), aes(x,y,group=g)) +
+    geom_path(data = bull(3,0), aes(x,y,group=g)) +
+    geom_path(data = bull(3,3), aes(x,y,group=g)) +
+    geom_point(data = pts(0,3), aes(x,y), size=2, color='red') +
+    geom_point(data = pts(3.5,3.5), aes(x,y), size=2, color='red') +
+    geom_point(data = pts(0,0,.3), aes(x,y), size=2, color='red') +
+    geom_point(data = pts(3.5,0.5,.3), aes(x,y), size=2, color='red') +
+    geom_text(data = tibble(x = c(-1,-1,2,2),y = c(4,1,4,1)+0.3,
+                             label=c('genau und präzise','genau und unpräzise',
+                                     'ungenau und präzise','ungenau und unpräzise')), 
+              aes(x,y,label=label), hjust='left') +
+    coord_equal(xlim=c(-1,5)) +
+    theme_void()
+}
+plot_precision_accuracy()
 ```
 
-## Woher Reliabilität?
+Bevor eine Messung durchgeführt werden soll, ist es daher notwendig über die Genauigkeit und die Präzision eines Messgeräts Bescheid zu wissen. In manchen Fällen kann beispielsweise eine geringere Genauigkeit eines Messgeräts weniger problematisch sein als eine geringere Präzision. Wenn zum Beispiel nur Unterschiede gemessen werden sollen, dass ist möglicherweise die absolute Genauigkeit weniger von Bedeutung da die Abweichungen vom *realen* Wert durch den Vergleich subtrahiert werden. Zum Beispiel wird eine Waage verwendet anhand derer die Veränderungen im Gewicht an Untersuchungspersonen über die Zeit verglichen werden sollen. Die Waage ist aber nicht korrekt geeicht und zeigt immer $2$ Kg zu viel an. Dadurch ist natürlich der absolute, angezeigte Wert verfälscht. Werden aber die beobachteten Gewichte voneinander abgezogen, dann ist der Unterschied zwischen den Messzeitpunkten dennoch korrekt. Die Annahme ist dabei allerdings, dass sich die Genauigkeit über den Beobachtungszeitung nicht verändert. Diese Eigenschaft kann mit Hilfe der Reliabilität untersucht werden.
+
+## Reliabilität?
 
 In @tbl-ed-rel-emg sind EMG-Daten aus @lijequist2019 abgetragen.
 
