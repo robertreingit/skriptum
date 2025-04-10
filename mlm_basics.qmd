@@ -13,7 +13,7 @@ lm_coef_ex <- function(mod, max_co=3) round(summary(mod)$coefficients[,1:max_co]
 ncol_theme <- theme(text = element_text(size=24))
 ```
 
-In vielen Fällen in der Praxis liegt selten der einfache Fall vor, dass eine abhängige Variable mittels nur einer einzigen Prädiktorvariablen erklärt bzw. vorhergesagt werden soll. Sondern meisten sind mehrere Prädiktorvariablen an dem Prozess beteiligt der modelliert werden soll. Ein Beispiel aus der Literatur ist eine Untersuchung von @debanne2011 über den Zusammenhang zwischen der Wurfgeschwindigkeit in Abhängigkeit vom Körpergewicht und der Armspannweite im Handball. In @tbl-debanne-2011 ist ein Ausschnitt aus dem Datensatz abgebildet.
+In den meisten Fällen in der Praxis liegt selten der einfache Fall vor, dass eine abhängige Variable mittels nur einer einzigen Prädiktorvariablen erklärt bzw. vorhergesagt werden soll. In den meisten Fällen liegt das Interesse darin den Zusammenhang mehrerer Prädiktorvariablen auf die abhängige Varible zu zu modellieren. Ein Beispiel aus der Literatur ist eine Untersuchung von @debanne2011 über den Zusammenhang zwischen der Wurfgeschwindigkeit in Abhängigkeit vom Körpergewicht und der Armspannweite im Handball. In @tbl-debanne-2011 ist ein Ausschnitt aus dem Datensatz abgebildet.
 
 ```{r}
 #| label: tbl-debanne-2011
@@ -30,7 +30,7 @@ handball_short |>
         )
 ```
 
-Im Prinzip könnte der isolierte Einfluss der beiden Prädiktorvariablen Körpermasse und Armspannweite auf die abhängige Variable die Wurfgeschwindigkeit einzeln untersucht werden. Allerdings ist oft von größerem Interesse zu untersuchen, wie sich die beiden Variablen zusammen verhalten und ob durch die Kombination der beiden Variablen ein besseres Modell erstellt werden kann. Aus dieser Problemstellung heraus ergibt sich die Notwendigkeit von der einfachen linearen Regression auf eine multiple multiple lineare Regression überzugehen. Formal geschieht dies einfach dadurch, dass die Formel der einfachen Regression mit dem Prädiktor $X$ um eine zweite oder mehr Variablen erweitert wird. Dementsprechend wird aus:
+Im Prinzip ändert sich an der Art der Daten nichts gegenüber der einfachen Regression. Die Daten beinhalten lediglich nun eine weitere Spalten mit einer weiteren Prädiktorvariablen. Im Prinzip könnte der isolierte Einfluss der beiden Prädiktorvariablen Körpermasse und Armspannweite auf die abhängige Variable Wurfgeschwindigkeit einzeln untersucht werden. Allerdings ist oft von größerem Interesse zu untersuchen, wie sich der gemeinsame Einfluss der beiden Variablen zusammen verhält und ob durch die Kombination der beiden Variablen ein *besseres* Modell erstellt werden kann. Aus dieser Problemstellung heraus ergibt sich die Notwendigkeit von der einfachen linearen Regression zur **multiple lineare Regression** überzugehen. Formal geschieht dies einfach dadurch, dass die Formel der einfachen Regression mit dem Prädiktor $X$ um eine weitere oder eben mehrere Variablen erweitert wird. Dementsprechend wird aus:
 
 \begin{equation}
 y_i = \beta_0 + \beta_1 x_i + \epsilon_i
@@ -42,7 +42,7 @@ die Formel für die multiple Regression mit:
 y_i = \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \dots + \beta_K x_{Ki} + \epsilon_i
 \end{equation}
 
-Da bei der einfachen Regression nur eine einzige $X$-Variable in der Formel vorhanden war, ist kein Index notwendig gewesen. Bei der multiplen Regression mit mehreren Prädiktorvariablen $X$ wird jeder $X$ Variable ein zusätzlicher Index $j$ angehängt um die Variablen eindeutig identifizieren zu können. Per Konvention, wobei diese leider nicht global eingehalten wird, wird die Anzahl der Prädiktorvaiablen mit $K$ bezeichnet (oft auch $p$). Der y-Achsenabschnitt erhält wieder den Index $j=0$ und die weiteren Steigungskoeffzienten $\beta_1$ bis $\beta_K$ erhalten den Prädiktorvariablen $X_j$ folgend den entsprechenden Index.
+Da bei der einfachen Regression nur eine einzige $X$-Variable in der Formel vorhanden war, ist kein Index $j$ notwendig gewesen um die $X$-Variablen voneinander zu unterscheiden. Bei der multiplen Regression mit mehreren Prädiktorvariablen $X$ wird jeder $X$ Variable ein zusätzlicher Index $j$ angehängt um die Variablen eindeutig identifizieren zu können. Per Konvention, wobei diese leider nicht global eingehalten wird, wird die **Anzahl der Prädiktorvaiablen** mit $K$ bezeichnet (oft auch $p$). Der $y$-Achsenabschnitt erhält wieder den Index $j=0$ und die weiteren Steigungskoeffzienten $\beta_1$ bis $\beta_K$ erhalten den Prädiktorvariablen $X_j$ folgend den entsprechenden Index.
 
 In welcher Reihenfolge die Prädiktorvariablen mit $j=1, j=2, \ldots, j=K$ verteilt werden hat zunächst keine Auswirkung auf das Modell und regelt lediglich die Bezeichnung. In unserem konkreten Fall der Handballwurfdaten wäre zum Beispiel eine mögliche Zuordnung, das $X_1$ die Körpermasse und $X_2$ die Armspannweite kodiert.
 
@@ -57,7 +57,7 @@ handball_short |>
   )
 ```
 
-Rein formal haben wir jetzt schon den Übergang zur multiple Regression vollzogen. Die Frage die sich natürlich direkt anschließt bezieht sich nun auf die Bedeutung der Koeffizienten $\beta_1, \ldots, \beta_k$ und wie sich die weiteren Konzepte die wir vorher bei der einfachen Regression kennengelernt haben auf die multiple Regression übertragen.
+Rein formal hat sich nun der Übergang zur multiple Regression bereits vollzogen. Die Frage die sich nun direkt anschließt bezieht sich auf die Bedeutung der Koeffizienten $\beta_1, \ldots, \beta_k$. Sind diese ebenfalls als Steigungen einer Geraden zu interpretieren? Ebenso, wie lassen sich die anderen Konzepte die bereits im Rahmen der einfachen Regression behandelt wurden haben auf die multiple Regression übertragen? Zunächst aber noch ein Beispiel.
 
 ::: {#exm-rowing-example-01}
 In @riechman2002 wurde ein Modell erstellt um die Leistung beim 2000m Indoor-Rudern von 12 Wettkampfruderinnen anhand eines 30-Sekunden-Ruder-Sprints, der maximalen Sauerstoffaufnahme und der Ermüdung vorherzusagen. Die Autoren bestimmten das folgende Modell:
@@ -92,8 +92,7 @@ p_res <- ggplot(simple, aes(x,y,label = epsilon)) +
 print(p_res)
 ```
 
-Bei der einfachen Regression haben wir mittels der Methode der kleinsten Quadrate eine Regressiongerade durch die Punktwolke der Daten gelegt. Dabei haben wir die Regressionsgerade so gewählt, dass die senkrechten Abstände der beobachteten Punkte von der Regressionsgerade minimiert werden bzw. die Abstände zwischen denen auf der Gerade liegenden, vorhergesagten Werte $\hat{y}_i$ und den beobachteten Wert $Y_i$ (Residuen). 
-Wenn wir nun den Übergang von einer Prädiktorvariablen zum nächstkomplizierteren Fall nehmen mit zwei Prädiktorvariablen $X_1$ und $X_2$, dann wäre eine mögliche Darstellungsform der Daten eine Punktwolke im dreidimensionalen Raum (siehe @fig-mlm-basics-scatter-1). 
+Bei der einfachen Regression wurde mittels der Methode der kleinsten Quadrate eine Regressionsgerade durch die Punktwolke der Daten gelegt. Dabei wurde die Regressionsgerade so gewählt, dass die senkrechten Abstände der beobachteten Punkte von der Regressionsgerade minimiert werden bzw. die Abstände zwischen denen auf der Gerade liegenden, vorhergesagten Werte $\hat{y}_i$ und den beobachteten Wert $Y_i$ (Residuen). Wird nun der Übergang von einer Prädiktorvariablen zum nächstkomplizierteren Fall mit zwei Prädiktorvariablen $X_1$ und $X_2$ durchgeführt, dann ist eine mögliche Darstellungsform der Daten eine Punktwolke im dreidimensionalen Raum (siehe @fig-mlm-basics-scatter-1). 
 
 ```{r}
 #| label: fig-mlm-basics-scatter
@@ -137,22 +136,20 @@ scatter3D(x, y, z, col='black', pch=16, cex=1.2,
     colkey=F, d = 4)
 ```
 
-Da jetzt eine einzelne Gerade nicht mehr in der Lage ist die Daten zu fitten, ist die nächste Möglichkeit eine Ebene in die Punktwolke zu legen (siehe @fig-mlm-basics-scatter-2). Dies ermöglicht dann genau die gleiche Herangehensweise wie bei der einfachen linearen Regression anzuwenden. Als Zielgröße wird aus den möglichen Ebenen diejenigen gesucht deren vorhergesagten, auf der Ebene liegenden, Punkte $\hat{y}_i$ die geringsten, senkrechten Abstand zu den beobachteten Punkten $y_i$ haben (wieder Residuen). Anders, wir suchen diejenigen Ebene durch die Punktwolke deren Summe der quadrierten Residuen $e_i = y_i - \hat{y}_i$ minimal ist.
+Da jetzt eine einzelne Gerade nicht mehr ausreichend ist um die Daten zu fitten, wird nun eine **Ebene** durch die Punktwolke gelegt (siehe @fig-mlm-basics-scatter-2). Dieser Ansatz ermöglicht nun die gleiche Herangehensweise wie bei der einfachen linearen Regression anzuwenden. Als Zielgröße wird aus den möglichen Ebenen diejenigen Ebene gesucht, deren vorhergesagte, in der Ebene liegende, Punkte $\hat{y}_i$ die geringsten, senkrechten Abstand zu den tatsächlich beobachteten Punkten $y_i$ haben (wieder Residuen). Anders ausgedrückt, es wird diejenigen Ebene durch die Punktwolke gesucht deren Summe der quadrierten Residuen $e_i = y_i - \hat{y}_i$ minimal ist. Die Definition der Residuen ist dabei genau gleich derjenigen bei der einfachen linearen Regression.
 
-Diese Herangehensweise hat den Vorteil, dass sie zum einem die einfache lineare Regression  als Spezialfall mit $K=1$ beinhaltet und sich beliebig erweitern lässt mit der Einschränkung, dass bei $K>2$ die dreidimensionale Darstellung mittels einer Grafik nicht mehr möglich ist da nicht ausreichend Dimensionen dargestellt werden können. Das Prinzip der Minimierung der Abweichungen von $\hat{y}_i$ zu $y$ von einer Ebene bleibt aber weiter erhalten. D.h. alle Einsichten die wir im Rahmen der einfachen linearen Regression gelernt haben, lassen sich direkt übertragen.
+Diese Herangehensweise hat den Vorteil, dass sie zum einem die einfache lineare Regression  als Spezialfall mit $K=1$ beinhaltet und sich beliebig erweitern lässt. Lediglich mit der Einschränkung, dass bei $K>2$ die dreidimensionale Darstellung mittels einer Grafik nicht mehr möglich ist da nicht ausreichend Dimensionen dargestellt werden können. Das Prinzip der Minimierung der Abweichungen von $\hat{y}_i$ zu $y$ von einer Ebene bleibt aber weiter erhalten. D.h. alle Konzepte die im Rahmen der einfachen linearen Regression erarbeitet wurden, lassen sich direkt auf die multiple lineare Regression übertragen.
 
 Zusammenfassend: 
 
 - Die Berechnungen beim Übergang von der einfachen zur multiplen Regression bleiben alle gleich
-- Abweichungen $\hat{\epsilon_i}$ sind jetzt nicht mehr Abweichungen von einer Gerade sondern von einer $K$-dimensionalen Hyperebene. Die Eigenschaften der Residuen bleiben aber alle erhalten. 
-- Die Modellannahmen bleiben gleich: Unabhängige $y_i$ und $\epsilon_i \sim \mathcal{N}(0,\sigma^2)$ iid 
-- Inferenz für die Koeffizienten mittels $t_k = \frac{\hat{\beta}_k}{s_k} \sim t(N-K-1)$ bleiben erhalten und übertragen sich auf die Konfidenzintervall 
-- Konzepte für die Vorhersage bleiben erhalten
+- Die Abweichungen, die Residuen $\hat{\epsilon_i}$ sind nun nicht mehr Abweichungen von einer Gerade sondern von einer $K$-dimensionalen Hyperebene. Die grundlegenden Eigenschaften der Residuen bleiben alle erhalten. 
+- Die Modellannahmen bleiben alle gleich: Unabhängige $y_i$ und $\epsilon_i \sim \mathcal{N}(0,\sigma^2)$ iid 
+- Inferenz für die Koeffizienten mittels $t_k = \frac{\hat{\beta}_k}{s_k} \sim t(N-K-1)$ bleiben erhalten und übertragen sich auf die Konfidenzintervalle 
+- Alle Konzepte für die Vorhersage bleiben erhalten
 - Modelldiagnosetools bleiben ebenfalls alle erhalten
 
-Als nächster Schritt versuchen wir nun die Interpretation der Koeffizienten  im multiplen Regressionsmodell besser zu verstehen.
-
-Fangen wir mit einem einfachen Beispiel an. Wir gehen von einem DGP mit den folgenden Modellwerten aus.
+Als nächster Schritt soll nun die Interpretation der Modellkoeffizienten  im multiplen Regressionsmodell näher betrachtet werden. Dazu wird zunächst ein einfaches synthetisches Beispiel betrachtet, dass dem folgenden DGP zugrunde hat.
 
 \begin{align*}
 y_i &= \beta_0 + \beta_1 \cdot x_{1i} + \beta_2 \cdot x_{2i} + \epsilon_i \\
@@ -160,7 +157,7 @@ y_i &= \beta_0 + \beta_1 \cdot x_{1i} + \beta_2 \cdot x_{2i} + \epsilon_i \\
 \epsilon_i &\sim N(0,\sigma = 0.5)
 \end{align*}
 
-Übersetzt in `R` code bedeutet dies, wenn wir $x_1$ und $x_2$ als Gleichverteilt aus $U(-2,2)$ ansehen.
+Übersetzt in `R` code bedeutet dies, unter der Annahme, dass $x_1$ und $x_2$ jeweils einer Gleichverteilung mit $U(-2,2)$ folgen. Die Annahme welcher Verteilung die beiden $X$-Variablen folgen, ist nicht wirklich Missionskritisch, dient die Wahl doch lediglich der einfachen Generierung von Werten. 
 
 ```{r}
 #| echo: true
@@ -177,7 +174,7 @@ df <- tibble(
   y = beta_0 + beta_1*x1 + beta_2*x2 + rnorm(N, 0, sigma)) # DGP
 ```
 
-Wenn wir die Prädiktorvariblen $x_1$ und $x_2$ gegen $y$ jeweils in einem Streudiagramm abtragen erhalten wir die folgenden Abbildungen (siehe @fig-mlm-basics-example-01).
+Die *Hauptlogik* in dem Codeschnipsel ist die Anweisung `y = beta_0 + beta_1*x1 + beta_2*x2 + rnorm(N, 0, sigma))` hier werden basierend auf den Modellparametern `beta_0`, `beta_1`, `beta_2` und `sigma` zufällige $Y$-Wert erzeugt. Wenn die Prädiktorvariablen $x_1$ und $x_2$ gegen $y$ jeweils in einem Streudiagramm abtragen werden, werden die folgenden Abbildungen erhalten (siehe @fig-mlm-basics-example-01).
 
 ```{r}
 #| label: fig-mlm-basics-example-01
@@ -192,7 +189,7 @@ ggplot(df, aes(x1,y)) + geom_point(size=3) + ncol_theme
 ggplot(df, aes(x2,y)) + geom_point(size=3) + ncol_theme
 ```
 
-Der Zusammenhang zwischen $x_1$ und $y$ ist ziemlich klar (siehe @fig-mlm-basics-example-01-1), während das Streudiagramm für $x_2$ gegen $y$ nicht ganz so eindeutig ist (siehe @fig-mlm-basics-example-01-2). Fitten wir das Modell mittels `lm()` in `R`. Die beiden Variablen gehen dem DGP folgend additiv in das Modell ein. Daher benutzen wir in der Modellformulierung für `lm()` `y ~ x1 + x2` (Tip: Im Kapitel zur einfachen Regression ist ein kurzer Primer zur Modellformulierung).
+Der Zusammenhang zwischen $x_1$ und $y$ ist ziemlich deutlich in der Abbildung zu sehen (siehe @fig-mlm-basics-example-01-1). Dagegen ist der Zusammenhang im Streudiagramm für $x_2$ gegen $y$ nicht ganz so eindeutig (siehe @fig-mlm-basics-example-01-2). Dies ist eine Folge der (willkürlichen) Wahl der beiden Modellkoeffizienten $\beta_1 = 3$ und $\beta_2 = 0.7$ im Zusammenhang mit einer Varianz von $\sigma^2 = 0.5^2$. Nun wird ein Modell mittels der `lm()`-Funktion in `R` an die Daten angepasst. Die beiden Variablen $x_1$ und $x_2$ gehen dem DGP folgend **additiv** in das Modell ein. Dies für zu der folgenden Modellformulierung für `lm()` `y ~ x1 + x2` (Tip: Im Kapitel zur einfachen Regression ist ein kurzer Primer zur Modellformulierung).
 
 ```{r}
 #| echo: true
@@ -200,7 +197,7 @@ Der Zusammenhang zwischen $x_1$ und $y$ ist ziemlich klar (siehe @fig-mlm-basics
 mod <- lm(y ~ x1 + x2, df)
 ```
 
-Wenn wir uns das gefittete Modell in `summary()` anschauen erhalten die folgenden Modellkoeffizienten $\beta_0, \beta_1$ und $\beta_2$.
+Das gefittete Modell kann nun wie üblich mittels `summary()` inspiziert werden. Insbesondere können hier, wie üblich, die berechneten Modellkoeffizienten $\beta_0, \beta_1$ und $\beta_2$ betrachtet werden. Der Übersicht halber sind in der folgenden Tabelle (siehe @tbl-mlm-basics-example-01) nur die Modellparameter und deren Standardfehler angezeigt.
 
 ```{r}
 #| label: tbl-mlm-basics-example-01
@@ -209,11 +206,19 @@ Wenn wir uns das gefittete Modell in `summary()` anschauen erhalten die folgende
 lm_tbl_knitr(mod, long=F, add_sigma=T)
 ```
 
-In @tbl-mlm-basics-example-01 sehen wir, dass wir die Koeffizienten des DGP wieder sehr gut wiederherstellen können. Das sollte uns erst mal etwas beruhigen, da es zeigt, dass wir mit unserer multiplen Regression eigentlich ganz gut arbeiten können und das Modell in der Lage ist die *wahren* Modellparameter im Rahmen der Stichprobenunsicherheit abschätzen zu können.
+In @tbl-mlm-basics-example-01 ist zu sehen, dass die anhand der Daten berechneten Koeffizienten diejenigen des DGP sehr gut reproduziert haben. Die Wert sind nicht perfekt diejenigen diejenigen die im DGP verwendet wurden, dies ist aber auf Grund der Stichprobenvariabilität nicht zu erwarten. Insgesamt sollte dieses Ergebnis jedoch beruhigend wirken, da es zeigt, dass die multiple Regression in der Lage ist die *wahren* Modellparameter im Rahmen der Stichprobenunsicherheit abschätzen zu können. Die einzige Neuerung im Gegensatz zur einfachen linearen Regression ist die Erweiterung um einer weitere Variablen $X_2$ und operativ die Erweiterung in `R` um den Term ` + x2` in der Formel für `lm()`.
 
 Die Interpretation von $\beta_1$ ist gleich derjenigen bei der einfachen linearen Regression allerdings mit einer kleinen Erweiterung. Zwei Objekte die sich in $x_1$ um eine Einheit voneinander unterscheiden und den gleichen Wert in $x_2$ haben, unterscheiden sich in der abhängigen Variablen $y$ um den Steigungskoeffizienten $\beta_1$. Die gleiche Interpretation mit den Rollen vertauscht trifft ebenfalls auf $\beta_2$ zu. Zwei Objekte die sich in $x_2$ um eine Einheit unterscheiden und den gleichen Wert für $x_1$ haben unterscheiden sich in $y$ um $\beta_2$.
 
-Schauen wir uns nun an, wie die Koeffizienten zustanderkommen. Dazu machen wir erst einmal einen kleinen Umweg. Wir erstellen uns eine neue Prädiktorvariable $x_1^*$. Wir erhalten $x_1^*$ indem wir eine Regression von $x_1$ auf $x_2$ berechnen. Also das Modell: 
+Im nächsten Schritt soll nun betrachtet werden, wie die Koeffizienten zustandekommen und wie die Koeffizienten zu interpretieren sind.
+
+## Interpretation der Modellkoeffizienten
+
+Die Interpretation von $\beta_0$ ist vollkommen identisch mit derjenigen bei der einfachen linearen Regression. Bei der einfachen linearen Regression bedeutete der Koeffizient $\beta_0$ derjenige Wert, den das Modell annimmt, der vorhergesagte Wert $\hat{Y}$, wenn die Prädiktorvariable $X$ den Wert $0$ annimmt. Graphisch ist dies der $y$-Achsenabschnitt. Bei der multiplen Regression bleibt diese Interpretation erhalten und $\beta_0$ ist nun der Wert $\hat{Y}$ wenn **alle** Prädiktorvariablen den Wert $0$ annehmen. Graphisch ist dies der Schnittpunkt der Modellebene mit der $y$-Achse, also ebenfalls der $y$-Achsenabschnitt (siehe @fig-mlm-basics-scatter-2).
+
+Die Interpretation der Modellkoeffizienten $\beta_1, \beta_2, \ldots, \beta_K$ bleibt zunächst auch gleich derjenigen aus der einfachen Regression. Der Koeffizient $\beta_j, (j\neq0)$ gibt den Unterschied zwischen zwei Objekten an die sich um eine Einheit bezüglich der Variablen $X_j$ unterscheiden. Was dabei aber etwas unklar bleibt, ist wie sich die Werte der anderen Prädiktorvariablen verhalten und welchen Einfluss diese auf diese Aussage haben?
+
+Um diesen Zusammenhang besser zu verstehen ist zunächst eine kleine Detour notwendig. Wir erstellen uns eine neue Prädiktorvariable $x_1^*$. Wir erhalten $x_1^*$ indem wir eine Regression von $x_1$ auf $x_2$ berechnen. Also das Modell: 
 
 \begin{equation*}
 x_{1i} = \beta_0 + \beta_1 x_{2i} + \epsilon_i
@@ -279,7 +284,7 @@ Bezogen auf die Werte der Steigungskoeffzienten $\beta_i$ ist die Bedeutung imme
 
 Die Eigenschaft, dass die anderen Variablen $x_j$ konstant gehalten werden ist dabei auch das Problem wenn wir ein einfaches Streudiagramm $y_i$ gegen $x_i$ bei einer multiplen linearen Regression wie in @fig-mlm-basics-example-01 erstellen. In @fig-mlm-basics-example-01-1 können wir den Einfluss von $x_1$ sehr gut identifizieren, da der Steigungskoeffizient $\beta_1$ im Verhältnis zu $\sigma$ recht groß ist. Im Falle von @fig-mlm-basics-example-01-2 ist dies nicht der Fall. Ein Möglichkeit trotzdem mit Hilfe von einfachen Streudiagrammen den isolierten Zusammenhang der Prädiktorvariablen $x_i$ auf die abhängige $y_i$ zu untersuchen bieten added-variable plots.
 
-## Added-variable plots
+### Added-variable plots
 
 Die Idee hinter added-variable plots basiert auf unserem Trick von eben mit den Residuen $e_i$. Neben der Bereinigung von $x_2$ aus $x_1$, die wir eben schon kennengelernt haben, rechnen wir zusätzlich auch noch den Einfluss von $x_2$ aus $y$ raus. Die beiden resultierenden Variablen stellen wir dann in einem Streudiagramm dar. In `R` können wir einen solchen Plot mittels des folgenden Ansatzes erstellen (siehe @fig-mlm-basics-avplot-01).
 
@@ -309,7 +314,7 @@ Wenn eine multiple Regression mit mehr als zwei Prädiktorvariablen gerechnet wi
 
 Da ein Steigungskoeffizientt $\beta_i$ immer den Beitrag der Information von $X_i$ über denjenigen der anderen Prädiktorvariablen bestimmt, stellt sich die Frage was passiert wenn im Modell eine oder mehrere Prädiktorvariablen weggelassen werden. 
 
-## Was passiert wenn eine Prädiktorvariable weggelassen wird?
+### Was passiert wenn eine Prädiktorvariable weggelassen wird?
 
 In @tbl-mlm-basics-modelfit-01 sind noch mal die Koeffizienten aus dem Beispiel abgebildet.
 
@@ -347,7 +352,7 @@ round(cor(df),3)
 
 D.h. $X_1$ und $X_2$ korrelieren praktisch überhaupt nicht miteinander (Warum ist die Korrelation $r_{x_1x_2}$ nicht exakt $=0$). D.h. $X_1$ enthält keine Informationen über $X_2$ und dementsprechend sollte die beiden Beiträge zum Modell unabhängig voneinander sein.
 
-## Was passiert wenn Prädiktoren stark miteinander korrelieren?
+### Was passiert wenn Prädiktoren stark miteinander korrelieren?
 
 Schauen wir uns nun einen neuen Datensatz an [Beispiel aus @kutner2005]. Im Rahmen einer Untersuchung sind Körperfettmessungen durchgeführt an $20$ Personen durchgeführt worden. Neben einer Gesamtkörpermessung wurde auch der Körperfettanteil am Oberarm, Unterarm und am Oberschenkel bestimmt. In @tbl-mlm-basics-bodyfat-01 ist ein Ausschnitt der Daten angebildet.
 
