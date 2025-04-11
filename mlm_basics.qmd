@@ -218,40 +218,58 @@ Die Interpretation von $\beta_0$ ist vollkommen identisch mit derjenigen bei der
 
 Die Interpretation der Modellkoeffizienten $\beta_1, \beta_2, \ldots, \beta_K$ bleibt zunächst auch gleich derjenigen aus der einfachen Regression. Der Koeffizient $\beta_j, (j\neq0)$ gibt den Unterschied zwischen zwei Objekten an die sich um eine Einheit bezüglich der Variablen $X_j$ unterscheiden. Was dabei aber etwas unklar bleibt, ist wie sich die Werte der anderen Prädiktorvariablen verhalten und welchen Einfluss diese auf diese Aussage haben?
 
-Um diesen Zusammenhang besser zu verstehen ist zunächst eine kleine Detour notwendig. Wir erstellen uns eine neue Prädiktorvariable $x_1^*$. Wir erhalten $x_1^*$ indem wir eine Regression von $x_1$ auf $x_2$ berechnen. Also das Modell: 
+Um diesen Zusammenhang besser zu verstehen ist zunächst eine kleine Detour notwendig. Zunächst wird eine einfache lineare Regression der beiden Prädiktorvariablen berechnet. Die Variable $X_1$ wird durch $X_2$ modelliert. D.h. es wird der Teil der Varianz von $X_1$ der durch einen linearen Zusammenhang mit $X_2$ erklärt werden. Dies führt zu folgendem Modell:
 
 \begin{equation*}
 x_{1i} = \beta_0 + \beta_1 x_{2i} + \epsilon_i
 \end{equation*}
 
-D.h. wir versuchen $x_1$ mittels $x_2$ vorherzusagen. Wir stellen uns die Frage wenn wir $x_2$ kennen, wie viel Information gibt uns dies über $x_2$. Wenn ein perfekter linearer Zusammenhang zwischen $x_1$ und $x_2$ besteht dann wäre die Information von $x_2$ über $x_1$ ebenfalls perfekt. Wenn ich weiß welchen Wert $x_2$ hat, dann weiß ich auch welchen Wert $x_1$ hat. Entsprechend umso schwächer der lineare Zusammenhang zwischen $x_1$ und $x_2$ ist, umso weniger Information besitzt $x_1$ über $x_2$.
+Anhand dieses Modells kann nun die Frage gestellt werden: Wenn $X_2$ bekannt ist, wie viel Information wird dadurch über $X_1$ erhalten werden? In dem Fall, dass ein perfekter linearer Zusammenhang zwischen $X_1$ und $X_2$ besteht dann wäre die Information von $X_2$ über $X_1$ ebenfalls perfekt. Für einen gegeben Wert von $X_2$ hat, könnte der entsprechende Wert für $X_1$ berechnet werden. Entsprechend umso schwächer der lineare Zusammenhang zwischen $X_1$ und $X_2$ ist, umso weniger Information besitzt $X_2$ über $X_1$.
 
-Gehen wir jetzt noch einen Schritt weiter uns nehmen aus dem Regressionmodell von $x_1$ gegen $x_2$ die Residuen $e_i$. Können wir diese auch im Rahmen der Information von $x_2$ über $x_1$ interpretieren. Nun, die Residuen $e_i$ beziffern genau denjenigen Teil der Varianz von $x_1$ den wir nicht mit Hilfe des Regressionsmodells von $x_1$ gegen $x_2$ aufklären können. D.h. die Residuen $e_i$ in diesem Modell sind die Varianz von $x_1$ um den Anteil von $x_2$ bereinigt.
+Nun können aber mit Hilfe des Regressionsmodell von $X_1$ gegen $X_2$ die Residuen $e_i$ berechnet werden. Aus Sicht der Information von $X_2$ über $X_1$, können diese interpretieren werden. Die Residuen $e_i$ beziffern genau denjenigen Teil der Varianz von $X_1$ der nicht mit Hilfe des Regressionsmodells von $X_1$ gegen $X_2$ erklärt werden kann. D.h. die Residuen $e_i$ repräsentieren aus dieser Sichtweise die Varianz von $X_1$ die um denjenigen Anteil von $X_2$ bereinigt wurde. Die Residuen $e_i$ bleiben sozusagen übrig wenn die Information von $X_2$ aus $X_1$ herausgenommen wird.
 
 \begin{equation}
 e_i = x_{1i} - \beta_0 - \beta_1 x_{2i}
 \label{eq-mlm-basics-coef-01}
 \end{equation}
 
-Nochmal, die Residuen $e_i$ stellen denjenigen Teil der Varianz von $x_1$ dar, der sich nicht durch $x_2$ vorhersagen lässt. Eben derjenige Teil der Varianz von $x_1$ der um den Teil von $x_2$ *bereinigt* wurde. Die Residuen $e_i$ aus Formel \eqref{eq-mlm-basics-coef-01} verwenden wir nun als neue Prädiktorvariablen $x_1^*$.
+Nochmal, die Residuen $e_i$ stellen denjenigen Teil der Varianz von $X_1$ dar, der sich nicht durch $X_2$ vorhersagen lässt. Eben derjenige Teil der Varianz von $X_1$ der um den Teil von $X_2$ *bereinigt* wurde. Die Residuen $e_i$ aus Formel \eqref{eq-mlm-basics-coef-01} werden nun als eine neue Prädiktorvariablen $x_{1i}^*$ verwendet. Formal:
 
-Im nächsten Schritt verwenden wir $x_1^*$ um eine einfache lineare Regression von $y$ gegen $x_1^*$ durchzuführen. 
+\begin{equation*}
+x_{1i^*} = e_i
+\end{equation*}
+
+Im nächsten Schritt wird nun diese *neue* Prädiktorvariable $x_1^*$ verwendet um eine einfache lineare Regression von $Y$ gegen $x_1^*$ durchzuführen. 
 
 \begin{equation*}
 y_i = \beta_0 + \beta_1 x_{1i}^* 
 \end{equation*}
 
-In `R` entsprechend:
+In `R` können diese Schritte entsprechend mit `lm()` durchgeführt werden. Zunächst die Regression von $X_1$ gegen $X_2$:
+
+```{r}
+#| echo: true
+
+mod_x1_star<- lm(x1 ~ x2, df)
+```
+
+Das Modell `mod_x1_star` beinhalt das Modell von $X_1$ gegen $X_2$. Im nächsten Schritt nun die Berechnung der Residuen $e_i$.
+
+```{r}
+#| echo: true
+
+x1_star <- resid(mod_x1_star)
+```
+
+Diese sind jetzt einer neuen Variable `x1_star` zugewiesen worden. Diese Variable wird nun verwendet um eine Regression gegen $Y$ zu rechnen.
 
 ```{r}
 #| echo: true
  
-mod_x1_star<- lm(x1 ~ x2, df)
-x1_star <- resid(mod_x1_star)
 mod_y_x1_star <- lm(y ~ x1_star, df)
 ```
 
-Schauen wir uns nun die Koeffizienten an (siehe @tbl-mlm-basics-example-02)
+Das Modell ist nun `mod_y_x1_star` zugewiesen. Bei Betrachtung der Modellkoeffizienten werden die folgenden Wert erhalten (siehe @tbl-mlm-basics-example-02):
 
 ```{r}
 #| label: tbl-mlm-basics-example-02
@@ -260,9 +278,9 @@ Schauen wir uns nun die Koeffizienten an (siehe @tbl-mlm-basics-example-02)
 lm_tbl_knitr(mod_y_x1_star, long = F)
 ```
 
-Der Steigungskoeffizient $\beta_1$ ist genau derjenige aus dem Modell mit beiden Variablen (siehe @tbl-mlm-basics-example-01).
+Der Steigungskoeffizient $\beta_1$ hat genau den gleichen Wert wie in dem Modell aus der multiplen linear Regression mit beiden Variablen (siehe @tbl-mlm-basics-example-01).
 
-Wenig überraschend, wenn wir das gleiche Verfahren auf $x_2$ anwenden. 
+Der Ansatz funktioniert genau gleich wenn anstatt $x_{1i}^*$ wenn $x_{2i}^*$ Berechnet wird indem eine einfache linear Regression von $X_2$ gegen $X_1$ berechnet wird und deren Residuen verwendet werden um $Y$ zu modellieren. 
 
 ```{r}
 #| echo: true
@@ -273,16 +291,18 @@ mod_y_x2_star <- lm(y ~ x2_star, df)
 coef(mod_y_x2_star)[2]
 ```
 
-Erhalten wir den Steigungskoeffizienten für $\beta_2$ aus dem Modell mit beiden Variablen. Das gleiche Prinzip generalisiert auch für mehr als zwei Variablen, nur das wir hier dann nicht mehr die Regression der Variable $x_i$ gegen eine andere $x_j$ Variable berechnen sondern $x_i$ gegen alle anderen Prädiktorvariablen $x_j, j = 1, i-1,i+1,K$.
+Wieder wird der Wert für den Steigungskoeffizienten $\beta_2$ aus dem Modell mit beiden Variablen der multiplen Regression erhalten. Das gleiche Prinzip generalisiert auch für mehr als zwei Variablen, nur das in diesem Fall nicht mehr einer Regression der Variable $X_i$ gegen eine andere $X_j$ Variable berechnet wird, sondern es wirde eine multiple Regression von $X_i$ gegen alle anderen Prädiktorvariablen $X_j, j = 1, i-1,i+1,K$ berechnet.
 
-Dadurch ergibt sich die folgende Interpretation der Steigungskoeffizienten $\beta_i$ im multiplen Regressionsmodell. Der Steigungskoeffizient $\beta_i$ drückt die Information der Variable $x_i$ aus, wenn der gemeinsame Anteil von $x_i$ mit allen anderen Prädiktorvariablen $x_j, j \neq i$ rausgerechnet, *bereinigt* wurde. Anders interpretiert, welche zusätzliche Information erhalten wir, wenn wir die Variable $x_i$ in das Modell integrieren, wenn wir schon alle anderen Variablen $x_j, j \neq i$ im Modell haben. D.h. das multiple Regressionsmodell kontrolliert automatisch immer den Einfluss der anderen $K-1$ Variablen bei der Betrachtung der Variablen $x_i$. Nochmal als Liste:
+Insgesamt folgt daraus die folgende Interpretation der Steigungskoeffizienten $\beta_i$ im multiplen Regressionsmodell:
 
-- $\hat{\beta}_1$: Wenn ich $x_2$ weiß, welche zusätzlichen Informationen bekomme ich durch $x_1$ 
-- $\hat{\beta}_2$: Wenn ich $x_1$ weiß, welche zusätzlichen Informationen bekomme ich durch $x_2$ 
+Der Steigungskoeffizient $\beta_i$ drückt die Information der Variable $X_i$ aus, wenn der gemeinsame Anteil von $X_i$ mit allen anderen Prädiktorvariablen $X_j, j \neq i$ rausgerechnet, *bereinigt*, wurde. Anders ausgedrückt: Welche zusätzliche Information wird erhalten , wenn die Variable $X_i$ in das Modell integriert wird, wenn schon alle anderen Variablen $X_j, j \neq i$ im Modell enthalten sind. D.h., das multiple Regressionsmodell kontrolliert automatisch immer den Einfluss der anderen $K-1$ Variablen bei der Betrachtung der Variablen $x_i$. Nochmal als Liste:
 
-Bezogen auf die Werte der Steigungskoeffzienten $\beta_i$ ist die Bedeutung immer noch wie oben, wenn sich zwei Objekte auf der Variablen $x_i$ um eine Einheit voneinander unterscheiden und alle anderen Variablen den gleichen Wert haben, dann unterscheiden sich die erwarteten (vorhergesagten) Werte $\hat{y}_i$ laut des Modells um $\beta_i$.
+- $\hat{\beta}_1$: Wenn $X_2$ bekannt ist, welche zusätzlichen Informationen wird durch $X_1$ über $Y$ erhalten.
+- $\hat{\beta}_2$: Wenn $X_1$ bekannt ist, welche zusätzlichen Informationen wird durch $X_2$ über $Y$ erhalten.
 
-Die Eigenschaft, dass die anderen Variablen $x_j$ konstant gehalten werden ist dabei auch das Problem wenn wir ein einfaches Streudiagramm $y_i$ gegen $x_i$ bei einer multiplen linearen Regression wie in @fig-mlm-basics-example-01 erstellen. In @fig-mlm-basics-example-01-1 können wir den Einfluss von $x_1$ sehr gut identifizieren, da der Steigungskoeffizient $\beta_1$ im Verhältnis zu $\sigma$ recht groß ist. Im Falle von @fig-mlm-basics-example-01-2 ist dies nicht der Fall. Ein Möglichkeit trotzdem mit Hilfe von einfachen Streudiagrammen den isolierten Zusammenhang der Prädiktorvariablen $x_i$ auf die abhängige $y_i$ zu untersuchen bieten added-variable plots.
+Bezogen auf die Werte der Steigungskoeffzienten $\beta_i$ ist die Bedeutung immer noch wie oben, wenn sich zwei Objekte auf der Variablen $X_i$ um eine Einheit voneinander unterscheiden und alle anderen Variablen den gleichen Wert haben, dann unterscheiden sich die erwarteten (vorhergesagten) Werte $\hat{y}_i$ laut des Modells um $\beta_i$.
+
+Die Eigenschaft, dass die anderen Variablen $X_j$ konstant gehalten werden ist dabei auch das Problem wenn ein einfaches Streudiagramm $Y_i$ gegen $X_i$ bei einer multiplen linearen Regression wie in @fig-mlm-basics-example-01 erstellt wird. In @fig-mlm-basics-example-01-1 kann der Einfluss von $X_1$ gut identifiziert, da der Steigungskoeffizient $\beta_1$ im Verhältnis zu $\sigma$ recht groß ist. Im Falle von @fig-mlm-basics-example-01-2 ist dies nicht der Fall. Ein Möglichkeit trotzdem mit Hilfe von einfachen Streudiagrammen den isolierten Zusammenhang der Prädiktorvariablen $X_i$ auf die abhängige $Y_i$ zu untersuchen bieten sogenannte added-variable plots.
 
 ### Added-variable plots
 
