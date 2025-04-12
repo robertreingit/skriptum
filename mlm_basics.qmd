@@ -291,7 +291,9 @@ mod_y_x2_star <- lm(y ~ x2_star, df)
 coef(mod_y_x2_star)[2]
 ```
 
-Wieder wird der Wert für den Steigungskoeffizienten $\beta_2$ aus dem Modell mit beiden Variablen der multiplen Regression erhalten. Das gleiche Prinzip generalisiert auch für mehr als zwei Variablen, nur das in diesem Fall nicht mehr einer Regression der Variable $X_i$ gegen eine andere $X_j$ Variable berechnet wird, sondern es wirde eine multiple Regression von $X_i$ gegen alle anderen Prädiktorvariablen $X_j, j = 1, i-1,i+1,K$ berechnet.
+Wieder ist der Wert für den Steigungskoeffizienten $\beta_2$ aus dem Modell der Gleiche wie bei dem multiplen Regressionmodell mit beiden Variablen.
+
+Das gleiche Prinzip greift auch für mehr als zwei Prädiktorvariablen. Der einzige Unterschied ist, dass in diesem Fall nicht mehr einer Regression der Variable $X_i$ gegen eine andere $X_j$ Prädiktorvariable berechnet wird, sondern es wird eine multiple Regression von $X_i$ gegen **alle anderen** Prädiktorvariablen $X_j, j = 1, i-1,i+1,K$ berechnet. Die Residuen aus diesem Modell können dann wieder für eine einfache Regression gegen $Y$ verwendet werden und der Steigungskoeffizient ist wieder gleich demjenigen der im multiplen Regressionsmodell berechnet wird.
 
 Insgesamt folgt daraus die folgende Interpretation der Steigungskoeffizienten $\beta_i$ im multiplen Regressionsmodell:
 
@@ -306,7 +308,7 @@ Die Eigenschaft, dass die anderen Variablen $X_j$ konstant gehalten werden ist d
 
 ### Added-variable plots
 
-Die Idee hinter added-variable plots basiert auf unserem Trick von eben mit den Residuen $e_i$. Neben der Bereinigung von $x_2$ aus $x_1$, die wir eben schon kennengelernt haben, rechnen wir zusätzlich auch noch den Einfluss von $x_2$ aus $y$ raus. Die beiden resultierenden Variablen stellen wir dann in einem Streudiagramm dar. In `R` können wir einen solchen Plot mittels des folgenden Ansatzes erstellen (siehe @fig-mlm-basics-avplot-01).
+Die Idee hinter den sogenannten *added-variable plots* basiert auf der gleichen Herangehensweise wie eben in Bezug der Berechnung einer Variable $X_{i}^*$ mittels der Residuen $e_i$. Neben der Bereinigung von $X_2$ aus $X_1$, die eben bereits verwendet wurde, wird zusätzlich auch noch der Einfluss von $X_2$ aus $Y$ herausgerechnet. Dazu wird wieder eine einfache lineare Regression von $Y$ gegen $X_2$ berechnet und die resultierenden Residuen werden verwendet. Die beiden resultierenden Variablen werden dann in einem Streudiagramm dargestellt. In `R` kann ein added-varaible plot mittels des folgenden Ansatzes erzeugt werden (siehe @fig-mlm-basics-avplot-01).
 
 ```{r}
 #| echo: true
@@ -321,7 +323,7 @@ ggplot(tibble(x2_star, y_star),
   labs(x = 'x2 | x1', y = 'y | x1')
 ```
 
-Wir sehen jetzt viel deutlicher den Zusammenhang zwischen $x_2$ und $y$ als dies in @fig-mlm-basics-example-01-2 der Fall war. Im Paket `car` gibt es eine Funktion `avPlots()` mit der wir die added-variable plots auch direkt erstellen können.
+Der Zusammenhang zwischen $X_2$ und $Y$ ist nun viel deutlicher zu sein, als dies in @fig-mlm-basics-example-01-2 der Fall war. Im Paket `car` gibt es eine Funktion `avPlots()` mit der added-variable plots auch direkt erstellt werden können.
 
 ```{r}
 #| echo: true
@@ -330,9 +332,9 @@ Wir sehen jetzt viel deutlicher den Zusammenhang zwischen $x_2$ und $y$ als dies
 car::avPlots(mod)
 ```
 
-Wenn eine multiple Regression mit mehr als zwei Prädiktorvariablen gerechnet wird, dann werden im added-variable plot jeweils alle $K-1$ Variablen aus $x_i$ und $y$ rausgerechnet. D.h. $Y$ und $X_i$ werden um den Einfluss aller, verbleibenden $X_j, j \neq i$ bereinigt.
+Wenn eine multiple Regression mit mehr als zwei Prädiktorvariablen gerechnet wird, dann werden im added-variable plot jeweils alle $K-1$ Variablen aus $x_i$ und $y$ herausgerechnet. D.h. $Y$ und $X_i$ werden um den Einfluss aller, verbleibenden $X_j, j \neq i$ bereinigt. Die Darstellung von added-variable plots ist daher im Zusammenhang einer multiplen Regressionsanalyse immer von Vorteil um den Einfluss einzelner Variablen auf die abhängige Variable zu beurteilen.
 
-Da ein Steigungskoeffizientt $\beta_i$ immer den Beitrag der Information von $X_i$ über denjenigen der anderen Prädiktorvariablen bestimmt, stellt sich die Frage was passiert wenn im Modell eine oder mehrere Prädiktorvariablen weggelassen werden. 
+Da ein Steigungskoeffizientt $\beta_i$ immer den Beitrag der Information von $X_i$ über denjenigen der anderen Prädiktorvariablen hinaus bestimmt, stellt sich die Frage was passiert wenn im Modell eine oder mehrere Prädiktorvariablen weggelassen werden. 
 
 ### Was passiert wenn eine Prädiktorvariable weggelassen wird?
 
@@ -341,10 +343,11 @@ In @tbl-mlm-basics-modelfit-01 sind noch mal die Koeffizienten aus dem Beispiel 
 ```{r}
 #| label: tbl-mlm-basics-modelfit-01
 #| tbl-cap: "Koeffizienten im Beispielmodell."
+
 lm_tbl_knitr(mod, long=F)
 ```
 
-Was passiert nun, wenn wir zwei Einzelmodelle als einfache lineare Regression fitten, jeweils mit nur einer Variablen? Wir schauen uns nur die Koeffizienten an. Einmal das Modell mit nur $X_1$:
+Was passiert nun, wenn anstatt einer multiplen Regression mit beiden Prädiktorvariablen zwei Einzelmodelle als einfache lineare Regression gefittet werden. Die Modell enthalten dabei jeweils mit eine der Prädiktorvariablen? Bleiben die Werte der Koeffizienten gleich derjenigen im multiplen Regressionsmodell? Dazu wird erst einmal das Modell mit nur der Prädiktorvariablen $X_1$ berechnet:
 
 ```{r}
 #| echo: true
@@ -352,7 +355,7 @@ Was passiert nun, wenn wir zwei Einzelmodelle als einfache lineare Regression fi
 coef(lm(y ~ x1, df))
 ```
 
-Wir sehen, dass sich der Koeffizient verändert aber noch in einem ähnlichen Bereich ist. Das Gleiche nun für $X_2$:
+Im Vergleich zum multiplen Regressionsmodell (siehe @tbl-mlm-basics-modelfit-01) hat sich der Modellkoeffizient verändert. Die Größe des Werts ist zwar in einem ähnlichen Bereich, die Werte sind aber nicht genau gleich. Das Gleiche nun für $X_2$:
 
 ```{r}
 #| echo: true
@@ -360,9 +363,9 @@ Wir sehen, dass sich der Koeffizient verändert aber noch in einem ähnlichen Be
 coef(lm(y ~ x2, df))
 ```
 
-Der Steigungskoeffizient ändert sich hier auch wieder, bleibt aber ebenfalls in einem ähnlichen Bereich.
+Wieder ist der Wert des Modellskoeffizient anders als derjenige im multiplen Regressionsmodell (siehe @tbl-mlm-basics-modelfit-01). Wieder ist die Größenordnung des Wertes aber ähnlich. Aus Sicht der vorgehenden Ausführungen betrachtet, deutet die Veränderung der Werte darauf hin, dass die Information die die Prädiktorvariablen über $Y$ aussagen sich ändert wenn die jeweils andere Variable im Modell enthalten ist.
 
-Jetzt können wir aber einwenden, dass in unserem Beispiel das sehr speziell ist, da nach Konstruktion des DGP $X_1$ und $X_2$ unabhängig voneinander sind. Als wir die Daten generiert haben, haben wir jeweils zwei unabhängige Zufallszahlenmengen erstellt. Wenn wir uns die Korrelation der Variablen ansehen, dann ist das gut nachvollziehbar.
+Wird nochmal die der DGP der Daten betrachtet, könnte eingewendet, dass in diesem Beispiel, per Konstruktion des DGPs $X_1$ und $X_2$ eigentlich unabhängig voneinander sollten. Als die die Daten generiert wurden, wurden jeweils zwei unabhängige Zufallszahlenmengen erstellt. Eine Antwort auf dieses Problem liefert eine kurze Betrachtung der Korrelation zwischen den beiden Variablen.
 
 ```{r}
 #| echo: true
@@ -370,11 +373,11 @@ Jetzt können wir aber einwenden, dass in unserem Beispiel das sehr speziell ist
 round(cor(df),3)
 ```
 
-D.h. $X_1$ und $X_2$ korrelieren praktisch überhaupt nicht miteinander (Warum ist die Korrelation $r_{x_1x_2}$ nicht exakt $=0$). D.h. $X_1$ enthält keine Informationen über $X_2$ und dementsprechend sollte die beiden Beiträge zum Modell unabhängig voneinander sein.
+Es ist zu sehen, dass $x_1$ und $x_2$ miteinander korrelieren, zwar nur leicht aber die Korrelation ist nicht exakt $=0$. D.h. $x_1$ enthält rein durch Zufall etwas Informationen über $x_2$. Dementsprechend ändern sich die Beiträge der Variablen zu $y$ in Abhängigkeit davon ob die jeweils andere Variable ebenfalls im Modell enthalten ist oder eben nicht. Die Änderungen sind dabei wie oben zu sehen war nur sehr gering.
 
 ### Was passiert wenn Prädiktoren stark miteinander korrelieren?
 
-Schauen wir uns nun einen neuen Datensatz an [Beispiel aus @kutner2005]. Im Rahmen einer Untersuchung sind Körperfettmessungen durchgeführt an $20$ Personen durchgeführt worden. Neben einer Gesamtkörpermessung wurde auch der Körperfettanteil am Oberarm, Unterarm und am Oberschenkel bestimmt. In @tbl-mlm-basics-bodyfat-01 ist ein Ausschnitt der Daten angebildet.
+Sei nun ein anderer Datensatz betrachtet [Beispiel aus @kutner2005]. Im Rahmen einer Untersuchung sind Körperfettmessungen durchgeführt an $20$ Personen durchgeführt worden. Neben einer Gesamtkörpermessung wurde auch der Körperfettanteil am Oberarm, Unterarm und am Oberschenkel bestimmt. In @tbl-mlm-basics-bodyfat-01 ist ein Ausschnitt der Daten abgebildet.
 
 ```{r}
 #| label: tbl-mlm-basics-bodyfat-01
@@ -390,13 +393,13 @@ knitr::kable(head(bodyfat),
              linesep = '')
 ```
 
-Als Modell sollen der Gesamtkörperfettanteil mit Hilfe der drei Messungen bestimmt werden.
+Als Modell sollen der Gesamtkörperfettanteil mit Hilfe der drei verschiedenen Messungen bestimmt werden.
 
 \begin{equation}
 Y_{\text{Körperfettanteil}} = \beta_0 + \beta_1 \cdot X_{\text{Oberarm}} + \beta_2 \cdot X_{\text{Unterarm}} + \beta_3 \cdot X_{\text{Oberschenkel}} + \epsilon
 \end{equation}
 
-Schauen wir uns zunächst einmal an, wie stark die Werte miteinander korrelieren. Wir verwenden die Funktion `ggpairs()` aus dem `GGally` Paket. So erhalten wir mit wenig Aufwand eine übersichtliche Darstellung (siehe @fig-mlm-basics-bodyfat-01).
+Um die Daten besser zu verstehen wird zunächst betrachtet, wie stark die Werte miteinander korrelieren. Dazu wird die Funktion `ggpairs()` aus dem `GGally` Paket. Diese ermöglicht mit wenig Aufwand eine übersichtliche Darstellung der Korrelation eines tibbles (siehe @fig-mlm-basics-bodyfat-01).
 
 ```{r}
 #| echo: true 
@@ -407,7 +410,7 @@ Schauen wir uns zunächst einmal an, wie stark die Werte miteinander korrelieren
 GGally::ggpairs(bodyfat) 
 ```
 
-Wie nicht anders zu erwarten, korrelieren die Prädiktorvariablen relativ stark miteinander. Die Korrelation zwischen den Oberschenkeldaten und den Oberarmdaten in dieser Stichprobe ist sogar $>0.9$. Schauen wir uns nun an, wie sich das auf die Modellfits auswirkt, wenn wir nur Teilmengen der Prädiktorvariablen zum fitten verwenden. Insgesamt fitten wir vier verschiedene Modelle. Ein Modell mit allen Prädiktorvariablen und drei weitere bei denen wir jeweils eine der Prädiktorvariablen weglassen. In `R`:
+Wie bei Körperfettwerten nicht anders zu erwarten, korrelieren die Prädiktorvariablen relativ stark miteinander. Die Korrelation zwischen den Oberschenkeldaten und den Oberarmdaten in dieser Stichprobe ist sogar $>0.9$. Die Frage ist nun, wie sich diese Korrelation auf den Modellfit auswirkt, wenn nur Teilmengen der Prädiktorvariablen zur Anpassung verwenden werden. Insgesamt können vier verschiedene Modelle verwendet werden. Ein Modell mit allen Prädiktorvariablen und drei weitere Modelle bei denen wir jeweils eine der Prädiktorvariablen weglassen. In `R`:
 
 ```{r}
 #| echo: true
@@ -442,7 +445,8 @@ mat |> knitr::kable(
 )
 ```
 
-Wir sehen, dass hier die Koeffizienten sich sehr stark ändern in Abhängigkeit von welche anderen Variablen in dem Modell enthalten sind. Beispielsweise änder der Koeffizient für den Oberschenkel nicht nur seine Größe und auch sein Vorzeichen, je nachdem ob der Ober- oder der Unterarm oder beide im Modell enthalten sind. Wenn mehrer Variablen in einem Modell miteinander korrelieren, dann wird dies als Multikollinearität bezeichnet.
+Es ist zu beobachten, dass für diese Daten die Werte der Modellkoeffizienten sich sehr stark ändern in Abhängigkeit von welche Variablen in dem Modell enthalten sind. Beispielsweise änder der Koeffizient für den Oberschenkel nicht nur seine Größe sondern auch sein Vorzeichen, je nachdem ob der Ober- oder der Unterarm oder beide im Modell enthalten sind. D.h. durch die Korrelation der Prädiktorvariablen untereinander kommt es dazu, dass die Modellkoeffizienten sehr stark schwanken in Abhängigkeit von der Variablenkombination. Wird dies wieder aus der Sicht der Information betrachtet ist dieser Effekt eigentlich auch zu erwarten. Die Interpretation der Modellkoeffizienten bei der multiplen Regression war oben hergeleitet als, wie viel Information die *neue* Variablen liefert nachdem die anderen Variablen schon im Modell berücksichtigt wurden. Wenn die Variablen nun sehr stark miteinander korrelieren, dass bringt eine neue Variable wenige neue Information in das Modell. D.h. bei der multiplen Regression ist die Betrachtung der Beziehung der Prädiktorvariablen miteinander wichtig bei der Beurteilung des Modells. Dieses Konzept ist so wichtig, dass es einen eigenen Namen bekommt. Wenn mehrere Variablen in einem Modell miteinander korrelieren, dann wird dies als **Multikollinearität** bezeichnet.
+
 
 
 ## Multikollinearität
@@ -470,25 +474,25 @@ Es lässt sich zeigen, dass die Varianz der geschätzen Modellkoefizienten $b_j$
 \label{eq-mlm-basics-varb_j}
 \end{equation}
 
-Der Term $R_j^2$ wird als multipler Korrelationskoeffizient bezeichnet und berechnet sich als der Determinationskoeffizienten der Prädiktorvariablen $x_i, i\neq j$ auf die Prädiktorvariable $x_j$. D.h. es wird ein Regressionsmodell gerechnet bei dem die Prädiktorvariable $x_j$ als abhängige Variable verwendet wird und mittels der anderen $p-1$ Präditkorvariablen modelliert wird.
+Der Term $R_j^2$ wird als multipler Korrelationskoeffizient bezeichnet und berechnet sich als der Determinationskoeffizienten der Prädiktorvariablen $x_i, i\neq j$ auf die Prädiktorvariable $x_j$. D.h. es wird ein Regressionsmodell gerechnet bei dem die Prädiktorvariable $x_j$ als abhängige Variable verwendet wird und mittels der anderen $p-1$ Prädiktorvariablen modelliert wird.
 
-Der zweiter Term in Formel \eqref{eq-mlm-basics-varb_j} $\frac{1}{1-R_j^2}$ wird als Variance Inflation Factor (VIF) \index{Variance Inflation Factor} bezeichnet. Anhand des VIF kann ein Modell relativ einfach, zumindest heuristisch, auf Multikollinearitäten überprüft werden. Dabei wird für jede Prädiktorvariable die VIF bestimmt. Manchmal wird in der Literatur auch die sogenannte Tolerance = $\frac{1}{VIF}$ betrachtet.
+Der zweiter Term in Formel \eqref{eq-mlm-basics-varb_j} $\frac{1}{1-R_j^2}$ wird als Variance Inflation Factor (VIF) \index{Variance Inflation Factor} bezeichnet. Anhand des VIF kann ein Modell relativ einfach, zumindest heuristisch, auf Multikollinearitäten überprüft werden. Dabei wird für jede Prädiktorvariable die VIF bestimmt. Manchmal wird in der Literatur auch die sogenannte Tolerance = $\frac{1}{VIF}$, also der Umkehrwert des VIF, betrachtet.
 
 \begin{equation*}
 \text{VIF}_j = \frac{1}{1-R_j^2}
 \end{equation*}
 
-Üblicherweise wird der größte VIF Wert betrachtet um die Multikollinearität eines Modells zu bewerten.
+Bei der Bewertung des VIFs, wird üblicherweise der größte VIF Wert im Modell betrachtet um die Multikollinearität des Modells zu bewerten.
 
 :::{.callout-tip}
 Wenn VIF > 10 ist, dann deutet dies auf hohe Multikollinearität hin.
 :::
 
-Hinsichtlich des Einflusses bzw. des Umgangs bei Multikollinearität muss unterschieden werden, welches Ziel die Modellierung verfolgt. Das Problem das durch die Multikollinearität entsteht ist, basiert darauf das das Modell nicht eindeutig zuordnen kann, welche der korrelierten Varible zuständig ist für die beobachteten Veränderungen in der abhängigen Variablen. Multikollinearität vermindert dabei nicht unsere Fähigkeit Mittelwerte $E[y|x]$ vorherzusagen oder einen guten Modellfit zu erhalten. Allerdings verkompliziert sich die Interpretation der Modellkoeffizienten $b_j$. Dadurch das die Prädiktorvariablen miteinander korrelieren, kann es beispielsweise gar nicht praktisch möglich sein die Variablen einzeln zu variieren, wodurch die Interpretation des Koeffizienten $b_j$ als die Veränderung von $y$ bei Veränderung von $x_j$ um eine Einheit problematisch wird. Weiterhin, dadurch das durch die Multikollinearität die Varianzen der Modelkoeffizienten vergrößert werden, kann es zu dem Fall kommen, dass ein Modellkoeffizienten $b_j$ statistisch nicht signifikant ist, obwohl eindeutig ein Zusammenhang zwischen $x_j$ und $y$ besteht. Zusätzlich, dadurch das die Modellkoeffizienten sich stark verändern können bei Veränderung des Modells ist deren Interpretation grundsätzlich problematisch. 
+Hinsichtlich des Einflusses bzw. des Umgangs bei Multikollinearität muss unterschieden werden, welches Ziel die Modellierung verfolgt. Das Problem das durch die Multikollinearität entsteht ist, basiert darauf das das Modell nicht eindeutig zuordnen kann, welche der miteinander korrelierten Variable für die beobachteten Veränderungen in der abhängigen Variablen $Y$ zuständig ist. Multikollinearität vermindert dabei **nicht** die Fähigkeit des Modells Mittelwerte $E[y|x]$ vorherzusagen oder einen guten Modellfit zu erhalten. Allerdings verkompliziert sich die Interpretation der Modellkoeffizienten $\hat{beta}_j$. Dadurch das die Prädiktorvariablen miteinander korrelieren, kann es beispielsweise gar nicht praktisch möglich sein die Variablen einzeln zu variieren, wodurch die Interpretation des Koeffizienten $b_j$ als die Veränderung von $y$ bei Veränderung von $x_j$ um eine Einheit problematisch wird. Weiterhin, dadurch das durch die Multikollinearität die Varianzen der Modelkoeffizienten vergrößert werden, kann es zu dem Fall kommen, dass ein Modellkoeffizienten $b_j$ statistisch nicht signifikant ist, obwohl eindeutig ein Zusammenhang zwischen $x_j$ und $y$ besteht. Zusätzlich, dadurch das die Modellkoeffizienten sich stark verändern können bei Veränderung des Modells ist deren Interpretation grundsätzlich problematisch. 
 
-### Variance Inflation Factor (VIF) in `R`
+### Variance Inflation Factor (VIF) in `R` berechnen
 
-In `R` können wir den VIF am einfachsten über zwei Funktionen berechnen. Einmal über die `vif()`-Funktion aus dem Paket `car`.
+In `R` kann der VIF am einfachsten über zwei Funktionen berechnet werden. Einmal über die `vif()`-Funktion aus dem Paket `car`.
 
 ```{r}
 #| echo: true
@@ -515,11 +519,11 @@ performance::check_collinearity(mod_full) |>
   )
 ```
 
-In @tbl-mlm-basics-collin sehen wir, dass  `check_collinearity()` auch noch Konfidenzintervalle und besagte Tolerance ausgibt. In jedem Fall, sehen wir, dass wenn wir die Daumenregel $VIF > 10$ anwenden, wir hohe Multikollinearität in unserem Modell aufweisen, was auch die großen Veränderung in den Koeffizienten bei Hinzu- bzw. Entnahme der Prädiktorvariblen erkärt.
+In @tbl-mlm-basics-collin ist zu sehen, dass  `check_collinearity()` auch noch Konfidenzintervalle und besagten Tolerance Parameter ausgibt. In jedem Fall, ist zu sehen, dass bei Anwendung der Daumenregel $VIF > 10$, hohe Multikollinearität in unserem Körperfettmodell zu beobachten sind. Dies erklärt somit auch die großen Veränderung in den Koeffizienten bei Hinzu- bzw. Entnahme der Prädiktorvariablen.
 
-## Verhältnis der Prädiktorvariblen $x_j$ untereinander
+## Verhältnis der Prädiktorvariblen $X_j$ untereinander
 
-Insgesamt sind aus der operativen Seite durch den Übergang von der einfachen zur multiplen Regression keine großen Neuerungen hinzugekommen. Allerdings müssen jetzt, wir schon bezüglich der Multikollinearität gesehen haben, das Verhältnis der Prädiktorvariablen $X_j$ untereinander näher betrachtet werden. Das folgenden Beispiel ist @mcelreath2016 entnommen und zeigt, dass sich Variablen auch gegenseitig maskieren können und wiederum große Veränderungen in den Modellkoeffizienten auftreten können, wenn Variablen hinzugenommen bzw. weggelassen werden.
+Insgesamt sind aus der operativen Seite durch den Übergang von der einfachen zur multiplen Regression keine großen Neuerungen hinzugekommen. Allerdings müssen jetzt, wie schon bezüglich der Multikollinearität gesehen wurde, das Verhältnis der Prädiktorvariablen $X_j$ untereinander näher betrachtet werden. Das folgenden Beispiel ist @mcelreath2016 entnommen und zeigt, dass sich Variablen auch gegenseitig *maskieren* können und wiederum große Veränderungen in den Modellkoeffizienten auftreten können, wenn Variablen hinzugenommen bzw. weggelassen werden.
 
 Um den Effekt der Maskierung leichter nachvollziehen zu können erstellen wir uns wieder einen einfachen Datensatz mit zwei Prädiktorvariablen $X_{pos}$ und $X_{neg}$. $X_{pos}$ ist positiv mit $Y$ korreliert, während $X_{neg}$ negativ mit $Y$ korreliert. Allerdings zeigen die beiden Variablen untereinander ebenfalls eine positive Korrelation. In @fig-mlm-basics-mask-01 ist die Korrelationsmatrize der drei Variablen abgebildet.
 
@@ -560,6 +564,8 @@ mat |> knitr::kable(
 ```
 
 Wir können erkennen, dass die Größe der Koeffizienten wiederum stark davon abhängt welches Modell gefittet wird. Für das Modell mit nur dem positiven Prädiktor ist der Modellkoeffizient $b_{pos}$ auch nicht statistisch signifikant. Sondern erst wenn beide Variablen in dem Modell inkludiert sind ist der Koeffizient ebenfalls statistisch signifikant. Zusammenfassend ist es entsprechend wichtig dass bei der Modellierung theoretische Vorüberlegungen die relevanten Variablen identifizieren und nicht einfach nur hin und her probiert wird. Zumindest wenn es darum geht der größer der Koeffizienten auch inhaltliche Bedeutung zuzuweisen.
+
+## Take-away
 
 ## Zum Nacharbeiten
 
