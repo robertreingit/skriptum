@@ -375,7 +375,7 @@ round(cor(df),3)
 
 Es ist zu sehen, dass $x_1$ und $x_2$ miteinander korrelieren, zwar nur leicht aber die Korrelation ist nicht exakt $=0$. D.h. $x_1$ enthält rein durch Zufall etwas Informationen über $x_2$. Dementsprechend ändern sich die Beiträge der Variablen zu $y$ in Abhängigkeit davon ob die jeweils andere Variable ebenfalls im Modell enthalten ist oder eben nicht. Die Änderungen sind dabei wie oben zu sehen war nur sehr gering.
 
-### Was passiert wenn Prädiktoren stark miteinander korrelieren?
+## Multikollinearität
 
 Sei nun ein anderer Datensatz betrachtet [Beispiel aus @kutner2005]. Im Rahmen einer Untersuchung sind Körperfettmessungen durchgeführt an $20$ Personen durchgeführt worden. Neben einer Gesamtkörpermessung wurde auch der Körperfettanteil am Oberarm, Unterarm und am Oberschenkel bestimmt. In @tbl-mlm-basics-bodyfat-01 ist ein Ausschnitt der Daten abgebildet.
 
@@ -445,11 +445,7 @@ mat |> knitr::kable(
 )
 ```
 
-Es ist zu beobachten, dass für diese Daten die Werte der Modellkoeffizienten sich sehr stark ändern in Abhängigkeit von welche Variablen in dem Modell enthalten sind. Beispielsweise änder der Koeffizient für den Oberschenkel nicht nur seine Größe sondern auch sein Vorzeichen, je nachdem ob der Ober- oder der Unterarm oder beide im Modell enthalten sind. D.h. durch die Korrelation der Prädiktorvariablen untereinander kommt es dazu, dass die Modellkoeffizienten sehr stark schwanken in Abhängigkeit von der Variablenkombination. Wird dies wieder aus der Sicht der Information betrachtet ist dieser Effekt eigentlich auch zu erwarten. Die Interpretation der Modellkoeffizienten bei der multiplen Regression war oben hergeleitet als, wie viel Information die *neue* Variablen liefert nachdem die anderen Variablen schon im Modell berücksichtigt wurden. Wenn die Variablen nun sehr stark miteinander korrelieren, dass bringt eine neue Variable wenige neue Information in das Modell. D.h. bei der multiplen Regression ist die Betrachtung der Beziehung der Prädiktorvariablen miteinander wichtig bei der Beurteilung des Modells. Dieses Konzept ist so wichtig, dass es einen eigenen Namen bekommt. Wenn mehrere Variablen in einem Modell miteinander korrelieren, dann wird dies als **Multikollinearität** bezeichnet.
-
-
-
-## Multikollinearität
+Es ist zu beobachten, dass für diese Daten die Werte der Modellkoeffizienten sich sehr stark ändern in Abhängigkeit von welche Variablen in dem Modell enthalten sind. Beispielsweise änder der Koeffizient für den Oberschenkel nicht nur seine Größe sondern auch sein Vorzeichen, je nachdem ob der Ober- oder der Unterarm oder beide im Modell enthalten sind. D.h. durch die Korrelation der Prädiktorvariablen untereinander kommt es dazu, dass die Modellkoeffizienten sehr stark schwanken in Abhängigkeit von der Variablenkombination. Wird dies wieder aus der Sicht der Information betrachtet ist dieser Effekt eigentlich auch zu erwarten. Die Interpretation der Modellkoeffizienten bei der multiplen Regression war oben hergeleitet als, wie viel Information die *neue* Variablen liefert nachdem die anderen Variablen schon im Modell berücksichtigt wurden. Wenn die Variablen nun sehr stark miteinander korrelieren, dann bringt eine neue Variable wenige *neue Information* in das Modell über diejenige Information die schon durch die anderen Variablen repräsentiert wird. D.h. bei der multiplen Regression ist die Betrachtung der Beziehung der Prädiktorvariablen miteinander wichtig bei der Beurteilung des Modells. Dieses Konzept ist so wichtig, dass es einen eigenen Namen bekommt. Wenn mehrere Variablen in einem Modell miteinander korrelieren, dann wird dies als **Multikollinearität** bezeichnet.
 
 ::: {#def-multicollinearity}
 ## Multikollinearität
@@ -467,14 +463,14 @@ Multikollinearität hat unter anderem die folgenden Effekte:
 - Hohe (einfache) Korrelationen zwischen Prädiktoren
 - Breite Konfidenzintervalle für "wichtige" Prädiktoren $b_j$ 
 
-Es lässt sich zeigen, dass die Varianz der geschätzen Modellkoefizienten $b_j$ die folgende Form hat (siehe Formel \eqref{eq-mlm-basics-varb_j}:
+Es lässt sich zeigen, dass die Varianz der geschätzten Modellkoefizienten $b_j$ die folgende Form hat (siehe Formel \eqref{eq-mlm-basics-varb_j}:
 
 \begin{equation}
 \widehat{\text{Var}}(b_j) = \frac{\hat{\sigma}^2}{(n-1)s_j^2}\frac{1}{1-R_j^2} 
 \label{eq-mlm-basics-varb_j}
 \end{equation}
 
-Der Term $R_j^2$ wird als multipler Korrelationskoeffizient bezeichnet und berechnet sich als der Determinationskoeffizienten der Prädiktorvariablen $x_i, i\neq j$ auf die Prädiktorvariable $x_j$. D.h. es wird ein Regressionsmodell gerechnet bei dem die Prädiktorvariable $x_j$ als abhängige Variable verwendet wird und mittels der anderen $p-1$ Prädiktorvariablen modelliert wird.
+Der Term $R_j^2$ wird als multipler Korrelationskoeffizient bezeichnet und berechnet sich als der Determinationskoeffizienten der Prädiktorvariablen $X_i, i\neq j$ auf die Prädiktorvariable $X_j$. D.h. es wird ein Regressionsmodell gerechnet bei dem die Prädiktorvariable $X_j$ als abhängige Variable verwendet wird und mittels der anderen $p-1$ Prädiktorvariablen modelliert wird.
 
 Der zweiter Term in Formel \eqref{eq-mlm-basics-varb_j} $\frac{1}{1-R_j^2}$ wird als Variance Inflation Factor (VIF) \index{Variance Inflation Factor} bezeichnet. Anhand des VIF kann ein Modell relativ einfach, zumindest heuristisch, auf Multikollinearitäten überprüft werden. Dabei wird für jede Prädiktorvariable die VIF bestimmt. Manchmal wird in der Literatur auch die sogenannte Tolerance = $\frac{1}{VIF}$, also der Umkehrwert des VIF, betrachtet.
 
@@ -487,6 +483,8 @@ Bei der Bewertung des VIFs, wird üblicherweise der größte VIF Wert im Modell 
 :::{.callout-tip}
 Wenn VIF > 10 ist, dann deutet dies auf hohe Multikollinearität hin.
 :::
+
+Der Name variance inflation factor deutet dabei schon auf den Effekt von Multikollinearität hin. Durch die Korrelation der Variablen untereinander kommt es zu einer *Inflation der Varianzen*. D.h. die Standardfehler der Modellparameter werden vergrößert was dazu führen kann, dass die Modellkoeffizienten keine statistische Signifikanz aufweisen obwohl ein klarer Zusammenhang zwischen der Prädiktorvariablen und der abhängigen Variablen besteht.
 
 Hinsichtlich des Einflusses bzw. des Umgangs bei Multikollinearität muss unterschieden werden, welches Ziel die Modellierung verfolgt. Das Problem das durch die Multikollinearität entsteht ist, basiert darauf das das Modell nicht eindeutig zuordnen kann, welche der miteinander korrelierten Variable für die beobachteten Veränderungen in der abhängigen Variablen $Y$ zuständig ist. Multikollinearität vermindert dabei **nicht** die Fähigkeit des Modells Mittelwerte $E[y|x]$ vorherzusagen oder einen guten Modellfit zu erhalten. Allerdings verkompliziert sich die Interpretation der Modellkoeffizienten $\hat{beta}_j$. Dadurch das die Prädiktorvariablen miteinander korrelieren, kann es beispielsweise gar nicht praktisch möglich sein die Variablen einzeln zu variieren, wodurch die Interpretation des Koeffizienten $b_j$ als die Veränderung von $y$ bei Veränderung von $x_j$ um eine Einheit problematisch wird. Weiterhin, dadurch das durch die Multikollinearität die Varianzen der Modelkoeffizienten vergrößert werden, kann es zu dem Fall kommen, dass ein Modellkoeffizienten $b_j$ statistisch nicht signifikant ist, obwohl eindeutig ein Zusammenhang zwischen $x_j$ und $y$ besteht. Zusätzlich, dadurch das die Modellkoeffizienten sich stark verändern können bei Veränderung des Modells ist deren Interpretation grundsätzlich problematisch. 
 
@@ -521,27 +519,66 @@ performance::check_collinearity(mod_full) |>
 
 In @tbl-mlm-basics-collin ist zu sehen, dass  `check_collinearity()` auch noch Konfidenzintervalle und besagten Tolerance Parameter ausgibt. In jedem Fall, ist zu sehen, dass bei Anwendung der Daumenregel $VIF > 10$, hohe Multikollinearität in unserem Körperfettmodell zu beobachten sind. Dies erklärt somit auch die großen Veränderung in den Koeffizienten bei Hinzu- bzw. Entnahme der Prädiktorvariablen.
 
-## Verhältnis der Prädiktorvariblen $X_j$ untereinander
+::: {#exm-mlm-basics-jiourumaru}
+## Gehparameter bei Älteren
 
-Insgesamt sind aus der operativen Seite durch den Übergang von der einfachen zur multiplen Regression keine großen Neuerungen hinzugekommen. Allerdings müssen jetzt, wie schon bezüglich der Multikollinearität gesehen wurde, das Verhältnis der Prädiktorvariablen $X_j$ untereinander näher betrachtet werden. Das folgenden Beispiel ist @mcelreath2016 entnommen und zeigt, dass sich Variablen auch gegenseitig *maskieren* können und wiederum große Veränderungen in den Modellkoeffizienten auftreten können, wenn Variablen hinzugenommen bzw. weggelassen werden.
+Die Beziehung zwischen gebrechlichen älteren Menschen und der Gehgeschwindigkeit ist entscheidend, um den Bedarf an Langzeitpflege oder erhöhter Unterstützung zu minimieren. Insbesondere ist der Zusammenhang zwischen Gehleistung, respiratorischer Funktion und dynamischem Gleichgewicht bei älteren Menschen, die auf Langzeitpflege angewiesen sind, noch nicht gut verstanden. Zu diesem Zweck wurde in @jiroumaru2023 der Zusammenhänge zwischen Gehgeschwindigkeit, Atemmuskelkraft und dynamischem Gleichgewicht mittels multipler Regressionsanalyse untersucht. 
 
-Um den Effekt der Maskierung leichter nachvollziehen zu können erstellen wir uns wieder einen einfachen Datensatz mit zwei Prädiktorvariablen $X_{pos}$ und $X_{neg}$. $X_{pos}$ ist positiv mit $Y$ korreliert, während $X_{neg}$ negativ mit $Y$ korreliert. Allerdings zeigen die beiden Variablen untereinander ebenfalls eine positive Korrelation. In @fig-mlm-basics-mask-01 ist die Korrelationsmatrize der drei Variablen abgebildet.
+Die Atemmuskelkraft wurde mittels des maximalen inspiratorische (PImax) und des maximalen exspiratorische Drucks (PEmax) bestimmt. Der maximale Doppelschrittlängentest (MDST) wurde als Index für das dynamische Gleichgewicht verwendet. Eine multiple Regressionsanalyse wurde durchgeführt, wobei die Gehgeschwindigkeit (normale und maximale Gehgeschwindigkeit) als abhängige Variable und PImax, PEmax sowie MDST als unabhängige Variablen verwendet wurden. Zusätzlich wurde das Geschlecht als Anpassungsvariable berücksichtigt und in den Daten als entweder $0$ oder $1$ kodiert. Die Daten sind  im repository zum Skriptum zu finden. Eine Analyse der Daten für die abhängige Variable maximale Gehgeschwindigkeit (`mws`) führte zu folgendem Ergebnis:
+
+```{r}
+jiro <- readxl::read_xlsx('data/jiromaru_2023_data_subset.xlsx',
+                  sheet = 'Raw data',
+                  range = "A2:K51")
+
+mod <- lm(mws ~ Pemax + mdst + Pimax + gender, jiro)
+summary(mod)
+```
+
+D.h. es wurde ein stastistisch signifikanter Zusammenhang der maximalen Gehgeschwindigkeit mit PEmax und MDST beobachtet. Eine Untersuchung des VIF deutete auf keine starken Multikollineariäten zwischen den Variablen hin.
+
+```{r}
+#| echo: true
+
+car::vif(mod)
+```
+:::
+
+### Wenn Prädiktorvariablen $X_j$ sich maskieren 
+
+Insgesamt sind aus der operativen Seite durch den Übergang von der einfachen zur multiplen Regression keine großen Neuerungen hinzugekommen. Allerdings müssen jetzt, wie schon bezüglich der Multikollinearität gesehen wurde, das Verhältnis der Prädiktorvariablen $X_j$ untereinander näher betrachtet werden. Das folgenden Beispiel ist @mcelreath2016 entnommen und zeigt noch einmal zu welchen unerwarteten Effekten es kommen kann, wenn die Prädiktorvariablen miteinander in Beziehung stehen. In diesem Beispiel kommt es tatsächlich zu einer *Maskierung* der Effekt untereinander wenn Variablen hinzugenommen bzw. weggelassen werden. Daraus resultieren ebenfalls große Veränderungen in den Modellkoeffizienten in Abhängigkeit von der Kombination der Prädiktorvariablen.
+
+Um das Beispiel so anschaulich wie möglich zu machen, wird ein DGP mit nur zwei Prädiktorvariablen $X_{pos}$ und $X_{neg}$  verwendet. Die Prädiktorvariable $X_{pos}$ sei positiv mit $Y$ korreliert, während die Prädiktorvariable $X_{neg}$ negativ mit $Y$ korreliert ist. Zusätzlich seien die beiden Prädiktorvariablen Variablen positiv miteinander korreliert. Es werden $N = 100$ Datenpunkte simuliert.  Die genaue Herleitung der Werte ist im einzelnen nicht wichtig und die Werte sind wie immer bei den verwendeten Simulationen der Einfachheit halber gewählt. Zwischen $X_{pos}$ und $Y$ besteht eine Korrelation von $rho_{X_{pos}y} = 0.15$, zwischen $X_{neg}$ und $Y$ von $rho_{X_{neg}Y} = -0.5$ und zwischen den beiden Prädiktorvariabeln von $rho_{XX} = 0.5$
+
+```{r}
+#| echo: true
+
+Sigma <- matrix(c(1,0.15, -.5, 0.15, 1, 0.5, -0.5, 0.5, 1), nr=3)
+Sigma
+```
+
+Um die gewünschte Korrelationsstruktur zwischen den Variablen kann nun die Funktion `mvrnorm()` aus dem Paket `MASS` verwendet werden. Mit `mvrnorm()` können Zufallszahlen generiert werden, die eine multivariaten Normalverteilung mit einer vorgegeben Kovarianzstruktur folgen.
+
+```{r}
+#| echo: true
+
+set.seed(123)
+N <- 100
+df_temp <- MASS::mvrnorm(n = 100, mu = c(0,0,0), Sigma=Sigma)
+colnames(df_temp) <- c('y','x_pos','x_neg')
+df <- as_tibble(df_temp)
+```
+
+In @fig-mlm-basics-mask-01 ist die resultierende Korrelationsmatrize der drei Variablen abgebildet.
 
 ```{r}
 #| fig-cap: "x_pos maskiert den Einfluss von x_neg"
 #| label: fig-mlm-basics-mask-01
 
-N <- 100
-set.seed(123)
-rho <- 0.7
-x_pos <- rnorm(N)
-x_neg <- rnorm(N, rho*x_pos)
-y <- rnorm(N, x_pos - x_neg)
-df <- tibble(y, x_pos, x_neg)
 GGally::ggpairs(df) + theme(text = element_text(size = 10))
 ```
 
-In @tbl-mlm-basics-mask-02 sind die verschiedenen Modellkoeffizienten für wenn jeweils nur eine der Variablen in das Modell eingeht bzw. wenn beide Variablen im Modell enthalten sind.
+Es ist zu sehen, dass `x_pos` und `x_neg` die gewünschte Korrelation mit $y$ aufweisen sowie ebenfalls eine positive Korrelation miteinander aufweisen. Nun werden wieder drei verschiedene Modelle angepasst. Ein Modell mit bei Variablen, eine Modell mit nur $x_{pos}$ und ein Modell mit nur $x_{neg}$ als Prädiktorvariablen. In @tbl-mlm-basics-mask-02 sind die resultierenden Modellkoeffizienten für die drei Modelle dokumentiert.
 
 ```{r}
 #| label: tbl-mlm-basics-mask-02
@@ -558,14 +595,20 @@ mat[3,] <- foo(co_3)
 rownames(mat) <- c('pos','neg','pos + neg')
 mat |> knitr::kable(
   booktabs = TRUE,
-  col.names = c('$\\beta_0 \\pm s_e$', '$\\beta_{pos} \\pm s_e$', '$\\beta_{neg} \\pm s_e$'),
+  col.names = c('$\\hat{\\beta_0} \\pm s_e$', '$\\hat{\\beta}_{pos} \\pm s_e$', '$\\hat{\\beta}_{neg} \\pm s_e$'),
   escape = FALSE
 )
 ```
 
-Wir können erkennen, dass die Größe der Koeffizienten wiederum stark davon abhängt welches Modell gefittet wird. Für das Modell mit nur dem positiven Prädiktor ist der Modellkoeffizient $b_{pos}$ auch nicht statistisch signifikant. Sondern erst wenn beide Variablen in dem Modell inkludiert sind ist der Koeffizient ebenfalls statistisch signifikant. Zusammenfassend ist es entsprechend wichtig dass bei der Modellierung theoretische Vorüberlegungen die relevanten Variablen identifizieren und nicht einfach nur hin und her probiert wird. Zumindest wenn es darum geht der größer der Koeffizienten auch inhaltliche Bedeutung zuzuweisen.
+Es ist zu erkennen, dass die Größe der Modellkoeffizienten sehr stark davon abhängt welche Variablenkombination gefittet wird. Für das Modell mit nur dem positiven Prädiktor $x_{pos}$ kann bei Verwendung der Daumenregeln $\pm 2\times \text{SE}$ erkannt werden, dass der Modellkoeffizient $b_{pos}$ statistisch nicht signifikant ist. Erst wenn beide Prädiktorvariablen in dem Modell inkludiert sind, ist der Modellkoeffizient statistisch signifikant. Im ersten Modell maskiert der Effekte der Prädiktorvariablen $x_{neg}$, welche gar nicht im Modell enthalten ist, den Effekt von $x_{pos}$ auf $y$. Erst wenn beide Variablen im Modell auch enthalten sind, ist das Modell in der Lage den Effekt auch tatsächlich zu erfassen.
+
+Zusammenfassend ist es entsprechend wichtig dass bei der Modellierung mittels einer multiplen linearen Regression theoretische Vorüberlegungen über die relevanten Variablen in die Studie mit eingehen. Ein einfaches probieren mittels In- und Exklusion von Prädiktorvariablen wird selten zum gewünschten Erfolg führen bzw. zu einem robustem Modell führen. Zumindest wenn es darum geht den Werten der Modellkoeffizienten auch inhaltliche Bedeutung zuweisen zu können.
 
 ## Take-away
+
+- Bei der multiplen Regression wird das Modell um zusätzliche Prädiktorvariablen erweitert
+- Die Interpretation der Modellkoeffizienten ist bezieht sich auf den Einfluss der jeweiligen Variblen über denjenigen der anderen Variablen hinaus
+- Die Korrelation der Prädiktorvariablen, die Multikollinearität, untereinander kann zu unvorhergesehenen Effekten bei den Modellkoeffizienten führen
 
 ## Zum Nacharbeiten
 
