@@ -499,8 +499,9 @@ window.Quarto = {
   <li><a href="#variance-inflation-factor-vif-in-r-berechnen" id="toc-variance-inflation-factor-vif-in-r-berechnen" class="nav-link" data-scroll-target="#variance-inflation-factor-vif-in-r-berechnen"><span class="header-section-number">17.3.1</span> Variance Inflation Factor (VIF) in <code>R</code> berechnen</a></li>
   <li><a href="#wenn-prädiktorvariablen-x_j-sich-gegenseitig-maskieren" id="toc-wenn-prädiktorvariablen-x_j-sich-gegenseitig-maskieren" class="nav-link" data-scroll-target="#wenn-prädiktorvariablen-x_j-sich-gegenseitig-maskieren"><span class="header-section-number">17.3.2</span> Wenn Prädiktorvariablen <span class="math inline">\(X_j\)</span> sich gegenseitig maskieren</a></li>
   </ul></li>
-  <li><a href="#take-away" id="toc-take-away" class="nav-link" data-scroll-target="#take-away"><span class="header-section-number">17.4</span> Take-away</a></li>
-  <li><a href="#zum-nacharbeiten" id="toc-zum-nacharbeiten" class="nav-link" data-scroll-target="#zum-nacharbeiten"><span class="header-section-number">17.5</span> Zum Nacharbeiten</a></li>
+  <li><a href="#unter-der-motorhaube-von-lm-die-modellmatrix" id="toc-unter-der-motorhaube-von-lm-die-modellmatrix" class="nav-link" data-scroll-target="#unter-der-motorhaube-von-lm-die-modellmatrix"><span class="header-section-number">17.4</span> Unter der Motorhaube von <code>lm()</code> die Modellmatrix</a></li>
+  <li><a href="#take-away" id="toc-take-away" class="nav-link" data-scroll-target="#take-away"><span class="header-section-number">17.5</span> Take-away</a></li>
+  <li><a href="#zum-nacharbeiten" id="toc-zum-nacharbeiten" class="nav-link" data-scroll-target="#zum-nacharbeiten"><span class="header-section-number">17.6</span> Zum Nacharbeiten</a></li>
   </ul>
 </nav>
     </div>
@@ -1409,16 +1410,84 @@ Tabelle&nbsp;17.8: Koeffizienten und Standardfehler der unterschiedlichen Modell
 <p>Zusammenfassend ist es entsprechend wichtig dass bei der Modellierung mittels einer multiplen linearen Regression theoretische Vorüberlegungen über die relevanten Variablen in die Studie mit eingehen. Ein einfaches probieren mittels In- und Exklusion von Prädiktorvariablen wird selten zum gewünschten Erfolg führen bzw. zu einem robustem Modell führen. Zumindest wenn es darum geht den Werten der Modellkoeffizienten auch inhaltliche Bedeutung zuweisen zu können.</p>
 </section>
 </section>
-<section id="take-away" class="level2" data-number="17.4">
-<h2 data-number="17.4" class="anchored" data-anchor-id="take-away"><span class="header-section-number">17.4</span> Take-away</h2>
+<section id="unter-der-motorhaube-von-lm-die-modellmatrix" class="level2" data-number="17.4">
+<h2 data-number="17.4" class="anchored" data-anchor-id="unter-der-motorhaube-von-lm-die-modellmatrix"><span class="header-section-number">17.4</span> Unter der Motorhaube von <code>lm()</code> die Modellmatrix</h2>
+<p>Für die weitere Arbeit mit der multiplen linearen Regression ist es von Vorteil ein etwas tiefergehendes Verständnis der Berechnungen in <code>R</code> bei der Verwendung von <code>lm()</code> zu haben. Insbesondere die Kenntnis der sogenannten Modellmatrix ist dabei von Vorteil.</p>
+<div id="def-model-matrix" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 17.2 (Modellmatrix)</strong></span> Die Modellmatrix , auch als Designmatrix oder Regressionsmatrix , ist eine Matrix welche die zur Modellierung verwendeten Daten in Form einer Matrix enthält. Jede Zeile der Modellmatrix repräsentiert eine Beobachtung, während jede Spalte einer Prädiktorvariable entspricht. Die Modellmatrix wird oft mit dem Buchstaben <span class="math inline">\(X\)</span> bezeichnet.</p>
+</div>
+<p>In <code>R</code> kann eine Modellmatrix mit Hilfe der Funktion <code>model.matrix()</code> erzeugt werden. Am einfachsten ist die Funktion anhand eines Beispiels nach zu vollziehen. Sei der folgende einfache Beispieldatensatz gegeben:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">3</span>,<span class="fl">2.5</span>,<span class="dv">7</span>),</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">x_1 =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>,</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">x_2=</span> <span class="fu">c</span>(<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">14</span>,<span class="dv">13</span>) </span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Wenn nun eine lineares Modell an die <em>Daten</em> gefittet wird, dann würde die folgende Syntax verwendet werden <code>lm(y ~ x_1 + x_2)</code> entsprechend zu dem Modell <span class="math inline">\(y_i = \beta_0 + \beta_1 x_{1i}+ \beta_2 x_{2i} + \epsilon_i\)</span>. Was nun intern in <code>lm()</code> passiert ist, das die Berechnung auf ein mathematisches Problem abgebildet wird, das mit Hilfe von Matrizenalgebra gelöst wird. Die genaueren Schritte sind zunächst nicht weiter wichtig, sondern nur der erste Schritt die Erstellung der Modellmatrix <span class="math inline">\(X\)</span>. Die erzeugte Modellmatrix kann angezeigt werden, indem die Funktion <code>model.matrix()</code> auf das Modellobjekt angewendet wird.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x_1 <span class="sc">+</span> x_2, df)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">model.matrix</span>(mod)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  (Intercept) x_1 x_2
+1           1   1  11
+2           1   2  11
+3           1   3  14
+4           1   4  13
+attr(,"assign")
+[1] 0 1 2</code></pre>
+</div>
+</div>
+<p>Alternativ kann die Modellmatrix anhand der <em>Formel</em> und dem Datensatz erstellt werden:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">model.matrix</span>(<span class="sc">~</span> x_1 <span class="sc">+</span> x_2, <span class="at">data =</span> df)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  (Intercept) x_1 x_2
+1           1   1  11
+2           1   2  11
+3           1   3  14
+4           1   4  13
+attr(,"assign")
+[1] 0 1 2</code></pre>
+</div>
+</div>
+<p>Laut der Definition, ist die Modellmatrix <span class="math inline">\(X\)</span> die numerische Darstellung der Prädiktorvariablen mittels einer Matrix. In der zweiten Spalte sind die Werte der Variablen <code>x_1</code>, während in der dritten Spalte die Werte der Variablen <code>x_2</code> eingetragen sind. Die Spalten entsprechen also den jeweiligen Einträgen der Prädiktorvariablen <span class="math inline">\(x_{ji}\)</span>. Die erste Spalte sticht hier etwas raus, da hier nur <span class="math inline">\(1\)</span> eingetragen sind. Diese Spalte ist dem ersten Modellkoeffizienten <span class="math inline">\(\beta_0\)</span> zugeordnet, also dem <em>konstanten</em> <span class="math inline">\(y\)</span>-Achsenabschnitt. Dies hat den Vorteil, dass die vorhergesagten Werte durch eine einfache Matrixmultiplikation berechnet werden können (im Anhang ist dazu eine kurze Erläuterung, ist aber nicht notwendig für das weitere Verständnis).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>beta_s <span class="ot">&lt;-</span> <span class="fu">coef</span>(mod)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(<span class="sc">~</span> x_1 <span class="sc">+</span> x_2, df)</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>X <span class="sc">%*%</span> beta_s</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       [,1]
+1 0.6296296
+2 3.4629630
+3 2.6851852
+4 6.7222222</code></pre>
+</div>
+</div>
+<p>Die Modellkoeffizienten werden bei der Berechnung der Werte <span class="math inline">\(\hat{y}_i\)</span> immer multiplikativ mit der jeweiligen Spalte verbunden. Etwas explizierter.</p>
+<p><span class="math display">\[\begin{equation*}
+\hat{y} = \begin{pmatrix} \hat{y}_1 \\ \hat{y}_2 \\ \hat{y}_3 \\ \hat{y}_4 \end{pmatrix} = \begin{pmatrix} 1 \\ 1 \\ 1 \\ 1 \end{pmatrix} \times \hat{\beta_0} + \begin{pmatrix} 1 \\ 2 \\ 3 \\ 4 \end{pmatrix} \times \hat{\beta_1} + \begin{pmatrix} 11 \\ 11 \\ 14 \\ 13 \end{pmatrix} \times \hat{\beta_2} = X \hat{\beta}
+\end{equation*}\]</span></p>
+<p>Dies sind dementsprechend die gleichen Werte <span class="math inline">\(\hat{y}_i\)</span> wie mittels der Funktion <code>predict()</code> berechnet werden.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(mod)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        1         2         3         4 
+0.6296296 3.4629630 2.6851852 6.7222222 </code></pre>
+</div>
+</div>
+<p>Wenn sich nun das Modell ändert, dann ändert sich dementsprechend auch die Modellmatrix <span class="math inline">\(X\)</span>. Zu Beispiel bei der Hinzunahme von weiteren Prädiktorvariablen verändert sich die Modellmatrix <span class="math inline">\(X\)</span> dahingehend, dass zusätzliche Spalten an die Matrix angehängt werden. Etwas interessanter wird es, wenn im weiteren Verlauf des Skripts Interaktionseffekte und kategoriale Variablen in das Modell aufgenommen werden. Hier ist dann Kenntnis über die Modellmatrix von Vorteil um die Bedeutung der Modellkoeffizienten besser verstehen zu können.</p>
+</section>
+<section id="take-away" class="level2" data-number="17.5">
+<h2 data-number="17.5" class="anchored" data-anchor-id="take-away"><span class="header-section-number">17.5</span> Take-away</h2>
 <ul>
 <li>Bei der multiplen Regression wird das Modell um zusätzliche Prädiktorvariablen erweitert</li>
 <li>Die Interpretation der Modellkoeffizienten ist bezieht sich auf den Einfluss der jeweiligen Variblen über denjenigen der anderen Variablen hinaus</li>
 <li>Die Korrelation der Prädiktorvariablen, die Multikollinearität, untereinander kann zu unvorhergesehenen Effekten bei den Modellkoeffizienten führen</li>
 </ul>
 </section>
-<section id="zum-nacharbeiten" class="level2" data-number="17.5">
-<h2 data-number="17.5" class="anchored" data-anchor-id="zum-nacharbeiten"><span class="header-section-number">17.5</span> Zum Nacharbeiten</h2>
+<section id="zum-nacharbeiten" class="level2" data-number="17.6">
+<h2 data-number="17.6" class="anchored" data-anchor-id="zum-nacharbeiten"><span class="header-section-number">17.6</span> Zum Nacharbeiten</h2>
 <p>Die folgenden Texte eignen sich gut um die Inhalte noch einmal zu vertiefen. <span class="citation" data-cites="pos_multiple_regression">Altman und Krzywinski (<a href="references.html#ref-pos_multiple_regression" role="doc-biblioref">2015</a>)</span> diskutiert noch mal eingehend was passiert wenn Variablen miteinander korrelieren und wie sich das auf die Schätzer für die Koeffizienten auswirkt. <span class="citation" data-cites="kutner2005">(<a href="references.html#ref-kutner2005" role="doc-biblioref">Kutner u.&nbsp;a. 2005, p.278–288</a>)</span> und <span class="citation" data-cites="fox2011">(<a href="references.html#ref-fox2011" role="doc-biblioref">Fox 2011, p.325–327</a>)</span> sind nochmal als Zusammenfassungen zu lesen.</p>
 
 

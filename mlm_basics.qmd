@@ -604,6 +604,72 @@ Es ist zu erkennen, dass die Größe der Modellkoeffizienten sehr stark davon ab
 
 Zusammenfassend ist es entsprechend wichtig dass bei der Modellierung mittels einer multiplen linearen Regression theoretische Vorüberlegungen über die relevanten Variablen in die Studie mit eingehen. Ein einfaches probieren mittels In- und Exklusion von Prädiktorvariablen wird selten zum gewünschten Erfolg führen bzw. zu einem robustem Modell führen. Zumindest wenn es darum geht den Werten der Modellkoeffizienten auch inhaltliche Bedeutung zuweisen zu können.
 
+## Unter der Motorhaube von `lm()` die Modellmatrix
+
+Für die weitere Arbeit mit der multiplen linearen Regression ist es von Vorteil ein etwas tiefergehendes Verständnis der Berechnungen in `R` bei der Verwendung von `lm()` zu haben. Insbesondere die Kenntnis der sogenannten Modellmatrix ist dabei von Vorteil. 
+
+::: {#def-model-matrix}
+## Modellmatrix 
+
+Die Modellmatrix \index{Modellmatrix}, auch als Designmatrix \index{Designmatrix} oder Regressionsmatrix \index{Regressionsmatrix}, ist eine Matrix welche die zur Modellierung verwendeten Daten in Form einer Matrix enthält. Jede Zeile der Modellmatrix repräsentiert eine Beobachtung, während jede Spalte einer Prädiktorvariable entspricht. Die Modellmatrix wird oft mit dem Buchstaben $X$ bezeichnet.
+
+:::
+
+In `R` kann eine Modellmatrix mit Hilfe der Funktion `model.matrix()` erzeugt werden. Am einfachsten ist die Funktion anhand eines Beispiels nach zu vollziehen. Sei der folgende einfache Beispieldatensatz gegeben:
+
+```{r}
+#| echo: true
+
+df <- tibble(
+  y = c(1,3,2.5,7),
+  x_1 = 1:4,
+  x_2= c(11,11,14,13) 
+)
+```
+
+Wenn nun eine lineares Modell an die *Daten* gefittet wird, dann würde die folgende Syntax verwendet werden `lm(y ~ x_1 + x_2)` entsprechend zu dem Modell $y_i = \beta_0 + \beta_1 x_{1i}+ \beta_2 x_{2i} + \epsilon_i$. Was nun intern in `lm()` passiert ist, das die Berechnung auf ein mathematisches Problem abgebildet wird, das mit Hilfe von Matrizenalgebra gelöst wird. Die genaueren Schritte sind zunächst nicht weiter wichtig, sondern nur der erste Schritt die Erstellung der Modellmatrix $X$. Die erzeugte Modellmatrix kann angezeigt werden, indem die Funktion `model.matrix()` auf das Modellobjekt angewendet wird.
+
+```{r}
+#| echo: true
+
+mod <- lm(y ~ x_1 + x_2, df)
+model.matrix(mod)
+```
+
+Alternativ kann die Modellmatrix anhand der *Formel* und dem Datensatz erstellt werden:
+
+```{r}
+#| echo: true
+
+model.matrix(~ x_1 + x_2, data = df)
+```
+
+Laut der Definition, ist die Modellmatrix $X$ die numerische Darstellung der Prädiktorvariablen mittels einer Matrix. In der zweiten Spalte sind die Werte der Variablen `x_1`, während in der dritten Spalte die Werte der Variablen `x_2` eingetragen sind. Die Spalten entsprechen also den jeweiligen Einträgen der Prädiktorvariablen $x_{ji}$. Die erste Spalte sticht hier etwas raus, da hier nur $1$ eingetragen sind. Diese Spalte ist dem ersten Modellkoeffizienten $\beta_0$ zugeordnet, also dem *konstanten* $y$-Achsenabschnitt. Dies hat den Vorteil, dass die vorhergesagten Werte durch eine einfache Matrixmultiplikation berechnet werden können (im Anhang ist dazu eine kurze Erläuterung, ist aber nicht notwendig für das weitere Verständnis).
+
+```{r}
+#| echo: true
+
+beta_s <- coef(mod)
+X <- model.matrix(~ x_1 + x_2, df)
+X %*% beta_s
+```
+
+Die Modellkoeffizienten werden bei der Berechnung der Werte $\hat{y}_i$ immer multiplikativ mit der jeweiligen Spalte verbunden. Etwas explizierter.
+
+\begin{equation*}
+\hat{y} = \begin{pmatrix} \hat{y}_1 \\ \hat{y}_2 \\ \hat{y}_3 \\ \hat{y}_4 \end{pmatrix} = \begin{pmatrix} 1 \\ 1 \\ 1 \\ 1 \end{pmatrix} \times \hat{\beta_0} + \begin{pmatrix} 1 \\ 2 \\ 3 \\ 4 \end{pmatrix} \times \hat{\beta_1} + \begin{pmatrix} 11 \\ 11 \\ 14 \\ 13 \end{pmatrix} \times \hat{\beta_2} = X \hat{\beta}
+\end{equation*}
+
+Dies sind dementsprechend die gleichen Werte $\hat{y}_i$ wie mittels der Funktion `predict()` berechnet werden.
+
+```{r}
+#| echo: true
+
+predict(mod)
+```
+
+Wenn sich nun das Modell ändert, dann ändert sich dementsprechend auch die Modellmatrix $X$. Zu Beispiel bei der Hinzunahme von weiteren Prädiktorvariablen verändert sich die Modellmatrix $X$ dahingehend, dass zusätzliche Spalten an die Matrix angehängt werden. Etwas interessanter wird es, wenn im weiteren Verlauf des Skripts Interaktionseffekte und kategoriale Variablen in das Modell aufgenommen werden. Hier ist dann Kenntnis über die Modellmatrix von Vorteil um die Bedeutung der Modellkoeffizienten besser verstehen zu können.
+
 ## Take-away
 
 - Bei der multiplen Regression wird das Modell um zusätzliche Prädiktorvariablen erweitert
