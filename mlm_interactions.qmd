@@ -185,19 +185,27 @@ hb_quick <- handball |>
 ## Interaktion zwischen zwei Effekten
 
 ::: {#def-interaction}
-## Interaktionseffekt\index{Interaktion}
+## Interaktionseffekt\index{Interaktionseffekt}
 
 Wenn der Effekt einer unabhängigen Variable auf die abhängige Variable davon abhängt welche Ausprägung eine weitere unabhängige Variable hat, dann wird dies als ein Interaktionseffekt bezeichnet.
+:::
+
+In Abgrenzung zu Interaktionseffekte werden die *normalen* Effekte als Haupteffekte bezeichnet.
+
+::: {#def-maineffect}
+## Haupteffekte \index{Haupteffekt}
+
+Haupteffekte beschreiben den **isolierten Einfluss** einer unabhängigen Variable auf die abhängige Variable, unabhängig von anderen Variablen im Modell.  
 :::
 
 Im Rahmen eines linearen Modells, wird ein solcher Interaktionseffekt durch einen *multiplikativen* Term zwischen den beiden Variablen modelliert.
 
 \begin{equation}
-Y_{i} = \beta_0 + \beta_1 \times \textrm{body_mass}_i + \beta_2 \times \textrm{arm_span}_i + \beta_3 \times \textrm{bm}_i \times \textrm{as}_i + \epsilon_i
+Y_{i} = \beta_0 + \beta_1 \times \textrm{bodymass}_i + \beta_2 \times \textrm{armspan}_i + \beta_3 \times \textrm{bodymass}_i \times \textrm{armspan}_i + \epsilon_i
 \label{mlm-inter-model-ex}
 \end{equation}
 
-In der Formel \eqref{mlm-inter-model-ex} ist neben den beiden Mdeollkoeffizienten $\beta_1$ und $\beta_2$ jetzt ein weitere Koeffizienten $\beta_3$ der den Interaktionseffekt abbildet. Die $X$-Werte die diesem Modellkoeffizienten zugeordnet sind, berechnen sich aus Produkt aus den beiden beteiligten Prädiktorvariablen. In dem vorliegenden Handballbeispiel aus dem Produkt aus Armspannweite und Körpergewicht $\text{body_mass}_i \times \text{arm_span}_i$. Dies ist der Interaktionseffekt.
+In der Formel \eqref{mlm-inter-model-ex} ist neben den beiden Mdeollkoeffizienten $\beta_1$ und $\beta_2$ jetzt ein weitere Koeffizienten $\beta_3$ der den Interaktionseffekt abbildet. Die $X$-Werte die diesem Modellkoeffizienten zugeordnet sind, berechnen sich aus Produkt aus den beiden beteiligten Prädiktorvariablen. In dem vorliegenden Handballbeispiel aus dem Produkt aus Armspannweite und Körpergewicht `body_mass` $\times$ `arm_span`. Dies ist der Interaktionseffekt.
 
 Warum die Multiplikation zwischen den Prädiktorvariablen sinnvoll ist, wird etwas später genauer betrachtet. 
 
@@ -232,7 +240,7 @@ handball <- handball |>
 mod_3 |> lm_tbl_knitr(caption = "Modell 3", long = T, add_sigma = T)
 ```
 
-Bei Betrachtung der Residualvarianz $\hat{\sigma}$ ist zu beobachten, dass sich der halbiert hat. D.h das Interaktionsmodell scheint deutlich präziser den Zusammenhang zwischen den Prädiktorvariablen und der abhängigen Variablen abbilden zu können, als dies bei dem rein additiven Modell der Fall war. Zusätzlich haben sich die Standardfehler der beiden Steigungskoeffizienten für die Haupteffekte deutlich verringert (vgl. @tbl-mlm-inter-handball-mod2). Beide Koeffizienten sind nun statistisch signifikant geworden. Der neu dazugekommene Koeffizient für den Interaktionseffekt ist ebenfalls statistisch signifikant mit einem sehr kleinen Standardfehler. D.h die Hinzunahme des Interaktionseffekts hat in dem vorliegenden Beispiel dazu geführt, dass der Modellfit deutlich verbessert wurde. Im nächsten Schritt soll nun die Wirkung des Interaktionseffekt noch einmal deutlicher herausgearbeitet werden.
+Bei Betrachtung der Residualvarianz $\hat{\sigma}$ ist zu beobachten, dass sich der halbiert hat. D.h das Interaktionsmodell scheint deutlich präziser den Zusammenhang zwischen den Prädiktorvariablen und der abhängigen Variablen abbilden zu können, als dies bei dem rein additiven Modell der Fall war. Zusätzlich haben sich die Standardfehler der beiden Steigungskoeffizienten für die **Haupteffekte** deutlich verringert (vgl. @tbl-mlm-inter-handball-mod2). Beide Koeffizienten sind nun statistisch signifikant geworden. Der neu dazugekommene Koeffizient für den Interaktionseffekt ist ebenfalls statistisch signifikant mit einem sehr kleinen Standardfehler. D.h die Hinzunahme des Interaktionseffekts hat in dem vorliegenden Beispiel dazu geführt, dass der Modellfit deutlich verbessert wurde. Im nächsten Schritt soll nun die Wirkung des Interaktionseffekt noch einmal deutlicher herausgearbeitet werden.
 
 ## Koeffizienten im Interaktionsmodell verstehen
 
@@ -368,14 +376,14 @@ tbl_simple <- hb_new_3 |>
 tbl_simple
 
 mod_3_cs <- coef(mod_3) 
-names(mod_3_cs) <- c('b0','bm_c','as_c','bm_c:as_c')
-knitr::kable(mod_3_cs, booktabs = T, col.names = 'betas',
+names(mod_3_cs) <- c('`(Intercept)`','`bm_c`','`as_c`','`bm_c:as_c`')
+knitr::kable(mod_3_cs, booktabs = T, col.names = '$\\beta$',
              digits = 3, caption='Modellkoeffizienten', escape=T)
 ```
 
 Entsprechend den Graphen in @fig-mlm-inter-mod3-coefs-1 ist der Steigungskoeffizient für $\beta_1$ für die Armspannweiten $0$ und $10$ positive, während er bei der Armspannweite $-10$ negativ ist. Ein Vergleich dieser Wert mit denjenigen aus dem Interaktionsmodell in @tbl-mlm-inter-mod3-coefs-1-2 zeigt, dass die Werte unterschiedlich sind. Um nun nachzuvollziehen, dass die Werte in @tbl-mlm-inter-mod3-coefs-1-1 aus denjenigen in @tbl-mlm-inter-mod3-coefs-1-2 resultieren sind ein paar Vereinfachungen notwendig.
 
-Sei zunächst einmal die zentrierte Körpermasse auf $\text{body_mass} = 0$. D.h. in @fig-mlm-inter-mod3-coefs-1 bewegen wir uns entlang grünen, eingezeichneten Linie. Wenn ein Handballer nun ebenfalls eine durchschnittliche Armspannweite hat, also $\text{arm_span} = 0$ dann wird eine Wurfgeschwindigkeit von $v = 21.346$ vorhergesagt. D.h. $\text{body_mass} = 0$ und $\text{arm_span} = 0$ also genau der $Y$-Achsenabschnitt in Modell 3. Sei nun ein Handballer mit durschnittlicher Körpermasse aber einer Armspannweite von $+10$ cm also $cm = 10$ gegeben. In @fig-mlm-inter-mod3-coefs-1 würde das einer vertikalen Beweung entlang der grünen Linie nach oben entsprechen. In Modellkoeffizienten gesprochen bedeutet dies:
+Sei zunächst einmal die zentrierte Körpermasse auf $\text{bodymass} = 0$. D.h. in @fig-mlm-inter-mod3-coefs-1 bewegen wir uns entlang der eingezeichneten, grünen Linie. Wenn ein Handballer nun ebenfalls eine durchschnittliche Armspannweite hat, also $\text{armspan} = 0$ dann wird eine Wurfgeschwindigkeit von $v = 21.346$ vorhergesagt. D.h. $\text{bodymass} = 0$ und $\text{armspan} = 0$ also genau der $Y$-Achsenabschnitt in Modell 3. Sei nun ein Handballer mit durschnittlicher Körpermasse aber einer Armspannweite von $+10$ cm also $cm = 10$ gegeben. In @fig-mlm-inter-mod3-coefs-1 würde das einer vertikalen Beweung entlang der grünen Linie nach oben entsprechen. In Modellkoeffizienten gesprochen bedeutet dies:
 
 \begin{align*}
 \hat{y} &= 21.346 + 0.119 \cdot 0 + 0.083 \cdot 10 + 0.021 \cdot 0 \cdot 10 \\
@@ -389,14 +397,16 @@ Der Wert ist, bis auf ein paar Rundungsfehler, dem $Y$-Achsenabschnitt $\beta_0$
 &= 21.346 - 0.83 = 20.516
 \end{align*}
 
-Dies entspricht wieder, bis auf Rundungsfehler, dem $Y$-Achsenabschnitt in @tbl-mlm-inter-mod3-coefs-1-1 an unter dem Eintrag für Armspannweite $-10$. Wenn wir einen Handballer mit einer Armspannweite von $as = 0$ nehmen, dann haben wir direkt den Koeffizienten in @tbl-mlm-inter-mod3-coefs-1-2. Die Wurfgeschwindigkeit verändert sich somit mit der Körpermasse über den Koeffizienten $\beta_{bm_c} = 0.119$. Denn eingesetzt in die Modellgleichung erhalten wir:
+Dies entspricht wieder, bis auf Rundungsfehler, dem $Y$-Achsenabschnitt in @tbl-mlm-inter-mod3-coefs-1-1 unter dem Eintrag für Armspannweite $-10$ ($20.516 \approx 20.514$).
+
+Sei nun ein Handballer mit einer Armspannweite von $as = 0$ gegeben. Dann können die Koeffizienten in @tbl-mlm-inter-mod3-coefs-1-2 direkt abgelesen werden. Die Wurfgeschwindigkeit verändert sich somit mit der Körpermasse über den Koeffizienten $\beta_{bm_c} = 0.119$. Eingesetzt in die Modellgleichung führt dies zu:
 
 \begin{align*}
 \hat{y} &= 21.346 + 0.119 \cdot bm_c + 0.083 \cdot 0 + 0.021 \cdot bm_c \cdot 0 \\
 &= 21.346 + 0.119 \cdot bm_c
 \end{align*}
 
-Was passiert nun, wenn beide Prädiktorvariablen $as\neq 0$ und $bm\neq 0$ sind. Sei zum Beispiel $as = 10$. Wie verändert sich der vorhergesagte Wert $\hat{y}_i$ mit der Körpermasse $bm_c$. Wir lassen $bm_c$ jetzt offen als Variable um die Steigungsgleichung zu bestimmen. Wieder eingesetzt in das Modell ergibt dies:
+Als nächstes wird der Fall betrachtet, wenn beide Prädiktorvariablen $as\neq 0$ und $bm\neq 0$ sind. Sei zum Beispiel $as = 10$. Wie verändert sich der vorhergesagte Wert $\hat{y}_i$ mit der Körpermasse $bm_c$. $bm_c$ bleibt offen um die Steigungsgleichung zu bestimmen. Wieder eingesetzt in das Modell ergibt dies:
 
 \begin{align*}
 \hat{y} &= 21.346 + 0.119 \cdot bm_c + 0.083 \cdot 10 + 0.021 \cdot bm_c \cdot 10 \\
@@ -405,13 +415,13 @@ Was passiert nun, wenn beide Prädiktorvariablen $as\neq 0$ und $bm\neq 0$ sind.
 &= 22.175 + 0.329 \cdot bm_c
 \end{align*}
 
-D.h. wir erhalten, bis auf ein paar Rundungsfehler, die Steigungskoeffizienten der Geradengleichung in @tbl-mlm-inter-mod3-coefs-1-1.
+Bis auf ein paar Rundungsfehler, werden die Steigungskoeffizienten der Geradengleichung in @tbl-mlm-inter-mod3-coefs-1-1 für den Eintrag `as = 10` erhalten. 
+
+In Bezug auf die Interpretation der Modellkoeffizienten ergibt sich somit das folgende Bild. Der Modellkoeffizient $\beta_0$ beschreibt den $y$-Achsenabschnitt wenn alle Prädiktorvariablen den Wert $0$ annehmen. Wenn einer der beiden Prädiktorvariablen $0$ ist, dann beschreibt der andere  Modellkoeffizient die Verschiebung des $Y$-Achsenabschnitts der *einfachen* Gerade deren Steigung durch den Modellkoeffizienten beschrieben wird. Wenn beide Prädiktorvariablen $neq 0$ sind, dann kommt erst der Interaktionskoeffizient ins Spiel und führt zu einer Veränderung der einfachen Steigung in Abhängigkeit von der Kombination der Prädiktorvariablen.
 
 ::: {#exr-interaction-coeffs}
 Versuche anhand der Koeffizienten in @tbl-mlm-inter-mod3-coefs-1-2 die einfache Steigungsgleichung für $as_c = -10$ zu erhalten.
 ::: 
-
-### Zusammenfassung
 
 Zusammenfassend lässt sich die folgende Interpretation der Koeffizienten in einem Interaktionsmodell mit zwei Prädiktorvariablen formulieren.
 
@@ -420,10 +430,9 @@ Y = b_0 + b_1 \cdot x_1 + b_2 \cdot x_2 + b_3 \cdot x_1 \cdot x_2 + \epsilon_i
 \end{equation*}
 
 - $b_0$: (y-Achsenabschnitt) der Wert von $\hat{Y}$ wenn $x_1 = 0$ und $x_2 = 0$ gilt.
-- $b_1$: Der Unterschied in $\hat{Y}$ wenn zwei Objekte sich in $x_1$ um eine Einheit unterscheiden und $x_2 = 0$ ist.
-- $b_2$: Der Unterschied in $\hat{Y}$ wenn zwei Objekte sich in $x_2$ um eine Einheit unterscheiden und $x_1 = 0$ ist.
+- $b_1$: Der Unterschied in $\hat{Y}$ wenn zwei Objekte sich in $x_1$ um eine Einheit unterscheiden und $x_2 = 0$ ist (Haupteffekt).
+- $b_2$: Der Unterschied in $\hat{Y}$ wenn zwei Objekte sich in $x_2$ um eine Einheit unterscheiden und $x_1 = 0$ ist (Haupteffekt).
 - $b_3$: (Interaktionskoeffizient) Die Veränderung des Effekts von $x_1$ auf $\hat{Y}$ wenn $x_2$ um eine Einheit größer wird bzw. genau andersherum für $x_2$.
-
 
 ## Vergleich additives Modell mit dem Interaktionsmodell
 
@@ -563,10 +572,21 @@ df <- tibble(
 Die Anwendung der Funktion `model.matrix()` mit einem Interaktionsterm zwischen `x_1` und `x_2` führt zu folgender Darstellung.
 
 ```{r}
+#| echo: true
+
 model.matrix(~x_1 + x_2 + x_1:x_2, df)
 ```
 
 Es ist zu beobachten, dass eine weitere Spalte für den Interaktionsterm zur Modellmatrize hinzugefügt wurde. Die Werte sind dabei genau das Ergebnis der Multiplikation zwischen den Werten von `x_1` und `x_2`.
+
+Wie oben schon erwähnt führt `~x_1 * x_2` zum gleichem Ergebnis.
+
+```{r}
+#| echo: true
+
+model.matrix(~x_1 * x_2, df)
+```
+
 
 ## Take-away
 
