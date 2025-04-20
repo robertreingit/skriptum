@@ -494,7 +494,10 @@ window.Quarto = {
   <ul>
   <li><a href="#vergleich-von-zwei-unabhängigen-gruppen" id="toc-vergleich-von-zwei-unabhängigen-gruppen" class="nav-link active" data-scroll-target="#vergleich-von-zwei-unabhängigen-gruppen"><span class="header-section-number">19.1</span> Vergleich von zwei unabhängigen Gruppen</a></li>
   <li><a href="#nominale-variablen-in-r" id="toc-nominale-variablen-in-r" class="nav-link" data-scroll-target="#nominale-variablen-in-r"><span class="header-section-number">19.2</span> Nominale Variablen in <code>R</code></a></li>
-  <li><a href="#vergleich-von-zwei-gruppen-continued" id="toc-vergleich-von-zwei-gruppen-continued" class="nav-link" data-scroll-target="#vergleich-von-zwei-gruppen-continued"><span class="header-section-number">19.3</span> Vergleich von zwei Gruppen (continued)</a></li>
+  <li><a href="#vergleich-von-zwei-gruppen-continued" id="toc-vergleich-von-zwei-gruppen-continued" class="nav-link" data-scroll-target="#vergleich-von-zwei-gruppen-continued"><span class="header-section-number">19.3</span> Vergleich von zwei Gruppen (continued)</a>
+  <ul class="collapse">
+  <li><a href="#verwendung-von-indikatorvariablen-in-lm" id="toc-verwendung-von-indikatorvariablen-in-lm" class="nav-link" data-scroll-target="#verwendung-von-indikatorvariablen-in-lm"><span class="header-section-number">19.3.1</span> Verwendung von Indikatorvariablen in <code>lm()</code></a></li>
+  </ul></li>
   <li><a href="#dummyvariablen-bei-mehr-als-zwei-faktorstufen" id="toc-dummyvariablen-bei-mehr-als-zwei-faktorstufen" class="nav-link" data-scroll-target="#dummyvariablen-bei-mehr-als-zwei-faktorstufen"><span class="header-section-number">19.4</span> Dummyvariablen bei mehr als zwei Faktorstufen</a></li>
   <li><a href="#kombination-von-kontinuierlichen-und-nominalen-prädiktorvariablen" id="toc-kombination-von-kontinuierlichen-und-nominalen-prädiktorvariablen" class="nav-link" data-scroll-target="#kombination-von-kontinuierlichen-und-nominalen-prädiktorvariablen"><span class="header-section-number">19.5</span> Kombination von kontinuierlichen und nominalen Prädiktorvariablen</a></li>
   <li><a href="#verschiedene-kodierschemas-für-die-dummy-variablen." id="toc-verschiedene-kodierschemas-für-die-dummy-variablen." class="nav-link" data-scroll-target="#verschiedene-kodierschemas-für-die-dummy-variablen."><span class="header-section-number">19.6</span> Verschiedene Kodierschemas für die Dummy-Variablen.</a>
@@ -887,31 +890,28 @@ y_i = \beta_0 + \beta_1 \cdot x_i + \epsilon_i = \beta_0 + \beta_1 \cdot 0 = \be
 <p><span class="math display">\[\begin{equation*}
 \hat{y}_{f} = \beta_0 + \epsilon_i, \quad \epsilon \sim \mathcal{N}(0,\sigma)
 \end{equation*}\]</span></p>
-<p>Diese Formulierung ist genau gleich derjenigen die im t-Test-Ansatz verwendet wurde (siehe <span class="math inline">\(\eqref{eq-mlm-dummy-tTest-model}\)</span>). Formal wird also der Mittelwert <span class="math inline">\(\mu_f\)</span> mit dem <span class="math inline">\(Y\)</span>-Achsenabschnitt <span class="math inline">\(\beta_0\)</span> identifziert:</p>
+<p>Diese Formulierung ist genau gleich derjenigen die im t-Test-Ansatz verwendet wurde (siehe <span class="math inline">\(\eqref{eq-mlm-dummy-tTest-model}\)</span>). Formal wird also der Mittelwert <span class="math inline">\(\mu_f\)</span> mit dem <span class="math inline">\(Y\)</span>-Achsenabschnitt <span class="math inline">\(\beta_0\)</span> identifiziert:</p>
 <p><span class="math display">\[\begin{equation*}
 \beta_0 = \mu_f
 \end{equation*}\]</span></p>
-<p>Schauen wir uns <span class="math inline">\(\beta_1\)</span> nun an. Wenn ein Datenpunkt aus der Gruppe <code>m</code> kommt dann wird <span class="math inline">\(x_i = 1\)</span> gesetzt. Formal:</p>
+<p>Da die Indikatorvariable <span class="math inline">\(X_i\)</span> für Werte aus der Gruppe <code>f</code> den Wert <span class="math inline">\(0\)</span> zugewiesen bekommt, wird für <span class="math inline">\(Y\)</span>-Werte aus der Gruppe <code>m</code> entsprechend der Indikatorwert <span class="math inline">\(1\)</span> zugewiesen. Formal führt dies also zu:</p>
 <p><span class="math display">\[\begin{equation*}
-y_i = \beta_0 + \beta_1 x_i + \epsilon_i = \beta_0 + \beta_1 + \epsilon
+Y_i = \beta_0 + \beta_1 X_i = \beta_0 + \beta_1 \cdot 1 = \beta_0 + \beta_1
 \end{equation*}\]</span></p>
-<p>Das sieht jetzt etwas unverständlich aus. Machen wir einfach mal die folgende Festlegung: <span class="math inline">\(\beta_1 = \mu_m - \mu_f = \Delta\)</span>. D.h. wir setzen als <span class="math inline">\(\beta_1\)</span> der Unterschied zwischen den beiden Gruppenmittelwerten. Setzen wir das mal ein und schauen ob uns das weiter bringt.</p>
+<p>D.h. der vorhergesagte Wert <span class="math inline">\(\hat{y}_i\)</span> ist wieder nur eine Konstante für alle Werte von <span class="math inline">\(i\)</span>, die sich jetzt aber aus beiden Modellparametern <span class="math inline">\(\beta_0\)</span> und <span class="math inline">\(\beta_1\)</span> zusammensetzt. Mit der gleichen Argumentation wie oben, ist der Wert der unter der Randbedingung des Minimums der mittleren, quadrierten Abweichungen der Mittelwert der Werte aus der Gruppe <code>m</code>. Daraus folgt, zusammen mit der Festsetzung von eben $<em>0 = {y}</em>{f}:</p>
+<p><span class="math display">\[\begin{align*}
+\bar{y}_{m} &amp;= \beta_0 + \beta_1 = \bar{y}_{f} + \beta_1 \\
+\Leftrightarrow \beta_1 &amp;= \bar{y}_{m} - \bar{y}_{f}
+\end{align*}\]</span></p>
+<p>Daraus folgt, dass der Modellparameter <span class="math inline">\(\beta_1\)</span>, der <em>Steigungskoeffizient</em>, den Unterschied der Mittelwerten <span class="math inline">\(\Delta = \bar{y}_{m} - \bar{y}_{f}\)</span> zwischen den beiden Gruppen modelliert.</p>
+<p>Insgesamt resultieren daraus die folgenden Zusammenhänge wenn noch die Annnahme der normalverteilten Residuen <span class="math inline">\(\epsilon_i \sim \mathcal{N}(0,\sigma)\)</span> dazugenommen werden.</p>
 <p><span class="math display">\[\begin{align*}
 y_i &amp;= \beta_0 + \beta_1 \cdot 0 + \epsilon_i = \mu_f + \Delta \cdot 0 + \epsilon_i = \mu_f + \epsilon_i \\
 y_i &amp;= \beta_0 + \beta_1 \cdot 1 + \epsilon_i = \mu_f + \Delta \cdot 1 + \epsilon_i = \mu_f + (\mu_m - \mu_f) + \epsilon_i = \mu_m + \epsilon_i
 \end{align*}\]</span></p>
-<p>D.h. wir sind mittels der Indikatorvariablen in der Lage das Modell des t-Test (Formel <span class="math inline">\(\eqref{eq-mlm-dummy-tTest-model}\)</span>) in ein lineares Modell eine einfache lineare Regression zu übersetzen.</p>
-<p><span class="math display">\[\begin{align*}
-Y_i &amp;= \mu_f + \Delta_{m} \times x_{i} + \epsilon_i \\
-\Delta_m &amp;= \mu_m - \mu_f \\
-\end{align*}\]</span></p>
-<p>Eine der Voraussetzungen im t-Test ist die Normalverteilung der Wert. Letztendlich bedeutet dies, dass wenn ich von den <span class="math inline">\(y_i\)</span>-Werten eine Konstante abziehen, das der Rest auch wieder Normalverteilt ist. Der Rest ist jetzt nichts anderes als die Residuen, wenn ich von den <span class="math inline">\(y\)</span>-Werten die jeweiligen Gruppenmittelwerte abziehe.</p>
-<p><span class="math display">\[\begin{align*}
-e_{if} &amp;= y_{if} - \mu_f \\
-e_{im} &amp;= y_{im} - \mu_m
-\end{align*}\]</span></p>
-<p>D.h. somit, dass die Residuen <span class="math inline">\(e_i\)</span> Normalverteilt. Das ist aber auch eine der Voraussetzungen für die Inferenz im linearen Modell. Im linearen Modell wird weiterhin Homoskedasitzität voraussgetzt, was nichts anderes als die Varianzgleichheit im t-Test ist.</p>
-<p>Um den Ansatz einmal konkret zu machen, können wir zum Beispiel den ersten Wert aus <a href="#tbl-mlm-dummy-gender" class="quarto-xref">Tabelle&nbsp;<span>19.1</span></a> <span class="math inline">\(y_{1m} = 174.4\)</span> in seine Komponenten aufteilen. Wir erhalten <span class="math inline">\(\Delta = 179.53 - 168.78 = 10.75, e_{1m} = 174.4 - 179.53= -5.13\)</span> und <span class="math inline">\(x_{1m} = 1\)</span>.</p>
+<p>Insgesamt zeigt dies, dass mittels der Indikatorvariablen eine Abbildung des einfachen linearen Regressionsmodells auf den t-Test (Formel <span class="math inline">\(\eqref{eq-mlm-dummy-tTest-model}\)</span>) möglich ist. Der t-Test ist kann daher als <em>Spezialfall</em> der einfachen Regression bzw. des einfachen linearen Modells betrachtet werden.</p>
+<p>Die Voraussetzungen im t-Test der Normalverteilung der Werte, bedeutet hierbei letztendlich nichts anderes, als die Normalverteilung der Residuen im Regressionsmodell. Die Voraussetzung der Varianzgleichheit ist dabei nichts anderes als die Homoskedastizität im linearen Modell.</p>
+<p>Um den Ansatz einmal konkret zu machen, sei zum Beispiel den ersten Wert aus <a href="#tbl-mlm-dummy-gender" class="quarto-xref">Tabelle&nbsp;<span>19.1</span></a> <span class="math inline">\(y_{1m} = 174.4\)</span> in seine Komponenten aufgeteilt. Es folgt <span class="math inline">\(\Delta = 179.53 - 168.78 = 10.75, e_{1m} = 174.4 - 179.53= -5.13\)</span> und <span class="math inline">\(x_{1m} = 1\)</span>.</p>
 <p><span class="math display">\[\begin{align*}
 y_{1m} = 174.4 &amp;= \mu_f + \Delta \cdot x_{1m} + e_{1m} \\
 &amp;= 168.78 + 10.74 \cdot 1 - 5.13
@@ -921,7 +921,10 @@ y_{1m} = 174.4 &amp;= \mu_f + \Delta \cdot x_{1m} + e_{1m} \\
 y_{1f} = 171.3 &amp;= \mu_f + \Delta \cdot x_{1f} + e_{1f} \\
 &amp;= 168.78 + 10.74 \cdot 0 + 2.52
 \end{align*}\]</span></p>
-<p>Zusammenfassend, haben wir mit der Indikatorvariable und dem <span class="math inline">\(\Delta\)</span> zwischen den Mittelwerten der beiden Gruppen eine Möglichkeit gefunden das t-Test Modell auf das lineare Modell abzubilden. Und tatsächlich, wenn das Modell in <code>lm()</code> eingeben:</p>
+<p>Zusammenfassend, mit Hilfe von Indikatorvariable ist eine Möglichkeit gefunden worden, mit der das t-Test Modell auf das lineare Modell abgebildet werden kann.</p>
+<section id="verwendung-von-indikatorvariablen-in-lm" class="level3" data-number="19.3.1">
+<h3 data-number="19.3.1" class="anchored" data-anchor-id="verwendung-von-indikatorvariablen-in-lm"><span class="header-section-number">19.3.1</span> Verwendung von Indikatorvariablen in <code>lm()</code></h3>
+<p>In <code>lm()</code> kann eine nominale Variable genauso wie die bisherigen kontinuierlichen Variablen verwendet werden.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(cm <span class="sc">~</span> gender, height)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -957,7 +960,8 @@ y_{1f} = 171.3 &amp;= \mu_f + \Delta \cdot x_{1f} + e_{1f} \\
 </table>
 </div>
 </div>
-<p>Dann sehen wir, dass wir genau diese Werte auch herausbekommen. <code>lm()</code> gibt die Faktorstufe nach dem Namen der Faktorvariable an. Im Beispiel steht <code>genderm</code> für Stufe <code>m</code> aus dem Faktor <code>gender</code>. Wenn wir uns die Werte für den t-Wert für <span class="math inline">\(\beta_1 = \Delta\)</span> anschauen, dann sehen wir, dass der Wert exakt mit demjenigen übereinstimmt, den wir mittels des t-Test berechnet haben. Lediglich das Vorzeichen ist in der anderen Richtung was aber nur damit zusammenhängt welcher Gruppenmittelwert von dem anderen Gruppenmittelwert subtrahiert werden. Schauen wir uns das Konfidenzintervall für den <em>Steigungskoeffizienten</em> <span class="math inline">\(\beta_1\)</span> an:</p>
+<p><code>lm()</code> gibt die Faktorstufe nach dem Namen der Faktorvariable an. Im Beispiel steht <code>genderm</code> für Stufe <code>m</code> aus dem Faktor <code>gender</code>. Der Wert für <span class="math inline">\(\hat{\beta}_0\)</span> entspricht genau demjenigen in <a href="#tbl-mlm-dummy-gender-desc" class="quarto-xref">Tabelle&nbsp;<span>19.2</span></a>. Weiterhin, der Wert für den t-Wert für <span class="math inline">\(\beta_1 = \Delta\)</span>, ist zu beobachten, dass der Wert exakt mit t-Wert übereinstimmt, der mittels des t-Test berechnet wurde . Lediglich das Vorzeichen ist in der anderen Richtung was aber nur damit zusammenhängt welcher Gruppenmittelwert von dem anderen Gruppenmittelwert subtrahiert wird.</p>
+<p>Sei nun noch das Konfidenzintervall für den <em>Steigungskoeffizienten</em> <span class="math inline">\(\beta_1\)</span> betrachtet:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">confint</span>(mod)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -966,8 +970,8 @@ y_{1f} = 171.3 &amp;= \mu_f + \Delta \cdot x_{1f} + e_{1f} \\
 genderm       6.03713  15.45403</code></pre>
 </div>
 </div>
-<p>Dann sehen wir, dass auch das Konfidenzintervall exakt demjenigen des t-Test, bis auf das Vorzeichen, entspricht. D.h. nochmal wir können einen t-Test als ein lineares Modell verstehen und anders herum wir können nun ohne Probleme nominale Variablen in ein lineares Modell mit aufnehmen.</p>
-<p>Damit haben wir auch schon eine sehr gute Idee wie <code>lm()</code> intern gemacht hat. Bei der Modellevaluierung erkennt <code>lm()</code> gender als nominale Variable und ersetzt es durch die Dummykodierung (siehe <a href="#tbl-mlm-dummy-dummy-lm" class="quarto-xref">Tabelle&nbsp;<span>19.3</span></a>).</p>
+<p>Wieder stimmt, bis auf das Vorzeichen, das Konfidenzintervall exakt mit demjenigen des t-Test überein.</p>
+<p>Damit lässt sich auf Basis der vorhergehenden Ausführung auch direkt nachvollziehen wie <code>lm()</code> intern mit nominalen Variablen umgeht. Bei der Modellevaluierung erkennt <code>lm()</code> <code>gender</code> als nominale Variable und ersetzt es durch eine Indiktaorvariable (siehe <a href="#tbl-mlm-dummy-dummy-lm" class="quarto-xref">Tabelle&nbsp;<span>19.3</span></a>).</p>
 <div class="cell">
 <div id="tbl-mlm-dummy-dummy-lm" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -1022,7 +1026,7 @@ Tabelle&nbsp;19.3: Repräsentation der Faktorvariablen
 </figure>
 </div>
 </div>
-<p><code>lm()</code> ersetzt <code>gender</code> durch die Dummy-Variable, also durch Zahlenwerte, und dann kann einfach wieder die uns bekannte Maschinerie des linearen Modell angeworfen werden. Schauen wir uns an, wie ein Residuenplot bei einer Dummyvariablen aussieht (siehe <a href="#fig-mlm-dummy-resid-plot" class="quarto-xref">Abbildung&nbsp;<span>19.3</span></a>).</p>
+<p><code>lm()</code> ersetzt <code>gender</code> durch die Indikatorvariable, also durch Zahlenwerte, und dann kann einfach wieder die bekannte Maschinerie des linearen Modell angeworfen werden. Als letzten Schritt nun noch eine Betrachtung des resultierenden Residuenplots (siehe <a href="#fig-mlm-dummy-resid-plot" class="quarto-xref">Abbildung&nbsp;<span>19.3</span></a>).</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-mlm-dummy-resid-plot" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -1037,7 +1041,8 @@ Abbildung&nbsp;19.3: Residuenplot des Körpergrößenmodells
 </div>
 </div>
 </div>
-<p>Der Plot sieht etwas komisch aus, da die Residuen nur für zwei vorhergesagte Werte <span class="math inline">\(\hat{y}_i\)</span> angezeigt werden. Kurzes überlegen sollte uns aber davon überzeugen, dass dies korrekt ist, da wir nun noch zwei verschiedene <span class="math inline">\(y\)</span>-Wert vorhersagen. Nämlich für die Werte <span class="math inline">\(x_i = 0\)</span> und <span class="math inline">\(x_i = 1\)</span>, eben die Mittelwerte aus den beiden Gruppen.</p>
+<p>Der Plot sieht etwas speziell aus, da die Residuen nur für zwei vorhergesagte Werte <span class="math inline">\(\hat{y}_i\)</span> angezeigt werden. Diese spezielle Form, ist letztendlich ein Ergebnis dessen, dass nur zwei verschiedene <span class="math inline">\(\hat{y}\)</span>-Werte vorhergesagt werden.</p>
+</section>
 </section>
 <section id="dummyvariablen-bei-mehr-als-zwei-faktorstufen" class="level2" data-number="19.4">
 <h2 data-number="19.4" class="anchored" data-anchor-id="dummyvariablen-bei-mehr-als-zwei-faktorstufen"><span class="header-section-number">19.4</span> Dummyvariablen bei mehr als zwei Faktorstufen</h2>

@@ -301,36 +301,33 @@ Diese Formulierung ist genau gleich derjenigen die im t-Test-Ansatz verwendet wu
 \beta_0 = \mu_f
 \end{equation*}
 
-Schauen wir uns $\beta_1$ nun an. Wenn ein Datenpunkt aus der Gruppe `m` kommt dann wird $x_i = 1$ gesetzt. Formal:
+Da die Indikatorvariable $X_i$ für Werte aus der Gruppe `f` den Wert $0$ zugewiesen bekommt, wird für $Y$-Werte aus der Gruppe `m` entsprechend der Indikatorwert $1$ zugewiesen. Formal führt dies also zu: 
 
 \begin{equation*}
-y_i = \beta_0 + \beta_1 x_i + \epsilon_i = \beta_0 + \beta_1 + \epsilon
+Y_i = \beta_0 + \beta_1 X_i = \beta_0 + \beta_1 \cdot 1 = \beta_0 + \beta_1
 \end{equation*}
 
-Das sieht jetzt etwas unverständlich aus. Machen wir einfach mal die folgende Festlegung: $\beta_1 = \mu_m - \mu_f = \Delta$. D.h. wir setzen als $\beta_1$ der Unterschied zwischen den beiden Gruppenmittelwerten. Setzen wir das mal ein und schauen ob uns das weiter bringt.
+D.h. der vorhergesagte Wert $\hat{y}_i$ ist wieder nur eine Konstante für alle Werte von $i$, die sich jetzt aber aus beiden Modellparametern $\beta_0$ und $\beta_1$ zusammensetzt. Mit der gleichen Argumentation wie oben, ist der Wert der unter der Randbedingung des Minimums der mittleren, quadrierten Abweichungen der Mittelwert der Werte aus der Gruppe `m`. Daraus folgt, zusammen mit der Festsetzung von eben $\beta_0 = \bar{y}_{f}:
+
+\begin{align*}
+\bar{y}_{m} &= \beta_0 + \beta_1 = \bar{y}_{f} + \beta_1 \\
+\Leftrightarrow \beta_1 &= \bar{y}_{m} - \bar{y}_{f}
+\end{align*}
+
+Daraus folgt, dass der Modellparameter $\beta_1$, der *Steigungskoeffizient*, den Unterschied der Mittelwerten $\Delta = \bar{y}_{m} - \bar{y}_{f}$ zwischen den beiden Gruppen modelliert.
+
+Insgesamt resultieren daraus die folgenden Zusammenhänge wenn noch die Annnahme der normalverteilten Residuen $\epsilon_i \sim \mathcal{N}(0,\sigma)$ dazugenommen werden.
 
 \begin{align*}
 y_i &= \beta_0 + \beta_1 \cdot 0 + \epsilon_i = \mu_f + \Delta \cdot 0 + \epsilon_i = \mu_f + \epsilon_i \\
 y_i &= \beta_0 + \beta_1 \cdot 1 + \epsilon_i = \mu_f + \Delta \cdot 1 + \epsilon_i = \mu_f + (\mu_m - \mu_f) + \epsilon_i = \mu_m + \epsilon_i
 \end{align*}
 
-D.h. wir sind mittels der Indikatorvariablen in der Lage das Modell des t-Test (Formel \eqref{eq-mlm-dummy-tTest-model}) in ein lineares Modell eine einfache lineare Regression zu übersetzen.
+Insgesamt zeigt dies, dass mittels der Indikatorvariablen eine Abbildung des einfachen linearen Regressionsmodells auf den t-Test (Formel \eqref{eq-mlm-dummy-tTest-model}) möglich ist. Der t-Test ist kann daher als *Spezialfall* der einfachen Regression bzw. des einfachen linearen Modells betrachtet werden.
 
-\begin{align*}
-Y_i &= \mu_f + \Delta_{m} \times x_{i} + \epsilon_i \\
-\Delta_m &= \mu_m - \mu_f \\
-\end{align*}
+Die Voraussetzungen im t-Test der Normalverteilung der Werte, bedeutet hierbei letztendlich nichts anderes, als die Normalverteilung der Residuen im Regressionsmodell. Die Voraussetzung der Varianzgleichheit ist dabei nichts anderes als die Homoskedastizität im linearen Modell. 
 
-Eine der Voraussetzungen im t-Test ist die Normalverteilung der Wert. Letztendlich bedeutet dies, dass wenn ich von den $y_i$-Werten eine Konstante abziehen, das der Rest auch wieder Normalverteilt ist. Der Rest ist jetzt nichts anderes als die Residuen, wenn ich von den $y$-Werten die jeweiligen Gruppenmittelwerte abziehe. 
-
-\begin{align*}
-e_{if} &= y_{if} - \mu_f \\
-e_{im} &= y_{im} - \mu_m
-\end{align*}
-
-D.h. somit, dass die Residuen $e_i$ Normalverteilt. Das ist aber auch eine der Voraussetzungen für die Inferenz im linearen Modell. Im linearen Modell wird weiterhin Homoskedasitzität voraussgetzt, was nichts anderes als die Varianzgleichheit im t-Test ist.
-
-Um den Ansatz einmal konkret zu machen, können wir zum Beispiel den ersten Wert aus @tbl-mlm-dummy-gender $y_{1m} = 174.4$ in seine Komponenten aufteilen. Wir erhalten $\Delta = `r mu_m` - `r mu_f` = `r mu_m - mu_f`, e_{1m} = 174.4 - `r mu_m`= -5.13$ und $x_{1m} = 1$.
+Um den Ansatz einmal konkret zu machen, sei zum Beispiel den ersten Wert aus @tbl-mlm-dummy-gender $y_{1m} = 174.4$ in seine Komponenten aufgeteilt. Es folgt $\Delta = `r mu_m` - `r mu_f` = `r mu_m - mu_f`, e_{1m} = 174.4 - `r mu_m`= -5.13$ und $x_{1m} = 1$.
 
 \begin{align*}
 y_{1m} = 174.4 &= \mu_f + \Delta \cdot x_{1m} + e_{1m} \\
@@ -344,7 +341,11 @@ y_{1f} = 171.3 &= \mu_f + \Delta \cdot x_{1f} + e_{1f} \\
 &= 168.78 + 10.74 \cdot 0 + 2.52
 \end{align*}
 
-Zusammenfassend, haben wir mit der Indikatorvariable und dem $\Delta$ zwischen den Mittelwerten der beiden Gruppen eine Möglichkeit gefunden das t-Test Modell auf das lineare Modell abzubilden. Und tatsächlich, wenn das Modell in `lm()` eingeben:
+Zusammenfassend, mit Hilfe von Indikatorvariable ist eine Möglichkeit gefunden worden, mit der das t-Test Modell auf das lineare Modell abgebildet werden kann.
+
+### Verwendung von Indikatorvariablen in `lm()`
+
+In `lm()` kann eine nominale Variable genauso wie die bisherigen kontinuierlichen Variablen verwendet werden. 
 
 ```{r}
 #| eval: false
@@ -357,7 +358,9 @@ mod <- lm(cm ~ gender, height)
 lm_tbl_knitr(mod)
 ```
 
-Dann sehen wir, dass wir genau diese Werte auch herausbekommen. `lm()` gibt die Faktorstufe nach dem Namen der Faktorvariable an. Im Beispiel steht `genderm` für Stufe `m` aus dem Faktor `gender`. Wenn wir uns die Werte für den t-Wert für $\beta_1 = \Delta$ anschauen, dann sehen wir, dass der Wert exakt mit demjenigen übereinstimmt, den wir mittels des t-Test berechnet haben. Lediglich das Vorzeichen ist in der anderen Richtung was aber nur damit zusammenhängt welcher Gruppenmittelwert von dem anderen Gruppenmittelwert subtrahiert werden. Schauen wir uns das Konfidenzintervall für den *Steigungskoeffizienten* $\beta_1$ an:
+`lm()` gibt die Faktorstufe nach dem Namen der Faktorvariable an. Im Beispiel steht `genderm` für Stufe `m` aus dem Faktor `gender`. Der Wert für $\hat{\beta}_0$ entspricht genau demjenigen in @tbl-mlm-dummy-gender-desc. Weiterhin, der Wert für den t-Wert für $\beta_1 = \Delta$, ist zu beobachten, dass der Wert exakt mit t-Wert übereinstimmt, der mittels des t-Test berechnet wurde . Lediglich das Vorzeichen ist in der anderen Richtung was aber nur damit zusammenhängt welcher Gruppenmittelwert von dem anderen Gruppenmittelwert subtrahiert wird.
+
+Sei nun noch das Konfidenzintervall für den *Steigungskoeffizienten* $\beta_1$ betrachtet:
 
 ```{r}
 #| echo: true
@@ -365,9 +368,9 @@ Dann sehen wir, dass wir genau diese Werte auch herausbekommen. `lm()` gibt die 
 confint(mod)
 ```
 
-Dann sehen wir, dass auch das Konfidenzintervall exakt demjenigen des t-Test, bis auf das Vorzeichen, entspricht. D.h. nochmal wir können einen t-Test als ein lineares Modell verstehen und anders herum wir können nun ohne Probleme nominale Variablen in ein lineares Modell mit aufnehmen.
+Wieder stimmt, bis auf das Vorzeichen, das Konfidenzintervall exakt mit demjenigen des t-Test überein. 
 
-Damit haben wir auch schon eine sehr gute Idee wie `lm()` intern gemacht hat. Bei der Modellevaluierung erkennt `lm()` gender als nominale Variable und ersetzt es durch die Dummykodierung (siehe @tbl-mlm-dummy-dummy-lm).
+Damit lässt sich auf Basis der vorhergehenden Ausführung auch direkt nachvollziehen wie `lm()` intern mit nominalen Variablen umgeht. Bei der Modellevaluierung erkennt `lm()` `gender` als nominale Variable und ersetzt es durch eine Indiktaorvariable (siehe @tbl-mlm-dummy-dummy-lm).
 
 ```{r}
 #| label: tbl-mlm-dummy-dummy-lm
@@ -382,7 +385,7 @@ cbind(height, (0:1)[as.numeric(height$gender)])[c(1:3,41:43),] |>
                digits = 2)
 ```
 
-`lm()` ersetzt `gender` durch die Dummy-Variable, also durch Zahlenwerte, und dann kann einfach wieder die uns bekannte Maschinerie des linearen Modell angeworfen werden. Schauen wir uns an, wie ein Residuenplot bei einer Dummyvariablen aussieht (siehe @fig-mlm-dummy-resid-plot).
+`lm()` ersetzt `gender` durch die Indikatorvariable, also durch Zahlenwerte, und dann kann einfach wieder die bekannte Maschinerie des linearen Modell angeworfen werden. Als letzten Schritt nun noch eine Betrachtung des resultierenden Residuenplots (siehe @fig-mlm-dummy-resid-plot).
 
 ```{r}
 #| label: fig-mlm-dummy-resid-plot 
@@ -397,8 +400,7 @@ height |> dplyr::mutate(y_hat = predict(mod),
        y = expression(paste('Residuen ', hat(e)[i]))) 
 ```
 
-Der Plot sieht etwas komisch aus, da die Residuen nur für zwei vorhergesagte Werte $\hat{y}_i$ angezeigt werden. Kurzes überlegen sollte uns aber davon überzeugen, dass dies korrekt ist, da wir nun noch zwei verschiedene $y$-Wert vorhersagen. Nämlich für die Werte $x_i = 0$ und $x_i = 1$, eben die Mittelwerte aus den beiden Gruppen.
-
+Der Plot sieht etwas speziell aus, da die Residuen nur für zwei vorhergesagte Werte $\hat{y}_i$ angezeigt werden. Diese spezielle Form, ist letztendlich ein Ergebnis dessen, dass nur zwei verschiedene $\hat{y}$-Werte vorhergesagt werden.
 
 ## Dummyvariablen bei mehr als zwei Faktorstufen
 
@@ -563,7 +565,7 @@ broom::tidy(mod) |> knitr::kable(
 )
 ```
 
-Die Variable `gender` ist durch `lm()` als Dummyvariable definiert worden und der Steigungskoeffizient $\beta_1=$`gender_fm` kodiert den mittleren Unterschied zwischen männlichen und weiblichen Studienteilnehmerinnen. Der $y$-Achsenabschnitt kodiert daher die Leistung von weiblichen Teilnehmerinnen mit einem Trainingsalter von `ta`$= 0$. (Warum?). Schauen wir uns dazu die resultierenden Graden der vorhergesagten $\hat{y}_i$ an (siehe @fig-mlm-dummy-combi-02).
+Die Variable `gender` ist durch `lm()` als Dummyvariable definiert worden und der Steigungskoeffizient $\beta_1=$ `gender_fm` kodiert den mittleren Unterschied zwischen männlichen und weiblichen Studienteilnehmerinnen. Der $y$-Achsenabschnitt kodiert daher die Leistung von weiblichen Teilnehmerinnen mit einem Trainingsalter von `ta`$= 0$. (Warum?). Schauen wir uns dazu die resultierenden Graden der vorhergesagten $\hat{y}_i$ an (siehe @fig-mlm-dummy-combi-02).
 
 ```{r}
 #| label: fig-mlm-dummy-combi-02
