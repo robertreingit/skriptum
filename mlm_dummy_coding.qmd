@@ -343,6 +343,22 @@ y_{1f} = 171.3 &= \mu_f + \Delta \cdot x_{1f} + e_{1f} \\
 
 Zusammenfassend, mit Hilfe von Indikatorvariable ist eine Möglichkeit gefunden worden, mit der das t-Test Modell auf das lineare Modell abgebildet werden kann.
 
+In @fig-mlm-dummy-dummymodel ist die *Regressionsgerade* für das Modell zusammen mit den Rohdaten mittels der Indikatorvariablen abgetragen.
+
+```{r}
+#| label: fig-mlm-dummy-dummymodel
+#| fig-cap: "Regressionsgerade des einfachen linearen Modell mit Indikatorvariablen."
+
+mod <- lm(cm ~ gender, height)
+height |> dplyr::mutate(gender_num = dplyr::if_else(gender == 'm', 1, 0)) |> 
+  ggplot(aes(gender_num, cm)) +
+  geom_point() +
+  geom_abline(intercept = coef(mod)[1], slope = coef(mod)[2]) +
+  scale_x_continuous("Gender", breaks = 0:1)
+```
+
+In @fig-mlm-dummy-dummymodel ist zu erkennen, wie der Steigungskoeffizient $\beta_0$ tatsächlich als eine Steigung zu interpretieren ist. Da die beiden Gruppen um eine $X$-Einheit von $1$ voneinander entfernt liegen, ist der Unterschied zwischen den beiden Gruppenmittelwerten genau die *Steigung* der Gerade.
+
 ### Verwendung von Indikatorvariablen in `lm()`
 
 In `lm()` kann eine nominale Variable genauso wie die bisherigen kontinuierlichen Variablen verwendet werden. 
@@ -404,9 +420,7 @@ Der Plot sieht etwas speziell aus, da die Residuen nur für zwei vorhergesagte W
 
 ## Dummyvariablen bei mehr als zwei Faktorstufen
 
-Nachdem wir ein Beispiel mit zwei Faktorstufen durchgegangen sind stellt sich die Frage ob wir auch mehr als zwei Faktorstufen bei einer nominalen Variablen in ein lineares Modell überführen können?
-
-Schauen wir uns dazu wiederum ein einfaches synthetisches Beispiel an (siehe @fig-mlm-dummy-reaction-01)
+Nachdem ein Beispiel mit zwei Faktorstufen durchgegangen, stellt sich die Frage ob dieser Ansatz auch für mehr als zwei Faktorstufen einer nominalen Variablen möglich ist? Sei dazu, zunächst ein einfaches synthetisches Beispiel betrachtet (siehe @fig-mlm-dummy-reaction-01)
 
 ```{r}
 #| label: fig-mlm-dummy-reaction-01
@@ -417,7 +431,7 @@ ggplot(data, aes(group, rt)) + geom_boxplot() +
   labs(x = 'Gruppe', y = 'Reaktionszeit') 
 ```
 
-Wir haben Daten zu einem Reaktionszeitexperiment bei dem Probanden unter vier verschiedenen Konditionen $A,B,C$ und $D$ beobachtet wurden. Die deskriptive Daten sind @tbl-mlm-dummy-reaction-01 einsehbar. Der Einfachheit halber sind die Daten so generiert, dass die Gruppenmittelwert von $A$ nach $D$ immer größer werden.
+Es wurde ein Datensatz ähnlich einem Reaktionszeitexperiment erstellt, bei dem Probanden unter vier verschiedenen Konditionen $A,B,C$ und $D$ beobachtet wurden. Die deskriptive Daten sind @tbl-mlm-dummy-reaction-01 einsehbar. Der Einfachheit halber sind die Daten so generiert, dass die Gruppenmittelwert von $A$ nach $D$ immer größer werden.
 
 ```{r}
 #| label: tbl-mlm-dummy-reaction-01
@@ -432,13 +446,13 @@ tmp |> dplyr::mutate(delta = c(NA,mat %*% y_hat)) |>
                escape=F)
 ```
 
-Die letzten Spalte zeigt die Abweichungen der Gruppenmittelwerte der Gruppen $B,C,D$ von der Gruppe $A$ an. Das sollte jetzt auch schon direkt eine Möglichkeit aufzeigen, wie wir diese Daten in ein lineares Modell überführen. Wir setzen wieder eine Referenzgruppe fest, z.B. Gruppe $A$ und anstatt ein einzelnes $Delta$ führen wir drei $\Delta$s ein, die jeweils die Abweichungen der Faktorstufen von der Referenzstufe repräsentieren. Für jedes dieser $\Delta_i$s führen wir jetzt eine Dummyvariable $x_{ij}$ ein, mit der wir jeweils über die $0$ und $1$ die Zugehörig des $y_i$ Wertes zu der Gruppe kodieren. Ein lineares Modell lässt nun wie folgt formulieren:
+Die letzten Spalte zeigt die Abweichungen der Gruppenmittelwerte der Gruppen $B,C,D$ von der Gruppe $A$ an. Das sollte jetzt auch schon direkt eine Möglichkeit aufzeigen, wie diese Daten in ein lineares Modell überführt werden können. Dazu wird wiederum eine Referenzgruppe festgelegt, z.B. Gruppe $A$. Anstatt nun nur ein einzelnes $Delta$ zu berechnen, werden drei $\Delta$s eingeführt. Die $\Delta$s repräsentieren dabei jeweils die Abweichungen der spezifischen Faktorstufen von der Referenzstufe. Für jedes dieser $\Delta_i$s wird nun eine Indikatorvariable $x_{ij}$ eingeführt. Die Indikatorvariable indiziert jeweils über die $0$ und $1$ die Zugehörig des $Y_i$ Wertes zu der Gruppe. Ein lineares Modell lässt nun wie folgt formulieren:
 
-$$
+\begin{equation*}
 y_i = \mu_A + \Delta_{B-A} x_{1i} + \Delta_{C-A} x_{2i} + \Delta_{D-A} x_{3i} + \epsilon_i
-$$
+\end{equation*}
 
-Wir haben drei Dummyvariablen $x_{1i}, x_{2i}$ und $x_{3i}$ eingeführt und die Modellkoeffizienten bilden jeweils die Abweichungen der Mittelwerte von Gruppe $A$ ab. Dies führt dann zu der folgenden Kodierung der Daten (siehe @tbl-mlm-dummy-reaction-02).
+Für die Abweichungen von der Referenzgruppe sind drei Indikatorvarialben $x_{1i}, x_{2i}$ und $x_{3i}$ eingeführt worden. Die Modellkoeffizienten bilden somit jeweils die Abweichungen der Mittelwerte von Gruppe $A$ ab. Dies führt dann zu der folgenden Kodierung der Daten (siehe @tbl-mlm-dummy-reaction-02).
 
 ```{r}
 #| label: tbl-mlm-dummy-reaction-02
@@ -450,7 +464,7 @@ knitr::kable(mat, booktabs=TRUE) |>
   kableExtra::kable_styling(position = 'center')
 ```
 
-Wenn ein Wert $y_i$ aus Gruppe $A$ kommt, dann werden die Dummyvariablen $x_{1i}, x_{2i}, x_{3i}$ mit den Werten $(0,0,0)$ belegt. Wenn ein Wert $y_i$ aus Gruppe $B$ kommt, dann $(1,0,0)$ belegt usw..
+Wenn ein Wert $Y_i$ aus Gruppe $A$, der Referenzgruppe, kommt, dann werden die dire Indikatorvariablen $X_{1i}, X_{2i}, X_{3i}$ mit den Werten $(0,0,0)$ belegt. Wenn ein Wert $Y_i$ aus Gruppe $B$ kommt, dann mit $(1,0,0)$ belegt usw..
 
 Dieser Ansatz lässt sich wie folgt Verallgemeinern (siehe @tbl-mlm-dummy-coding).
 
@@ -461,14 +475,14 @@ Dieser Ansatz lässt sich wie folgt Verallgemeinern (siehe @tbl-mlm-dummy-coding
 | $j=3$ | 0 | 1 | $\ldots$  | 0 |
 | $j=K$ | 0 | 0 | $\ldots$  | 1 | 
 
-: Dummykodierung bei $k$-Faktorstufen. {#tbl-mlm-dummy-coding}
+: Indikatorkodierung bei $k$-Faktorstufen. {#tbl-mlm-dummy-coding}
 
-Bei Integration einer nominalen Variable mit $K$ Faktorstufen werden $K-1$ Dummyvariablen $x_1, x_2, \ldots, x_{K-1}$ benötigt. Eine der Faktorstufen wird als Referenzstufe definiert. Die Dummyvariablen $x_1$ bis $x_{K-1}$ kodieren dann die Abweichungen der anderen Stufen von der Referenzstufe. Diese Art der Kodierung wird in der Literatur auch als *treatment* Kodierung bezeichnet.
+Bei Integration einer nominalen Variable mit $K$ Faktorstufen werden $K-1$ Indikatorvariablen $X_1, X_2, \ldots, X_{K-1}$ benötigt. Eine der Faktorstufen wird als Referenzstufe definiert. Die Indikatorvariablen $X_1$ bis $X_{K-1}$ kodieren dann die Abweichungen der anderen Stufen von der Referenzstufe. Diese Art der Kodierung wird in der Literatur auch als *treatment* Kodierung bezeichnet. Die Indikatorvariablen werden oft auch als Dummyvariablen bezeichnet
 
 ::: {#def-dummy}
-## Dummyvariablen \index{Dummyvariablen}
+## Indikator-/Dummyvariablen \index{Dummyvariablen} \index{Indikatorvariablen}
 
-Eine Dummyvariable, auch Indikatorvariable, ist eine binäre Prädiktorvariable die nur die Werte $0$ oder $1$ annimmt in einem linearem Modell einnimmt. Mit einer Dummyvariable kann die An- bzw. Abwesenheit eines kategorialen Effekts modelliert werden.
+Eine Dummyvariable, auch Indikatorvariable genannt, ist eine binäre Prädiktorvariable die nur die Werte $0$ oder $1$ annimmt. Mit einer Dummyvariable kann die An- bzw. Abwesenheit eines kategorialen Effekts modelliert werden.
 :::
 
 Das lineare Modell in unserem Reaktionszeitexperiment ergibt den folgenden Modellfit (siehe @tbl-mlm-dummy-reaction-03).
@@ -488,9 +502,9 @@ mod <- lm(rt ~ group, data)
 lm_tbl_knitr(mod)
 ```
 
-Wir erhalten als Steigungskoeffizienten eben genau die Abweichungen der Mittelwerte der jeweiligen Faktorstufen von der Referenzstufe (siehe @tbl-mlm-dummy-reaction-02). D.h. insgesamt haben wir also die Möglichkeit eine nominale Variable mit beliebig vielen Faktorstufen in einem linearen Modell abzubilden. Damit ist dann auch die Unterscheidung in ANOVA und linear Regression als überfällig anzusehen, da beide letztendlich auf dem gleichem Modell, nämlich dem linearen Modell, beruhen.
+Als Steigungskoeffizienten werden genau die Abweichungen der Mittelwerte der jeweiligen Faktorstufen von der Referenzstufe erhalten (siehe @tbl-mlm-dummy-reaction-02). Zusammenfassend ermöglicht somit die Verwendung der Indikatorvarialben die Möglichkeit eine nominale Variable mit beliebig vielen Faktorstufen in einem linearen Modell abzubilden. Damit ist dann auch die Unterscheidung in ANOVA und linear Regression als überfällig anzusehen, da beide letztendlich auf dem gleichem Modell, nämlich dem linearen Modell, beruhen.
 
-Schauen wir uns noch den Residuenplot an (siehe @fig-mlm-dummy-reaction-02).
+Es folgt wieder eine kurze Betrachtung des Residuenplots (siehe @fig-mlm-dummy-reaction-02).
 
 ```{r}
 #| label: fig-mlm-dummy-reaction-02
@@ -504,9 +518,9 @@ ggplot(aes(y_hat, e_i)) +
        y = expression(paste('Residuen ', hat(e)[i]))) 
 ```
 
-Hier sehen wir wieder, dass nur vier verschiedene $\hat{y}_i$ Werte vorhergesagt werden, nämlich die Mittelwerte $\bar{y}_k$ in den jeweiligen $K$ Gruppen. Die Residuen $e_i$ streuen daher nur um diese vorhergesagten Werte.
+Es ist wieder zu sehen, dass nur vier verschiedene $\hat{y}_i$ Werte vorhergesagt werden, nämlich die Mittelwerte $\bar{y}_k$ in den jeweiligen $K$ Gruppen. Die Residuen $e_i$ streuen daher nur um diese vorhergesagten Werte.
 
-Wir können die Dummy-Kodierung explizit von `R` mittels der `dummy.coef()`-Funktion erhalten.
+In `R` kann die Dummy-Kodierung explizit mittels der `dummy.coef()`-Funktion erhalten werden.
 
 ```{r}
 #| echo: true
@@ -514,10 +528,9 @@ Wir können die Dummy-Kodierung explizit von `R` mittels der `dummy.coef()`-Funk
 dummy.coef(mod)
 ```
 
-
 ## Kombination von kontinuierlichen und nominalen Prädiktorvariablen
 
-Schauen wir uns nun als weiteren Fall ein Modell an, bei dem beide Typen von Variablen, nominale und kontinuierliche, integriert sind. In @fig-mlm-dummy-combi-01 haben wir einen hypothetischen Zusammenhang zwischen der körperlichen Leistung dem Trainingsalter und dem Gender.
+Da durch die Verwendung von Indikatorvariablen die Unterscheidung zwischen nominalen und kontinuierlichen Variablen in der Modellierung aufgehoben wird, können beide Typen von Variablen in einem Modell integriert werden. In @fig-mlm-dummy-combi-01 ist ein hypothetischen Zusammenhang zwischen der körperlichen Leistung dem Trainingsalter und dem Gender abgetragen.
 
 ```{r}
 #| label: fig-mlm-dummy-combi-01
@@ -537,7 +550,7 @@ ggplot(lew, aes(ta, perf, color = gender_f)) +
   scale_color_discrete('Gender') 
 ```
 
-Das Trainingsalter geht wie bisher als kontinuierliche Variable in das Modell ein, während wir gender als nominale Variable über eine Dummyvariable modellieren. Weibliche Teilnehmerinnen der Studie legen wir als Referenzstufe fest. Das resultiert in dem folgenden linearen Modell:
+Das Trainingsalter (`ta`) geht wie bisher als kontinuierliche Variable in das Modell ein, während `gender` als nominale Variable über eine Dummyvariable modelliert wird. Weibliche Teilnehmerinnen der Studie werden als Referenzstufe festgelegt. Das resultiert dann in dem folgenden linearen Modell:
 
 \begin{align*}
 Y_i &= \beta_{ta = 0,x_{1i}=0} + \Delta_m \times x_{1i} + \beta_{ta} \times ta + \epsilon_i \\
@@ -565,7 +578,7 @@ broom::tidy(mod) |> knitr::kable(
 )
 ```
 
-Die Variable `gender` ist durch `lm()` als Dummyvariable definiert worden und der Steigungskoeffizient $\beta_1=$ `gender_fm` kodiert den mittleren Unterschied zwischen männlichen und weiblichen Studienteilnehmerinnen. Der $y$-Achsenabschnitt kodiert daher die Leistung von weiblichen Teilnehmerinnen mit einem Trainingsalter von `ta`$= 0$. (Warum?). Schauen wir uns dazu die resultierenden Graden der vorhergesagten $\hat{y}_i$ an (siehe @fig-mlm-dummy-combi-02).
+Die Variable `gender` ist durch `lm()` als Dummyvariable definiert worden und der Steigungskoeffizient $\beta_1=$ `gender_fm` kodiert den mittleren Unterschied zwischen männlichen und weiblichen Studienteilnehmerinnen. Der $Y$-Achsenabschnitt kodiert daher die Leistung von weiblichen Teilnehmerinnen mit einem Trainingsalter von `ta`$= 0$. (Warum?). Der Graph der Datenpunkte zusammen mit den resultierenden Modellgraphen der vorhergesagten $\hat{y}_i$ zeigt an wie das Modell die Daten modelliert (siehe @fig-mlm-dummy-combi-02).
 
 ```{r}
 #| label: fig-mlm-dummy-combi-02
@@ -582,9 +595,9 @@ ggplot(lew, aes(ta, perf, color = gender_f)) + geom_point() +
   scale_color_discrete('Gender') 
 ```
 
-Wir haben zwei Geraden eine für die weiblichen und eine für die männlichen Teilnehmer mittels des Modells gefittet. Die Geraden sind parallel und um den Wert von $\beta_1$ gegeneinander verschoben.
+Es wurden zwei Geraden modelliert. Eine Gerade für die weiblichen und eine für die männlichen Teilnehmer. Die Geraden sind parallel zueinander und um den Wert von $\beta_1$ gegeneinander verschoben.
 
-Nichts hält uns davon ab auch eine Interaktion zwischen kontinuierlichen und nominalen Variablen zu modellieren. Wenn die Daten zum Beispiel dem Trend in @fig-mlm-dummy-combi-03 folgen.
+Natürlich ist es auch nun möglich mit dem Indikatorvariablenansatz auch eine Interaktion zwischen kontinuierlichen und nominalen Variablen zu modellieren. Wenn die Daten zum Beispiel dem Trend in @fig-mlm-dummy-combi-03 folgen würden.
 
 ```{r}
 #| label: fig-mlm-dummy-combi-03
@@ -604,7 +617,7 @@ ggplot(lew, aes(ta, perf, color = gender_f)) +
   scale_color_discrete('Gender') 
 ```
 
-Hier sehen wir, dass die Zunahme der Leistung mit dem Trainingsalter nicht gleich ist in beiden gendern. Bei männlichen Teilnehmern ist der Zuwachs mit dem Trainingsalter größer. D.h der Einfluss der Prädiktorvariable Trainingsalter hängt mit der Ausprägung der Prädiktorvariablen gender zusammen. Es liegt ein Interaktionseffekt vor. Übertragen auf ein lineares Modell könnte der Modellansatz wie folgt aussehen:
+Hier ist zu sehen, dass die Zunahme der Leistung mit dem Trainingsalter nicht gleich ist in beiden `gender` Gruppen. Bei den männlichen Teilnehmern ist der Zuwachs mit dem Trainingsalter größer. D.h der Einfluss der Prädiktorvariable Trainingsalter hängt mit der Ausprägung der Prädiktorvariablen `gender` zusammen. Es liegt ein Interaktionseffekt vor. Übertragen auf ein lineares Modell könnte der Modellansatz wie folgt aussehen:
 
 \begin{equation*}
 y_i = \beta_{ta=0,x_{1i}=0} + \Delta_m \times x_{1i} + \beta_{ta} \times ta + \beta_{ta \times gender} \times x_{1i} \times ta + \epsilon_i
@@ -647,7 +660,7 @@ ggplot(lew, aes(ta, perf, color = gender_f)) +
 ta_cen <- 6
 ```
 
-Interpretieren wir noch einmal die Regressionskoeffizienten mit Hilfe des Graphen. Dazu zentrieren wir zunächst einmal die Altersvariable um den Wert $ta = `r ta_cen`$ und fitten das Modell mittels der zentrierten Variable. 
+Zunächst sollen Modellkoeffizienten mit Hilfe des Graphen interpretiert werden. Dazu wird die Prädiktorvariable für das Alters `ta` um den Wert $\bar{ta} = `r ta_cen`$ zentriert und die Modellanpassung erfolgt mittels der zentrierten Variable. 
 
 ```{r}
 #| echo: true
@@ -674,7 +687,7 @@ broom::tidy(mod_c)[,1:2] |>
   )
 ```
 
-Was bedeuten nun die einzelnen Koeffizienten noch einmal genau? Die Referenzgruppe sind die Datenpunkte der männlichen Gruppe. Daher ist der y-Achsenabschnitt $\beta_0 = `r beta_s[1]`$ die Performance einer durchschnittlichen, männlichen Versuchsperson mit einem Trainingsalter von `ta`$= 6$. Der zweite Koeffizient $\beta_1 = `r beta_s[2]`$ kodiert hier den Unterschied zwischen einer männlichen und einer weiblichen Versuchsperson jeweils mit einem Trainingsalter von `ta`$=6$. Der Steigungskoeffizient $\beta_2 = `r beta_s[3]`$ dagegen, kodiert den Unterschied zwischen zwei männlichen Versuchspersonen, die sich um ein Trainingsjahr `ta` voneinander unterscheiden. Der letzte Koeffiziente $\beta_3 = `r beta_s[4]`$, der Interaktionskoeffizient kodiert nun den Unterschied in den Steigungen zwischen den männlichen und den weiblichen Versuchspersonen. Um den Unterschied zwischen zwei weiblichen Versuchsperson zu erhalten, die sich um ein Trainingsjahr `ta` voneinander Unterscheiden, müssen daher $\beta_2$ und $\beta_3$ miteinander addiert werden $`r round(sum(beta_s[3:4]), 3)`$. 
+Wie sind die Modellkoeffizienten zu interpretieren? Die Referenzgruppe sind die Datenpunkte der männlichen Gruppe. Daher ist der $Y$-Achsenabschnitt $\beta_0 = `r beta_s[1]`$ die Performance einer durchschnittlichen, männlichen Versuchsperson mit einem Trainingsalter von `ta`$= 6$. Der zweite Koeffizient $\beta_1 = `r beta_s[2]`$ kodiert hier den Unterschied zwischen einer männlichen und einer weiblichen Versuchsperson jeweils mit einem Trainingsalter von `ta`$=6$. Der Steigungskoeffizient $\beta_2 = `r beta_s[3]`$ dagegen, kodiert den Unterschied zwischen zwei männlichen Versuchspersonen, die sich um ein Trainingsjahr `ta` voneinander unterscheiden. Der letzte Koeffizient $\beta_3 = `r beta_s[4]`$, der Interaktionskoeffizient kodiert nun den Unterschied in den Steigungen zwischen den männlichen und den weiblichen Versuchspersonen. Um den Unterschied zwischen zwei weiblichen Versuchsperson zu erhalten, die sich um ein Trainingsjahr `ta` voneinander Unterscheiden, müssen daher $\beta_2$ und $\beta_3$ miteinander addiert werden $`r round(sum(beta_s[3:4]), 3)`$. 
 
 ```{r}
 #| label: fig-mlm-dummy-combi-05 
@@ -706,22 +719,23 @@ ggplot(lew, aes(ta, perf)) +
 
 In @fig-mlm-dummy-combi-05 sind die einzelnen Modellkoeffizienten aus @tbl-mlm-dummy-combi-02 in der Grafik miteingefügt. Die Interpretation der Werte sollte damit klarer werden.
 
-
 ## Verschiedene Kodierschemas für die Dummy-Variablen.
 
-In der Herleitung der Integration von nominalen Faktoren in die multiple Regression haben wir ein bestimmtes Schema kennengelernt, wie die einzelnen Faktorstufen auf $X$-Variablen abgebildet werden. Wir haben eine Referenzstufe welche durch einen $y$-Achsenabschnitt modelliert wird und die anderen $\beta_i$-Koeffizienten bilden Abweichungen in den Faktorstufenmittelwerten von dieser Referenzstufe ab.
+In der Herleitung der Integration von nominalen Faktoren in die multiple Regression ist bisher ein bestimmtes Schema verwendet worden, wie die einzelnen Faktorstufen auf $X$-Variablen abgebildet werden. Dazu wurde eine Referenzstufe welche durch einen $Y$-Achsenabschnitt modelliert wird und die anderen $\beta_i$-Koeffizienten bilden Abweichungen in den Faktorstufenmittelwerten von dieser Referenzstufe ab.
 
-Wenn wir die $\beta_i$-Koeffizienten in einem Vektor $\boldsymbol{\beta}$ zusammenfassen.
+Wenn die $\beta_i$-Koeffizienten in einem Vektor $\boldsymbol{\beta}$ zusammengefasst.
+
 \begin{equation*}
 \boldsymbol{\beta} = (\beta_0, \beta_1, \ldots, \beta_K)^T
 \end{equation*}
 
 und die Mittelwerte $\mu_i$ der Faktorstufen $i = 1,2,\ldots,K$ in einem Vektor $\boldsymbol{\mu}$
+
 \begin{equation*}
 \boldsymbol{\mu} = (\mu_1, \mu_2, \ldots, \mu_K)^T
 \end{equation*}
 
-Dann können wir die Interpretation der $\beta$-Koeffzienten im Sinne der Mittelwerte der Faktorstufen als eine Abbildung von $\boldsymbol{\beta} \rightarrow \boldsymbol{\mu}$ auffassen. Bezeichnen wir diese Abbildung mit dem Symbol $\boldsymbol{B}$.
+Dann können die $\beta$-Koeffzienten im Sinne der Mittelwerte der Faktorstufen als eine Abbildung von $\boldsymbol{\beta} \rightarrow \boldsymbol{\mu}$ aufgefasst werden. Sie diese Abbildung mit dem Symbol $\boldsymbol{B}$ abgebildet.
 
 \begin{equation*}
 \boldsymbol{\mu} = \boldsymbol{B\beta}
@@ -733,9 +747,9 @@ Wenn ihr euch mit Matrizen auskennt, dann werdet ihr gemerkt haben, dass wir hie
 
 ### Treatment-Kodierung
 
-Die Abbildung mit einer Referenzstufe und Abweichungen von dieser Stufe, die wir kennengelernt haben, wird als **treatment coding** \index{treatment coding}. Und kann mit Hilfe der Funktion `contr.treatment()` erstellt werden, bzw. ist standardmäßig bei `R` eingestellt. Schauen wir `R` dazu etwas unter die Motorhaube.
+Die Abbildung mit einer Referenzstufe und Abweichungen von dieser Stufe, wird als **treatment coding** \index{treatment coding} bezeichnet. In `R` kann diese Kodierung mit Hilfe der Funktion `contr.treatment()` erstellt werden, bzw. ist standardmäßig bei `R` eingestellt. 
 
-Unsere Faktorvariable $A$ hat beispielsweise drei Stufen $K = 3, A, B, C$. Mit der Funktion `mean_contrasts()` aus dem package `codingMatrices` können wir uns die Abbildung darstellen lassen (Im Code werden noch die Zeilen- und Spaltenbeschriftungen geändert um den Output leichter interpretieren zu können).
+Sei eine Faktorvariable $A$ hat drei Stufen $K = 3, A, B, C$ gegeben. Mit der Funktion `mean_contrasts()` aus dem package `codingMatrices` können die Abbildung dargestellt werden (Im Code werden noch die Zeilen- und Spaltenbeschriftungen geändert um den Output leichter interpretieren zu können).
 
 ```{r}
 #| echo: true
@@ -747,11 +761,19 @@ dimnames(beta_to_mu)[[2]] <- paste0("mu_",f_A)
 beta_to_mu
 ```
 
-Im Ausdruck bezeichnen die Zeilen die $\beta$-Koeffizienten im multiplen Regressionsmodell, während die Spalten die Mittelwerte $\mu_i$ der Faktorstufen $A,B$ und $C$ spezifizieren. Die Punkte `.` stehen für den Wert $0$. Wir sehen, dass in der ersten Zeile für $\beta_0$ eine $1$ unter $\mu_1$ eingetragen ist, während unter $\mu_2$ und $\mu_3$ jeweils eine $0$ eingetragen sind. D.h., der Koeffizient $\beta_0$ repräsentiert den Mittelwert der Faktorstufe $A$, der Referenzstufe. In der zweiten Zeile für $\beta_1$ dagegen, steht unter dem Mittelwert $\mu_A$ eine $-1$, unter $\mu_B$ eine 1 und unter $\mu_C$ eine $0$. D.h., wie schon bekannt, der Koeffizient $\beta_1$ repräsentiert den Unterschied zwischen den Mittelwerten $\mu_A$ und $\mu_B$ der dazugehörenden Faktorstufen $A$ und $B$. Das gleiche gilt für die dritte Zeile für $\beta_2$ für den Unterschied $\mu_C - \mu_A$. Insgesamt, erkennen wir hier direkt die Kodierung der Faktorstufen wie wir sie oben hergeleitet haben.
+Im Ausdruck bezeichnen die Zeilen die $\beta$-Koeffizienten im multiplen Regressionsmodell, während die Spalten die Mittelwerte $\mu_i$ der Faktorstufen $A,B$ und $C$ spezifizieren. Die Punkte `.` stehen für den Wert $0$. Es ist zu sehen, dass in der ersten Zeile für $\beta_0$ eine $1$ unter $\mu_1$ eingetragen ist, während unter $\mu_2$ und $\mu_3$ jeweils eine $0$ eingetragen sind. D.h., der Koeffizient $\beta_0$ repräsentiert den Mittelwert der Faktorstufe $A$, der Referenzstufe. In der zweiten Zeile für $\beta_1$ dagegen, steht unter dem Mittelwert $\mu_A$ eine $-1$, unter $\mu_B$ eine 1 und unter $\mu_C$ eine $0$. D.h., wie schon bekannt, der Koeffizient $\beta_1$ repräsentiert den Unterschied zwischen den Mittelwerten $\mu_A$ und $\mu_B$ der dazugehörenden Faktorstufen $A$ und $B$. Das gleiche gilt für die dritte Zeile für $\beta_2$ für den Unterschied $\mu_C - \mu_A$. Insgesamt, ist hier direkt die Kodierung der Faktorstufen wie sie oben hergeleitet wurde zu erkennen. Die Kodierung ist auch in der dazugehörenden Modellmatrix zu sehen welche die Funktion `contr.treatment()` verwendet.
+
+```{r}
+#| echo: true
+
+set.seed(1)
+height_4 <- height |> sample_n(4)
+model.matrix(~gender, height_4)
+```
 
 ### Sum-to-zero Kodierung
 
-Allerdings ist die Treatmentkodierung \index{Abweichungskodierung} \index{sum-to-zero coding} nicht die einzig mögliche Kodierung, sondern es geht noch zahlreiche Andere bzw. es können auch eigene Abbildungen definiert werden, worauf wir hier aber nicht eingehen. Ein weiteres Kodierungsschema ist die Abweichungskodierung (engl. deviation) welche auch als sum-to-zero Kodierung bezeichnet wird. Schauen wir uns zunächst an, wie das Schema aussieht. In `R` können wir dieses Schema mit der Funktion `contr.sum()` generieren.
+Die Treatmentkodierung \index{Abweichungskodierung} \index{sum-to-zero coding} ist nicht die einzig mögliche Kodierung, sondern es geht noch zahlreiche andere bzw. es können auch eigene Abbildungen definiert werden. Ein weiteres Kodierungsschema ist die Abweichungskodierung (engl. deviation) welche auch als *sum-to-zero* Kodierung bezeichnet wird.  In `R` kann dieses Schema mit der Funktion `contr.sum()` erzeugt werden und das resultierende Abbildungsschema sieht wie folgt aus.
 
 ```{r}
 #| echo: true
@@ -762,13 +784,13 @@ dimnames(beta_to_mu)[[2]] <- paste0("mu_",f_A)
 beta_to_mu
 ```
 
-Die erste Zeile ist direkt ablesbar. Der Koeffizient $\beta_0$ stellt den Mittelwert $\bar{\mu}$ der Stufenmittelwerte dar. Die zweite und dritte Zeile für $\beta_1$ und $\beta_2$ sind etwas undurchsichtiger. Deswegen direkt die Lösung und danach die Herleitung. Die $\beta_i$-Koffizienten repräsentieren jeweils die Abweichung der Stufe $\mu_i$ vom Gesamtmittelwert $\bar{\mu}$. Formal:
+Die erste Zeile ist direkt ablesbar. Der Koeffizient $\beta_0$ stellt den Mittelwert $\bar{\mu}$ der Stufenmittelwerte dar. Die zweite und dritte Zeile für $\beta_1$ und $\beta_2$ sind etwas undurchsichtiger. Die $\beta_i$-Koffizienten repräsentieren jeweils die Abweichung der Stufe $\mu_i$ vom Gesamtmittelwert $\bar{\mu}$. Formal:
 
 \begin{equation*}
 \beta_i = \mu_i - \bar{\mu} \quad i = 2,3,\ldots,K
 \end{equation*}
 
-Wie kommen wir dann auf diese Kodierung? Schauen wir uns $\beta_1$ an.
+Wie resultiert daraus diese Kodierung? Sei zunächst $\beta_1$ betrachtet.
 
 \begin{equation*}
 \begin{aligned}
@@ -777,7 +799,7 @@ Wie kommen wir dann auf diese Kodierung? Schauen wir uns $\beta_1$ an.
 \end{aligned}
 \end{equation*}
 
-Wir erkennen unsere Koeffizienten aus dem Output wieder. Das gleiche Schema trifft auch für $\beta_2$ zu. Schauen wir uns das Schema in unserem Beispiel der Reaktionszeiten an.
+Die Koeffizienten aus dem Output sind wieder zu erkennen. Das gleiche Schema trifft auch für $\beta_2$ zu. Übertragen auf das Schema im Beispiel der Reaktionszeiten ergibt sich.
 
 ```{r}
 #| echo: true
@@ -795,7 +817,7 @@ Beziehungsweise für die Abweichungen der Mittelwerte $\mu_i$ vom Gesamtmittelwe
 mu_i$m - mu_bar
 ```
 
-Fitten wir nun das Modell mit `lm()`, verwenden nun aber `contr.sum()` anstatt `contr.treatment()`. Wir können dies direkt im Aufruf von `lm()` spezifizieren über den Parameter `contrasts` dem eine Liste mit den Namen der nominalen Variablen zusammen mit der Kodierungsfunktion als Zeichenkette übergeben wird (Es gibt noch weitere Möglichkeiten).
+Nun wird eine Modellanpassung mit `lm()` durchgeführt, wobei `contr.sum()` anstatt `contr.treatment()` verwendet werden soll. Dies kann direkt im Aufruf von `lm()` über den Parameter `contrasts` spezifiziert werden. Der Parameter erwartet eine Liste mit den Namen der nominalen Variablen zusammen mit der Kodierungsfunktion als Zeichenkette (Es gibt noch weitere Möglichkeiten).
 
 ```{r}
 #| echo: true
@@ -804,7 +826,7 @@ mod_sum <- lm(rt ~ group, data, contrasts = list(group = 'contr.sum'))
 coef(mod_sum)
 ```
 
-Wir sehen, dass die $\beta$-Koeffizienten tatsächlich den Gesamtmittelwert und die Abweichungen der Faktormittelwerte $\mu_i$ vom Gesamtmittelwert $\bar{\mu}$ kodieren. Es fehlt allerdings der letzte Abweichungswert. Wie können wir diesen erhalten? Hier kommt die Eigenschaft dieser Kodierung ins Spiel, die der Kodierung ihren Namen sum-to-zero gegeben hat. Per Konstruktion haben die Abweichungen die Eigenschaft das sie aufsummiert gleich $0$ ergeben. Wie bereits bei den Residuen kennengelernt, die Abweichungen von Werten von deren Mittelwert müssen $0$ ergeben. Daher gilt:
+Es ist zu sehen, dass die $\beta$-Koeffizienten tatsächlich den Gesamtmittelwert und die Abweichungen der Faktormittelwerte $\mu_i$ vom Gesamtmittelwert $\bar{\mu}$ kodieren. Es fehlt allerdings der letzte Abweichungswert. Hier kommt die Eigenschaft dieser Kodierung ins Spiel, die der Kodierung ihren Namen sum-to-zero gegeben hat. Per Konstruktion haben die Abweichungen die Eigenschaft das sie aufsummiert gleich $0$ ergeben. Wie bereits bei den Residuen kennengelernt, die Abweichungen von Werten von deren Mittelwert müssen $0$ ergeben. Daher gilt:
 
 \begin{equation*}
 \begin{aligned}
@@ -813,7 +835,7 @@ Wir sehen, dass die $\beta$-Koeffizienten tatsächlich den Gesamtmittelwert und 
 \end{aligned}
 \end{equation*}
 
-D.h. durch die Aufsummation der Abweichungen und der Invertierung des Vorzeichens bekommen wir den letzten Abweichungswert. Übertragen auf unser Beispiel:
+D.h. durch die Summation der Abweichungen und der Invertierung des Vorzeichens kann der letzte Abweichungswert erhalten werden. Übertragen auf das Beispiel:
 
 ```{r}
 #| echo: true
@@ -821,11 +843,20 @@ D.h. durch die Aufsummation der Abweichungen und der Invertierung des Vorzeichen
 -sum(coef(mod_sum)[2:4])
 ```
 
-Und tatsächlich erhalten wir den gesuchten Wert.
+Die Anwendung von `contr.sum()` wirkt sich entsprechend auf die Konstruktion der Modellmatrix aus (Es wird eine verkürzter Datensatz mit nur acht Datenpunkten zu leicheteren Darstellung erstellt).
+
+```{r}
+#| echo: true
+
+data_8 <- data |> sample_n(8)
+model.matrix(~group, data_8)
+model.matrix(~group, data_8, contrasts=list(group='contr.sum'))
+```
+
 
 ### Differenzkodierung
 
-Schauen wir uns noch eine weitere Möglichkeit an die Faktorstufen zu kodieren, die Differenzkodierung \index{Differenzkodierung}. Bei der Differenzkodierung werden jeweils aufeinanderfolgende Stufen miteinander verglichen. In `R` können wir dieses Kodierungsssystem mittels der Funktion `contr.diff()` aus dem package `codingMatrices` erstellen. Wenden wir das Kodierungssystem wieder zunächst auf unseren Faktor `f_A` an.
+Abschließend sei noch eine weitere Möglichkeit betachtet um die Faktorstufen zu kodieren, die Differenzkodierung \index{Differenzkodierung}. Bei der Differenzkodierung werden jeweils aufeinanderfolgende Stufen miteinander verglichen. In `R` kann dieses Kodierungsssystem mittels der Funktion `contr.diff()` aus dem package `codingMatrices` erstellen werden. Angewendet auf den Faktor `f_A` ergibt sich.
 
 ```{r}
 #| echo: true
@@ -838,7 +869,7 @@ beta_to_mu
 
 Der Koeffizient $\beta_0$ ist wieder gleich dem Mittelwert aus Gruppe $A$. Der Koeffiziente $\beta_1$ kodiert ähnlich wie beim Treatmentkoding den Unterschied zwischen den Mittelwerten der Faktoren $A$ und $B$. Im Unterschied zum Treatmentkoding kodiert $\beta_2$ dagegen den Unterschied zwischen den Mittelwerten der Faktoren $C$ und $B$.
 
-Angewendet auf das Reaktionszeitexperiment erhalten wir.
+Angewendet auf das Reaktionszeitexperiment:
 
 ```{r}
 #| echo: true
@@ -855,15 +886,25 @@ Die Koeffizienten entsprechen den aufeinanderfolgenden Unterschieden der Gruppen
 diff(mu_i$m)
 ```
 
+Entsprechend folgt wieder eine andere Modellmatrize.
+
+```{r}
+#| echo: true
+
+model.matrix(~group, data_8, contrasts = list(group = 'contr.diff'))
+```
+
 ### Zusammenfassung
 
-Zusammenfassend, die verschiedenen Kodierungssysteme führen dazu, dass die Bedeutung der Regressionskoeffizienten $\beta_i$ sich unterscheidet. Daher, um die Koeffizienten interpretieren zu können, muss immer bekannt sein, welches Kodierungssystem bei der Analyse verwendet wurde. Leider ist dies nicht die einzige Implikation, sondern die unterschiedlichen Kodierungssysteme relativ zu weiteren subtilen Unterschieden die ganz und gar nicht offensichtlich sind. Vor allem später, bei der Behandlung von faktoriellen, experimentellen Designs werden die Details der Kodierungssysteme noch einmal stärker von Relevanz werden. In Bezug auf den Fit des Modells haben die Unterschiedlichen Systeme allerdings keinen Einfluss. Die Regressionsgerade (Ebene) wird durch die Wahl der Kodierungssysteme nicht beeinflusst. Somit sind auch die Residuen $e_i$ unter allen Kodierungssystemen gleich.  In der gegensätzlichen Richtung ermöglichen die Kodierungssysteme gewollte Vergleiche zwischen Faktorenstufen direkt zu kodieren und dann in Form der Koeffizienten statistisch zu überprüfen. Unter der Treatmentkodierung bilden die Koeffizienten direkt die Unterschiede der Faktorenstufen von der Referenzstufe ab. Daher sagt die statistische Signifikanz der Koeffizienten $\beta_i, i = 2,3,\ldots,K$ direkt schon etwas über die statistische Signifikanz dieser Stufen von der ersten Stufe aus. Wird zum Beispiel als die Referenzstufe eine Kontrollkondition gewählt und die anderen Stufen bilden unterschiedliche Interventionsstufen ab, dann kann über die Koeffizienten direkt der Unterschied der Interventionsstufen von der Kontrollstufe überprüft werden. Dadurch überschneidet die Thematik der Kodierungssysteme sich mit dem der Kontraste das wir später im Kapitel zu Linearen Kontrasten kennenlernen werden.
+Zusammenfassend zeigen diese Beispiele, dass die verschiedenen Kodierungssysteme dazu führen, dass die Bedeutung der Regressionskoeffizienten $\beta_i$ sich unterscheidet je nachdem welches Kodierungssystem verwendet wird. Daher, um die Werte der Koeffizienten interpretieren zu können, muss bekannt sein, welches Kodierungssystem bei der Analyse verwendet wurde. Leider ist dies nicht die einzige Implikation, sondern die unterschiedlichen Kodierungssysteme führen zu weiteren, subtilen Unterschieden die ganz und gar nicht offensichtlich sind. Vor allem später, bei der Behandlung von faktoriellen, experimentellen Untersuchungsdesigns werden die Details der Kodierungssysteme noch einmal stärker von Relevanz werden. In Bezug auf den allgemeinen Fit des Modells haben die Unterschiedlichen Systeme allerdings keinen Einfluss. Die angepasste Regressionsgerade (Ebene) wird daher durch die Wahl der Kodierungssysteme ebenfalls nicht beeinflusst. Somit sind auch die Residuen $e_i$ unter allen Kodierungssystemen gleich.
+
+Durch die Wahl von speziellen Kodierungssysteme ist es möglich spezifisch gewollte Vergleiche zwischen Faktorenstufen direkt zu kodieren und dann in Form der Koeffizienten statistisch zu überprüfen. Unter der Treatmentkodierung bilden die Koeffizienten direkt die Unterschiede der Faktorenstufen von der Referenzstufe ab. Daher sagt die statistische Signifikanz der Koeffizienten $\beta_i, i = 2,3,\ldots,K$ direkt schon etwas über die statistische Signifikanz dieser Stufen von der ersten Stufe aus. Wird zum Beispiel als die Referenzstufe eine Kontrollkondition gewählt und die anderen Stufen bilden unterschiedliche Interventionsstufen ab, dann kann über die Koeffizienten direkt der Unterschied der Interventionsstufen von der Kontrollstufe überprüft werden. Dadurch überschneidet die Thematik der Kodierungssysteme sich mit dem der Kontraste bzw. Mehrfachvergleiche, dass später im Kapitel zu Linearen Kontrasten eingeführt wird.
 
 Dieser kurze Überblick über die Kodierungssysteme basiert hauptsächlich auf @venables2023. Dies ist auch die primäre Quelle um sich in die Thematik noch einmal tiefer einzulesen. 
 
 ## Zusammenfassung
 
-In diesem Kapitel haben wir gesehen, dass wir ohne Probleme auch nominale Prädiktorvariablen in das lineare Modell integrieren können. Dabei können die Variablen rein additiv oder auch als interaktive Effekte eingehen. Damit haben wir eine extrem flexiblen Prozess um Daten zu modellieren und dabei immer in dem bekannten Punkt-Steigungs-Modell bleiben.
+In diesem Kapitel wurde gezeigt, dass auch nominale Prädiktorvariablen ohne Probleme in das lineare Modell integrieren können. Dabei können die Variablen rein additiv oder auch als interaktive Effekte eingehen. Damit ist der Prozess um Daten zu modellieren deutlich flexibler geworden. Dabei bleibt aber immer die bekannten Rückführung auf Punkt-Steigungs-Modell erhalten.
 
 ## Herleitung der Identität von t-Test und linearen Modell (optional)
 
