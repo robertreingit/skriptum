@@ -70,18 +70,18 @@ Bevor eine Messung durchgeführt werden soll, ist es daher notwendig über die G
 
 ## Reliabilität
 
-In @tbl-ed-rel-emg sind EMG-Daten aus @liljequist2019 abgetragen.
+In @tbl-ed-rel-emg sind ein Ausschnitt von EMG-Daten aus @liljequist2019 abgetragen.
 
 ```{r}
 #| tbl-cap: "Beispieldaten von Lijequist (2019), EMG Median Frequenz (Hz), linke lumbale Rückenmuskulator über drei Tage"
 #| label: tbl-ed-rel-emg
 
-lil |> knitr::kable(
+lil |> head() |> knitr::kable(
              linesep = '',
              col.names = c('Subject','Day 1', 'Day 2', 'Day 3'))
 ```
 
-Es wurden insgesamt $N = 10$ Personen an drei Tagen jeweils an der gleichen Stelle an der Rückenmuskulatur gemessen um abzuschätzen wie ähnlich die Messungen sind. In @fig-ed-rel-emg sind die Daten graphisch dargestellt.
+Insgesamt wurde bei $N = 10$ Personen die Muskelaktivierung in der Rückenmuskulatur über drei Tagen jeweils an der gleichen Stelle gemessen. Ziel war ein Abzuschätzen zu erhalten, wie stabil bzw. ähnlich die EMG-Messungen über die verschiedenen Tage sind. In @fig-ed-rel-emg sind die Daten noch einmal graphisch dargestellt.
 
 ```{r}
 #| fig-cap: "EMG Daten nach Liljequist et al. (2019). Die roten Punkte sind die Mittelwerte mit Standardabweichungen, schwarze gestrichtelte Linien sind die einzelnen Personen."
@@ -101,11 +101,11 @@ ggplot(lil_w, aes(day, emg, group=Subject)) +
   labs(y = 'Median EMG Frequenz') 
 ```
 
-Wie in @fig-ed-rel-emg zu sehen ist, schwanken die Werte über die drei Messzeitpunkte. Einmal innerhalb der Personen sind Unterschied zu erkennen, aber auch die Mittelwerte verändern sich über die Messzeitpunkte. D.h. die gewählte Messmethodik weist selbst schon Schwankungen auf. Die Schwankungen müssen aber bei der Erstellung eines Untersuchungsdesigns berücksichtigt werden. Sollen beispielsweise Unterschiede zwischen zwei Gruppen mit Hilfe dieser Messmethodik untersucht werden, die zu erwartenden Unterschiede bewegen sich in der Größenordnung der Schwankungen oder liegen vielleicht sogar darunter, dann wird es sehr schwierig bis unmöglich diese Unterschiede im Experiment nachweisen zu können. Diese ungewollten Schwankungen sind einer Funktion der *Reliabilität* der Messmethodik. Ohne eine Kenntnis der Reliabilität einer Methodik ist tatsächlich die Durchführung einer experimentellen Untersuchung immer ein Stück weit Kaffeesatzlesen.
+Wie in @fig-ed-rel-emg zu sehen ist, schwanken die Werte über die drei Messzeitpunkte. Einmal sind innerhalb der Personen Unterschiede zu erkennen, aber auch die Mittelwerte für die Messtage über die zehn Personen hinweg verändern sich über die Messzeitpunkte. D.h. die gewählte Messmethodik weist selbst Schwankungen auf. Die Höhe der Schwankungen müssen aber bei der Erstellung eines Untersuchungsdesigns berücksichtigt werden. Sollen beispielsweise Unterschiede zwischen zwei Gruppen mit Hilfe dieser Messmethodik untersucht werden, aber wenn sich die zu erwartenden Unterschiede zwischen den Gruppen in der Größenordnung der Schwankungen oder möglicherweise sogar darunter, dann wird es sehr schwierig bis unmöglich werden diese Unterschiede in einem Experiment nachweisen zu können. Diese ungewollten Schwankungen sind einer Funktion der *Reliabilität* der Messmethodik. Ohne eine Kenntnis der Reliabilität einer Methodik ist tatsächlich die Durchführung einer experimentellen Untersuchung immer ein Stück weit Kaffeesatzlesen.
 
 ### Modell 
 
-Um sich der Reliabilität inhaltlich zu nähern ist zunächst die Erstellung eines theoretischen Modells erforderlich. Soll ein *Wert* bestimmt werden, der die Eigenschaft eines Objekts beschreibt, dann ist eine plausible Annahme das es einen *wahren* Wert gibt. Zum Beispiel ist direkt einsichtig, dass ein gegebener Holzstab eine bestimmte Länge hat. Oder eine Hantelscheibe hat ein bestimmtes Gewicht. Solange keine Manipulation an der Scheibe durchgeführt wird, sollte sich dieses Gewicht nicht ändern. Diesen Wert soll nun als *true-score* bezeichnet werden und er erhält das Zeichen $\tau$. Während $\tau$ für eine Hantelscheibe noch relativ direkt einsichtig ist, ist dies nicht mehr ganz so einfach sobald biologische Objekte ins Spiel kommen. Soll beispielsweise die Körpergröße einer Person bestimmt werden, dann ist klar das die Körpergröße keine feststehende Größe ist, sondern im Verlauf eines Tages einer Schwankung unterliegt [@tyrrell1985]. In @fig-ed-rel-height ist beispielsweise die Veränderung über einen Tag abgetragen.
+Um sich der Reliabilität inhaltlich zu nähern ist zunächst die Erstellung eines theoretischen Modells erforderlich. Soll ein *Wert* bestimmt werden, der die Eigenschaft eines Objekts beschreibt, dann ist eine plausible Annahme das es einen *wahren* Wert gibt. Zum Beispiel ist direkt einsichtig, dass ein gegebener Holzstab eine bestimmte Länge hat. Oder eine Hantelscheibe hat ein bestimmtes Gewicht. Solange keine Manipulation an der Scheibe durchgeführt wird, sollte sich dieses Gewicht nicht ändern. Diesen Wert soll nun als *true-score* bezeichnet werden und er erhält das Zeichen $\tau$. Während $\tau$ für eine Hantelscheibe noch relativ direkt einsichtig ist, ist dies nicht mehr ganz so einfach sobald biologische Objekte ins Spiel kommen. Soll beispielsweise die Körpergröße einer Person bestimmt werden, dann ist klar das die Körpergröße keine feststehende Größe ist, sondern im Verlauf eines Tages einer Schwankung unterliegt [@tyrrell1985]. In @fig-ed-rel-height ist beispielsweise die Veränderung der Körperhöhe im Verlauf eines Tages abgetragen.
 
 ```{r}
 #| fig-cap: "Veränderung der Körpergröße über den Tag (adaptiert nach Tyrrell et al. (1985))."
@@ -126,17 +126,18 @@ Es soll nun aber davon ausgegangen werden das der wahre Wert $\tau$ wohldefinier
 
 \begin{equation}
 Y = \tau + \epsilon
+\label{eq-ed-reliability-model}
 \end{equation}
 
-D.h. der beobachtete Wert $Y$ setzt sich zusammen aus dem wahren Wert $\tau$ und dem Messfehler $\epsilon$ der additiv wirkt. Eine weitere Annahme soll nun dahin gehend bestehen, die Messfehler zufällig sind und bei wiederholter Messung im *Mittel* gleich $0$ sind. Formal ist der Erwartungswert $E[\epsilon_0] = 0$ und es besteht keine Zusammenhang zwischen der Größe des Messfehlers und der Größe von $\tau$. Beispielsweise bei der Messung der Körpergröße verändert sich die Größe des Messfehlers nicht mit der Größer der Probandinnen sondern bleibt konstant. Formal führt dies zu $\text{Cov}(\epsilon,\tau) = 0$.
+D.h. der beobachtete Wert $Y$ setzt sich zusammen aus dem wahren Wert $\tau$ und dem Messfehler $\epsilon$. Der Messfehler geht additiv ein. Eine weitere Annahme soll nun dahin gehend bestehen, dass die Messfehler zufällig sind und bei wiederholter Messung im *Mittel* gleich $0$ sind. Formal ist der Erwartungswert $E[\epsilon_0] = 0$. Weiterhin besteht keine Zusammenhang zwischen der Größe des Messfehlers und der Größe von $\tau$. Beispielsweise bei der Messung der Körpergröße verändert sich die Größe des Messfehlers nicht mit der Größer der Probandinnen sondern bleibt konstant. Formal führt dies zu $\text{Cov}(\epsilon,\tau) = 0$.
 
-Werden nun mehrere bzw. $N$ Messungen durchgeführt dann wird entsprechend nur ein einzelner Wert beobachtet sondern eine Menge von Werten. Um diese zu unterschieden wird entsprechend ein Index $i$ eingeführt.
+Werden nun mehrere bzw. $N$ Messungen durchgeführt, dann wird entsprechend nicht nur ein wiederholter, konstanter Wert beobachtet sondern eine Menge von Werten. Um diese zu unterscheiden wird entsprechend ein Index $i$ eingeführt.
 
 \begin{equation}
 Y_i = \tau_i + \epsilon_i, \quad i \in [1,\ldots,N]
 \end{equation}
 
-Sobald nun mehrere Werte zur Verfügung stehen, kann für diese beobachteten Wert $Y_i$ eine Varianz berechnet werden und, zumindest theoretisch, auch eine Varianz für die $\tau_i$s berechnet werden. Dies ermöglicht nun eine formale Definition der Reliabilität zu erhalten.
+Sobald nun mehrere Werte zur Verfügung stehen, kann für diese beobachteten Wert $Y_i$ eine Varianz berechnet werden und, zumindest theoretisch, auch eine Varianz für die $\tau_i$s berechnet werden. Dies ermöglicht nun eine formale Definition der Reliabilität unter dem gegebenen Modell.
 
 ::: {#def-reliability}
 ## Reliabilität - Definition 
@@ -150,7 +151,7 @@ Die Reliabilität ist definiert als das Verhältnis der Varianz der *True-Score-
 Der Wertebereich der Reliabilität liegt in $\text{Rel} \in [0,1]$ wobei eine Wert $0$ gar keine Reliabilität anzeigt, während ein Wert von $\text{Rel} = 1$ auf eine perfekte Reliabilität hindeutet.
 :::
 
-Für die Interpretation der Reliabilität hat sich in der Literatur eine Kategorisierung entlang der Wert in @tbl-ed-rel-interpretation etabliert.
+Veranschaulicht, wenn der Messfehler gleich Null ist, also $\sigma_{\epsilon}^2 = 0$ gilt, dann ist $\text{Rel} = 1$, während der Messfehler sehr groß im Verhältnis zu $\sigma_{\tau}^2$, dann geht der $\text{Rel}$ gegen Null. Für die Interpretation der Reliabilität hat sich in der Literatur eine Kategorisierung entlang der Werte in @tbl-ed-rel-interpretation etabliert.
 
 | Bereich | Interpretation |
 | --- | --- |
