@@ -98,47 +98,47 @@ Seien die Datenpunkte $[1,2,3,4,5]$ gegeben. Der Mittelwert $\hat{y} = 3$. Wenn 
 \bar{y} = 3 = \frac{1}{5} (1+2+3+4+y_5) = \frac{1}{5}(10+y_5) \Leftrightarrow (3\cdot 5)-10=y_5
 \end{equation*}
 
-Das Ziel ist nun eine Metrik zu entwickeln die es erlaubt abschätzen, ob die Hinzunahme von zusätzlichen Modellparametern zu einer Verbesserung der Modellvorhersage führt. D.h. wir starten mit einem Modell und fügen dann weitere Variablen dazu um zu überprüfen ob dadurch die Modellvorhersage verbessert wird. Eine *Verbesserung* versuchen wir über die Veränderung in $SSE$ zu bestimmen. Wenn zusätzliche Modellparameter zu einer Verbesserung führen, dann sollte eine *relevante* Reduktion der Fehlervarianz $SSE$ beobachtet werden. Die Residuen werden kleiner und wir können präzisere Vorhersagen treffen. Als Randbedinungen fordern wir, dass die zu vergleichenden Modelle in einer Hierarchie zueinander stehen. Dies bedeutet, dass einfachere Modelle als Teilmodelle von komplexeren Modellen interpretiert werden.
+Das Ziel ist nun eine Metrik zu entwickeln die es erlaubt abschätzen, ob die Hinzunahme von zusätzlichen Modellparametern zu einer Verbesserung der Modellvorhersage führt. D.h. der Analyseprozess startet mit einem *einfachen* Modell und sukzessive werden weitere Variablen zum Modell hinzugefügt und es wird überprüft ob dadurch die Modellvorhersage verbessert wird. Eine *Verbesserung* wird in diesem Fall über die Veränderung in $SSE$ ermittelt. Wenn zusätzliche Modellparameter zu einer Verbesserung führen, dann sollte eine *relevante* Reduktion der Fehlervarianz $SSE$ beobachtet werden. Die Residuen werden kleiner und die Präzision der Vorhersagen wird verbessert. Als Randbedingung sollen die zu vergleichenden Modelle in einer Hierarchie zueinander stehen. Dies bedeutet, dass einfachere Modelle als Teilmodelle von komplexeren Modellen interpretiert werden.
 
-Wir müssen dazu zunächst die Unterscheidung in ein volles Modell ($F$ull model) und ein reduziertes Modell ($R$educed model) verstehen. Als das volle Modell bezeichnen wir bei einem Vergleich immer das komplizierte Modell. Dementsprechend ist das reduzierte Modell das weniger komplizierte Modell welches einem Spezialfall des vollen Modell entspricht. Dabei ist die Bezeichnung voll bzw. reduziertes Modell immer nur temporär, ein volles Modell kann bei einem weiteren Vergleich zum reduzierten Modell werden. Im weiteren wird bei der Bezeichnung der Modell die englische Bezeichung (full vs. reduced) verwendet. Für das Beispiel der einfachen lineare Regression ist das full model das uns schon bekannte:
+Dazu wird zunächst eine Unterscheidung zwischen einem vollem Modell ($F$ull model) und einem reduzierten Modell ($R$educed model) getroffen. Als das volle Modell wird immer das kompliziertere Modell, also dasjenige mit größerem $p$, bezeichnet. Dementsprechend ist das reduzierte Modell das weniger komplizierte Modell, welches einem Spezialfall des vollen Modell entspricht. Dabei ist die Bezeichnung voll bzw. reduziertes Modell immer nur temporär. Ein volles Modell kann bei einem weiteren Vergleich zum reduzierten Modell werden. Im weiteren wird bei der Bezeichnung der Modell die englische Bezeichung (full vs. reduced) verwendet. Für das Beispiel der einfachen lineare Regression ist das full model das bekannte Modell:
 
-$$
+\begin{equation*}
 Y_i = \beta_0 + \beta_1 X_i + \epsilon_i, \quad \epsilon_i \sim \mathcal{N}(0,\sigma^2)
-$$
+\end{equation*}
 
-Um die Residualvarianzen $SSE$ für die beiden Modell voneinander unterscheiden zu können bezeichnen wir diese mit $SSE(F)$ für das full model und $SSE(R)$ für das reduced model. Die Residualvarianz $SSE(F)$ berechnet sich wie oben wiederholt mittels:
+Um die Residualvarianzen $SSE$ für die beiden Modell voneinander unterscheiden zu können, werden diese mit $SSE(F)$ für das full model und $SSE(R)$ für das reduced model bezeichnet. Die Residualvarianz $SSE(F)$ berechnet sich wie oben angegeben mittels:
 
 \begin{equation}
 \textrm{SSE(F)}  = \sum_{i=1}^N(y_i - \hat{y}_i)^2 = \sum_{i=1}^N [y_i - (\beta_0 + \beta_1 x_i)]^2
 \label{eq-mlm-hier-ssef}
 \end{equation}
 
-Da wir $p = 2$ Modellparameter haben, hat das Modell $df_{F} = N - p = N - 2$ Freiheitsgrade. Wir könnten uns jetzt die Frage stellen, ob wir wirklich den Modellparameter $\beta_1$ benötigen. Vielleicht zeigt die $X$-Variable gar keinen Zusammenhang mit der $Y$-Variable und wir fitten nur Datenrauschen mit dem Modell. Aus dieser Überlegung heraus, können wir jetzt ein reduziertes Modell formulieren bei dem der Parameter $\beta_1$ fehlt.
+Dieses Modell hat $p = 2$ Modellparameter und somit $df_{F} = N - p = N - 2$ Freiheitsgrade. Nun kann die Frage gestellet werden, ob der Modellparameter $\beta_1$ wirklich benötigt wird? Vielleicht zeigt die $X$-Variable gar keinen Zusammenhang mit der $Y$-Variable und durch die Inklusion von $X$ wird letztendlich nur Datenrauschen im Modell angepasst. Aus dieser Überlegung heraus, ist es möglich ein reduziertes Modell zu formulieren bei dem der Parameter $\beta_1$ fehlt.
 
-$$
+\begin{equation*}
 Y_i = \beta_0 + \epsilon_i, \quad \epsilon_i \sim \mathcal{N}(0,\sigma^2)
-$$
+\end{equation*}
 
 Die Residualvarianz $SSE(R)$ für dieses reduzierte Modell berechnet sich nun mittels.
 
-$$
+\begin{equation*}
 \textrm{SSE(R)} = \sum_{i=1}^N (y_i - \beta_0)^2 
-$$
+\end{equation*}
 
 Im reduzierten Modell ist nur noch ein Paramter $\beta_0$ vorhanden, somit gilt $p = 1$ und entsprechend $df_{R} = N - 1$. 
 
 Mit etwas Algebra lässt sich zeigen, dass im Allgemeinen $SSE(F) \leq SSE(R)$ gilt. Dieser Zusammenhang lässt sich auch heuristisch herleiten. Wenn es keinen Zusammenhang zwischen $X$ und $Y$ gibt, dann wird der $\beta_1$ im full model nahezu $0$ sein und Formel \eqref{eq-mlm-hier-ssef} wird zu $SSE(R)$. Im realistischen Fall wird aber, selbst wenn kein Zusammenhang besteht zwischen $X$ und $Y$, ein Teil des immer vorhandenen Rauschens in den Daten mittels $\beta_1$ gefittet. Das führt dazu, das praktisch immer $SSE(F)$ etwas kleiner ist als $SSE(R)$. Somit folgt der beschriebene Zusammenhang zwischen $SSE(F)$ und $SSE(R)$. 
 
-### Reduziertes Modell und Stichprobenvarianz(*) 
+### Reduziertes Modell und Stichprobenvarianz (deep dive)
 
-Zwischen der Residualvarianz im reduzierten Modell SSE(R), dem *optimalen* Modellparameter $\beta_0$ und der Stichprobenvarianz besteht ein enger Zusammenhang bzw. Identität wie sich anhand der folgenden Herleitung sehen lässt. Wir wollen den Modellparameter unter der Minimierung der Summer der Quadrate der Abweichung, sprich SSE, ermitteln.
+Zwischen der Residualvarianz im reduzierten Modell $SSE(R)$, dem *optimalen* Modellparameter $\beta_0$ und der Stichprobenvarianz besteht ein enger Zusammenhang bzw. Identität wie sich anhand der folgenden Herleitung sehen lässt. Der Modellparameter $\beta_0$ im reduzierten Modell soll, wie üblich, unter der Minimierung der Summe der Quadrate der Abweichungen, sprich $SSE(R)$, ermittelt werden.
 
 \begin{align*}
-SSE &= \sum_{i=1}^n(y_i - \beta_0)^2 \\
+SSE(R) &= \sum_{i=1}^n(y_i - \beta_0)^2 \\
 &= \sum_{i=1}^n (y_i^2 - 2y_i\beta_0 + \beta_0^2) 
 \end{align*}
 
-Wir bestimmen $min[SSE]$, wie wir das schon vorher beim einfachen Regressionmodell gemacht haben. Wir setzen den Term $=0$ und leiten nach dem Modellparameter $\beta_0$ ab. Ein bisschen Algebra führt zu:
+Das Minimum $min[SSE]$ wird bestimmt, indem, wie schon beim einfachen Regressionsmodell, nach dem Modellparameter $\beta_0$ abgeleitet und das Resultat wird $=0$ gesetzt. Ein bisschen Algebra führt zu:
 
 \begin{align*}
 0 &= \frac{\mathrm{d}}{\mathrm{d} \beta_0}\sum_{i=1}^n (y_i^2 - 2y_i\beta_0 + \beta_0^2) \\
@@ -147,18 +147,21 @@ n\beta_0 &= \sum_{i=1}^n y_i \\
 \beta_0 &= \frac{\sum_{i=1}^n y_i}{n} 
 \end{align*}
 
-Somit ist Wert von $\beta_0$ der Abweichungen minimiert, der Mittelwert $\bar{y}$. Daraus folgt, das unsere Schätzer für $\sigma^2$, 
+Somit ist Wert von $\beta_0$ im reduzierten Modell der die Abweichungen minimiert, der Mittelwert $\bar{y}$. Daraus folgt wiederum, dass im reduzierten Modell mit der Modellgleichung $y_i = \beta_0 + \epsilon_i$ für alle $i$, also alle Datenpunkte, der gleiche Vorhersagewert *bestimmt* wird, nämlich der Mittelwert $\bar{y}$ der Stichprobe. Daraus folgt wiederum, das der Schätzer für $\sigma^2$, nämlich $MSE$ also $SSE(R)/df$. Die Freiheitsgrade berechnen sich, wie bereichts erwähnt, durch $N - p$, wobei $p$ beim reduced model $p = 1$ gilt, da nur ein Modellparameter $\beta_0$ vorhanden ist. Daraus folgt für $\hat{\sigma}^2$: 
+
+\begin{align*}
+\hat{\sigma}^2 &= MSE(R) = \frac{SSE(R)}{df} = \frac{SSE(R)}{N-p} \\
+&= \frac{SSE(R)}{N-1} = \frac{1}{N-1}\sum_{i=1}^N (y_i - \hat{\beta}_0)^2 \\
+&= \frac{1}{N-1}\sum_{i=1}^N (y_i - \bar{y})^2 =  s^2
+\end{align*}
+
+Diese Gleichung ist aber nur der bereits bekannte Schätzer der Stichprobenvarianz $s^2$. Somit gilt für das reduced model:
 
 \begin{equation*}
-\hat{\sigma}^2 = \frac{SSE}{n-p} = \frac{SSE(R)}{n-1} = \sum_{i=1}^n (y_i - \bar{y})^2 =  s^2
+\textrm{SSE(R)} = \sum_{i=1}^N (y_i - \beta_0)^2 = \sum_{i=1}^N(y_i - \bar{y})^2 = \textrm{SSTO}
 \end{equation*}
 
-einfach nur unser bekannter Schätzer der Stichprobenvarianz $s^2$ ist. Somit gilt für das reduced model:
-
-$$
-\textrm{SSE(R)} = \sum_{i=1}^N (y_i - \beta_0)^2 = \sum_{i=1}^N(y_i - \bar{y})^2 = \textrm{SSTO}
-$$
-Kommen wir zurück zur Entwicklung unsere Metrik um das volle und das reduzierte Modell miteinander zu vergleichen. Gehen wir davon aus, das das reduzierte Modell korrekt ist. D.h. die Hinzunahme von $X$ sollte keine Verbesserung des Modells, keine Verbesserung in der Modellvorhersage, nach sich ziehen. Konkret bedeutet dies, dass $SSE(R)$ und $SSE(F)$ in etwas gleich groß sein sollten, bzw. $SSE(F)$ nur wenig besser (also kleiner) ist als $SSE(R)$ ist. Wenn wir die Differenz der beiden Quadratsummen berechnen, dann sollte die Differenz entsprechend eher klein sein.
+Zurückkommend auf die Entwicklung einer Metrik um das volle und das reduzierte Modell miteinander zu vergleichen. Sei nun das reduzierte Modell korrekt. D.h. die Hinzunahme von $X$ sollte keine Verbesserung des Modells, keine Verbesserung in der Modellvorhersage, nach sich ziehen. Konkret bedeutet dies, dass $SSE(R)$ und $SSE(F)$ in etwas gleich groß sein sollten, bzw. $SSE(F)$ nur wenig besser (also kleiner) ist als $SSE(R)$ ist. Wenn die Differenz der beiden Quadratsummen gebildet wird, dann sollte diese Differenz entsprechend eher klein sein.
 
 \begin{equation}
 \textrm{SSE(R)} - \textrm{SSE(F)}
@@ -167,19 +170,19 @@ Kommen wir zurück zur Entwicklung unsere Metrik um das volle und das reduzierte
 
 Beide Modelle sind in etwas gleich gut, fitten die Daten also in etwa gleich gut. Das volle Modell etwas besser, das es durch den zusätzlichen Parameter etwas flexibler als das reduzierte Modell ist.
 
-Gehen wir von nun von der entgegengesetzen Annahme aus. Das reduzierte Modell ist falsch und wir benötigen die Variable $X$ um die Varianz in $Y$ aufzuklären. In diesem Fall sollte die Differenz \eqref{eq-mlm-hier-div} einen deutlich größeren Wert annehmen. Das reduzierte Modell kann denjenigen Teil der Varianz von $Y$ nicht aufklären der durch $X$ entsteht. Dadurch wandert die durch $X$ verursachte Varianz in die Residuen, was dazu führt das $SSE(R)$ größer wird. Im vollem Modell dagegen, kann die durch $X$ entstehende Varianz durch den zusätzlichen Modellparameter $\beta_1$ erklärt werden und entsprechend sind die Residuen geringer was wiederum zu einem kleineren $SSE(F)$ führt. 
+Sei nun von von der entgegen gesetzen Annahme ausgegangen. Das reduzierte Modell ist falsch und die Variable $X$ wird benötigt um die Varianz in $Y$ aufzuklären. In diesem Fall sollte die Differenz \eqref{eq-mlm-hier-div} einen deutlich größeren Wert annehmen. Das reduzierte Modell kann denjenigen Teil der Varianz von $Y$ nicht aufklären der durch $X$ entsteht. Dadurch wandert die durch $X$ verursachte Varianz in die Residuen, was dazu führt das $SSE(R)$ größer wird. Im vollem Modell dagegen, kann die durch $X$ entstehende Varianz durch den zusätzlichen Modellparameter $\beta_1$ erklärt werden und entsprechend sind die Residuen geringer. Wenn die Residuen geringer werden führt das wiederum dazu, dass der Wert von $SSE(F)$ kleiner wird. 
 
-Zusammengefasst haben wir heuristisch eine Metrik hergeleitet, die uns erlaubt verschiedene Modell miteinander zu vergleichen. Wenn das reduzierte, das einfachere, Modell ausreicht um die Daten zu erklären, dann wird die Differenz \eqref{eq-mlm-hier-div} eher klein ausfallen. Wenn dagegen die zusätzlichen Parameter im vollem Modell benötigt werden und die Varianz in $Y$ zu erklären, dann wird der Unterschied \eqref{eq-mlm-hier-div} eher groß werden.
+Zusammengefasst aus der Differenz in den $SSE$ zwischen den Modellen heuristisch bereits eine Metrik hergeleitet. Diese Metrik erlaubt verschiedene Modell miteinander zu vergleichen. Wenn das reduzierte, einfachere, Modell ausreicht um die Daten zu erklären, dann wird die Differenz \eqref{eq-mlm-hier-div} eher klein ausfallen. Wenn dagegen die zusätzlichen Parameter im vollem Modell benötigt werden und die Varianz in $Y$ zu erklären, dann wird der Unterschied \eqref{eq-mlm-hier-div} eher groß werden.
 
-Wir bringen nun noch einen zusätzlichen Parameter in unseren Modellvergleich ein. Die Bedeutsamkeit des Unterschieds zwischen den beiden Modellen ist auch noch abhängig davon in wie vielen Parametern die beiden Modelle sich voneinander unterscheiden. Wenn im vollen Modell $p = 10$ Parameter sind und im reduzierten Modell eben nur $p = 1$ Parameter ist, dann ist ein gegebener Unterschied in den $SSE$s zwischen den Modellen anders zu bewerten, als wenn im vollem Modell $p = 2$ Parameter geschätzt werden. Bei gleichem Unterschied zwischen den Modellen ist der Unterschied im ersteren Fall weniger bedeutsam im Vergleich zum letzteren Fall. Daher kalibrieren wir den Unterschied zwischen den Modellen noch anhand des Unterschieds in der Anzahl der Parameter. Anders formuliert, wir betrachten die Veränderung in der Varianzverkleinerung pro Freiheitsgrad an. In unserem einfachen Fall passiert da nichts, da der Unterschied in der Parameteranzahl $= 1$ ist. Wir werden aber später sehen, dass auch Modelle mit größeren Unterschieden in der Parameteranzahl $p$ miteinander verglichen werden können.
+Nun wird ein zusätzlicher Parameter in den Modellvergleich eingebracht. Die Bedeutsamkeit des Unterschieds zwischen den beiden Modellen ist auch noch davon abhängig um wie vielen Parameter die beiden Modelle sich voneinander unterscheiden. Wenn im vollen Modell $p = 10$ Parameter sind und im reduzierten Modell eben nur $p = 1$ Parameter ist, dann ist ein gegebener Unterschied in den $SSE$s zwischen den Modellen anders zu bewerten, als wenn im vollem Modell $p = 2$ Parameter geschätzt werden. Bei gleichem Unterschied zwischen den Modellen ist der Unterschied im ersteren Fall weniger bedeutsam im Vergleich zum letzteren Fall. Daher erscheint es sinnvoll den Unterschied zwischen den Modellen noch anhand des Unterschieds in der Anzahl der Parameter zu kalibrieren. Anders formuliert, es wird die Veränderung in der Varianzverkleinerung *pro Freiheitsgrad* betrachtet. Im vorliegenden einfachen Fall ist dies nicht von Bedeutung, da der Unterschied in der Parameteranzahl $= 1$ ist. Im weiteren Verlauf wird aber gesehen, dass auch Modelle mit größeren Unterschieden in der Parameteranzahl $p$ miteinander verglichen werden können.
 
 Mit $p_F$ = Anzahl der Parameter im vollen Modell, $p_R$ = Anzahl der Parameter im reduzierten Modell gilt:
 
-$$
-p_{F} - p_{R} = p_{F} - p_{R} + N - N = N - p_{R} - (N - p_{F}) = df_{R} - df_{F}
-$$
+\begin{equation*}
+p_{F} - p_{R} = p_{F} - p_{R} + N - N = (N - p_{R}) - (N - p_{F}) = df_{R} - df_{F}
+\end{equation*}
 
-Nach dem ersten $=$ haben wir $0$ in Form von $+N-N$ addiert umd die Schreibweise mit den Freiheitsgraden zu erhalten. Achtung, die Reihenfolge der Modellparameter ändert sich von $p$ zu $df$. Als Merkhilfe, der Unterschied muss positiv sein, d.h. es wird immer der größere Wert vom kleineren Wert abgezogen. Somit schreiben wir den Unterschied zwischen den beiden Modellen folgendermaßen auf und geben dem Term auch noch eine eigene Bezeichnung $MS_{\textrm{test}}$ für mean squared test.
+Nach dem ersten $=$ haben wir $0$ in Form von $+N-N$ addiert um die Schreibweise mit den Freiheitsgraden zu erhalten. Achtung, die Reihenfolge der Modellparameter ändert sich von $p$ zu $df$. Als Merkhilfe, der Unterschied muss positiv sein, d.h. es wird immer der größere Wert vom kleineren Wert abgezogen. Somit wird der Unterschied zwischen den beiden Modellen folgendermaßen aufgeschrieben und der Term erhält auch noch eine eigene Bezeichnung $MS_{\textrm{test}}$ für mean squared test.
 
 \begin{equation}
 MS_{\textrm{test}} = \frac{\textrm{SSE(R)} - \textrm{SSE(F)}}{df_{E(R)} - df_{E(F)}}
