@@ -42,11 +42,11 @@ rt_tbl <- tibble::tibble(
 )
 ```
 
-Bisher waren wir damit beschäftigt unsere Modelle Stück für Stück immer komplizierter zu machen. Angefangen haben wir mit dem einfachen linearen Modell, das dann zum additiven multiplen linearen Modell mit mehreren $X$-Variablen wurde. Die $X$-Variablen konnten im nächsten Schritt miteinander interagieren, während im letzten Schritt die Anforderung aufgehoben wurde, dass die $x$-Variablen kontinuierlich sein mussten. Mit Hilfe von Indexvariablen können wir nun auch nominale Variablen modellieren. Im Kern wurde aber letztendlich immer das einfache Modell der Punkt-Steigungsform aus der Schule beibehalten. Im folgenden Abschnitt werden wir nun eine direkte Verbindung zwischen dem Regressionsmodell und der Varianzanalyse erarbeiten.
+In den bisherigen Kapiteln sind die behandelten Modelle Stück für Stück immer komplizierter geworden. Angefangen mit dem einfachen linearen Modell, wurde die Erweiterung zum additiven multiplen linearen Modell mit mehreren $X$-Variablen vollzogen. Im nächsten Schritt konnten die $X$-Variablen miteinander interagieren, während im letzten Schritt die Anforderung aufgehoben wurde, dass die $X$-Variablen kontinuierlich sein mussten. Im Kern wurde aber immer das einfache Modell der Punkt-Steigungsform beibehalten. Im Zuge der Behandlung von Indikatorvariablen wurde eine direkte Verbindung zwischen dem linearen Modell und dem t-Test hergeleitet. Im folgenden Abschnitt wird nun eine direkte Verbindung zwischen dem Regressionsmodell und der Varianzanalyse hergeleitet, bei der es sich letztendlich nur um eine Verallgemeinerung des t-Test handelt.
 
 ## Genereller Linearer Modell Testansatz 
 
-Wir beginnen wieder mit dem Modell der einfachen linearen Regression, mit nur einer $X$- und einer $Y$-Variable.
+Ausgangspunkt ist wieder das Modell der einfachen linearen Regression, mit nur einer $X$-Variable.
 
 ```{r}
 #| echo: true
@@ -55,7 +55,7 @@ mod0 <- lm(y ~ x, simple)
 summary(mod0)
 ```
 
-Schauen wir uns noch einmal genauer die Residuen an, d.h. die Abweichungen der beobachteten Daten von der Regressionsgeraden. Bei der Besprechung des Determinationskoeffizienten $R^2$ haben wir schon Quadratsummen und deren Unterteilung kennengelernt. Dort hatten wird die Aufteilung der Varianz von $Y$, bezeichnet als $SSTO$, die totale Varianz in die beiden Komponenten Regressionsvarianz $SSR$ und Fehlervarianz $SSE$ besprochen.
+Zunächst werden wieder die Residuen betrachtet, die Abweichungen der beobachteten Daten $y_i$ von der vorhergesagten Werten der Regressionsgeraden $\hat{y}_i$. Im Rahmen der Behandlung des Determinationskoeffizienten $R^2$ sind bereits Quadratsummen und deren Unterteilung besprochen worden. Dort wurde die Aufteilung der Varianz von $Y$, bezeichnet als $SSTO$, die totale Varianz in die beiden Komponenten Regressionsvarianz $SSR$ und Fehlervarianz $SSE$ eingeführt.
 
 \begin{equation}
 SSTO = SSR + SSE
@@ -67,17 +67,15 @@ Die Fehlerquadratsumme SSE, die Summe der quadrierten Abweichungen zwischen dem 
 SSE = \sum_{i=1}^n (y_i - \hat{y}_i)^2
 \end{equation}
 
-Also letztendlich wieder nur die Summe der quadrierten Residuen.
+Also letztendlich wieder nur die Summe der quadrierten Residuen. Um für gegebene Daten die vorhergesagten Werte $\hat{y}_i$ berechnen zu können, wird ein Modell und die dazugehörigen Modellkoeffizienten $\beta_0$ und $\beta_1$ benötigt. Das einfache lineare Modell hat in diesem Fall zwei Modellparameter. Streng genommen besitzt das Modell noch einen weiteren Parameter nämlich $\sigma^2$, da $\sigma^2$ für die Berechnung der $\hat{y}_i$ nicht unbedingt notwendig ist, kann er erstmal ignoriert werden. Zuvor wurde bereits die Anzahl der Modellparameter formalisiert und als eigener Parameter bezeichnet. Per Konvention wird die Parameteranzahl mit $p$ bezeichnet. Im einfachen Fall mit den beiden Parametern $\beta_0$ und $\beta_1$ gilt daher $p = 2$.
 
-Um für gegebene Daten die vorhergesagten Werte $\hat{y}_i$ berechnen zu können, benötigen wir das Modell und die dazugehörigen Modellkoeffizienten $\beta_0$ und $\beta_1$. Das einfache lineare Modell hat in diesem Fall zwei Parameter. Streng genommen besitzt das Modell noch einen weiteren Parameter nämlich $\sigma^2$. Diesen lassen wir aber erst wieder links liegen, da $\sigma^2$ auch für die Berechnung der $\hat{y}_i$ nicht unbedingt notwendig ist. Formalisierung wir nun die Parameteranzahl indem ihr eine eigene Variable spendieren. Per Konvention wird die Parameteranzahl mit $p$ bezeichnet. In unserem einfachen Fall mit den beiden Parametern $\beta_0$ und $\beta_1$ gilt daher $p = 2$.
-
-Die Anzahl der Parameter $p$ spielt eine Rolle wenn die sogenannten Freiheitsgrade $df$ (degrees of freedom) bestimmt werden müssen. Umgangssprach bezeichnen die Freiheitsgerade die Anzahl der Daten die frei variiert werden können. Die tatsächliche Definition ist komplizierter und auch nicht immer eindeutig. Die Freiheitsgrade von $SSE$ berechnen sich mittels der Formel $N-p$. $N$ bezeichnet wie immer die Anzahl der Beobachtungen, die Anzahl der Datenpunkte. 
+Die Anzahl der Parameter $p$ spielt eine Rolle wenn die sogenannten **Freiheitsgrade** $df$ (degrees of freedom) bestimmt werden müssen. Umgangssprachlich bezeichnen die Freiheitsgerade die Anzahl der Daten die frei variiert werden können. Die tatsächliche Definition ist komplizierter und auch nicht immer eindeutig. Die Freiheitsgrade für die Fehlerquadratsumme $SSE$ berechnet sich mittels der Formel $N-p$. $N$ bezeichnet die Anzahl der Beobachtungen, in unserem Fall die Anzahl der Datenpunkte. 
 
 \begin{equation}
 df_E := N - p
 \end{equation}
 
-Die Freiheitsgerade $df$ bestimmen die *effektive* Anzahl der Beobachtungen die zur Verfügung stehen um die Varianz $\sigma^2$ des Modells abzuschätzen. Dadurch, dass zwei Parameter anhand der Daten für das Modell bestimt werden, fallen zwei Datenpunkt als unabhängige Informationsquellen weg. Anders ausgedrückt, wenn ich die beiden Modellparameter $\beta_0$ und $\beta_1$ kenne, dann sind nur noch $N-2$ Datenpunkt frei variierbar. Sobald ich die Werte von $N-2$ Datenpunkten und die beiden Parameter kenne, kann ich die verbleibenden beiden Werte berechnen. Daher der Begriff der Freiheitsgrade.
+Die Freiheitsgerade $df$ bestimmen die *effektive* Anzahl der Beobachtungen die zur Verfügung stehen um die Varianz $\sigma^2$ des Modells abzuschätzen. Dadurch, dass zwei Parameter anhand der Daten für das Modell bestimmt werden, fallen zwei Datenpunkt als *unabhängige* Informationsquellen weg. Anders ausgedrückt, wenn die beiden Modellparameter $\beta_0$ und $\beta_1$ bekannt sind, dann sind nur noch $N-2$ Datenpunkt frei variierbar. Sobald die Werte von $N-2$ Datenpunkten und die beiden Parameter bekannt, können die verbleibenden beiden Werte berechnet werden. Daher der Begriff der Freiheitsgrade.
 
 Wenn $SSE$ durch die Anzahl der Freiheitsgerade geteilt wird, dann lässt sich zeigen, das dieser Wert ein erwartungstreuer Schätzer für die Residualvarianz $\sigma^2$ unter der Verteilungsannahme $\epsilon_i \sim \mathcal{N}(0,\sigma^2)$ der Daten ist. Das Verhältnis von $SSE$ zu $df$ wird als Mean squared error ($MSE$) bezeichnet.
 
@@ -86,17 +84,21 @@ MSE = \frac{SSE}{df_{E}} = \frac{\sum_{i=1}^n (y_i - \hat{y}_i)^2}{N-p} = \hat{\
 \label{eq-mlm-hier-MSE}
 \end{equation}
 
-Im Allgemeinen bedeutet groß $SS$ immer, das es sich um die Summe von quadrierten werden handelt ($S$um of $S$squares) während ein $M$ bedeutet das die Quadratsumme durch ihre Freiheitsgrade beteilt wurde ($M$ean).
-
-Tatsächlich ist der Ansatzu in Formel \eqref{eq-mlm-hier-MSE} schon bekannt uns ist uns bei der Stichprobenvarianz $s^2$ schon begegnet. Wenn wir eine Stichprobe der Größe $N$ mit Werten $y_i$ haben, dann haben wir die Stichprobenvarianz mittels der uns bekannten Formel berechnet:
+Im Allgemeinen bedeutet groß $SS$ immer, das es sich um die Summe von quadrierten Werten handelt ($S$um of $S$squares) während ein $M$ bedeutet das die Quadratsumme durch ihre Freiheitsgrade geteilt wurde ($M$ean). Tatsächlich ist der Ansatz in Formel \eqref{eq-mlm-hier-MSE} schon bekannt und bei der Stichprobenvarianz $s^2$ angewendet worden. Wenn eine Stichprobe der Größe $N$ mit Werten $y_i$ vorliegt, dann wird die Stichprobenvarianz mittels der bekannten Formel berechnet:
 
 \begin{equation}
-\hat{\sigma}^2 = s^2 = \frac{1}{N-1}\sum_{i=1}^2(y_i - \bar{y})^2
+\hat{\sigma}^2 = s^2 = \frac{1}{N-1}\sum_{i=1}^N(y_i - \bar{y})^2
 \end{equation}
 
-Was bei dieser Formel vielleicht schon immer etwas undurchsichtig gewesen ist, ist der Nenner mit $N-1$ anstatt einfach $N$ wie wir es vom Mittelwert kennen. Hier kommen wieder die Freiheitsgerade zum Einsatz. Um die Varianz überhaupt berechnen zu können benötigen wir einen Parameter, den Mittelwert $\hat{y}$ der $y_i$. Den Mittelwert berechnen wir aber anhand der Daten. Dies führt dazu, dass nach Berechnung von $\hat{y}$ wiederum nur noch $N-1$ Werte frei variiert werden können. Sobald wir, neben dem Mittelwert $\bar{y}$, $N-1$ Werte kennen, können wir den verbleibenden $N$-ten Wert berechnen. Durch die Berechnung des Mittelwerts ist also ein Freiheitsgerad *verloren* gegangen. Der Zähler bei der Varianz ist wieder eine Summe quadrierter Abweichungen also ein $SS$ und damit wird die Varianz $s^2$ insgesamt zu einer $MS$.
+Was bei dieser Formel vielleicht schon immer etwas undurchsichtig gewesen ist, ist der Nenner mit $N-1$ anstatt einfach $N$ wie es vom Mittelwert bekannt ist. Hier kommen die Freiheitsgerade zum Einsatz. Um die Varianz überhaupt berechnen zu können, wird ein *Parameter*, den Mittelwert $\hat{y}$ der $y_i$ benötigt. Der Mittelwert wird allerdings anhand der Daten berechnet. Dies führt dazu, dass nach Berechnung von $\hat{y}$ nur noch $N-1$ Werte frei variiert werden können. Sobald, neben dem Mittelwert $\bar{y}$, $N-1$ Werte bekannt sind, kann der verbleibenden $N$-ten Wert berechnet werden. Durch die Berechnung des Mittelwerts ist daher ein Freiheitsgerad *verloren* gegangen. Der Zähler bei der Varianz ist wieder eine Summe quadrierter Abweichungen also ein $SS$ und damit wird die Varianz $s^2$ insgesamt zu einer $MS$.
 
-Nach dieser Wiederholung kommen wie wieder zur Regression zurück. Das Ziel ist eine Metrik zu entwickeln die es erlaubt abschätzen, ob die Hinzunahme von zusätzlichen Modellparametern zu einer Verbesserung der Modellvorhersage führt. D.h. wir starten mit einem Modell und fügen dann weitere Variablen dazu um zu überprüfen ob dadurch die Modellvorhersage verbessert wird. Eine *Verbesserung* versuchen wir über die Veränderung in $SSE$ zu bestimmen. Wenn zusätzliche Modellparameter zu einer Verbesserung führen, dann sollte eine *relevante* Reduktion der Fehlervarianz $SSE$ beobachtet werden. Die Residuen werden kleiner und wir können präzisere Vorhersagen treffen. Als Randbedinungen fordern wir, dass die zu vergleichenden Modelle in einer Hierarchie zueinander stehen. Dies bedeutet, dass einfachere Modelle als Teilmodelle von komplexeren Modellen interpretiert werden.
+Seien die Datenpunkte $[1,2,3,4,5]$ gegeben. Der Mittelwert $\hat{y} = 3$. Wenn nun $N-1=4$ Werte, z.B. die ersten vier Wert $[1,2,3,4]$ und der Mittelwert bekannt sind, dann ist der fünfte Wert festgelegt.
+
+\begin{equation*}
+\bar{y} = 3 = \frac{1}{5} (1+2+3+4+y_5) = \frac{1}{5}(10+y_5) \Leftrightarrow (3\cdot 5)-10=y_5
+\end{equation*}
+
+Das Ziel ist nun eine Metrik zu entwickeln die es erlaubt abschätzen, ob die Hinzunahme von zusätzlichen Modellparametern zu einer Verbesserung der Modellvorhersage führt. D.h. wir starten mit einem Modell und fügen dann weitere Variablen dazu um zu überprüfen ob dadurch die Modellvorhersage verbessert wird. Eine *Verbesserung* versuchen wir über die Veränderung in $SSE$ zu bestimmen. Wenn zusätzliche Modellparameter zu einer Verbesserung führen, dann sollte eine *relevante* Reduktion der Fehlervarianz $SSE$ beobachtet werden. Die Residuen werden kleiner und wir können präzisere Vorhersagen treffen. Als Randbedinungen fordern wir, dass die zu vergleichenden Modelle in einer Hierarchie zueinander stehen. Dies bedeutet, dass einfachere Modelle als Teilmodelle von komplexeren Modellen interpretiert werden.
 
 Wir müssen dazu zunächst die Unterscheidung in ein volles Modell ($F$ull model) und ein reduziertes Modell ($R$educed model) verstehen. Als das volle Modell bezeichnen wir bei einem Vergleich immer das komplizierte Modell. Dementsprechend ist das reduzierte Modell das weniger komplizierte Modell welches einem Spezialfall des vollen Modell entspricht. Dabei ist die Bezeichnung voll bzw. reduziertes Modell immer nur temporär, ein volles Modell kann bei einem weiteren Vergleich zum reduzierten Modell werden. Im weiteren wird bei der Bezeichnung der Modell die englische Bezeichung (full vs. reduced) verwendet. Für das Beispiel der einfachen lineare Regression ist das full model das uns schon bekannte:
 
