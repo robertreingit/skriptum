@@ -9,40 +9,221 @@ source('_common.R')
 
 ## Multiple Regression und Polynome
 
+In verschiedenen Zusammenhängen kann es vorkommen, dass der Zusammenhang zwischen den Prädiktorvariablen $X$ und der abhängigen Variable $Y$ nicht linear ist. Sondern es können durchaus vorkommen, dass diese Zusammenhänge auch Kurvenförmig sind. Beispielsweise ist @pickett2021 der Zusammenhang zwischen der Ermüdung und der Wettkampfleistung untersucht worden und der folgende Zusammenhang zwischen den beiden Variablen wurde beobachtet (@fig-mlm-prediction-poly-1).
+
+```{r}
+#| label: fig-mlm-prediction-poly-1
+#| fig-cap: "Zusammenhang zwischen Ermüdung (Fatigue Index) und Wettkampfzeit (s) (adaptiert nach Pickett et al. (2021))"
+
+kayak <- readr::read_delim("data/pickett(2020)_kayak_fig5", delim=';')
+p_kayak <- ggplot(kayak, aes(fatigue, time_s)) +
+  geom_point() +
+  scale_x_continuous('Fatigue Index [%]') +
+  scale_y_continuous('Wettkampfzeit [s]')
+p_kayak
+```
+
+Aus physiologischen Überlegungen heraus, haben die Autoren den Zusammenhang zwischen den beiden Variablen nicht nur mittels einer einfachen linearen Regression modelliert, sondern es wurde auch ein Polynom 2. Grades an die Daten angepasst (siehe Mathematische Grundlagen zu Polynomen). Dies resultierte in dem folgenden Modell (siehe @fig-mlm-prediction-poly-2).
+
+```{r}
+#| label: fig-mlm-prediction-poly-2
+#| fig-cap: "Modellzusammenhang zwischen Ermüdung (Fatigue Index) und Wettkampfzeit (s) mittels eines Polynoms 2. Grades (adaptiert nach Pickett et al. (2021))"
+
+mod_kayak <- lm(time_s ~ poly(fatigue, degree=2, raw=T), kayak)
+kayak_p <- tibble(fatigue=seq(10,20,length.out=20))
+y_hat <- predict(mod_kayak, newdata=kayak_p)
+kayak_p <- kayak_p |> mutate(time_s = y_hat)
+p_kayak + geom_line(data = kayak_p)
+```
+
+Die Autoren fittet das folgende Modell:
+
+\begin{equation*}
+y_i = 89.8 - 6.99 \cdot x_i + 0.23 \cdot x_i^2
+\end{equation*}
+
+D.h. die Prädiktorvariable `fatigue` ist nicht nur linear in das Modell eingegangen, sondern auch die quadrierten Terme wurden in das Modell integriert. Dies erlaubt die Modellierung von parabelförmigen Zusammenhängen zwischen der Prädiktorvariablen und der abhängigen Variablen. Dieser Ansatz kann dabei beliebig erweitert werden entsprechend der Anzahl der Datenpunkten. Bei einem Datensatz mit $N$ Datenpunkten hat das höchst mögliche Polynom den Grad $N-1$. Dies ist natürlich in den seltensten Fällen sinnvoll, wie weiter unten diskutiert wird. Wenn eine Prädiktorvariablen dermaßen transformiert in das Modell eingeht, dann wird oft von einer sogenannten **Polynomregression** gesprochen, wobei diese Begrifflichkeit nicht universell verwendet wird.
+
+Die Polynomregression stellt somit eine Erweiterung der einfachen linearen Regression dar. Während die lineare Regression versucht, eine gerade Linie bzw. eine flache Ebene an die Daten anzupassen, erlaubt die Polynomregression gebogene Kurven bzw. Ebene an die Daten anzupassen. D.h. der Effekt ist ähnlich dessen der schon bei den Interaktionseffekten beobachtet wurde. Dies erlaubt wieder komplexere Zusammenhänge zwischen den Prädiktorvariablen $X$ und einer Kriteriumsvariable $Y$ zu modellieren. Entsprechend nutzt die Polynomregression anstatt nur $Y = \beta_0 + \beta_1 X$ zu verwenden, Modelle in Form von:
+
+\begin{equation}
+Y = \beta_0 + \beta_1 X + \beta_2 X^2 + \beta_3 X^3 + \dots + \beta_d X^d + \epsilon
+\end{equation}
+
+Dabei beschreibt die Variable $d$ den **Polynomgrad**. Je höher der Grad, desto flexibler ist das Modell. Üblicherweise werden die niedrigeren Grade bis zum höchsten Polynomgrad im Modell beibehalten und nur in begründeten Ausnahmefällen, beispielsweise aus theoretischen Überlegungen, werden niedrigere Grade ausgeschlossen. Ein einfaches Beispiel wäre zum Beispiel ein parabelförmiger Zusammenhang. Formal:
+
+\begin{equation*}
+y_i = \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + \epsilon_i
+\end{equation*}
+
+Hier könnte beispielsweise auch das Modell:
+
+\begin{equation*}
+y_i = \beta_2 x_i^2 + \epsilon_i
+\end{equation*}
+
+an die Daten angepasst werden. Inhaltlich würde das Bedeutung, dass davon auszugehen ist, dass die Parabel durch den Koordinatenpunkt $(0,0)$ geht und dass in diesem Fall die *Steigung* $\beta_1 = 0$ ist. Dies kann in bestimmten Fällen tatsächlich plausibel sein, wird aber in den meisten Fällen nur sehr schwer inhaltlich zu verargumentieren sein. Daher ist in praktisch immer die Anpassung des vollständigen Modell sinnvoller.
+
+Insgesamt ergibt sich durch die Erweiterungen die im Rahmen des multiplen Regression besprochen wurden dementsprechend ein extrem flexibler Ansatz um Zusammenhänge von Prädiktorvariablen mit einer abhängigen Kriteriumsvariable zu modellieren. Durch Interaktionseffekte, nominale Variablen und Polynome kann ein große Klasse von Zusammenhängen innerhalb des gleichen Ansatzes einheitlich behandelt werden.
+
+### Polynomregression in `R`
 
 ## Vorhersage versus Inferenz
 
-### Bias-Variance Trade-off
 
-### Test error versus training error
+## Modellbewertung
 
-- The **test error** is the average error that results from using a statistical learning method to predict the response on a new observation, one that was not used in training the method.
-- The **training error** is the average error that results from applying the statistical learning method to the observations used in its training.
+Eine zentrale Aufgabe bei der Erstellung eines Modells um Vorhersagen zu treffen ist die Modellbewertung. Wie gut ist das Modell in der Lage Daten vorherzusagen? Insbesondere ist hierbei die Frage wie gut die Vorhersage des Modells ist, für Datenpunkte die es bisher *noch nicht gesehen* hat. In diesem Zusammenhang bedeutet *gesehen*, Datenpunkte die für die Erstellung des Modell verwendet wurden.
 
-The training error rate often is quite different from the test error rate, and in particular the former can dramatically underestimate the latter.
+Im Rahmen der einfachen linearen Regression wurden bereits die beiden Parameter der Root-Mean-Square Fehler ($RMSE$) $\hat{sigma}^2$, der Standardschätzfehler, den Determinationskoeffizienten $R^2$ behandelt. Im weiteren wird zunächst $RMSE$ bzw. ohne Wurzel $MSE$, die gemittelte Summer der Residuen, verwendet.
 
-### Training- versus Test-Set Performance
+\begin{equation*}
+MSE = \frac{1}{N}\sum_{i=1}^N (\hat{y}_i - y_i)^2
+\end{equation*}
+
+Allgemein, umso kleiner der $MSE$ wird, umso besser kann das Modell die Daten vorhersagen. Daher erscheint es zunächst sinnvoll, dass Modell so zu wählen, dass die Daten möglichst perfekt abgebildet werden können. Allerdings ist zu bedenken, dass die Daten sich normalerweise aus zwei Komponenten zusammensetzen. Dem *tatsächlichen* Zusammenhang zwischen $X$ und $Y$ und noch einem zusätzlichen **Rauschanteil**. In den bisherigen Betrachtungen wurde dieser Rauschanteil bzwl zufällige Fehler immer mit Hilfe von $\sigma_i$ abgebildet. Allgemein, kann der Zusammenhang zwischen $X$ und $Y$ daher wie folgt dargestellt werden.
+
+\begin{equation*}
+Y = f(X) + \epsilon
+\end{equation*}
+
+Was nun passieren kann, ist dass ein Modell gewählt wird, das perfekt die **beobachteten** Daten abbildet. Diese Daten sind aber mit Rauschen bzw. Fehlern behaftet. Wenn das Modell nun die Daten perfekt nachbildet, dann wird ebenfalls der Rauschanteil abgebildet der aber eigentlich nicht berücksichtigt werden soll. Dies führt dann dazu, das das Modell wenn es einen neuen Datenpunkt vorhersagen soll fehlerhafte Vorhersagewerten produziert. Dass Modell ist nicht in der Lage, zwischen dem systematischen Teil und dem Rauschteil zu unterschieden. Der Fachbegriff dafür nennt sich **Überanpasung** oder geläufiger englisch **overfitting**. Andersherum kann auch der gegenteilige Effekt auftreten, dass Modell kann unterkomplex sein, was ebenfalls dazu führt, das das Modell nicht in der Lage ist *gute* Verhersage zu treffen. Hier wird von einer **Unteranpassung** bzw. **underfitting** gesprochen. Das folgende Beispiel stellt diese beiden Effekte da.
+
+Angenommen der folgende DPG generiert die Daten.
+
+\begin{equation*}
+Y = 3 + 1.5 \cdot X^3 + \epsilon
+\end{equation*}
+
+Dabei soll der Rauschanteil $\epsilon$ einer Standardnormalverteilung $\Phi$ folgen. Es wurden die folgenden $N = 7$ Datenpunkte generiert (siehe @fig-mlm-prediction-over-1).
 
 ```{r}
+#| label: fig-mlm-prediction-over-1
+#| fig-cap: "Beispieldaten mit Rauschen (Punkte) und der tatsächliche DPG"
 
-ggplot(tibble(x=c(0,1), y=c(0,1)), aes(x,y)) +
-  scale_x_continuous('Model Complexity', breaks=0:1, labels=c('low','high')) +
-  scale_y_continuous('Prediction Error', breaks=0:1, labels=c('lower','higher'))
+set.seed(5)
+n <- 7
+sigma <- 1
+foo <- function(x) 3 + 1.5*x**3
+dat <- tibble(
+  x = seq(-2,2,length.out=n),
+  y = foo(x) + rnorm(n, 0, 1)
+)
+ggplot(dat, aes(x,y)) +
+  geom_point(size=2) +
+  geom_line(data = tibble(x=seq(-2,2,length.out=150),y=foo(x))) +
+  scale_x_continuous('Prädiktorvariable') +
+  scale_y_continuous('Anhängige Variable')
 ```
 
-## Validation-set approach
+Nun werden drei verschiedene Modell an die Daten gefittet.
+
+\begin{align*}
+m_u: Y &= \beta_0 + \beta_1 X \\
+m_f: Y &= \beta_0 + \beta_1 X^3 \\
+m_o: Y &= \beta_0 + \beta_1 X + \beta_2 X^2 + \ldots + \beta_6 X^6
+\end{align*}
+
+Das Modell $m_u$ ist ein einfache lineares Regressionsmodell, während $m_f$ und $m_o$ Polynome sind. $m_f$ ist dabei ein Polynom dritten Grades, dass dem tatsächlichen DPG entspricht während $m_o$ ein Polynom 6. Grades ist, dass deutlich komplexer als der DPG ist. Wenn nun diese drei Modell an die Daten angepasst werden werden die folgenden Graphen erhalten.
+
+```{r}
+#| label: fig-mlm-prediction-over-2
+#| fig-cap: Anpassung der drei Modell an die Beispieldaten.
+
+mod_0 <- lm(y ~ poly(x,1), dat)
+mod_1 <- lm(y ~ poly(x,3), dat)
+mod_2 <- lm(y ~ poly(x,n-1), dat)
+dat_2 <- dat |>
+  select(x) |> 
+  mutate(mod_0 = predict(mod_0),
+         mod_1= predict(mod_1),
+         mod_2 = predict(mod_2)) |> 
+  pivot_longer(cols = -x, names_to = 'model', values_to='y')  
+
+dat_new <- tibble(
+  x = seq(-2,2.5,length.out=200),
+  perfect = foo(x),
+  mod_0 = predict(mod_0, newdata=tibble(x)),
+  mod_1 = predict(mod_1, newdata=tibble(x)),
+  mod_2 = predict(mod_2, newdata=tibble(x)),
+) |> 
+  pivot_longer(cols = -x, names_to = 'model', values_to='y')  
+
+
+ggplot(dat_2, aes(x,y)) +
+  geom_line(data = dat_new, aes(color = model)) +
+  geom_point(data = dat, size=2) +
+  scale_x_continuous('Prädiktorvariable') +
+  scale_y_continuous('Abhängige Variable') +
+  scale_color_discrete('Modell',
+                       labels=c(
+                         expression(m[u]),
+                         expression(m[f]),
+                         expression(m[o]),
+                         'DGP'))
+```
+
+Es ist zu sehen, das das Modell $m_u$ nur sehr schlecht in der Lage ist, werden den beobachteten Datenpunkten noch dem tatsächlichen DPG zu folgen. Das Modell kann nur eine Gerade generieren  und diese ist nicht ausreicht um den DGP nachzubilden. Wie erwartet ist das Modell $m_f$ dagegen sehr gut in der Lage den tatsächlichen DPG anhand der Daten zu reproduzieren. Dabei ist ist zu beobachten, das das Modell nicht perfekt durch die beobachteten Datenpunkte geht. D.h. das Modell ist in der Lage den systematischen und den Fehlerteil in den Daten voneinander zu trennen. Insbesondere wenn die Kurven rechts außerhalb des Bereichs der Daten verglichen werden, ist klar zu erkennen, dass nur das Modell $m_f$ dem tatsächlichen DPG nachbildet. Dabei ist hier auch ein leichter Unterschied zu erkennen, der daraus folgt, dass eben keine perfekten Information anhand der Datenpunkt zur Verfügung standen. Das Modell $m_o$ dagegen ist zwar in der Lage die beobachteten Daten perfekt abzubilden. Die Kurve geht genau durch alle Punkte hindurch aber weicht dadurch auch vom DGP ab. Dies ist wieder besonders stark im rechten Teil, außerhalb der Datenpunkte, zu beobachten. Zusammengefasst ist es also wichtig ein Modell zu verwenden das der Komplexität des DGPs entspricht damit es weder zu einer Über- noch zu einer Unteranpassung kommt.
+
+Nach dieser Betrachtung werden die folgenden Definitionen erhalten.
+
+::: {#def-overfitting}
+## Überanpassung (over-fitting) \index{Überanpassung} \index{overfitting}
+Eine Überanpassung liegt vor, wenn ein Modell die Details und das Rauschen in den Trainingsdaten in einem Maße erlernt, das seine Fähigkeit zur Generalisierung auf neue, ungesehene Daten beeinträchtigt. Das Modell wird zu komplex und passt sich zu sehr an die Trainingsdaten an, statt an den zugrunde liegenden datenerzeugenden Prozess. 
+:::
+
+::: {#def-underfitting}
+## Unteranpassung (under-ftting) \index{Unteranpassung} \index{underfitting}
+Eine Unteranpassung liegt vor, wenn ein Modell zu eine zu geringe Komplexität aufweise, um den zugrunde liegende datengeneriereden Prozess zu erlernen. Das Modell lernt nicht effektiv aus den Trainingsdaten, was zu einer schlechten Leistung führt.
+:::
+
+Prinzipiell ist es schwierig zu entscheiden ob eine Über- oder Unteranpassung vorliegt. Wie bereits im vorhergehenden Kapitel zu Modellhierarchien wird der Standardschätzfehler immer kleiner umso mehr Prädiktorvariablen in das Modell integriert werden. D.h. wenn das Modell immer komplexer wird. Dazu kommen noch die vorgestellten Möglichkeiten von Interaktions- und oben Polynomen dazu. Im Falle des Beispiels, mit $m_u$, wo ein Polynom 6. Grades gefittet wurde, sind die beobachteten Daten perfekt abgebildet worden und die Interpretation von overfitting war nur möglich weil der DGP bekannt ist. Um dennoch eine Abschätzung treffen zu können wie gut das Modell **generalisiert**, also für Datenpunkte funktioniert die noch nicht bekannt ist wird in der Praxis eine Unterteilung der Daten in Test- und Trainigsdatensatz verwendet.
+
+## Testfehler versus Trainingsfehler
+
+Um die Generalisierbarkeit eines Modells abschätzen zu können wird der folgende einfache Ansatz angewendet. Die Daten werden vor der Anpassung des Modells in zwei Teile aufgeteilen: **Trainingsdaten** und **Testdaten**. Das Modell wird dann zunächst mit Hilfe der Trainingsdaten erstellt. Die Testdaten spielen bei der Erstellung des Modells hingegen keine Rolle und werden **zurückgehalten**. Nachdem das Modell erstellt wurde, werden dann die Trainingsdaten verwendet, um zu überprüfen, wie gut das Modell neue, unbekannte Daten abbildet. Dadurch kann beurteilt werden, ob das Modell gut generalisiert. Die Aufteilung der Daten hilft daher zu entscheiden bzw. zu bewerten wir gut das Modell den DGP in der Lage ist abzubilden. Entsprechend der Unterteilungen kann ein **Testfehler** und ein **Trainingsfehler** für ein Modell bestimmt werden. Der Trainingsfehler unterscheidet sich häufig deutlich von Testfehler – insbesondere kann der Trainingsfehler den Testfehler stark unterschätzen.
+
+::: {#def-traininerror}
+## Trainingsfehler \index{Trainingsfehler} \index{training error}
+
+Der Trainingsfehler ist der durchschnittliche Fehler, der entsteht, wenn eine statistische Lernmethode auf genau die Beobachtungen angewendet wird, die auch zum Trainieren des Modells genutzt wurden.
+:::
+
+::: {#def-testerror}
+## Testfehler \index{Testfehler} \index{test error}
+
+Der Testfehler ist der durchschnittliche Fehler, der entsteht, wenn eine statistische Lernmethode verwendet wird, um die Kriterionsvariable für eine neue Beobachtung vorherzusagen. Eine neue Beobachtung ist eine Beobachtung, die **nicht** zum Training des Modells verwendet wurde.
+:::
+
+```{r}
+#| label: fig-mlm-prediction-testtrain
+#| fig-cap: "Trainings- und Testfehler in Abhängigkeit vom Modellkomplexität"
+
+df <- tibble(
+  x = 2:18,
+  Test = (x-10)**2,
+  Train = if_else(x < 10, -4+(x-10)**2, -4+-1.5*(x-9))
+) |> tidyr::pivot_longer(-x)
+ggplot(df, aes(x,value, color=name)) +
+  geom_line() +
+  scale_x_continuous("Polynomgrad (Modelkomplexität)") +
+  scale_y_continuous("MSE", breaks=NULL) +
+  scale_color_manual("Fehlertypen", values=c('blue','green'))
+```
+
+
+## Validation-set Ansatz 
 
 - Randomly divide the available set of samples into two parts: a training set and a validation or hold-out set.
 - The model is fit on the training set, and the fitted model is used to predict the responses for the observations in the validation set.
 - The resulting validation-set error provides an estimate of the test error. This is typically assessed using MSE in the case of a quantitative response and misclassification rate in the case of a qualitative (discrete) response.
 
-### K-fold Cross-validation
+### K-fache Kreuzvalidierung 
 
 - Estimates can be used to select best model, and to give an idea of the test error of the final chosen model.
 - Randomly divide the data into K equal-sized parts. We leave out part $k$, fit the model to the other $K-1$ parts (combined), and then obtain predictions for the left-out $k$th part.
 - This is done in turn for each part $k = 1, 2, \ldots K$, and then the results are combined.
 
-### Implementierungs details
 
 - Let the $K$ parts be $C_1, C_2, \ldots, C_K$ with $n_k = n/K$ observations each
 - Compute
@@ -51,113 +232,7 @@ CV_{(K)} = \sum_{i=1}^K \frac{n_k}{n}MSE_k
 $$
 - Setting $K =  n$ yields leave-one out cross-validation (LOOCV)
 
-## Bootstrap
 
-In vielen Fällen ist die Annahme einer bestimmten Verteilung für eine Statistik nur sehr schwer zu begründen. Da aber die gesamte Maschinerie der Inferenz darauf beruht Aussagen über die Stichprobenverteilung zu machen hat man sich auf die Suche nach alternativen Möglichkeiten gemacht. Eine Lösung für dieses Problem ist der *Bootstrap*. Der Bootstrap ist dabei eine flexibles statistisches Tool um eine Aussage über die Unsicherheit auf Basis einer Stichprobe zu machen ohne zu restriktive Annahme über die Verteilung der Population zu machen. Hauptziel des Bootstraps ist es einen Schätzer für den Standardfehler zu erhalten. Das Prinzip das beim Bootstrap zur Anwendung kommt, ist das sogenannte *plug-in principle*.
+## Bias-Variance Trade-off
 
-::: {#def-plug-in}
-## Plug-in principle
-
-To estimate a parameter, a quantity that describes the population, use the statistic that is the corresponding quantity for the sample.
-:::
-
-Die Effiziente Anwendung des Bootstrap ist dabei erst mit allgemeinen Verfügbarkeit von schneller Rechenleistung möglich gemacht worden. Beim Bootstrap wird eine wiederholte Stichprobenziehung der Daten aus der vorliegenden *Stichprobe* durchgeführt. Diese Stichprobe wird als Bootstrap-Stichprobe bezeichnet. Die Bootstrap-Stichprobe hat die gleiche Größe $N$ wie die ursprüngliche Verteilung. Damit nicht die genau gleiche Strichprobe entsteht, wird die Bootstrap-Stichprobe durch *Ziehen mit Zulegen* generiert. D.h. jeder Datenpunkt in der Originalstichprobe kann mehrmals in der Bootstrap-Stichprobe landen. Die Annahme beim Bootstrapverfahren, ohne geht es auch hier nicht, ist, das die beobachtete Stichprobe die Population repräsentiert. In diesem Fall, ist kann die Stichprobe als drop-in replacement für die eigentliche Population verwendet werden. D.h. aber auch das nicht wirklich *neue* Daten durch den Bootstrap generiert werden. Die Bootstrap-Stichprobe wird lediglich dazu verwendet Informationen über die Varianz der gewünschten Statistik zu erhalten, ähnlich wie dies auch beim Standardfehler $s_{e} = \frac{s}{\sqrt{n}}$ des Mittelwerts $\bar{x}$ gemacht wird.
-
-In @fig-mlm-pred-bootstrap sind die Unterschied zwischen diesen beiden Prozessen noch einmal verdeutlicht.
-
-```{r}
-#| fig-cap: Adaptiert nach Hesterberg (2015)
-#| label: fig-mlm-pred-bootstrap
-#| fig-height: 8
-
-bootstrap_graph <- function() {
-  x_0 <- -4
-  x_1 <- 4
-  my_theme <- theme(
-      axis.line.x = element_line(colour = 'black', linewidth=1),
-      panel.background = element_blank(),
-      axis.title.y = element_blank(),
-      axis.ticks.y = element_blank(),
-      axis.text.y = element_blank(),
-      axis.text.x = element_text(size=12),
-      axis.ticks.x = element_line(linewidth=1),
-      axis.ticks.length = unit(0.4,"cm")
-    )
-  foo <- function(n=20, x0=x_0, x1=x_1, df = tibble(x = rnorm(n)), star=FALSE) {
-    x_bar <- mean(df$x)
-    breaks <- sort(c(x0, x1, 0, x_bar))
-    if (star) {
-      ex <- expression(bar(x)^"*")
-      lt <- 'dotted'
-    } else {
-      ex <- expression(bar(x))
-      lt <- 'dashed'
-    }
-    if (x_bar <= 0) {
-      labels <- c(x0, ex, "", x1)
-    } else {
-      labels <- c(x0, "", ex, x1)
-    }
-    ggplot(df, aes(x)) + 
-      geom_histogram(fill='grey') +
-      geom_vline(xintercept = x_bar, linetype=lt, linewidth=1) +
-      scale_x_continuous("", breaks=breaks,
-                         labels=labels,
-                         limits = c(x0, x1)) +
-      guides(x = guide_axis(cap = 'both')) +
-      my_theme
-  } 
-  df <- tibble(
-    x = seq(-3, 3, length.out=100),
-    y = dnorm(x))
-  
-  set.seed(2)
-  p1 <- ggplot(df, aes(x,y)) + 
-    geom_line(linewidth=1) + 
-    scale_x_continuous("", 
-                       limits=c(-10,10), 
-                       breaks=c(x_0,0,x_1),
-                       labels=c(x_0,expression(mu), x_1)) + 
-    geom_vline(xintercept = 0, linewidth=1) +
-    guides(x = guide_axis(cap = 'both')) +
-    labs(title = 'Zufallsstichproben aus der Population') +
-    my_theme
-  p2 <- foo() + annotate(geom = 'segment', x = 4, y = 4, xend = 3, yend = 3, arrow = arrow(type='closed'))
-  p3 <- foo() + annotate(geom = 'segment', x = 0, y = 4, xend = 0, yend = 3, arrow = arrow(type='closed'))
-  p4 <- foo() + annotate(geom = 'segment', x = -4, y = 4, xend = -3, yend = 3, arrow = arrow(type='closed'))
-  set.seed(7)
-  df_2 <- tibble(x = rnorm(30, 0.3)) 
-  x_bar <- mean(df_2$x)
-  p5 <- ggplot(df_2, aes(x)) + 
-    geom_histogram(fill='grey') +
-    scale_x_continuous("", 
-                       limits=c(-10,10), 
-                       breaks=c(x_0,0,x_bar,x_1),
-                       labels=c(x_0,"",expression(bar(x)^"*"), x_1)) + 
-    geom_vline(xintercept = 0, linewidth=1) +
-    geom_vline(xintercept = x_bar, linetype='dashed', linewidth=1) +
-    guides(x = guide_axis(cap = 'both')) +
-    labs(title = 'Bootstrap-Stichproben aus der Zufallsstichprobe ') +
-    my_theme
-  p6 <- foo(df = tibble(x = sample(df_2$x, 20, replace=TRUE)), star=T) +
-    annotate(geom = 'segment', x = 4, y = 4, xend = 3, yend = 3, arrow = arrow(type='closed'))
-  p7 <- foo(df = tibble(x = sample(df_2$x, 20, replace=TRUE)), star=T) +
-    annotate(geom = 'segment', x = 0, y = 4, xend = 0, yend = 3, arrow = arrow(type='closed'))
-  p8 <- foo(df = tibble(x = sample(df_2$x, 20, replace=TRUE)), star=T) +
-    annotate(geom = 'segment', x = -4, y = 4, xend = -3, yend = 3, arrow = arrow(type='closed'))
-  p1 / (p2 + p3 + p4) / p5 / (p6 + p7 + p8)
-}
-bootstrap_graph()
-```
-
-
-Bootstrap t-Interval (compare @hesterberg2015)
-
-- Calculate a bootstrap t-statistics
-$$
-t^* = \frac{\hat{\theta}- \hat{\theta}}{SE^{*}}
-$$
-- Calculate Confidence interval (attention reversed quantiles)
-$$
-(\hat{\theta}-q_{1-\alpha/2}SE,\hat{\theta}-q_{\alpha/2}SE)
-$$
+## Zum Nach- und Weiterlesen
