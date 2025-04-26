@@ -62,11 +62,53 @@ Hier könnte beispielsweise auch das Modell:
 y_i = \beta_2 x_i^2 + \epsilon_i
 \end{equation*}
 
-an die Daten angepasst werden. Inhaltlich würde das Bedeutung, dass davon auszugehen ist, dass die Parabel durch den Koordinatenpunkt $(0,0)$ geht und dass in diesem Fall die *Steigung* $\beta_1 = 0$ ist. Dies kann in bestimmten Fällen tatsächlich plausibel sein, wird aber in den meisten Fällen nur sehr schwer inhaltlich zu verargumentieren sein. Daher ist in praktisch immer die Anpassung des vollständigen Modell sinnvoller.
+an die Daten angepasst werden. Inhaltlich würde das Bedeutung, dass davon auszugehen ist, dass die Parabel durch den Koordinatenpunkt $(0,0)$ geht und dass in diesem Fall die *Steigung* $\beta_1 = 0$ ist. Dies kann in bestimmten Fällen tatsächlich plausibel sein, wird aber in den meisten Fällen nur sehr schwer inhaltlich zu verargumentieren sein. Daher ist in praktisch immer die Anpassung des vollständigen Modell sinnvoller. Weiterhin ist es meistens auch sinnvoll eher ein einfacheres Modell gegenüber einen Modell mit hohem Polynomgrad zu bevorzugen.
 
-Insgesamt ergibt sich durch die Erweiterungen die im Rahmen des multiplen Regression besprochen wurden dementsprechend ein extrem flexibler Ansatz um Zusammenhänge von Prädiktorvariablen mit einer abhängigen Kriteriumsvariable zu modellieren. Durch Interaktionseffekte, nominale Variablen und Polynome kann ein große Klasse von Zusammenhängen innerhalb des gleichen Ansatzes einheitlich behandelt werden.
+Insgesamt ergibt sich durch die Erweiterungen die im Rahmen des multiplen Regression besprochen wurden dementsprechend ein extrem flexibler Ansatz um Zusammenhänge von Prädiktorvariablen mit einer abhängigen Kriteriumsvariable zu modellieren. Durch Interaktionseffekte, nominale Variablen und Polynome kann ein große Klasse von Zusammenhängen innerhalb des gleichen Ansatzes einheitlich behandelt werden. Damit kommen auch die bereits kennengelernten Methoden zum Einsatz um den Modellfit zu bewerten.
 
 ### Polynomregression in `R`
+
+In `R` gibt es verschiedene Methoden eine Polynomregression durchzuführen, die aber alle mittels `lm()` durchgeführt werden. Im einfachsten Falle werden die höheren Polynome von $X$ direkt im `tibble` generiert. Seien zum Beispiel die folgenden Daten gegeben.
+
+```{r}
+#| echo: true
+
+set.seed(1)
+df <- tibble(
+  x = runif(10, -1, 1),
+  y = 4 + 2*x + 0.5*x**2 + rnorm(10)
+)
+```
+
+Dann wäre eine mögliche Lösung zunächste die Polynome von $X$ zu generieren und dann entsprechend in `lm()` in der Formel zu verwenden.
+
+```{r}
+#| echo: true
+
+df_add <- df |> mutate(x2 = x**2)
+mod_1 <- lm(y ~ x + x2, df_add)
+summary(mod_1)
+```
+
+Eine andere Möglichkeit ist ohne die Variablen vorher zu generieren, sondern direkt in `lm()` mittels der `I()`-Funktion. Somit wird das Polynom direkt zum Funktionsaufruf generiert.
+
+```{r}
+#| echo: true
+
+mod_2 <- lm(y ~ x + I(x**2), df)
+summary(mod_2)
+```
+
+Eine weitere Möglichkeit besteht mittels der Funktion `poly()` im Formelaufruf von `lm()`. An die Funktion `poly()` muss dann der Parameter `degree` spezifiziert werden um den Grad des Polynoms zu bestimmen. Dazu noch der Parameter `raw = TRUE` wenn **keine** orthogonalen Polynome erstellt werden sollen. Orthogonale Polynome haben den Vorteil, dass die Polynome voneinander unabhängig sind und keine Multikollinearitäten entstehen. Eine weitere Besprechung führt allerdings hier etwas zu weit.
+
+```{r}
+#| echo: true
+
+mod_3 <- lm(y ~ poly(x, degree=2, raw = TRUE), df)
+summary(mod_3)
+```
+
+Wie zu erkennen ist, führen alle drei Wege zum gleichen Ergebnis.
 
 ## Vorhersage versus Inferenz
 

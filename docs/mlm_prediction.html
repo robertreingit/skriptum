@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 /* CSS for citations */
 div.csl-bib-body { }
 div.csl-entry {
@@ -541,10 +575,98 @@ y_i = \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + \epsilon_i
 <p><span class="math display">\[\begin{equation*}
 y_i = \beta_2 x_i^2 + \epsilon_i
 \end{equation*}\]</span></p>
-<p>an die Daten angepasst werden. Inhaltlich würde das Bedeutung, dass davon auszugehen ist, dass die Parabel durch den Koordinatenpunkt <span class="math inline">\((0,0)\)</span> geht und dass in diesem Fall die <em>Steigung</em> <span class="math inline">\(\beta_1 = 0\)</span> ist. Dies kann in bestimmten Fällen tatsächlich plausibel sein, wird aber in den meisten Fällen nur sehr schwer inhaltlich zu verargumentieren sein. Daher ist in praktisch immer die Anpassung des vollständigen Modell sinnvoller.</p>
-<p>Insgesamt ergibt sich durch die Erweiterungen die im Rahmen des multiplen Regression besprochen wurden dementsprechend ein extrem flexibler Ansatz um Zusammenhänge von Prädiktorvariablen mit einer abhängigen Kriteriumsvariable zu modellieren. Durch Interaktionseffekte, nominale Variablen und Polynome kann ein große Klasse von Zusammenhängen innerhalb des gleichen Ansatzes einheitlich behandelt werden.</p>
+<p>an die Daten angepasst werden. Inhaltlich würde das Bedeutung, dass davon auszugehen ist, dass die Parabel durch den Koordinatenpunkt <span class="math inline">\((0,0)\)</span> geht und dass in diesem Fall die <em>Steigung</em> <span class="math inline">\(\beta_1 = 0\)</span> ist. Dies kann in bestimmten Fällen tatsächlich plausibel sein, wird aber in den meisten Fällen nur sehr schwer inhaltlich zu verargumentieren sein. Daher ist in praktisch immer die Anpassung des vollständigen Modell sinnvoller. Weiterhin ist es meistens auch sinnvoll eher ein einfacheres Modell gegenüber einen Modell mit hohem Polynomgrad zu bevorzugen.</p>
+<p>Insgesamt ergibt sich durch die Erweiterungen die im Rahmen des multiplen Regression besprochen wurden dementsprechend ein extrem flexibler Ansatz um Zusammenhänge von Prädiktorvariablen mit einer abhängigen Kriteriumsvariable zu modellieren. Durch Interaktionseffekte, nominale Variablen und Polynome kann ein große Klasse von Zusammenhängen innerhalb des gleichen Ansatzes einheitlich behandelt werden. Damit kommen auch die bereits kennengelernten Methoden zum Einsatz um den Modellfit zu bewerten.</p>
 <section id="polynomregression-in-r" class="level3" data-number="21.1.1">
 <h3 data-number="21.1.1" class="anchored" data-anchor-id="polynomregression-in-r"><span class="header-section-number">21.1.1</span> Polynomregression in <code>R</code></h3>
+<p>In <code>R</code> gibt es verschiedene Methoden eine Polynomregression durchzuführen, die aber alle mittels <code>lm()</code> durchgeführt werden. Im einfachsten Falle werden die höheren Polynome von <span class="math inline">\(X\)</span> direkt im <code>tibble</code> generiert. Seien zum Beispiel die folgenden Daten gegeben.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="fu">runif</span>(<span class="dv">10</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> <span class="dv">4</span> <span class="sc">+</span> <span class="dv">2</span><span class="sc">*</span>x <span class="sc">+</span> <span class="fl">0.5</span><span class="sc">*</span>x<span class="sc">**</span><span class="dv">2</span> <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">10</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Dann wäre eine mögliche Lösung zunächste die Polynome von <span class="math inline">\(X\)</span> zu generieren und dann entsprechend in <code>lm()</code> in der Formel zu verwenden.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df_add <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">x2 =</span> x<span class="sc">**</span><span class="dv">2</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>mod_1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x <span class="sc">+</span> x2, df_add)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mod_1)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = y ~ x + x2, data = df_add)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-1.7030 -0.4729 -0.1269  0.7497  1.3360 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)   3.3648     0.5182   6.493 0.000336 ***
+x             1.9716     0.5585   3.530 0.009600 ** 
+x2            2.4626     1.1188   2.201 0.063635 .  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 1.028 on 7 degrees of freedom
+Multiple R-squared:  0.7601,    Adjusted R-squared:  0.6916 
+F-statistic: 11.09 on 2 and 7 DF,  p-value: 0.006758</code></pre>
+</div>
+</div>
+<p>Eine andere Möglichkeit ist ohne die Variablen vorher zu generieren, sondern direkt in <code>lm()</code> mittels der <code>I()</code>-Funktion. Somit wird das Polynom direkt zum Funktionsaufruf generiert.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>mod_2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x <span class="sc">+</span> <span class="fu">I</span>(x<span class="sc">**</span><span class="dv">2</span>), df)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mod_2)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = y ~ x + I(x^2), data = df)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-1.7030 -0.4729 -0.1269  0.7497  1.3360 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)   3.3648     0.5182   6.493 0.000336 ***
+x             1.9716     0.5585   3.530 0.009600 ** 
+I(x^2)        2.4626     1.1188   2.201 0.063635 .  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 1.028 on 7 degrees of freedom
+Multiple R-squared:  0.7601,    Adjusted R-squared:  0.6916 
+F-statistic: 11.09 on 2 and 7 DF,  p-value: 0.006758</code></pre>
+</div>
+</div>
+<p>Eine weitere Möglichkeit besteht mittels der Funktion <code>poly()</code> im Formelaufruf von <code>lm()</code>. An die Funktion <code>poly()</code> muss dann der Parameter <code>degree</code> spezifiziert werden um den Grad des Polynoms zu bestimmen. Dazu noch der Parameter <code>raw = TRUE</code> wenn <strong>keine</strong> orthogonalen Polynome erstellt werden sollen. Orthogonale Polynome haben den Vorteil, dass die Polynome voneinander unabhängig sind und keine Multikollinearitäten entstehen. Eine weitere Besprechung führt allerdings hier etwas zu weit.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>mod_3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="fu">poly</span>(x, <span class="at">degree=</span><span class="dv">2</span>, <span class="at">raw =</span> <span class="cn">TRUE</span>), df)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mod_3)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = y ~ poly(x, degree = 2, raw = TRUE), data = df)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-1.7030 -0.4729 -0.1269  0.7497  1.3360 
+
+Coefficients:
+                                 Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)                        3.3648     0.5182   6.493 0.000336 ***
+poly(x, degree = 2, raw = TRUE)1   1.9716     0.5585   3.530 0.009600 ** 
+poly(x, degree = 2, raw = TRUE)2   2.4626     1.1188   2.201 0.063635 .  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 1.028 on 7 degrees of freedom
+Multiple R-squared:  0.7601,    Adjusted R-squared:  0.6916 
+F-statistic: 11.09 on 2 and 7 DF,  p-value: 0.006758</code></pre>
+</div>
+</div>
+<p>Wie zu erkennen ist, führen alle drei Wege zum gleichen Ergebnis.</p>
 </section>
 </section>
 <section id="vorhersage-versus-inferenz" class="level2" data-number="21.2">
