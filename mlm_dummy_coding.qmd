@@ -721,7 +721,7 @@ In @fig-mlm-dummy-combi-05 sind die einzelnen Modellkoeffizienten aus @tbl-mlm-d
 
 ## Verschiedene Kodierschemas für die Dummy-Variablen.
 
-In der Herleitung der Integration von nominalen Faktoren in die multiple Regression ist bisher ein bestimmtes Schema verwendet worden, wie die einzelnen Faktorstufen auf $X$-Variablen abgebildet werden. Dazu wurde eine Referenzstufe welche durch einen $Y$-Achsenabschnitt modelliert wird und die anderen $\beta_i$-Koeffizienten bilden Abweichungen in den Faktorstufenmittelwerten von dieser Referenzstufe ab.
+In der Herleitung der Integration von nominalen Faktoren in die multiple Regression ist bisher ein bestimmtes Schema verwendet worden, wie die einzelnen Faktorstufen auf $X$-Variablen abgebildet werden. Dazu wurde eine Referenzstufe bestimmt, welche durch den $Y$-Achsenabschnitt im Modell modelliert wird und die anderen $\beta_i$-Koeffizienten bilden jeweils die Abweichungen der Faktorstufenmittelwerten von dieser Referenzstufe ab.
 
 Wenn die $\beta_i$-Koeffizienten in einem Vektor $\boldsymbol{\beta}$ zusammengefasst.
 
@@ -735,19 +735,19 @@ und die Mittelwerte $\mu_i$ der Faktorstufen $i = 1,2,\ldots,K$ in einem Vektor 
 \boldsymbol{\mu} = (\mu_1, \mu_2, \ldots, \mu_K)^T
 \end{equation*}
 
-Dann können die $\beta$-Koeffzienten im Sinne der Mittelwerte der Faktorstufen als eine Abbildung von $\boldsymbol{\beta} \rightarrow \boldsymbol{\mu}$ aufgefasst werden. Sie diese Abbildung mit dem Symbol $\boldsymbol{B}$ abgebildet.
+Dann können die $\beta$-Koeffizienten im Sinne der Mittelwerte der Faktorstufen als eine Abbildung von $\boldsymbol{\beta} \rightarrow \boldsymbol{\mu}$ aufgefasst werden. Diese Abbildung kann daher auch mit ein Symbol, beispielsweise $\boldsymbol{B}$, abgebildet werden.
 
 \begin{equation*}
 \boldsymbol{\mu} = \boldsymbol{B\beta}
 \end{equation*}
 
 ::: {.callout-tip}
-Wenn ihr euch mit Matrizen auskennt, dann werdet ihr gemerkt haben, dass wir hier um lineare Abbildungen herumtanzen. Wenn euch das nichts sagt, dann einfach weiterlesen.
+Wenn ihr euch mit Matrizen auskennt, dann werdet ihr gemerkt haben, dass es hier um Grunde um eine lineare Abbildungen handelt. Wenn euch das nichts sagt, dann einfach weiterlesen.
 :::
 
 ### Treatment-Kodierung
 
-Die Abbildung mit einer Referenzstufe und Abweichungen von dieser Stufe, wird als **treatment coding** \index{treatment coding} bezeichnet. In `R` kann diese Kodierung mit Hilfe der Funktion `contr.treatment()` erstellt werden, bzw. ist standardmäßig bei `R` eingestellt. 
+Die Abbildung mit einer Referenzstufe und Abweichungen von dieser Stufe, wird als **treatment coding** \index{treatment coding} bezeichnet. In `R` kann diese Kodierung mit Hilfe der Funktion `contr.treatment()` erstellt werden, bzw. ist standardmäßig bei `R` für nominale Variablen eingestellt. 
 
 Sei eine Faktorvariable $A$ hat drei Stufen $K = 3, A, B, C$ gegeben. Mit der Funktion `mean_contrasts()` aus dem package `codingMatrices` können die Abbildung dargestellt werden (Im Code werden noch die Zeilen- und Spaltenbeschriftungen geändert um den Output leichter interpretieren zu können).
 
@@ -784,22 +784,30 @@ dimnames(beta_to_mu)[[2]] <- paste0("mu_",f_A)
 beta_to_mu
 ```
 
-Die erste Zeile ist direkt ablesbar. Der Koeffizient $\beta_0$ stellt den Mittelwert $\bar{\mu}$ der Stufenmittelwerte dar. Die zweite und dritte Zeile für $\beta_1$ und $\beta_2$ sind etwas undurchsichtiger. Die $\beta_i$-Koffizienten repräsentieren jeweils die Abweichung der Stufe $\mu_i$ vom Gesamtmittelwert $\bar{\mu}$. Formal:
+Die erste Zeile ist direkt ablesbar. Der Koeffizient $\beta_0$ stellt den Mittelwert $\bar{\mu}$ der Stufenmittelwerte dar. Die zweite und dritte Zeile für $\beta_1$ und $\beta_2$ sind etwas undurchsichtiger. Die $\beta_i$-Koeffizienten repräsentieren jeweils die Abweichung der Stufe $\mu_i$ vom Gesamtmittelwert $\bar{\mu}$. Formal:
 
 \begin{equation*}
 \beta_i = \mu_i - \bar{\mu} \quad i = 2,3,\ldots,K
 \end{equation*}
 
-Wie resultiert daraus diese Kodierung? Sei zunächst $\beta_1$ betrachtet.
+Wie resultiert daraus diese Kodierung? Sei zunächst $\beta_1$ betrachtet. Dieser Koeffizient kodiert die Abweichung der Gruppe `A` vom Gesamtmittelwert $\bar{y}$. D.h.
+
+\begin{equation*}
+\beta_1 = \mu_A - \bar{\mu}
+\end{equation*}
+
+Der Gesamtmittelwert $\bar{y}$ berechnet sich nach $\bar{y} = \frac{1}{3}\sum_{i=1}^3\mu_i$. Daraus folgt.
 
 \begin{equation*}
 \begin{aligned}
-\beta_1 &= \mu_1 - \bar{\mu} = \mu_1 - \frac{\sum_{i=1}^3\mu_i}{3} \\
-        &= \mu_A - \frac{1}{3}\mu_A - \frac{1}{3}\mu_B - \frac{1}{3}\mu_C = \frac{2}{3}\mu_A - \frac{1}{3}\mu_B - \frac{1}{3}\mu_C
+\beta_1 &= \mu_A - \bar{\mu} \\
+        &= \mu_A - \frac{\sum_{i=1}^3\mu_i}{3} \\
+        &= \mu_A - \frac{1}{3}\mu_A - \frac{1}{3}\mu_B - \frac{1}{3}\mu_C \\
+        &= \frac{2}{3}\mu_A - \frac{1}{3}\mu_B - \frac{1}{3}\mu_C
 \end{aligned}
 \end{equation*}
 
-Die Koeffizienten aus dem Output sind wieder zu erkennen. Das gleiche Schema trifft auch für $\beta_2$ zu. Übertragen auf das Schema im Beispiel der Reaktionszeiten ergibt sich.
+Es werden die Koeffizienten `2/3 -1/3 -1/3` aus dem Output erhalten. Das gleiche Schema trifft auch für $\beta_2$ zu, der die Abweichung von Gruppe `B` zum Gesamtmittelwert $\bar{y}$ kodiert. Übertragen auf das Schema im Beispiel der Reaktionszeiten ergibt sich.
 
 ```{r}
 #| echo: true
@@ -813,6 +821,7 @@ Beziehungsweise für die Abweichungen der Mittelwerte $\mu_i$ vom Gesamtmittelwe
 
 ```{r}
 #| echo: true
+#| label: sumzero
 
 mu_i$m - mu_bar
 ```
@@ -826,7 +835,7 @@ mod_sum <- lm(rt ~ group, data, contrasts = list(group = 'contr.sum'))
 coef(mod_sum)
 ```
 
-Es ist zu sehen, dass die $\beta$-Koeffizienten tatsächlich den Gesamtmittelwert und die Abweichungen der Faktormittelwerte $\mu_i$ vom Gesamtmittelwert $\bar{\mu}$ kodieren. Es fehlt allerdings der letzte Abweichungswert. Hier kommt die Eigenschaft dieser Kodierung ins Spiel, die der Kodierung ihren Namen sum-to-zero gegeben hat. Per Konstruktion haben die Abweichungen die Eigenschaft das sie aufsummiert gleich $0$ ergeben. Wie bereits bei den Residuen kennengelernt, die Abweichungen von Werten von deren Mittelwert müssen $0$ ergeben. Daher gilt:
+Es ist zu sehen, dass die $\beta$-Koeffizienten tatsächlich den Gesamtmittelwert und die Abweichungen der Faktormittelwerte $\mu_i$ vom Gesamtmittelwert $\bar{\mu}$ kodieren. Es fehlt allerdings der letzte Abweichungswert. Hier kommt die Eigenschaft dieser Kodierung ins Spiel, die der Kodierung ihren Namen sum-to-zero gegeben hat. Per Konstruktion haben die Abweichungen die Eigenschaft das sie aufsummiert gleich $0$ ergeben. Beispielweise, seien drei Wert $1,2,3$ gegeben. Deren Mittelwert ist $3$ und die Abweichungen der Werte vom Mittelwert sind $-1,0,1$. Diese Abweichung aufsummiert ergeben den Wert $0$. Diese Eigenschaft trifft immer zu wenn die Abweichungen vom Mittelwert gebildet werden, dass deren Summe gleich $0$ ist. Dementsprechend, wie auch bei den Residuen kennengelernt, die Abweichungen von Werten von deren Mittelwert ergeben $0$. Daher gilt:
 
 \begin{equation*}
 \begin{aligned}
@@ -843,7 +852,7 @@ D.h. durch die Summation der Abweichungen und der Invertierung des Vorzeichens k
 -sum(coef(mod_sum)[2:4])
 ```
 
-Die Anwendung von `contr.sum()` wirkt sich entsprechend auf die Konstruktion der Modellmatrix aus (Es wird eine verkürzter Datensatz mit nur acht Datenpunkten zu leicheteren Darstellung erstellt).
+D.h. der letzte Abweichungswert oben aus dem Output wird erhalten. Die Anwendung von `contr.sum()` wirkt sich entsprechend auf die Konstruktion der Modellmatrix aus. Daher unterscheiden sich die resultierenden Modellmatrizen zwischen der Treatment- und der Summ-to-Zero Kodierung. (Zur besseren Übersicht wird ein verkürzter Datensatzmit `data_8` nur $8$ Einträgen verwendet).
 
 ```{r}
 #| echo: true
@@ -853,6 +862,7 @@ model.matrix(~group, data_8)
 model.matrix(~group, data_8, contrasts=list(group='contr.sum'))
 ```
 
+Bis auf die Spalte `(Intercept)` unterscheiden sich die Verteilung der $1$ und $0$ in den Modellmatrizen entsprechend den Kodierungsschemas.
 
 ### Differenzkodierung
 
@@ -886,7 +896,7 @@ Die Koeffizienten entsprechen den aufeinanderfolgenden Unterschieden der Gruppen
 diff(mu_i$m)
 ```
 
-Entsprechend folgt wieder eine andere Modellmatrize.
+Entsprechend resultiert wieder eine andere Modellmatrix.
 
 ```{r}
 #| echo: true
@@ -898,8 +908,7 @@ model.matrix(~group, data_8, contrasts = list(group = 'contr.diff'))
 
 Zusammenfassend zeigen diese Beispiele, dass die verschiedenen Kodierungssysteme dazu führen, dass die Bedeutung der Regressionskoeffizienten $\beta_i$ sich unterscheidet je nachdem welches Kodierungssystem verwendet wird. Daher, um die Werte der Koeffizienten interpretieren zu können, muss bekannt sein, welches Kodierungssystem bei der Analyse verwendet wurde. Leider ist dies nicht die einzige Implikation, sondern die unterschiedlichen Kodierungssysteme führen zu weiteren, subtilen Unterschieden die ganz und gar nicht offensichtlich sind. Vor allem später, bei der Behandlung von faktoriellen, experimentellen Untersuchungsdesigns werden die Details der Kodierungssysteme noch einmal stärker von Relevanz werden. In Bezug auf den allgemeinen Fit des Modells haben die Unterschiedlichen Systeme allerdings keinen Einfluss. Die angepasste Regressionsgerade (Ebene) wird daher durch die Wahl der Kodierungssysteme ebenfalls nicht beeinflusst. Somit sind auch die Residuen $e_i$ unter allen Kodierungssystemen gleich.
 
-Durch die Wahl von speziellen Kodierungssysteme ist es möglich spezifisch gewollte Vergleiche zwischen Faktorenstufen direkt zu kodieren und dann in Form der Koeffizienten statistisch zu überprüfen. Unter der Treatmentkodierung bilden die Koeffizienten direkt die Unterschiede der Faktorenstufen von der Referenzstufe ab. Daher sagt die statistische Signifikanz der Koeffizienten $\beta_i, i = 2,3,\ldots,K$ direkt schon etwas über die statistische Signifikanz dieser Stufen von der ersten Stufe aus. Wird zum Beispiel als die Referenzstufe eine Kontrollkondition gewählt und die anderen Stufen bilden unterschiedliche Interventionsstufen ab, dann kann über die Koeffizienten direkt der Unterschied der Interventionsstufen von der Kontrollstufe überprüft werden. Dadurch überschneidet die Thematik der Kodierungssysteme sich mit dem der Kontraste bzw. Mehrfachvergleiche, dass später im Kapitel zu Linearen Kontrasten eingeführt wird.
-
+Durch die Wahl von speziellen Kodierungssysteme ist es möglich spezifisch gewollte Vergleiche zwischen Faktorenstufen direkt zu kodieren und dann in Form der Koeffizienten statistisch zu überprüfen. Unter der Treatmentkodierung bilden die Koeffizienten direkt die Unterschiede der Faktorenstufen von der Referenzstufe ab. Daher sagt die statistische Signifikanz der Koeffizienten $\beta_i, i = 2,3,\ldots,K$ direkt schon etwas über die statistische Signifikanz dieser Stufen von der ersten Stufe aus. Wird zum Beispiel als die Referenzstufe eine Kontrollkondition gewählt und die anderen Stufen bilden unterschiedliche Interventionsstufen ab, dann kann über die Koeffizienten direkt der Unterschied der Interventionsstufen von der Kontrollstufe überprüft werden. Dadurch gibt es eine Überschneidung der Thematik der Kodierungssysteme mit dem der Kontraste bzw. Mehrfachvergleiche. Dies wird später im Kapitel zu Linearen Kontrasten noch einmal betrachtet werden. 
 Dieser kurze Überblick über die Kodierungssysteme basiert hauptsächlich auf @venables2023. Dies ist auch die primäre Quelle um sich in die Thematik noch einmal tiefer einzulesen. 
 
 ## Zusammenfassung

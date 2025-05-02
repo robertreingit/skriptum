@@ -1581,7 +1581,7 @@ Abbildung&nbsp;19.11: Leistungsentwicklung in Abhängigkeit vom Alter und Gender
 </section>
 <section id="verschiedene-kodierschemas-für-die-dummy-variablen." class="level2" data-number="19.6">
 <h2 data-number="19.6" class="anchored" data-anchor-id="verschiedene-kodierschemas-für-die-dummy-variablen."><span class="header-section-number">19.6</span> Verschiedene Kodierschemas für die Dummy-Variablen.</h2>
-<p>In der Herleitung der Integration von nominalen Faktoren in die multiple Regression ist bisher ein bestimmtes Schema verwendet worden, wie die einzelnen Faktorstufen auf <span class="math inline">\(X\)</span>-Variablen abgebildet werden. Dazu wurde eine Referenzstufe welche durch einen <span class="math inline">\(Y\)</span>-Achsenabschnitt modelliert wird und die anderen <span class="math inline">\(\beta_i\)</span>-Koeffizienten bilden Abweichungen in den Faktorstufenmittelwerten von dieser Referenzstufe ab.</p>
+<p>In der Herleitung der Integration von nominalen Faktoren in die multiple Regression ist bisher ein bestimmtes Schema verwendet worden, wie die einzelnen Faktorstufen auf <span class="math inline">\(X\)</span>-Variablen abgebildet werden. Dazu wurde eine Referenzstufe bestimmt, welche durch den <span class="math inline">\(Y\)</span>-Achsenabschnitt im Modell modelliert wird und die anderen <span class="math inline">\(\beta_i\)</span>-Koeffizienten bilden jeweils die Abweichungen der Faktorstufenmittelwerten von dieser Referenzstufe ab.</p>
 <p>Wenn die <span class="math inline">\(\beta_i\)</span>-Koeffizienten in einem Vektor <span class="math inline">\(\boldsymbol{\beta}\)</span> zusammengefasst.</p>
 <p><span class="math display">\[\begin{equation*}
 \boldsymbol{\beta} = (\beta_0, \beta_1, \ldots, \beta_K)^T
@@ -1590,7 +1590,7 @@ Abbildung&nbsp;19.11: Leistungsentwicklung in Abhängigkeit vom Alter und Gender
 <p><span class="math display">\[\begin{equation*}
 \boldsymbol{\mu} = (\mu_1, \mu_2, \ldots, \mu_K)^T
 \end{equation*}\]</span></p>
-<p>Dann können die <span class="math inline">\(\beta\)</span>-Koeffzienten im Sinne der Mittelwerte der Faktorstufen als eine Abbildung von <span class="math inline">\(\boldsymbol{\beta} \rightarrow \boldsymbol{\mu}\)</span> aufgefasst werden. Sie diese Abbildung mit dem Symbol <span class="math inline">\(\boldsymbol{B}\)</span> abgebildet.</p>
+<p>Dann können die <span class="math inline">\(\beta\)</span>-Koeffizienten im Sinne der Mittelwerte der Faktorstufen als eine Abbildung von <span class="math inline">\(\boldsymbol{\beta} \rightarrow \boldsymbol{\mu}\)</span> aufgefasst werden. Diese Abbildung kann daher auch mit ein Symbol, beispielsweise <span class="math inline">\(\boldsymbol{B}\)</span>, abgebildet werden.</p>
 <p><span class="math display">\[\begin{equation*}
 \boldsymbol{\mu} = \boldsymbol{B\beta}
 \end{equation*}\]</span></p>
@@ -1604,12 +1604,12 @@ Tipp
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Wenn ihr euch mit Matrizen auskennt, dann werdet ihr gemerkt haben, dass wir hier um lineare Abbildungen herumtanzen. Wenn euch das nichts sagt, dann einfach weiterlesen.</p>
+<p>Wenn ihr euch mit Matrizen auskennt, dann werdet ihr gemerkt haben, dass es hier um Grunde um eine lineare Abbildungen handelt. Wenn euch das nichts sagt, dann einfach weiterlesen.</p>
 </div>
 </div>
 <section id="treatment-kodierung" class="level3" data-number="19.6.1">
 <h3 data-number="19.6.1" class="anchored" data-anchor-id="treatment-kodierung"><span class="header-section-number">19.6.1</span> Treatment-Kodierung</h3>
-<p>Die Abbildung mit einer Referenzstufe und Abweichungen von dieser Stufe, wird als <strong>treatment coding</strong> bezeichnet. In <code>R</code> kann diese Kodierung mit Hilfe der Funktion <code>contr.treatment()</code> erstellt werden, bzw. ist standardmäßig bei <code>R</code> eingestellt.</p>
+<p>Die Abbildung mit einer Referenzstufe und Abweichungen von dieser Stufe, wird als <strong>treatment coding</strong> bezeichnet. In <code>R</code> kann diese Kodierung mit Hilfe der Funktion <code>contr.treatment()</code> erstellt werden, bzw. ist standardmäßig bei <code>R</code> für nominale Variablen eingestellt.</p>
 <p>Sei eine Faktorvariable <span class="math inline">\(A\)</span> hat drei Stufen <span class="math inline">\(K = 3, A, B, C\)</span> gegeben. Mit der Funktion <code>mean_contrasts()</code> aus dem package <code>codingMatrices</code> können die Abbildung dargestellt werden (Im Code werden noch die Zeilen- und Spaltenbeschriftungen geändert um den Output leichter interpretieren zu können).</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>f_A <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"A"</span>,<span class="st">"B"</span>,<span class="st">"C"</span>)</span>
@@ -1658,18 +1658,24 @@ beta_1  2/3 -1/3 -1/3
 beta_2 -1/3  2/3 -1/3</code></pre>
 </div>
 </div>
-<p>Die erste Zeile ist direkt ablesbar. Der Koeffizient <span class="math inline">\(\beta_0\)</span> stellt den Mittelwert <span class="math inline">\(\bar{\mu}\)</span> der Stufenmittelwerte dar. Die zweite und dritte Zeile für <span class="math inline">\(\beta_1\)</span> und <span class="math inline">\(\beta_2\)</span> sind etwas undurchsichtiger. Die <span class="math inline">\(\beta_i\)</span>-Koffizienten repräsentieren jeweils die Abweichung der Stufe <span class="math inline">\(\mu_i\)</span> vom Gesamtmittelwert <span class="math inline">\(\bar{\mu}\)</span>. Formal:</p>
+<p>Die erste Zeile ist direkt ablesbar. Der Koeffizient <span class="math inline">\(\beta_0\)</span> stellt den Mittelwert <span class="math inline">\(\bar{\mu}\)</span> der Stufenmittelwerte dar. Die zweite und dritte Zeile für <span class="math inline">\(\beta_1\)</span> und <span class="math inline">\(\beta_2\)</span> sind etwas undurchsichtiger. Die <span class="math inline">\(\beta_i\)</span>-Koeffizienten repräsentieren jeweils die Abweichung der Stufe <span class="math inline">\(\mu_i\)</span> vom Gesamtmittelwert <span class="math inline">\(\bar{\mu}\)</span>. Formal:</p>
 <p><span class="math display">\[\begin{equation*}
 \beta_i = \mu_i - \bar{\mu} \quad i = 2,3,\ldots,K
 \end{equation*}\]</span></p>
-<p>Wie resultiert daraus diese Kodierung? Sei zunächst <span class="math inline">\(\beta_1\)</span> betrachtet.</p>
+<p>Wie resultiert daraus diese Kodierung? Sei zunächst <span class="math inline">\(\beta_1\)</span> betrachtet. Dieser Koeffizient kodiert die Abweichung der Gruppe <code>A</code> vom Gesamtmittelwert <span class="math inline">\(\bar{y}\)</span>. D.h.</p>
+<p><span class="math display">\[\begin{equation*}
+\beta_1 = \mu_A - \bar{\mu}
+\end{equation*}\]</span></p>
+<p>Der Gesamtmittelwert <span class="math inline">\(\bar{y}\)</span> berechnet sich nach <span class="math inline">\(\bar{y} = \frac{1}{3}\sum_{i=1}^3\mu_i\)</span>. Daraus folgt.</p>
 <p><span class="math display">\[\begin{equation*}
 \begin{aligned}
-\beta_1 &amp;= \mu_1 - \bar{\mu} = \mu_1 - \frac{\sum_{i=1}^3\mu_i}{3} \\
-        &amp;= \mu_A - \frac{1}{3}\mu_A - \frac{1}{3}\mu_B - \frac{1}{3}\mu_C = \frac{2}{3}\mu_A - \frac{1}{3}\mu_B - \frac{1}{3}\mu_C
+\beta_1 &amp;= \mu_A - \bar{\mu} \\
+        &amp;= \mu_A - \frac{\sum_{i=1}^3\mu_i}{3} \\
+        &amp;= \mu_A - \frac{1}{3}\mu_A - \frac{1}{3}\mu_B - \frac{1}{3}\mu_C \\
+        &amp;= \frac{2}{3}\mu_A - \frac{1}{3}\mu_B - \frac{1}{3}\mu_C
 \end{aligned}
 \end{equation*}\]</span></p>
-<p>Die Koeffizienten aus dem Output sind wieder zu erkennen. Das gleiche Schema trifft auch für <span class="math inline">\(\beta_2\)</span> zu. Übertragen auf das Schema im Beispiel der Reaktionszeiten ergibt sich.</p>
+<p>Es werden die Koeffizienten <code>2/3 -1/3 -1/3</code> aus dem Output erhalten. Das gleiche Schema trifft auch für <span class="math inline">\(\beta_2\)</span> zu, der die Abweichung von Gruppe <code>B</code> zum Gesamtmittelwert <span class="math inline">\(\bar{y}\)</span> kodiert. Übertragen auf das Schema im Beispiel der Reaktionszeiten ergibt sich.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>mu_i <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span> <span class="fu">group_by</span>(group) <span class="sc">|&gt;</span> <span class="fu">summarize</span>(<span class="at">m =</span> <span class="fu">mean</span>(rt))</span>
 <span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>mu_bar <span class="ot">&lt;-</span> <span class="fu">mean</span>(data<span class="sc">$</span>rt)</span>
@@ -1701,7 +1707,7 @@ beta_2 -1/3  2/3 -1/3</code></pre>
   655.30733  -145.78113   -55.63090    51.63251 </code></pre>
 </div>
 </div>
-<p>Es ist zu sehen, dass die <span class="math inline">\(\beta\)</span>-Koeffizienten tatsächlich den Gesamtmittelwert und die Abweichungen der Faktormittelwerte <span class="math inline">\(\mu_i\)</span> vom Gesamtmittelwert <span class="math inline">\(\bar{\mu}\)</span> kodieren. Es fehlt allerdings der letzte Abweichungswert. Hier kommt die Eigenschaft dieser Kodierung ins Spiel, die der Kodierung ihren Namen sum-to-zero gegeben hat. Per Konstruktion haben die Abweichungen die Eigenschaft das sie aufsummiert gleich <span class="math inline">\(0\)</span> ergeben. Wie bereits bei den Residuen kennengelernt, die Abweichungen von Werten von deren Mittelwert müssen <span class="math inline">\(0\)</span> ergeben. Daher gilt:</p>
+<p>Es ist zu sehen, dass die <span class="math inline">\(\beta\)</span>-Koeffizienten tatsächlich den Gesamtmittelwert und die Abweichungen der Faktormittelwerte <span class="math inline">\(\mu_i\)</span> vom Gesamtmittelwert <span class="math inline">\(\bar{\mu}\)</span> kodieren. Es fehlt allerdings der letzte Abweichungswert. Hier kommt die Eigenschaft dieser Kodierung ins Spiel, die der Kodierung ihren Namen sum-to-zero gegeben hat. Per Konstruktion haben die Abweichungen die Eigenschaft das sie aufsummiert gleich <span class="math inline">\(0\)</span> ergeben. Beispielweise, seien drei Wert <span class="math inline">\(1,2,3\)</span> gegeben. Deren Mittelwert ist <span class="math inline">\(3\)</span> und die Abweichungen der Werte vom Mittelwert sind <span class="math inline">\(-1,0,1\)</span>. Diese Abweichung aufsummiert ergeben den Wert <span class="math inline">\(0\)</span>. Diese Eigenschaft trifft immer zu wenn die Abweichungen vom Mittelwert gebildet werden, dass deren Summe gleich <span class="math inline">\(0\)</span> ist. Dementsprechend, wie auch bei den Residuen kennengelernt, die Abweichungen von Werten von deren Mittelwert ergeben <span class="math inline">\(0\)</span>. Daher gilt:</p>
 <p><span class="math display">\[\begin{equation*}
 \begin{aligned}
 &amp; \sum_{i=1}^K \beta_i = 0 \\
@@ -1715,7 +1721,7 @@ beta_2 -1/3  2/3 -1/3</code></pre>
 <pre><code>[1] 149.7795</code></pre>
 </div>
 </div>
-<p>Die Anwendung von <code>contr.sum()</code> wirkt sich entsprechend auf die Konstruktion der Modellmatrix aus (Es wird eine verkürzter Datensatz mit nur acht Datenpunkten zu leicheteren Darstellung erstellt).</p>
+<p>D.h. der letzte Abweichungswert oben aus dem Output wird erhalten. Die Anwendung von <code>contr.sum()</code> wirkt sich entsprechend auf die Konstruktion der Modellmatrix aus. Daher unterscheiden sich die resultierenden Modellmatrizen zwischen der Treatment- und der Summ-to-Zero Kodierung. (Zur besseren Übersicht wird ein verkürzter Datensatzmit <code>data_8</code> nur <span class="math inline">\(8\)</span> Einträgen verwendet).</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>data_8 <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span> <span class="fu">sample_n</span>(<span class="dv">8</span>)</span>
 <span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a><span class="fu">model.matrix</span>(<span class="sc">~</span>group, data_8)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1753,6 +1759,7 @@ attr(,"contrasts")$group
 [1] "contr.sum"</code></pre>
 </div>
 </div>
+<p>Bis auf die Spalte <code>(Intercept)</code> unterscheiden sich die Verteilung der <span class="math inline">\(1\)</span> und <span class="math inline">\(0\)</span> in den Modellmatrizen entsprechend den Kodierungsschemas.</p>
 </section>
 <section id="differenzkodierung" class="level3" data-number="19.6.3">
 <h3 data-number="19.6.3" class="anchored" data-anchor-id="differenzkodierung"><span class="header-section-number">19.6.3</span> Differenzkodierung</h3>
@@ -1786,7 +1793,7 @@ beta_2  .   -1    1  </code></pre>
 <pre><code>[1]  90.15023 107.26341  98.14701</code></pre>
 </div>
 </div>
-<p>Entsprechend folgt wieder eine andere Modellmatrize.</p>
+<p>Entsprechend resultiert wieder eine andere Modellmatrix.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="fu">model.matrix</span>(<span class="sc">~</span>group, data_8, <span class="at">contrasts =</span> <span class="fu">list</span>(<span class="at">group =</span> <span class="st">'contr.diff'</span>))</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -1810,8 +1817,7 @@ attr(,"contrasts")$group
 <section id="zusammenfassung" class="level3" data-number="19.6.4">
 <h3 data-number="19.6.4" class="anchored" data-anchor-id="zusammenfassung"><span class="header-section-number">19.6.4</span> Zusammenfassung</h3>
 <p>Zusammenfassend zeigen diese Beispiele, dass die verschiedenen Kodierungssysteme dazu führen, dass die Bedeutung der Regressionskoeffizienten <span class="math inline">\(\beta_i\)</span> sich unterscheidet je nachdem welches Kodierungssystem verwendet wird. Daher, um die Werte der Koeffizienten interpretieren zu können, muss bekannt sein, welches Kodierungssystem bei der Analyse verwendet wurde. Leider ist dies nicht die einzige Implikation, sondern die unterschiedlichen Kodierungssysteme führen zu weiteren, subtilen Unterschieden die ganz und gar nicht offensichtlich sind. Vor allem später, bei der Behandlung von faktoriellen, experimentellen Untersuchungsdesigns werden die Details der Kodierungssysteme noch einmal stärker von Relevanz werden. In Bezug auf den allgemeinen Fit des Modells haben die Unterschiedlichen Systeme allerdings keinen Einfluss. Die angepasste Regressionsgerade (Ebene) wird daher durch die Wahl der Kodierungssysteme ebenfalls nicht beeinflusst. Somit sind auch die Residuen <span class="math inline">\(e_i\)</span> unter allen Kodierungssystemen gleich.</p>
-<p>Durch die Wahl von speziellen Kodierungssysteme ist es möglich spezifisch gewollte Vergleiche zwischen Faktorenstufen direkt zu kodieren und dann in Form der Koeffizienten statistisch zu überprüfen. Unter der Treatmentkodierung bilden die Koeffizienten direkt die Unterschiede der Faktorenstufen von der Referenzstufe ab. Daher sagt die statistische Signifikanz der Koeffizienten <span class="math inline">\(\beta_i, i = 2,3,\ldots,K\)</span> direkt schon etwas über die statistische Signifikanz dieser Stufen von der ersten Stufe aus. Wird zum Beispiel als die Referenzstufe eine Kontrollkondition gewählt und die anderen Stufen bilden unterschiedliche Interventionsstufen ab, dann kann über die Koeffizienten direkt der Unterschied der Interventionsstufen von der Kontrollstufe überprüft werden. Dadurch überschneidet die Thematik der Kodierungssysteme sich mit dem der Kontraste bzw. Mehrfachvergleiche, dass später im Kapitel zu Linearen Kontrasten eingeführt wird.</p>
-<p>Dieser kurze Überblick über die Kodierungssysteme basiert hauptsächlich auf <span class="citation" data-cites="venables2023">Venables (<a href="references.html#ref-venables2023" role="doc-biblioref">2023</a>)</span>. Dies ist auch die primäre Quelle um sich in die Thematik noch einmal tiefer einzulesen.</p>
+<p>Durch die Wahl von speziellen Kodierungssysteme ist es möglich spezifisch gewollte Vergleiche zwischen Faktorenstufen direkt zu kodieren und dann in Form der Koeffizienten statistisch zu überprüfen. Unter der Treatmentkodierung bilden die Koeffizienten direkt die Unterschiede der Faktorenstufen von der Referenzstufe ab. Daher sagt die statistische Signifikanz der Koeffizienten <span class="math inline">\(\beta_i, i = 2,3,\ldots,K\)</span> direkt schon etwas über die statistische Signifikanz dieser Stufen von der ersten Stufe aus. Wird zum Beispiel als die Referenzstufe eine Kontrollkondition gewählt und die anderen Stufen bilden unterschiedliche Interventionsstufen ab, dann kann über die Koeffizienten direkt der Unterschied der Interventionsstufen von der Kontrollstufe überprüft werden. Dadurch gibt es eine Überschneidung der Thematik der Kodierungssysteme mit dem der Kontraste bzw. Mehrfachvergleiche. Dies wird später im Kapitel zu Linearen Kontrasten noch einmal betrachtet werden. Dieser kurze Überblick über die Kodierungssysteme basiert hauptsächlich auf <span class="citation" data-cites="venables2023">Venables (<a href="references.html#ref-venables2023" role="doc-biblioref">2023</a>)</span>. Dies ist auch die primäre Quelle um sich in die Thematik noch einmal tiefer einzulesen.</p>
 </section>
 </section>
 <section id="zusammenfassung-1" class="level2" data-number="19.7">
