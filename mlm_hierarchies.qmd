@@ -321,7 +321,7 @@ Sobald nun aber wieder eine bekannte, theoretische Verteilung unter einer $H_0$ 
 #| label: fig-mlm-hier-fcrit
 
 k_w <- qf(0.95, 5, 10)
-ggplot(dff %>% dplyr::filter(dist == 'f3'), aes(F, d)) +
+ggplot(dff |> dplyr::filter(dist == 'f3'), aes(F, d)) +
   geom_line(linewidth=1.3) +
   geom_vline(xintercept = k_w, color='red', linetype = 'dashed') +
   geom_ribbon(data = tibble::tibble(F = seq(k_w, 5, length.out=30),
@@ -429,11 +429,11 @@ Im folgenden sollen nun Vergleiche zwischen verschiedenen Modell gemacht werden.
 
 ### Modellvergleiche mit $\Delta p = 1$
 
-Entsprechend des Eindrucks aus @fig-mlm-hier-candy-exmpale kann das volle Modell dementsprechend mit $X_1$ = `sweetness` und $X_2$ = `moisture` folgendermaßen modelliert werden.
+Entsprechend des Eindrucks aus @fig-mlm-hier-candy-example kann das volle Modell dementsprechend mit $X_1$ = `sweetness` und $X_2$ = `moisture` folgendermaßen modelliert werden.
 
-$$
+\begin{equation*}
 y_i = \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \beta_3 x_{1i}x_{2i} + \epsilon_i
-$$
+\end{equation*}
 
 Das volle Modell besitzt daher $p = 4$ Modellparameter und es können drei verschiedene reduzierte Modelle betrachtet werden. Das einfachste Modell sei $m_0$ und dementsprechend ansteigend bis zum vollen Modell $m_3$.
 
@@ -450,7 +450,7 @@ Das Modell $m_0$ besitzt nur einen $y$-Achsenabschnitt $\beta_0$, der, wie oben 
 m_0 \subseteq m_1 \subseteq m_2 \subseteq m_3
 \end{equation*}
 
-Das Modell $m_3$ ist oben in der Hierarchie. Untergeordnete Modell können nun immer so erhalten werden, dass Modellparameter in übergeordneten Modellen gleich Null gesetzt werden, wie das oben schon besprochen wurde. Beispielsweise ist das Modell $m_1$ dem Modell $m_2$ gleich mit der Randbedingung das $\beta_2 = 0$ gilt. In Bezug auf die Freiheitsgrade der Modell ergibt sich ebenfalls die gleiche hierarchische Anordnung.
+Das Modell $m_3$ ist ganz oben in der Hierarchie. Untergeordnete Modelle können nun immer erhalten werden, indem Modellparameter in einem übergeordneten Modell gleich Null gesetzt werden. Genauso, wie in dem Beispiel oben schon besprochen. Beispielsweise ist das Modell $m_1$ äquivalent zu dem Modell $m_2$ mit der Randbedingung das $\beta_2 = 0$ gilt. In Bezug auf die Freiheitsgrade der Modelle ergibt sich ebenfalls die gleiche hierarchische Anordnung.
 
 \begin{equation*}
 p_{m_0} = 1 < p_{m_1} = 2< p_{m_2}=3< p_{m_3}=4
@@ -525,7 +525,7 @@ ggplot(tibble(x = F, y = 0), aes(x,y)) +
   scale_y_continuous("Dichte")
 ```
 
-Dementsprechend kann von einem statistisch signifikanten Ergebnis gesprochen werden und die $H_0$ das das einfachere Modell $m_0$ ausreicht zugunsten des komplexeren Modells wird abgelehnt. Dieser Ansatz kann nun einfach so weitergeführt werden. Als nächstes der der Vergleich zwischen $m_1$ gegen $m_2$.
+Dementsprechend kann von einem statistisch signifikanten Effekt gesprochen werden und die $H_0$, das das einfachere Modell $m_0$ ausreicht wird zugunsten des komplexeren Modells abgelehnt. Dieser Ansatz kann nun für die anderen Modell weitergeführt werden. Als nächstes der Vergleich zwischen $m_1$ und $m_2$.
 
 \begin{align*}
 m_1: y_i &= \beta_0 + \beta_1 x_{1i} + \epsilon_i \\
@@ -538,7 +538,7 @@ m_2: y_i &= \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \epsilon_i
 anova(mod_1, mod_2)
 ```
 
-Wiederum deutet der Test einen darauf, das das komplexere Modell das beide Variablen enthält zu einer Verbesserung der Modellvorhersage führt. Abschließend dann der letzte Vergleich $m_3$ gegen $m_2$.
+Wiederum deutet der Test einen darauf, das das komplexere Modell welches beide Variablen enthält zu einer Verbesserung der Modellvorhersage führt. Abschließend dann der letzte Vergleich $m_3$ gegen $m_2$.
 
 \begin{align*}
 m_2: y_i &= \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \epsilon_i  \\
@@ -551,7 +551,7 @@ m_3: y_i &= \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \beta_3 x_{1i} x_{2i} + 
 anova(mod_2, mod_3)
 ```
 
-Wieder kann statistisch signifikantes Ergebnis beobachtet werden. Zusammenfassend erlaubt dies nun eine Definition für Modellhierarchien zu geben.
+Wieder kann ein statistisch signifikantes Ergebnis beobachtet werden. Zusammenfassend kann nun eine Definition für Modellhierarchien formuliert werden.
 
 ::: {#def-model-hierarchies}
 ## Modellhierarchie
@@ -561,7 +561,7 @@ Eine Modellhierarchie beschreibt eine verschachtelte Modellstruktur (nested mode
 
 ::: {#rem-hierarchies}
 
-Wenn Modell miteinander verglichen werden, die sich nur um einen Parameter voneinander unterschieden, d.h. $\Delta p = 1$, dann ist der beobachtete $F$-Test äquivalent zum $t$-Wert den unter `summary()` angezeigt wird. Der $F$-Wert ist gleich dem quadrierten $t$-Wert.
+Wenn Modelle miteinander verglichen werden, die sich nur um einen einzelnen Parameter voneinander unterschieden, d.h. $\Delta p = 1$, dann ist der beobachtete $F$-Test äquivalent zum $t$-Wert den unter `summary()` angezeigt wird. Der $F$-Wert ist in diesem Fall gleich dem quadrierten $t$-Wert.
 
 ```{r}
 #| echo: true
@@ -585,7 +585,7 @@ Letztendlich ist dies auch eine Folge dessen, dass die $t$-Verteilung ein Spezia
 
 ### Modellvergleiche mit $\Delta p > 1$ 
 
-Der Vergleich zwischen hierarchisch miteinander in Beziehung stehenden Modell ist nicht darauf beschränkt das die Modelle sich immer nur um einen zusätzlichen Parameter unterscheiden. Wir können genauso das Modell $m_3$ mit $p = 4$ Parametern gegen das $m_0$ Modell mit $p = 1$ Parametern vergleichen.
+Der Vergleich zwischen hierarchisch miteinander in Beziehung stehenden Modell ist nicht darauf beschränkt das die Modelle sich immer nur um einen zusätzlichen Parameter unterscheiden. Es ist auch möglich beispielsweise Modell $m_3$ mit $p = 4$ Parametern mit dem $m_0$ Modell mit $p = 1$ Parametern zu vergleichen.
 
 \begin{align*}
 m_0: y_i &= \beta_0 + \epsilon_i  \\
@@ -598,9 +598,9 @@ m_3: y_i &= \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \beta_3 x_{1i} x_{2i} + 
 anova(mod_0, mod_3)
 ```
 
-In diesem Fall wird getestet ob die Hinzunahme der Parameter $\beta_1, \beta_2$ und $\beta_3$ eine statistisch signifikante Verbesserung im Modellfit bedeutet. Entsprechend sind in der Spalte `DF` jetzt drei Parameterunterschied dokumentiert. Das Prinzip ist aber immer noch das Gleiche. Die Fehlerquadratsummen werden voneinander abgezogen durch den Unterschied in der Parameteranzahl geteilt und mittels der $MSE(F)$ kalibriert.
+In diesem Fall wird getestet ob die Hinzunahme der Parameter $\beta_1, \beta_2$ und $\beta_3$ eine statistisch signifikante Verbesserung des Modellfit bedeutet. Entsprechend ist nun in der Spalte `DF` drei Parameterunterschiede dokumentiert. Das Prinzip ist aber immer noch das Gleiche. Die Fehlerquadratsummen werden voneinander abgezogen durch den Unterschied in der Parameteranzahl geteilt und mittels der $MSE(F)$ normiert.
 
-Mit diesem Test verstehen wir auch endlich die letzte Zeile im Output von `summary()`. Tatsächlich wird dieser Test in der Ausgabe von `summary()` dokumentiert.
+Auf der Basis dieses Tests ist nun auch die letzte Zeile im Output von `summary()` zu verstehen. Tatsächlich wird dieser Test in der Ausgabe von `summary()` dokumentiert.
 
 ```{r}
 #| echo: true
@@ -608,13 +608,13 @@ Mit diesem Test verstehen wir auch endlich die letzte Zeile im Output von `summa
 summary(mod_3)
 ```
 
-D.h. dieser Test prüft immer ob das spezifizierte Modell im Gegensatz zum einfachsten Modell mit nur einem Parameter eine Verbesserung im Modellfit ergibt.
+Der Test überprüft ob das jeweils spezifizierte Modell (das an `lm()` übergebene) im Gegensatz zum einfachsten Modell mit nur einem Parameter, dem Parameter $\beta_0$, eine Verbesserung der Modellanpassung ergibt.
 
-Insgesamt haben wir jetzt einen flexiblen Ansatz gewonnen um Modellparameter zu testen. Bisher haben wir immer nur einen einzelnen Parameter anhand des zum jeweiligen Koeffizienten $\beta_i$ gehörenden $t$-Werts getestet. Die Interpretation war hier die resultierende Steigung der zum Koeffizienten gehörenden Grade. Nun haben wir eine zweite Interpretation in Form der Reduktion der Fehlerquadrate. Der Modellvergleich erlaubt darüber hinaus dasjenige Modell zu bestimmen, welches die Daten am *Besten* bzw. am einfachsten (mit den wenigstens Parametern) modelliert.
+Insgesamt ist durch die Modellvergleiche ein flexiblen Ansatz gewonnen um Modellparameter zu testen. Bisher wurde immer nur ein einzelner Parameter anhand des zum jeweiligen Koeffizienten $\beta_i$ gehörenden $t$-Werts getestet. Die Interpretation war hier die resultierende Steigung der zum Koeffizienten gehörenden Grade. Mittels der Modellvergleiche, ergibt sich nun eine zweite Interpretation in Form der Reduktion der Fehlerquadrate. Der Modellvergleich erlaubt darüber hinaus dasjenige Modell zu bestimmen, welches die Daten am *Besten* bzw. am einfachsten (mit den wenigstenen Parametern) modelliert.
 
 ## Modellvergleiche und nominale Variablen
 
-Schauen wir uns als Nächstes an, was passiert wenn wir eine nominale Variable in unser Modell haben und diese durch Indexvariablen darstellen. In @fig-mlm-hier-rtex haben wir wieder unser hypothetishces Beispiel mit den Reaktionszeiten unter vier verschiedenen Konditionen `A`, `B`, `C` und `D`.
+Als letzter Schritt, nun werden nun Modellvergleiche betrachtet, bei denen eine nominale Variable am Modell beteiligt ist. Wie bereits diskutiert, werden diese Variablen mittels Indikatorvariablen repräsentiert. In @fig-mlm-hier-rtex ist wieder das hypothetische Beispiel mit Reaktionszeiten unter vier verschiedenen Konditionen `A`, `B`, `C` und `D` abgetragen.
 
 ```{r}
 #| fig-cap: "Ein Reaktionszeitexperiment mit vier Stufen A, B, C und D"
@@ -625,13 +625,15 @@ ggplot(rt_tbl, aes(group, rt)) + geom_boxplot() +
   labs(x = 'Treatment', y = 'Reaktionszeit') 
 ```
 
-Klassischerweise würde wir diese Daten mit einer Varianzanalyse (ANOVA) untersuchen, aber wir haben ja schon gesehen das wir diese Analyse auch mit einem linearen Modell durchführen können. In der Varianzanalyse unterteilen wir die Varianz in die drei Komponenten $SS_{total}, SS_{between}$ und $SS_{within}$.
+Klassischerweise würde diese Art von Daten mittels einer Varianzanalyse (ANOVA) untersuchen. In der Varianzanalyse wird die Varianz in die drei Komponenten $SS_{total}, SS_{between}$ und $SS_{within}$ unterteilt.
 
 \begin{equation*}
 SS_{total} = SS_{between} + SS_{within}
 \end{equation*}
 
-Mit etwas motiviertem auf die Gleichungstarren fällt uns natürlich auf, das das ziemlich genauso aussieht wie die Regressionszerlegung in $SSR$ und $SSE$. Bei der Herleitung der Varianzanalyse sind euch möglicherweise die folgenden Formeln zur Berechnung der $F$-Statistik untergekommen ($K$ = Anzahl der Faktorstufen).
+Mit etwas motiviertem *auf die Gleichung starren* fällt möglicherweise auf, das diese Gleichungen ähnlich zu derjenigen formuliert ist die im Rahmen der Regressionszerlegung in $SSR$ und $SSE$ bei der einfachen linearen Regression und Vorhersagen durchgeführt wurde. Dort wurde die Zerlegung verwendet um $R^2$ zu berechnen.
+
+Im Allgemeinen wird bei der Herleitung der Varianzanalyse üblicherweise die folgenden Formeln zur Berechnung der $F$-Statistik verwendet ($K$ = Anzahl der Faktorstufen).
 
 \begin{align*}
 \hat{\sigma}^2_{within} = s_{within}^2 &= \frac{1}{N-K}\sum_{j=1}^K\sum_{i=1}^{N_j}(y_{ji}-\bar{y}_{j.})^2 \\
@@ -640,9 +642,9 @@ Mit etwas motiviertem auf die Gleichungstarren fällt uns natürlich auf, das da
 F &= \frac{\hat{\sigma}_{between}^2} {\hat{\sigma}_{within}^2} \sim F(K-1,N-K)
 \end{align*}
 
-Schauen wir uns $s_{between}^2$ etwas genauer an, dann wird vom beobachteten Wert $y_{ij}$ der jeweiligen Gruppenmittelwert $\bar{y}_{j.}$ abgezogen, quadriert, aufsummiert und durch $N-K$ geteilt. Wenn wir die Daten mittels eines linearen Modells modellieren, dann bildet der $y$-Achsenabschnitt den Mittelwert der Referenzgruppe ab und die anderen Koeffizienten $\beta_i$ den Unterschied zu den anderen Mittelwerten. Wenn die Residuen berechnet werden, dann sind das letztendlich nichts anderes als die Abweichungen von den Gruppenmittelwerten. Im linearen Modell hätten wir dann vier Modellparameter $p = 4$ dementsprechend ist $N-K = N-p$ und $s_{within}^2$ ist nichts anderes als $SSE(F)$. Wenig überraschend lässt sich nun auch noch zeigen, dass der Term $s_{between}^2$ auch nichts anderes als $MS(test)$ ist. Daher ist die Varianzanalyse nichts anderes als ein Vergleich von Modellen miteinandern und geht daher vollkommen in unserem Regressionansatz und letztendlich in der Punkt-Steigungsform aus der 7. Klasse auf.
+Seien $s_{between}^2$ etwas genauer betrachtet. Vom beobachteten Wert $y_{ij}$ wird der jeweilige Gruppenmittelwert $\bar{y}_{j.}$ abgezogen, quadriert, aufsummiert und durch $N-K$ geteilt. Wenn die Daten mittels eines linearen Modells modellieren werden, dann bildet der $y$-Achsenabschnitt den Mittelwert der Referenzgruppe ab und die anderen Koeffizienten $\beta_i$ den Unterschied zu den anderen Mittelwerten. Wenn die Residuen berechnet werden, dann berechnen sich diese ebenfalls als die Abweichungen der beobachteten Werte $y_{ij}$ von den vorhergesagten Werten $\hat{y}_{ij}$ die in diesem Fall eben genau die Gruppenmittelwerte $\bar{y}_{j.}$ sind. Im linearen Modell sind in diesem Fall dann vier Modellparameter $p = 4$ verwendet worden, dementsprechend ist $N-K = N-p$ und $s_{within}^2$ ist nichts anderes als $SSE(F)$. Wenig überraschend lässt sich nun auch noch zeigen, dass der Term $s_{between}^2$ auch nichts anderes als $MS(test)$ ist. Daraus folgt, dass die Varianzanalyse nichts anderes als einen Modellvergleich darstellt. Daher geht die ANOVA vollständig im Regressionansatz und letztendlich in der Punkt-Steigungsform aus der 7. Klasse auf.
 
-In `R` können wir eine ANOVA mit der `aov()`-Funktion berechnen. Die Modellformulierung ist gleich derjenigen wie sie bei `lm()` verwendet wird.
+In `R` kann eine ANOVA mit der `aov()`-Funktion berechnen werden. Die Modellformulierung ist gleich derjenigen wie sie bei `lm()` verwendet wird.
 
 ```{r}
 #| echo: true
@@ -653,22 +655,24 @@ mod_aov <- aov(rt ~ group, rt_tbl)
 Anwendung von `summary()` auf das gefittete `aov`-Modell liefert die übliche ANOVA-Tabelle.
 
 ```{r}
+#| echo: true
+
 summary(mod_aov)
 ```
 
-Wie sieht das Ganz aus, wenn wir den Ansatz mit Modellhierarchien anwenden? Das vollständige Modell ist dasjenige, bei dem wir für beispielsweise Stufe A als Referenz nehmen und mittels dreier Dummy-Variablen ($K-1$) die Abweichungen der Stufen B-D von A modellieren, woraus folgt $p = 4$. 
+Wie sieht das Ganz aus, wenn wir den Ansatz mit Modellhierarchien anwenden? Das vollständige Modell ist dasjenige, bei dem beispielsweise die Faktorstufe `A` als Referenz definiert wird und mittels dreier Dummy-Variablen ($K-1$) die Abweichungen der Stufen `B`-`D` von `A` modelliert werden. Daraus folgt, dass $p = 4$ gilt. 
 
 \begin{equation*}
 y_i = \beta_0 + \beta_{\Delta_{B-A}} x_1 + \beta_{\Delta_{C-A}} x_2 + \beta_{\Delta_{D-A}} x_3 + \epsilon_i
 \end{equation*}
 
-Als reduziertes Modell wählen wir das Modell mit nur einem $y$-Achsenabschnitt und daher nur Parameter $p = 1$.
+Als reduziertes Modell sein nun das Modell mit nur einem $y$-Achsenabschnitt und dementsprechend nur einem Parameter $\beta_0$ und somit $p = 1$. Das reduziert Modell hat daher die Formulierung:
 
 \begin{equation*}
 y_i = \beta_0 + \epsilon_i
 \end{equation*}
 
-Wenn das reduzierte Modell die Daten gleich gut fittet wie das vollständige Modell dann bedeutet dass, das die zusätzliche Information über die verschiedenen Konditionstufen meine Vorhersage von $y_i$ nicht verbessert.
+Wenn das reduzierte Modell die Daten gleich gut fittet wie das vollständige Modell dann bedeutet dies, dass die zusätzliche Information über die verschiedenen Konditionstufen die Vorhersage von $y_i$ nicht verbessert. D.h. ein einzelner Parameter reicht aus um die Daten zu fitten. Das gefittet Model mit `lm()` sieht nun folgendermaßen aus:
 
 ```{r}
 #| echo: true
@@ -677,8 +681,7 @@ mod <- lm(rt ~ group, rt_tbl)
 summary(mod)
 ```
 
-Wenn wir uns die letzte Zeile im `summary()` Ausdruck anschauen, dann sehen wir dort die gleichen Werte die wir mit `aov()` erhalten haben. Wenn wir `anova()` das gefittete `lm` Modell übergeben erhalten wir sogar genau die gleiche ANOVA Tabelle.
-
+Bei Betrachtung der letzten Zeile im `summary()` Ausdruck, ist zu sehen, dass dort die gleichen Werte dokumentiert werden wir durch `aov()`. Wenn der`anova()`-Funktion das gefittete `lm` Modell übergeben wird, wird genau die gleiche ANOVA Tabelle wie mittels `aov()` erhalten.
 
 ```{r}
 #| echo: true
@@ -686,7 +689,18 @@ Wenn wir uns die letzte Zeile im `summary()` Ausdruck anschauen, dann sehen wir 
 anova(mod)
 ```
 
-Tatsächlich verwendet `aov()` im Hintergrund auch nichts anderes als die `lm()` Funktion. Insgesamt bedeutet das für uns, das die ANOVA und Regression letztendlich auf das gleiche Modell zurück gehen, nämlich auf das Allgemeine Lineare Modell.
+Tatsächlich verwendet `aov()` im Hintergrund ebenfalls die `lm()` Funktion. Insgesamt bedeutet das nun, das die ANOVA und Regression letztendlich auf das gleiche Modell zurück gehen, nämlich auf das **Allgemeine Lineare Modell**. Unter dem allgemeinen linearen Modell sind die ANOVA und die Regression beides spezielle Fälle desselben grundlegenden statistischen Modells. Wie bisher immer wieder wiederholt beruht das Modell auf einer Beschreibung eines Zusammenhangs zwischen einer abhängigen Variable und einer oder mehreren unabhängigen Variablen durch eine lineare Gleichung. Bei der Regression sind die unabhängigen Variablen meist kontinuierlich und werden oft genutzt, um Vorhersagen zu treffen. Bei der ANOVA hingegen sind die unabhängigen Variablen kategorial und dienen dazu, Mittelwertsunterschiede zwischen Gruppen zu analysieren. Trotz dieser unterschiedlichen Anwendungsbereiche beruhen beide Verfahren auf denselben mathematischen Prinzipien zur Schätzung von Effekten und zur Überprüfung von Hypothesen.
+
+::: {#def-general-linear-model}
+## Allgemeine Lineare Modell \index{Allgemeine lineare Modell}
+
+Das allgemeine lineare Modell (ALM) ist ein statistisches Verfahren, das den Zusammenhang zwischen **einer** abhängigen Variable und einer oder mehreren unabhängigen Variablen durch eine **lineare Gleichung** beschreibt. Dem ALM liegt die Annahme zugrunde, dass der Wert der abhängigen Variable durch eine lineare Kombination der $p$ unabhängigen Variablen und ihrer jeweiligen Gewichte (Modellkoeffizienten) vorhergesagt werden kann. In der Modellformulierung ist zusätzlich eine additive, zufällige Fehlerkomponente enthalten. Die Formulierung hat daher die folgende Form:
+
+\begin{equation}
+Y_i = \beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + \cdots + \beta_p X_{pi} + \epsilon_i
+\end{equation}
+
+:::
 
 ## Zum Nacharbeiten 
 
