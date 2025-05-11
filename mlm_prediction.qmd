@@ -50,19 +50,19 @@ Die Polynomregression stellt somit eine Erweiterung der einfachen linearen Regre
 Y = \beta_0 + \beta_1 X + \beta_2 X^2 + \beta_3 X^3 + \dots + \beta_d X^d + \epsilon
 \end{equation}
 
-Dabei beschreibt die Variable $d$ den **Polynomgrad**. Je höher der Grad, desto flexibler ist das Modell. Üblicherweise werden die niedrigeren Grade bis zum höchsten Polynomgrad im Modell beibehalten und nur in begründeten Ausnahmefällen, beispielsweise aus theoretischen Überlegungen, werden niedrigere Grade ausgeschlossen. Ein einfaches Beispiel wäre zum Beispiel ein parabelförmiger Zusammenhang. Formal:
+Dabei beschreibt die Variable $d$ den **Polynomgrad**. Je höher der Grad, desto flexibler ist das Modell. Üblicherweise werden die niedrigeren Grade bis zum höchsten Polynomgrad im Modell beibehalten auch wenn diese nicht statistisch signifikant sind [@peixoto1987; @peixoto1990] und nur in begründeten Ausnahmefällen, beispielsweise aus theoretischen Überlegungen, werden niedrigere Grade ausgeschlossen. Ein einfaches Beispiel wäre zum Beispiel ein parabelförmiger Zusammenhang. Formal:
 
 \begin{equation*}
 y_i = \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + \epsilon_i
 \end{equation*}
 
-Hier könnte beispielsweise auch das Modell:
+Hier könnte beispielsweise auch das folgende Modell an die Daten angepasst werden. 
 
 \begin{equation*}
 y_i = \beta_2 x_i^2 + \epsilon_i
 \end{equation*}
 
-an die Daten angepasst werden. Inhaltlich würde das Bedeutung, dass davon auszugehen ist, dass die Parabel durch den Koordinatenpunkt $(0,0)$ geht und dass in diesem Fall die *Steigung* $\beta_1 = 0$ ist. Dies kann in bestimmten Fällen tatsächlich plausibel sein, wird aber in den meisten Fällen nur sehr schwer inhaltlich zu verargumentieren sein. Daher ist in praktisch immer die Anpassung des vollständigen Modell sinnvoller. Weiterhin ist es meistens auch sinnvoll eher ein einfacheres Modell gegenüber einen Modell mit hohem Polynomgrad zu bevorzugen.
+Inhaltlich würde das Bedeutung, dass davon auszugehen ist, dass die Parabel durch den Koordinatenpunkt $(0,0)$ geht und dass in diesem Fall die *Steigung* $\beta_1 = 0$ ist. Dies kann in bestimmten Fällen tatsächlich plausibel sein, wird aber in den meisten Fällen nur sehr schwer inhaltlich zu begründen sein. Daher ist in praktisch immer die Anpassung des vollständigen Modell sinnvoller. Weiterhin ist es meistens auch sinnvoll eher ein einfacheres Modell gegenüber einen Modell mit hohem Polynomgrad zu bevorzugen. Aus numerischen Gründen ist es oft auch sinnvoll die Prädiktorvariablen zu zentrieren.
 
 Insgesamt ergibt sich durch die Erweiterungen die im Rahmen des multiplen Regression besprochen wurden dementsprechend ein extrem flexibler Ansatz um Zusammenhänge von Prädiktorvariablen mit einer abhängigen Kriteriumsvariable zu modellieren. Durch Interaktionseffekte, nominale Variablen und Polynome kann ein große Klasse von Zusammenhängen innerhalb des gleichen Ansatzes einheitlich behandelt werden. Damit kommen auch die bereits kennengelernten Methoden zum Einsatz um den Modellfit zu bewerten.
 
@@ -112,6 +112,9 @@ Wie zu erkennen ist, führen alle drei Wege zum gleichen Ergebnis.
 
 ## Vorhersage versus Inferenz
 
+Regressionsmodelle können je nach Zielsetzung sehr unterschiedliche Zwecke erfüllen. Insbesondere der Unterschied zwischen Modellen um eine *Vorhersage*  zu treffen und Modellen zur *Inferenz* muss unterschieden werden. In diesem Zusammenhang ist liegt der bedeutende Unterschied darin, was mit dem Modell erreicht werden soll. Bei der Vorhersage ist von primären Interesse, wie gut das Modell neue, unbekannte Werte der Zielvariable prognostizieren kann. Ob die einzelnen Einflussgrößen (Prädiktoren) statistisch signifikant sind oder wie genau ihr Zusammenhang zur Zielgröße aussieht, ist dabei zweitrangig. Dagegen steht bei der Inferenz die *Erklärung* im Vordergrund. Welche Variablen haben einen Effekt, wie stark ist dieser und ist der Zusammenhang statistisch belegbar ist.
+
+In einem medizinischen Zusammenhang könnte ein Regressionsmodell verwendet werden, um vorherzusagen, wie hoch das Risiko eines Patienten für eine bestimmte Krankheit ist, basierend auf Prädiktorvariablen Alter, Gewicht, Blutdruck und möglichen weiteren Faktoren. Ein Modell zur Vorhersage würde hier möglicherweise viele Prädiktoren einbeziehen um die Risikoabschätzung möglichst genau vorherzusagen. Ein inferenzorientiertes Modell hingegen würde gezielt untersuchen, ob z.B. der Blutdruck statistisch signifikant mit dem Krankheitsrisiko zusammenhängt, mit dem Ziel, eine kausale Interpretation zu ermöglichen und beispielsweise klinischer Empfehlungen abzuleiten. D.h. bei der Inferenz ist die Interpretierbarkeit der Prädiktorvariablen von Bedeutung. Somit spielen auch Effekt wie Kollinearitäten eine bedeutsamere Rolle. Bei der Vorhersage ist dieses Problem dagegen möglicherweise von geringerer Bedeutung so lange die Vorhersagequalität nicht beeinträchtigt wird.
 
 ## Modellbewertung
 
@@ -221,9 +224,10 @@ Eine Unteranpassung liegt vor, wenn ein Modell zu eine zu geringe Komplexität a
 
 Prinzipiell ist es schwierig zu entscheiden ob eine Über- oder Unteranpassung vorliegt. Wie bereits im vorhergehenden Kapitel zu Modellhierarchien wird der Standardschätzfehler immer kleiner umso mehr Prädiktorvariablen in das Modell integriert werden. D.h. wenn das Modell immer komplexer wird. Dazu kommen noch die vorgestellten Möglichkeiten von Interaktions- und oben Polynomen dazu. Im Falle des Beispiels, mit $m_u$, wo ein Polynom 6. Grades gefittet wurde, sind die beobachteten Daten perfekt abgebildet worden und die Interpretation von overfitting war nur möglich weil der DGP bekannt ist. Um dennoch eine Abschätzung treffen zu können wie gut das Modell **generalisiert**, also für Datenpunkte funktioniert die noch nicht bekannt ist wird in der Praxis eine Unterteilung der Daten in Test- und Trainigsdatensatz verwendet.
 
-## Testfehler versus Trainingsfehler
+## Validierungsansatz 
+Wenn ein Modell zur Prädiktion erstellt werden soll, dann ist das primäre Ziel die Zielvariable mit Hilfe der Prädiktoren möglichst präzise vorherzusagen. Dazu iest notwendig die generalisierbarkeit des Modells abschätzen zu können. Es reicht nicht zu wissen wie gut das Modell die zur Modellanpassung verwendeten Daten vorhersagt, sondern es sollte ein Einschätzung gemacht werden wie gut *neue* Daten vorhergesagt werden können. Ein Ansatz dieses Problem zu lösen besteht darin eine Partitionierung der verfügbaren Daten in verschiedene Teilmengen vorzunehmen.
 
-Um die Generalisierbarkeit eines Modells abschätzen zu können wird der folgende einfache Ansatz angewendet. Die Daten werden vor der Anpassung des Modells in zwei Teile aufgeteilen: **Trainingsdaten** und **Testdaten**. Das Modell wird dann zunächst mit Hilfe der Trainingsdaten erstellt. Die Testdaten spielen bei der Erstellung des Modells hingegen keine Rolle und werden **zurückgehalten**. Nachdem das Modell erstellt wurde, werden dann die Trainingsdaten verwendet, um zu überprüfen, wie gut das Modell neue, unbekannte Daten abbildet. Dadurch kann beurteilt werden, ob das Modell gut generalisiert. Die Aufteilung der Daten hilft daher zu entscheiden bzw. zu bewerten wir gut das Modell den DGP in der Lage ist abzubilden. Entsprechend der Unterteilungen kann ein **Testfehler** und ein **Trainingsfehler** für ein Modell bestimmt werden. Der Trainingsfehler unterscheidet sich häufig deutlich von Testfehler – insbesondere kann der Trainingsfehler den Testfehler stark unterschätzen.
+Unter der Partitionierung wird der Datensatz in einen **Trainings-** und einen **Testdatensatz** unterteilt. Das Modell wird dann zunächst mit Hilfe der Trainingsdaten erstellt. Die Testdaten spielen bei der Erstellung des Modells hingegen keine Rolle und werden **zurückgehalten**. Nachdem das Modell erstellt wurde, werden dann die Trainingsdaten verwendet, um zu überprüfen, wie gut das Modell neue, unbekannte Daten abbildet. Dadurch kann beurteilt werden, ob das Modell gut generalisiert. Die Aufteilung der Daten hilft daher zu entscheiden bzw. zu bewerten wir gut das Modell den DGP in der Lage ist abzubilden. Entsprechend der Unterteilungen kann ein **Testfehler** und ein **Trainingsfehler** für ein Modell bestimmt werden. Der Trainingsfehler unterscheidet sich häufig deutlich von Testfehler – insbesondere kann der Trainingsfehler den Testfehler stark unterschätzen.
 
 ::: {#def-traininerror}
 ## Trainingsfehler \index{Trainingsfehler} \index{training error}
@@ -234,7 +238,7 @@ Der Trainingsfehler ist der durchschnittliche Fehler, der entsteht, wenn eine st
 ::: {#def-testerror}
 ## Testfehler \index{Testfehler} \index{test error}
 
-Der Testfehler ist der durchschnittliche Fehler, der entsteht, wenn eine statistische Lernmethode verwendet wird, um die Kriterionsvariable für eine neue Beobachtung vorherzusagen. Eine neue Beobachtung ist eine Beobachtung, die **nicht** zum Training des Modells verwendet wurde.
+Der Testfehler ist der durchschnittliche Fehler, der entsteht, wenn eine statistische Lernmethode verwendet wird, um die Kriterionsvariable für eine neue Beobachtung vorherzusagen. Eine *neue Beobachtung* ist ein Datenpunkt, der **nicht** zum Training des Modells verwendet wurde.
 :::
 
 ```{r}
@@ -253,28 +257,67 @@ ggplot(df, aes(x,value, color=name)) +
   scale_color_manual("Fehlertypen", values=c('blue','green'))
 ```
 
+In @fig-mlm-prediction-testtrain ist ein stilisierter Zusammenhang zwischen dem Test- und dem Trainingsfehler in Abhängigkeit von der Modellkomplexität abgetragen. Es ist zu sehen, dass der Trainingsfehler immer niedriger als der Testfehler ist und mit zunehmender Modellkomplexität immer weiter abnimmt. Das beruht auf dem Effekt der schon im Zusammenhang mit Modellhierarchien besprochen wurde, dass die Hinzunahme von zusätzlichen Variablen, selbst wenn diese keinen Zusammenhang mit $Y$ besitzen, die Modellanpassung mindestens gleich gut bleibt. Die wichtige Einsicht ist allerdings der Zusammenhang mit des Testfehlers mit der Modellkomplexität. Hier ist ebenfalls zunächst eine Abnahme des Fehler zu beobachten allerdings nimmt ab einer bestimmten Modellkomplexität der Fehler wieder zu. Dieser verlauf beruht darauf, das das Modell zunächst zu wenige Komplexität besitzt und entsprechend eine Unteranpassung stattfindet bis die Komplexität zum DGP passt. Nimmt nun die Komplexität weiter zu kommt es zu einer Überanpassung. D.h. das Modell ist immer spezifischer auf die Trainingsdaten trainiert bzw. passt deren Rauschen an und verliert dadurch an Generalisierbarkeit. Mit dem Validierungsansatz ist es somit möglich den Bereich der *optimalen* Modellkomplexität abzuschätzen.
 
-## Validation-set Ansatz 
+Die Aufteilung der Daten in Trainings- und Test- bzw. Validierungsdatensatz bringt einen inhärenten Kompromiss mit sich. Eine größere Menge an Trainingsdaten könnte potenziell die Genauigkeit des Modells auf diesen Daten verbessern. Gleichzeitig kann eine kleinere Validierungsmenge zu einer weniger zuverlässigen Einschätzung der Generalisierungsfähigkeit führen. Es ist ein grundlegendes Dilemma, dass die Menge an Daten, die zum Trainieren des Modells verwendet wird, dessen Fähigkeit beeinflusst, komplexe Muster zu erlernen und auf neue Daten anzuwenden. Ist der Validierungsdatensatz zu klein, sind die darauf berechneten Leistungsmetriken möglicherweise verrauscht oder nicht repräsentativ für die tatsächliche Fähigkeit des Modells, auf völlig neue Daten zu generalisieren. Dieses Problem muss bei der Anwendung des Validierungsdatensatzansatzes sorgfältig abgewogen werden.
 
-- Randomly divide the available set of samples into two parts: a training set and a validation or hold-out set.
-- The model is fit on the training set, and the fitted model is used to predict the responses for the observations in the validation set.
-- The resulting validation-set error provides an estimate of the test error. This is typically assessed using MSE in the case of a quantitative response and misclassification rate in the case of a qualitative (discrete) response.
+Ein weiteres Problem ergibt sich, wenn der Validierungsdatensatz *schlecht* gewählt wurde. Dies bedeutet, dass der Trainingsdatensatz möglicherweise nicht genau die Verteilung zukünftiger, unbekannter Daten widerspiegelt. Dies kann zu irreführenden Leistungsschätzungen führen. Enthält der Validierungsdatensatz beispielsweise Datenpunkte, die sich erheblich von den Daten unterscheiden, denen das Modell in realen Anwendungen begegnen wird, so ist die Leistung des Modells auf dem Validierungsdatensatz möglicherweise kein guter Indikator für seine tatsächliche Leistungsfähigkeit. Wenn beispielsweise die Trainingsdaten hauptsächlich Daten einer bestimmten demografischen Gruppe enthalten und der Validierungsdatensatz hauptsächlich Daten einer anderen Gruppe enthält, könnte die Bewertung verzerrt sein.
+
+Der Validierungsdatensatzansatz bietet sowohl Vorteile als auch Nachteile, die bei seiner Anwendung berücksichtigt werden müssen. Die Vorteile liegen zunächst in der  konzeptionellen Einfachheit des Ansatzes und in seiner einfache Implementierung. Der Hauptnachteil liegt in der Sensitivität gegenüber der Datenaufteilung. Die Modellbewertung kann stark von der spezifischen zufälligen Aufteilung der Daten in Trainings- und Validierungsdatensätze abhängen. Insbesondere bei kleinen Datensätzen können die Datensätze leicht zu fehlerhaften Einschätzungen kommen, und Variationen in der Aufteilung können zu stark unterschiedlichen Leistungsschätzungen führen. Weiterhin kann die Reduktion der Trainingsdaten dazu führen, dass die Gesamtleistung des Modells beeinträchtigt wird, insbesondere wenn der Datensatz begrenzt ist.
+
+Die Abwägung zwischen der Größe des Trainings- und des Validierungsdatensatzes erfordert eine sorgfältige Überlegung, die auf der Gesamtgröße des Datensatzes und der Komplexität des Problems basiert. Bei sehr großen Datensätzen ist die Reduzierung der Trainingsdaten durch einen angemessen großen Validierungsdatensatz möglicherweise vernachlässigbar. Bei kleineren Datensätzen kann die Zuweisung eines erheblichen Teils zur Validierung jedoch die Fähigkeit des Modells, effektiv zu lernen, stark einschränken. Das richtige Gleichgewicht zu finden ist entscheidend und erfordert oft einen systematische Herangehensweise. Die Zufälligkeit bei der Datenaufteilung kann ebenfalls zu Unterschiedlichen Modellbewertung führen.
+
+### Validierungsansatz in `R`
 
 ### K-fache Kreuzvalidierung 
 
-- Estimates can be used to select best model, and to give an idea of the test error of the final chosen model.
-- Randomly divide the data into K equal-sized parts. We leave out part $k$, fit the model to the other $K-1$ parts (combined), and then obtain predictions for the left-out $k$th part.
-- This is done in turn for each part $k = 1, 2, \ldots K$, and then the results are combined.
+Um die Einschränkungen des einzelnen Validierungsdatensatzansatzes, insbesondere die Sensitivität gegenüber der Datenaufteilung, zu adressieren, wird in der Praxis häufig eine Variante, die Kreuzvalidierung, eingesetzt. Bei der k-fachen Kreuzvalidierung wird der Datensatz in $k$ gleich große Teile (sogenannte Folds) aufgeteilt. Das Modell wird dann $k$-mal trainiert und bewertet. In jeder Iteration wird ein anderer Fold als Validierungsdatensatz verwendet, während die übrigen $k-1$ Folds als Trainingsdatensatz dienen. Die endgültige Leistungsschätzung wird durch Mittelung der Ergebnisse über alle $k$ Validierungsdurchläufe hinweg ermittelt.Die Kreuzvalidierung bietet eine robustere Schätzung der Modellleistung, da sie die Ergebnisse über mehrere verschiedene Datenaufteilungen hinweg berücksichtigt. Insbesondere bei begrenzten Datenmengen ist die Kreuzvalidierung hilfreich.
 
+Ein Kochbuch zur Kreuzvalidierung hat die folgenden *Zutaten*
 
-- Let the $K$ parts be $C_1, C_2, \ldots, C_K$ with $n_k = n/K$ observations each
-- Compute
-$$
-CV_{(K)} = \sum_{i=1}^K \frac{n_k}{n}MSE_k
-$$
-- Setting $K =  n$ yields leave-one out cross-validation (LOOCV)
+- Seien die $K$ folds $C_1, C_2, \ldots, C_K$ mit jeweils $n_k = n/K$ Beobachtungen in jedem Fold 
+- Für jeden Folde wird  $CV_{(K)} = \sum_{i=1}^K \frac{n_k}{n}MSE_k$ berechnet
 
+Im Spezialfall dass $K = n$ gilt, dann wird die Kreuzvalidierung eine sogenannte **leave-one out cross-validation (LOOCV)**
+
+Daher lässt sich sehen, dass die Kreuzvalidierung in der Durchführung ebenfalls relativ einfach umzusetzen ist. Bei großen Datensätzen mit sehr komplizierten Modellen kann es lediglich zum Problem kommen, dass die Rechenzeiten zu lang werden. Dies ist im Rahmen der hier besprochenen Probleme eher nicht zu erwarten. In manchen Fällen wird auch eine Kombination aus Validierung und Kreuzvalidierung verwendet. Dazu wird zunächst ein Teil des Datensatzes zur Validierung beseite gelegt. Anschließend wird das Modell mittels der Kreuzvalidierung auf den Trainingsdatensatz bestimmt um dann auf dem Validierungsdatensatz den Modellfehler abzuschätzen.
+
+### K-fache Kreuzvalidierung in `R`
 
 ## Bias-Variance Trade-off
 
+Das grundsätzliche Problem der Modellselektion, d.h. für einen gegebenen Datensatz ein *passendes* Modell zu finden geht zurück auf den sogenannten **Bias-Variance Trade-off**. Der Bias-Variance Trade-off beschreibt das Verhältnis zwischen der Komplexität eines Modells und seiner Vorhersagegenauigkeit sowohl auf den Trainingsdaten als auch auf neuen, ungesehenen Daten. Formal folgt der Bias-Variance Trade-off aus der folgenden Gleichung.
+
+\begin{equation}
+E(y_0 - \hat{f}(x_0))^2 = \text{Var}(\hat{f}{x_0}) + [\text{Bias}(\hat{f}(x_0))]^2 + \text{Var}(\epsilon)
+\label{eq-bias-variance-trade}
+\end{equation}
+
+Hierbei ist $E((y_0 - \hat{f}(x_0))^2$ der zu erwartete MSE, d.h. der zu mittlere Fehler auf den **Testdaten** wenn die Funktion $f$ wiederholt auf großen Trainingsdatensätzen abgeschätzt werden würde und jedes Mal der Fehler für den Datenpunkt $x_0$ bestimmt worden wäre. Dieser mittlere Fehler setzt sich zusammen aus drei Komponenten. $\text{Var}(\hat{f}{x_0})$ ist die Varianz der geschätzten $\hat{f}$, also der unterschiedlichen Modelle, wenn unterschiedliche Testdatensätze verwendet werden würde. Jedes Mal, wenn ein Modell an Daten angepasst wird und sich die Daten verändern, dann ändert sich auch das angepasste Modell. Diese *Streuung* der Modell ist mit dieser Varianz gemeint. Im Idealfall sollten die Modell nicht allzu stark schwanken und diese Komponente wäre entsprechend klein. Die zweite Komponente ,  $[\text{Bias}(\hat{f}(x_0))]^2$ beschreibt den sogenannten **Bias**. Dieser Fall entsteht dadurch, dass ein Prozess aus der *realen* Welt mit Hilfe eines Modell abgeschätzt werden soll, welches in den allermeisten Fällen auf Grund von vereinfachenden Annahmen bestimmt wird. Durch diese Unteranpassung kommt es zu einem Fehler. Die wenigsten Prozesse in der Natur werden *perfekt* einem linearem Modell entsprechen, dadurch kommt es zu einem *systematischen* Fehler der mittels des Bias bestimmt wird. Mathematisch lässt sich der Bias als die Differenz zwischen der durchschnittlichen Vorhersage des Modells und dem wahren Wert bestimmen. Die letzte Komponente $\text{Var}(\epsilon)$ stellt die bekannte, zufällige Komponente des Modells, das Rauschen in den Daten, dar. Alle drei Komponenten sind positiv, daraus folgt, dass die Vorhersagegenauigkeit niemals unterhalb der Rauschkomponente liegen kann.
+
+Die *Kunst* besteht nun darin ein Modell zu finden, dass die beiden Komponenten Varianz und Bias gegeneinander optimiert. Üblicherweise führt eine Erhöhung der Modellkomplexität zu einer Verringerung des Bias aber zu einer Erhöhung der Varianz. Andersherum führt eine Erniedrigung der Modellkomplexität zu einer Verringerung der Varianz gepaart mit einer Erhöhung des Bias. Daher kommt es zu einem Trade-off zwischen diesem beiden Tendenzen. Dies muss aber nicht immer so sein und hängt sehr stark von dem jeweiligen Prozess und den Daten ab.
+
+```{r}
+#| label: fig-mlm-pred-varbias-trade
+#| fig-cap: "Stilisierter Zusammenhang zwischen MSE, Bias, Varianz und $\\sigma^2$ (schwarze, unterbrochene Linie)"
+
+sigma <- 0.05
+df <- tibble(
+  x = 1:25,
+  bias = exp(-0.3*x),
+  var = 1/100*x + 0.0005*x**2,
+  mse = bias + var + sigma
+) |> tidyr::pivot_longer(-x)
+ggplot(df, aes(x,value,color=name)) +
+  geom_line() +
+  geom_hline(yintercept = 4*sigma, linetype = 'dashed') +
+  scale_x_continuous('Modellkomplexität', limits=c(1,25)) +
+  scale_color_discrete("Fehlerkomponente", breaks = c("bias","var","mse"), labels=c('Bias','Varianz','MSE')) +
+  scale_y_continuous("Fehler", labels = NULL)
+```
+
+In @fig-mlm-pred-varbias-trade ist ein hypothetischer Zusammenhang zwischen MSE, der Varianz, dem Bias und $\sigma^2$ abgebildet. Hier ist zu erkennen, dass der resultierende Fehler MSE niemals unterhalb der Rauschgrenze liegen kann. Weiterhin setzt sich der Gesamtfehler über den angegebenen Modellkomplexitätsbereich jeweils aus verschieden starken Anteil der Varianz und dem Bias zusammen. Die genaue Ausprägung zwischen den Komponenten hängt aber stark von dem jeweiligen Problem ab. So ist es durchaus möglich, dass der Bias über den gesamten Bereich eher niedrig ist und somit der Gesamtfehler von der Varianz dominiert wird.
+
 ## Zum Nach- und Weiterlesen
+
+Ein extrem gutes Buch ist @james2023 das mit dem Vorwissen aus diesem Skript direkt gelesen werden kann. Das Buch gibt es als `R` und `Python`-Versionen.
