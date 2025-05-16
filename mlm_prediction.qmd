@@ -1,4 +1,4 @@
-# Vorhersagen bei der multiple linearen Regression
+# Polynome und Prädiktion 
 
 ```{r}
 #| echo: false
@@ -232,6 +232,36 @@ Wenn ein Modell zur Prädiktion erstellt werden soll, dann ist das primäre Ziel
 
 Unter der Partitionierung wird der Datensatz in einen **Trainings-** und einen **Testdatensatz** unterteilt. Das Modell wird dann zunächst mit Hilfe der Trainingsdaten erstellt. Die Testdaten spielen bei der Erstellung des Modells hingegen keine Rolle und werden **zurückgehalten**. Nachdem das Modell erstellt wurde, werden dann die Trainingsdaten verwendet, um zu überprüfen, wie gut das Modell neue, unbekannte Daten abbildet. Dadurch kann beurteilt werden, ob das Modell gut generalisiert. Die Aufteilung der Daten hilft daher zu entscheiden bzw. zu bewerten wir gut das Modell den DGP in der Lage ist abzubilden. Entsprechend der Unterteilungen kann ein **Testfehler** und ein **Trainingsfehler** für das Modell bestimmt werden. Der Trainingsfehler unterscheidet sich häufig deutlich von Testfehler indem er deutlich kleiner ist.
 
+```{r}
+#| label: fig-mlm-pred-valid-01
+#| fig-cap: "Validierungsansatz anhand eines einfachen Beispiels mit $N=30$ Datenpunkten."
+#| fig-height: 2
+
+k_folds <- 6
+n_samples <- 30
+tibble(
+  Sample = 1:n_samples,
+  Fold = cut(sample(n_samples), breaks = k_folds, labels = FALSE)
+) |>  
+  dplyr::mutate(
+    Set = ifelse(Fold == 2, "Test", "Train"),
+    y = factor(Fold)) |> 
+  ggplot(aes(x = Sample, y = 1)) +
+  geom_tile(aes(fill = Set), color = "white") +
+  scale_x_continuous("Datenpunkt", breaks=1:n_samples) +
+  scale_y_continuous("", breaks=NULL) +
+  scale_fill_manual(values = c("Train" = "#1f77b4", "Test" = "#ff7f0e")) +
+  labs(
+    fill = "Datenset"
+  ) + theme_minimal() +
+  theme(
+    panel.grid = element_blank(),
+    legend.position = "bottom"
+  ) 
+```
+
+In @fig-mlm-pred-valid-01 ist der Validierungsansatz schematisch anhand eines Beispiels mit $N = 30$ Datenpunkten dargestellt. Die Datenpunkte werden zufällig nach einem bestimmten Verhältnis in Test- und Trainingsdatensatz unterteilt. Ein typisches Verhältnis ist $80/20$, mit $80$% im Trainingsdatensatz.
+
 ::: {#def-traininerror}
 ## Trainingsfehler \index{Trainingsfehler} \index{training error}
 
@@ -323,6 +353,37 @@ Ein Kochbuchansatz zur Kreuzvalidierung hat die folgenden *Zutaten*
 
 - Seien die $K$ folds $C_1, C_2, \ldots, C_K$ mit jeweils $n_k = n/K$ Beobachtungen in jedem Fold 
 - Für jeden Fold wird  $CV_{(K)} = \sum_{i=1}^K \frac{n_k}{n}MSE_k$ berechnet
+
+In @fig-mlm-pred-crossvalid-01 ist beispielhaft die Kreuzvalidierung wieder mit $N = 30$ Datenpunkten und $k = 5$ folds dargestellt.
+
+```{r}
+#| label: fig-mlm-pred-crossvalid-01
+#| fig-cap: "Schematische Darstellung der Kreuzvalidierung mit $N=30$ Datenpunkten und $k=5$ folds."
+#| fig-height: 3
+
+tibble(
+  Sample = 1:n_samples,
+  Fold = cut(sample(n_samples), breaks = k_folds, labels = FALSE)
+  ) |>  
+  tidyr::crossing(CurrentFold = 1:k_folds) |>  
+  dplyr::mutate(
+    Set = ifelse(Fold == CurrentFold, "Test", "Train"),
+    y = factor(CurrentFold)) |> 
+  ggplot(aes(x = Sample, y = y)) +
+    geom_tile(aes(fill = Set), color = "white") +
+    scale_x_continuous("Datenpunkt", breaks=1:n_samples) +
+    scale_fill_manual(values = c("Train" = "#1f77b4", "Test" = "#ff7f0e")) +
+    labs(
+      y = "Aktueller Fold (Test-Set)",
+      fill = "Datenset"
+    ) + theme_minimal() +
+    theme(
+      panel.grid = element_blank(),
+      legend.position = "bottom"
+    )
+```
+
+Die Datenpunkte werden werden so unterteilt, dass jeder Datenpunkt in einem fold im Testdatensatz enthalten ist.
 
 Im Spezialfall dass $K = n$ gilt, dann wird aus der Kreuzvalidierung eine sogenannte **leave-one out cross-validation (LOOCV)**. Konzeptionell ist dieser Ansatz ähnlich den Einflussmetriken, die im Rahmen der Bewertungs des Modellsfits bei der einfachen linearen Regression eingeführt wurden. 
 
