@@ -67,6 +67,30 @@ rplot <- function(df, text_size = 11, point_size = 1.5) {
 }
 
 
+# ICC helperfunctions
+icc <- function(ratings)
+{
+  ratings <- as.matrix(ratings)
+  ns <- nrow(ratings)
+  nr <- ncol(ratings)
+  SStotal <- var(as.numeric(ratings)) * (ns * nr - 1)
+  MSr <- var(apply(ratings, 1, mean)) * nr
+  MSw <- sum(apply(ratings, 1, var)/ns)
+  MSc <- var(apply(ratings, 2, mean)) * ns
+  MSe <- (SStotal - MSr * (ns - 1) - MSc * (nr - 1))/((ns - 1) * (nr - 1))
+  
+  icc_s <- numeric(3) 
+  icc_s[1] <- (MSr - MSw)/(MSr + (nr - 1) * MSw) # oneway
+  icc_s[2] <- (MSr - MSe)/(MSr + (nr - 1) * MSe) # twoway consistency
+  icc_s[3] <- (MSr - MSe)/(MSr + (nr - 1) * MSe + (nr/ns) * (MSc - MSe)) # twoway agreement
+  tibble::tibble(
+    type = c("ICC(1)","ICC(2,C)", "ICC(2,A)"),
+    icc = icc_s
+  )
+}
+
+# MISC
+
 r_2 <- function(x) round(x, 2)
 r_3 <- function(x) round(x, 3)
 paste_com <- function(x) paste(x, collapse=',')
