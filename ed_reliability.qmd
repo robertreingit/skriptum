@@ -20,7 +20,7 @@ lil_w <- lil |> tidyr::pivot_longer(-Subject,
 
 ## Genauigkeit versus Präzision
 
-Die ersten beiden wichtigen Eigenschaften eines Messinstruments sind die Genauigkeit und die Präzision. Beide sind Eigenschaften sind zentrale zur Beurteilung der Qualität eines Messinstruments. **Genauigkeit** beschreibt, wie nahe eine Messung am tatsächlichen oder wahren Wert liegt. Ein Messinstrument mit hoher Genauigkeit liefert Werte, die nur eine geringe Abweichung vom *realen Wert* aufweisen. **Präzision** hingegen bezieht sich auf die Wiederholbarkeit von Messungen: Ein präzises Instrument liefert bei mehrfacher Messung ähnliche oder identische Werte, unabhängig davon, ob diese dem wahren Wert nahekommen. Ein Messinstrument kann also präzise, aber ungenau sein, wenn die Werte zwar eng beieinanderliegen, jedoch systematisch vom tatsächlichen Wert abweichen. Idealerweise sollte ein Messinstrument sowohl genau als auch präzise sein, um verlässliche Ergebnisse zu liefern.
+Die ersten beiden wichtigen Eigenschaften eines Messinstruments sind die Genauigkeit und die Präzision. Beide sind Eigenschaften sind zentrale zur Beurteilung der Qualität eines Messinstruments. **Genauigkeit** beschreibt, wie nahe eine Messung am tatsächlichen oder wahren Wert liegt. Ein Messinstrument mit hoher Genauigkeit liefert Werte, die nur eine geringe Abweichung vom *realen Wert* aufweisen. Die mittlere Abweichung vom tatsächlichen Wert wird auch als **bias** bezeichnet. **Präzision** hingegen bezieht sich auf die Wiederholbarkeit von Messungen. Ein präzises Instrument liefert bei mehrfacher Messung ähnliche oder identische Werte, unabhängig davon, ob diese dem wahren Wert nahekommen. Die Streuung wird auch oft als Rauschen (engl. noise) bezeichnet. Ein Messinstrument kann also präzise, aber ungenau sein, wenn die Werte zwar eng beieinanderliegen, jedoch systematisch vom tatsächlichen Wert abweichen. Idealerweise sollte ein Messinstrument sowohl genau als auch präzise sein, um verlässliche Ergebnisse zu liefern [siehe auch @luchette2024].
 
 In @fig-ed-rel-precision sind Präzision und Genauigkeit anhand einer Zielscheibe noch einmal verdeutlicht.
 
@@ -164,7 +164,7 @@ Werden nun mehrere bzw. $N$ Messungen durchgeführt, dann wird entsprechend nich
 Y_i = \tau_i + \epsilon_i, \quad i \in [1,\ldots,N]
 \end{equation}
 
-Sobald nun mehrere Werte zur Verfügung stehen, kann für diese beobachteten Wert $Y_i$ eine Varianz berechnet werden und, zumindest theoretisch, auch eine Varianz für die $\tau_i$s berechnet werden. Dies ermöglicht nun eine formale Definition der Reliabilität unter dem gegebenen Modell.
+Um die beiden Komponenten abschätzen zu können ist es daher notwendig, dass von dem zu messenden Objekt mehrere Messungen vorliegen. Wenn mehrere Werte für jedes Objekt zur Verfügung stehen, dann kann für diese beobachteten Wert $Y_i$ eine Varianz berechnet werden und, zumindest theoretisch, auch eine Varianz für die $\tau_i$s abgeschätzt werden. Dies ermöglicht nun auch eine formale Definition der Reliabilität unter dem gegebenen Modell.
 
 ::: {#def-reliability}
 ## Reliabilität - Definition 
@@ -180,7 +180,17 @@ Der Wertebereich der Reliabilität liegt in $\text{Rel} \in [0,1]$ wobei eine We
 
 Veranschaulicht, wenn der Messfehler gleich Null ist, also $\sigma_{\epsilon}^2 = 0$ gilt, dann ist $\text{Rel} = 1$, während wenn der Messfehler sehr groß im Verhältnis zu $\sigma_{\tau}^2$ ist, dann geht der $\text{Rel}$ gegen Null. Diese Herleitung unterstreicht noch einmal die Abhängigkeit der Reliabilität von der Varianz der Stichprobe. Für einen gegebenen Messfehler wird die Reliabilität besser wenn die Varianz der Messobjekte $\sigma_{\tau}^2$ größer wird. Andersherum, für eine gegebene Varianz $\sigma_{\tau}^2$ zwischen den Objekten wird die Reliabilität größer wenn der Messfehler $\sigma_{\epsilon}^2$ kleiner wird.
 
-Für die Interpretation der Reliabilität hat sich in der Literatur eine Kategorisierung entlang der Werte in @tbl-ed-rel-interpretation etabliert.
+::: {#rem-reliablity}
+
+Das Modell das zur Verwendung der Definition für die Reliabilität verwendet wurde mit $Y = \tau + \epsilon$ folgt der sogenannten klassischen Testtheorie (KTT). Unter der klassischen Testtheorie fließen noch weitere Annahmen in das Modell ein. So sind nicht nur die Messfehler und der wahre Wert unkorreliert $Cov(\epsilon,\tau)=0$ sondern, die Messfehler sind auch voneinander unabhängig $Cov(\epsilon_i, \epsilon_j) = 0$ und die Varianzen der Messfehler $\sigma^2(\epsilon_i)$ bleiben über Wiederholungen konstant, sprich gleich groß. Dies führt dann zu einer Aufteilung der *totalen* Varianz von $Y$ in die beiden Komponenten: Varianz der wahren Werte $\sigma^2(\tau_i)$ und Varianz der Messfehler $\sigma^2(\epsilon_i)$.
+
+\begin{equation*}
+\sigma^2(Y) = \sigma^2(\tau_i) + \sigma^2(\epsilon_i)
+\end{equation*}
+
+:::
+
+Für die Interpretation der Reliabilität hat sich in der Literatur eine Kategorisierung entlang der Werte in @tbl-ed-rel-interpretation etabliert, die allerdings auch wieder nur als Orientierungshilfe zu betrachten ist.
 
 | Bereich | Interpretation |
 | --- | --- |
@@ -191,7 +201,7 @@ Für die Interpretation der Reliabilität hat sich in der Literatur eine Kategor
 
 : Interpretation der Reliablität nach @koo2016 {#tbl-ed-rel-interpretation}
 
-Es gibt unterschiedliche Arten wie die Reliabilität bestimmt werden kann (@baumgartner1989). Die **Test-Retest-Reliabilität** beschreibt die Stabilität eines Tests über die Zeit, indem die gleichen Objekte zu unterschiedlichen Zeitpunkten getestet werden. Die **Interrater-Reliabilität** bezieht sich auf die Übereinstimmung der Bewertungen durch verschiedene Beobachter oder Rater der gleichen Objekte und wird auch als Objektivität im Rahmen der Testgütekriterien bezeichnet. Die **Paralleltest-Reliabilität** vergleicht die Ergebnisse zweier gleichwertiger Testformen, um die Konsistenz zu überprüfen. 
+Es gibt unterschiedliche Arten wie die Reliabilität bestimmt werden kann [@baumgartner1989]. Die **Test-Retest-Reliabilität** beschreibt die Stabilität eines Tests über die Zeit, indem die gleichen Objekte zu unterschiedlichen Zeitpunkten getestet werden. Die **Interrater-Reliabilität** bezieht sich auf die Übereinstimmung der Bewertungen durch verschiedene Beobachter oder Rater der gleichen Objekte und wird auch als Objektivität im Rahmen der Testgütekriterien bezeichnet. Die **Paralleltest-Reliabilität** vergleicht die Ergebnisse zweier gleichwertiger Testformen, um die Konsistenz zu überprüfen. 
 
 ### Intraclass correlation coefficient
 
@@ -320,13 +330,44 @@ icc_hat
 
 ## Messfehler (Agreement)
 
+Im Folgenden werden verschiedene Maße für den Messfehler vorgestellt. Leider gibt es hier auch überschneidende Terminologie in der Literatur, die zum Teil auch in unterschiedlichen Berechnungsmethoden resultiert.
+
 ### Standard Error of Measurement 
 
+In Abschnitt zur Reliabilität wurde anhand des KTT der Messfehler $\epsilon_i$ eingeführt. Die Varianz der Messfehler $\sigma^2(\epsilon_i)$ die zur Berechnung der Reliabilität verwendet wird, charakterisiert auch schon alleine für sich genommen auch schon ein wichtiges Merkmal des Messinstruments. Die Wurzel dieser Varianz wir als der Standardfehler des Messwerts (SEM) bezeichnet. Der SEM ist ein Maß dafür, wie stark die Ergebnisse wiederholter Messungen voneinander abweichen. Sei zum Beispiel der Sprunghöhe einer Athletin 20-mal hintereinander gemessen worden, dann schätzt die Standardabweichung dieser Messwerte den SEM ab [@patterson1955].
+
+\begin{equation*}
+SEM = \sqrt{\sigma^2(\epsilon_i)}
+\end{equation*}
+
+Der große Vorteil des SEM besteht darin, dass der SEM in den gleichen Einheiten der Messvariable angegeben wird. Dies ermöglicht eine direkte Abschätzung der Größe des Messfehlers. Allerdings, der Unterscheidung der ICCs in Agreement und Consistency folgend, bestehen unterschiedliche Arten wie der SEM berechnet werden kann. Wie beim ICCs je nachdem ob die systematischen Unterschiede zwischen Rater mit einbezogen oder vernachlässigt werden.
+
 \begin{align*}
-SEM &= \sqrt{\sigma_{error}} \\
-SEM_1 &= s_y \sqrt{1 - ICC} \\
-SEM_H   &= \frac{s_{d_i}}{\sqrt{2}} 
-\end{align*}^[$SEM_H$ = nach @hopkins2000, $s_y$ = Standardabweichung der Messung]
+SEM_{\text{agreement}} &= \sqrt{\sigma^2(\epsilon_i) + \sigma_r^2} \\
+SEM_{\text{consistency}} &= \sqrt{\sigma^2(\epsilon_i)} \\
+\end{align*}
+
+Eine alternative Methode zur Berechnung des SEM beruht auf der Standardabweichung der Differenzen zwischen wiederholten Messungen. D.h. wenn für jedes Messobjekt zwei Messungen bestimmt werden $y_{i1}$ und $y_{i2}$ dann können die Differenzen $d_i = y_{i1} - y_{i2}$ berechnet werden und für diese Werte wird dann die Standardabweichung berechnet und noch mit einem Korrekturfaktor multipliziert. Der erhaltene Wert ist der $SEM_{\text{consistency}}$ Wert.
+
+\begin{equation*}
+SEM_{\text{consistency}} = \frac{SD_{\text{difference}}}{\sqrt{2}}
+\end{equation*}
+
+Eine weitere Möglichkeit den SEM zu berechnen beruht auf der Umformung der Gleichung für die Reliabilität, basierend darauf, dass anhand von Literatur der ICC zu bestimmen ist.
+
+\begin{equation*}
+SEM = s_y \sqrt{1 - ICC} 
+\end{equation*}
+
+In dieser Formel steht $s_y$ für die Standardabweichung der Stichprobenwewrte anhand derer der ICC bestimmt wurde. Unglücklicherweise kann diese Formel falsch angewendet, wenn der SEM-Wert für eine eigene Stichprobenmessung berechnet werden soll und dazu Werte aus der Literatur für den ICC übernommen werden. Wie bereits diskutiert, ist die Reliabilität immer an eine bestimmte Population gekoppelt. Wenn nun die eigene Population nicht der ursprünglichen Population anhand derer der ICC abgeschätzt wurde entspricht, dann kommt es zu einer Fehlabschätzung des SEM. @devet2011 raten daher von der Verwendung dieser Formel in solchen Fällen ab [p.112].
+
+### Variationskoeffizient 
+
+Ein weiteres oft verwendet Maß um eine Ausssage über den Messfehler zu erhalten ist der Variationskoeffizient (CV, engl. coefficient of variation). Formal berechnet sich der CV als die Standardabweichung geteilt durch den Mittelwert der Stichprobe.
+
+\begin{equation*}
+CV = \frac{\sigma_Y}{\bar{Y}}
+\end{equation*}
 
 ### Limits of Agreement
 
@@ -383,7 +424,11 @@ p_loa +
 ```
 
 
-### Smallest Worthwhile Change (SWC)
+### Fehlerschwellen 
+
+Analytical goal
+
+Smallest Worthwhile Change (SWC)
 
 ```{r}
 #| fig-cap: "Pre-Pre-Post Design um Limits of Agreement zu bestimmen."
@@ -426,7 +471,8 @@ ggplot(dat, aes(time, y)) +
 }
 ```
 
-## Analytical goal
+
+Eine weiter Zielgröße ist der sogenannte **Minimal important change (MIC)**, d.h. die kleinste, wichtige Veränderung einer Zielgröße. In der Medizin wird der MIC als die kleinste Veränderung die von Patienten als vorteilhaft angesehen wird [@terwee2009]. Daher wird der MIC vor allem im Zusammenhang mit Fragebögen verwendet die Patienten vor und nach einer Interventionsphase ausfüllen. Der MIC wird dann als der Unterschied zwischen denjenigen Personen die eine kleine Verbesserung bemerken im Vergleich zu Personen die keine Verbesserung dokumentieren. @terwee2009 zeigen, dass in diesem Fall der MIC viermal größer als der SEM sein muss, damit MIC vom Messfehler unterschieden werden kann. 
 
 ## Zum Nachlesen 
 
