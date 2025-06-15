@@ -173,6 +173,7 @@ Die Reliabilität ist definiert als das Verhältnis der Varianz der *True-Score-
 
 \begin{equation}
 \text{Rel} = \frac{\sigma_{\tau}^2}{\sigma_{Y}^2} = \frac{\sigma_{\tau}^2}{\sigma_{\tau}^2+\sigma_{\epsilon}^2}
+\label{eq-ed-reliability}
 \end{equation}
 
 Der Wertebereich der Reliabilität liegt in $\text{Rel} \in [0,1]$ wobei eine Wert $0$ keine Reliabilität anzeigt, während ein Wert von $\text{Rel} = 1$ auf eine perfekte Reliabilität hindeutet.
@@ -184,9 +185,10 @@ Veranschaulicht, wenn der Messfehler gleich Null ist, also $\sigma_{\epsilon}^2 
 
 Das Modell das zur Verwendung der Definition für die Reliabilität verwendet wurde mit $Y = \tau + \epsilon$ folgt der sogenannten klassischen Testtheorie (KTT). Unter der klassischen Testtheorie fließen noch weitere Annahmen in das Modell ein. So sind nicht nur die Messfehler und der wahre Wert unkorreliert $Cov(\epsilon,\tau)=0$ sondern, die Messfehler sind auch voneinander unabhängig $Cov(\epsilon_i, \epsilon_j) = 0$ und die Varianzen der Messfehler $\sigma^2(\epsilon_i)$ bleiben über Wiederholungen konstant, sprich gleich groß. Dies führt dann zu einer Aufteilung der *totalen* Varianz von $Y$ in die beiden Komponenten: Varianz der wahren Werte $\sigma^2(\tau_i)$ und Varianz der Messfehler $\sigma^2(\epsilon_i)$.
 
-\begin{equation*}
+\begin{equation}
 \sigma^2(Y) = \sigma^2(\tau_i) + \sigma^2(\epsilon_i)
-\end{equation*}
+\label{eq-y-tau-variance}
+\end{equation}
 
 :::
 
@@ -359,8 +361,25 @@ SEM = s_y \sqrt{1 - ICC}
 
 In dieser Formel steht $s_y$ für die Standardabweichung der Stichprobenwerte anhand derer der ICC bestimmt wurde. Unglücklicherweise ist diese Formel nicht korrekt, wenn der SEM-Wert für eine eigene Stichprobenmessung berechnet werden soll und dazu Werte aus der Literatur für den ICC übernommen werden. Wie bereits diskutiert, ist die Reliabilität immer an eine bestimmte Population gekoppelt. Wenn nun die eigene Population nicht der ursprünglichen Population anhand derer der ICC abgeschätzt wurde entspricht, dann kommt es zu einer Fehlabschätzung des SEM. @devet2011 raten daher von der Verwendung dieser Formel in solchen Fällen ab [p.112, vgl. auch @harvill1991].
 
+Grundsätzlich lässt sich allerdings zeigen, dass der SEM die Bestimmung des Messfehler unabhängig von der Population erlaubt.
+
+Die Reliabilität ist in Formel\eqref{eq-ed-reliability}, zusammen mit der Definition von $\sigma^2(Y)$ in Formel \eqref{eq-y-tau-variance} folgt:
+
+\begin{align*}
+SEM &= \sigma_Y\sqrt{1-\rho} \\
+\Leftrightarrow SEM^2 &= \sigma^2_Y(1-\rho) \\
+&= \sigma^2_{Y}\left(1 - \frac{\sigma_{\tau}^2}{\sigma_{\tau}^2 + \sigma_{\epsilon}^2}\right) \\
+&= (\sigma_{\tau}^2 + \sigma_{\epsilon}^2)\left(1 - \frac{\sigma_{\tau}^2}{\sigma_{\tau}^2 + \sigma_{\epsilon}^2}\right) \\
+&= \sigma_{\tau}^2 + \sigma_{\epsilon}^2 - (\sigma_{\tau}^2 + \sigma_{\epsilon}^2)\frac{\sigma_{\tau}^2}{\sigma_{\tau}^2 + \sigma_{\epsilon}^2} \\
+&= \sigma_{\tau}^2 + \sigma_{\epsilon}^2 - \sigma_{\tau}^2 \\
+&= \sigma^2_{\epsilon} \\
+\Leftrightarrow SEM &= \sigma_{\epsilon}
+\end{align*}
+
+Daher ist unter den Annahmen der klassischen Testtheorie der Standardfehler tatsächlich ein von der Population unabhängig Maß. Dazu muss allerdings die Population anhand derer die Varianz der Werte $\sigma_Y^2$ der Population des Reliabilitätskoeffizienten $\rho$ entsprechen.
+
 ::: {.callout-caution}
-In der Literatur sind immer wieder falsche Berechnung zu einem Konfidenzintervall basierend auf dem SEM zu finden. Wenn ein Konfidenzintervall gewünscht wird, dann ist @mcmanus2012 eine sehr gute Quelle [siehe auch @dudek1979;@payne1989]. Hier wird im weiteren nicht näher darauf eingegangen, da noch zusätzliche Hintergrundinformation dazu gezogen werden müsste und dass zu weit führen würde.
+In der Literatur sind immer wieder fehlerhafte Berechnung zum Konfidenzintervall für den SEM zu finden. Wenn ein Konfidenzintervall gewünscht wird, dann ist @mcmanus2012 eine sehr gute Quelle [siehe auch @dudek1979;@payne1989]. Hier wird im weiteren nicht näher darauf eingegangen, da noch zusätzliche Hintergrundinformation dazu gezogen werden müsste und dass zu weit führen würde.
 :::
 
 ### Variationskoeffizient 
@@ -396,6 +415,7 @@ ggplot(df, aes(x,y, color=id)) +
   scale_color_discrete("Proband")
 ```
 
+Durch die Normierung der Streuung anhand des Mittelwerts der jeweiligen Werte ist die Streuung vergleichbar. Da die Streuung und der Mittelwert die gleichen Einheiten haben, handelt es sich bei dem CV um eine Dimensionslose Größe. @bland1996cv zeigen, dass der CV als eine logarithmische Transformation der Daten interpretiert werden kann, die zu einer Varianzstabilisierung führt.
 
 ### Limits of Agreement - Bland-Altman Plots
 
@@ -457,17 +477,21 @@ p_loa +
               alpha=0.1, col = 'green', fill='green'))
 ```
 
-Bei der Bewertung der Limits of agreement gibt es keine festen Schwellenwerte, sondern, da die Werte abhängig von den verwendeten Einheiten sind erfolgt eine Abschätzung anhand der *relevanten* Fehlerschwellen. Da zwei Messungen praktisch nie zu den genau gleichen Werten führen werden ist daher die Bewertung immer abhängig von der Domäne und der intendierten Anwendung. Ein gegebenes LOAs kann in der einen Anwendungen vollkommen ausreichen sein, während es für eine andere Anwendung, bei der eine höhere Präzision notwendig ist, nicht anwendbar ist. Eine der Annahmen bei der Berechnung der LOAs ist, dass die Differenzen unabhängig von den Mittelwerten sind, d.h. es herrscht Homoskedastizität. Sollte dies nicht der Fall sein, dann sind in @bland1999 entsprechende Anpassungen zu finden. Weiterhin können Probleme entstehen, wenn die Varianzen der beiden Messungen sehr unterschiedlich sind. In diesem Fall kann beispielsweise durch wiederholte Messungen (repetitions) die Stabilität der Streuung verbessert werden [@mansournia2021].
+Bei der Bewertung des Limit of Agreement gibt es keine festen Schwellenwerte, sondern, da die Werte abhängig von den verwendeten Einheiten sind erfolgt eine Abschätzung anhand der *relevanten* Fehlerschwellen. Da zwei Messungen praktisch nie zu den genau gleichen Werten führen werden ist daher die Bewertung immer abhängig von der Domäne und der intendierten Anwendung. Ein gegebenes LOAs kann in der einen Anwendungen vollkommen ausreichen sein, während es für eine andere Anwendung, bei der eine höhere Präzision notwendig ist, nicht anwendbar ist. Eine der Annahmen bei der Berechnung der LOAs ist, dass die Differenzen unabhängig von den Mittelwerten sind, d.h. es herrscht Homoskedastizität. Sollte dies nicht der Fall sein, dann sind in @bland1999 entsprechende Anpassungen zu finden. Weiterhin können Probleme entstehen, wenn die Varianzen der beiden Messungen sehr unterschiedlich sind. In diesem Fall kann beispielsweise durch wiederholte Messungen (repetitions) die Stabilität der Streuung verbessert werden [@mansournia2021].
 
 In der sportwissenschaftlichen Literatur besteht eine zum Teil etwas verwirrende Diskussionen darüber, ob LOAs tatsächlich anwendbar sind [siehe @hopkins2000;@atkinson2000;@warneke2025] bei der unglücklicherweise zum Teil auf falsche Aussagen gemacht werden. Eine gute Zusammenfassung und Antwort ist in @mansournia2021 zu finden.
 
 ### Fehlerschwellen 
 
-Bei der Interpretation der Messfehler, sei es nach SEM, CV oder LOA ist immer eine Einordnung der Fehlergröße im Bezug auf die gewünschte Anwendung zu treffen. D.h. es werden bestimmte Fehlerschwellen definiert bei deren Überschreiten ein Messinstrument als zu unpräzise interpretiert wird. Zwei wichtige Konzepte in diesem Zusammenhang sind die Begrifflichkeiten **analytical goal** und **smallest worthwhile change** (SWC). Das analytical goal definieren, welche Präzision ein Messverfahren erreichen muss, um als ausreichend zuverlässig für den praktischen Einsatz zu gelten. Die Größe orientieren sich an physiologisch relevanten Veränderungen oder klinischen Entscheidungsgrenzen. Die smallest worthwhile change hingegen beschreibt die kleinste Veränderung eines Messwertes, die als bedeutsam oder relevant angesehen wird – sei es im Hinblick auf eine Leistungsverbesserung oder eine klinische Verbesserung. Liegt der Messfehler eines Verfahrens über der SWC, kann eine beobachtete Veränderung nicht sicher als real oder bedeutsam interpretiert werden. D.h. analytical goals ist eher als eine Eigenschaft des Messinstruments zu verstehen, während SWC als eine praktisch relevante Größe interpretiert wird. In @fig-ed-reliability-swc ist ein Beispiel für die Bestimmung eines SWC exemplarisch abgebildet.
+Bei der Interpretation der Messfehler, sei es nach SEM, CV oder LOA ist immer eine Einordnung der Fehlergröße im Bezug auf die gewünschte Anwendung zu treffen. D.h. es werden bestimmte Fehlerschwellen definiert bei deren Überschreiten ein Messinstrument als zu unpräzise interpretiert wird. Zwei wichtige Konzepte in diesem Zusammenhang sind die Begrifflichkeiten **analytical goal** \index{analytical goal} und **smallest worthwhile effect** (SWE) \index{smallest worthwhile effect}. Das analytical goal definiert, welche Präzision ein Messverfahren erreichen muss, um als ausreichend zuverlässig für den praktischen Einsatz zu gelten. Die Größe orientieren sich an physiologisch relevanten Veränderungen oder klinischen Entscheidungsgrenzen. Der smallest worthwhile effect, auch Minimally Clinical Important Change, dagegen beschreibt die kleinste Veränderung eines Messwertes, die als bedeutsam oder relevant angesehen wird – sei es im Hinblick auf eine Leistungsverbesserung oder eine klinische Verbesserung. Der SWE beruht dabei auf einer Abwägung der Veränderung der Messgröße, der benötigten Ressourcen, der Risiken und der Bewertung durch den Patienten [vgl. @ferreira2012]. Der SWE stammt vor allem aus dem klinischen Bereich.
+
+Liegt der Messfehler eines Verfahrens über der SWE, kann eine beobachtete Veränderung nicht sicher als real (Zufallsprodukt) oder bedeutsam interpretiert werden. Das  analytical goals ist somit eher als eine Eigenschaft des Messinstruments zu verstehen, während SWE als eine praktisch relevante Größe interpretiert wird. Daher werden in vielen Fällen diese beiden Größen unterschiedlich voneinander sein. Weiterhin ist der SWE auch keine Konstante sondern verändert sich mit der untersuchten Population. Beispielsweise wäre eine Intervention die sehr viele Ressourcen benötigt aber die Mortalität in einer Population mit Krebspatientinnen anders zu beurteilen als wenn es um gesunde Probandinnen geht.
+
+In @fig-ed-reliability-swe ist ein hypothetisches Beispiel für das Zusammenspiel von analytical goal und SWE exemplarisch dargestellt.
 
 ```{r}
 #| fig-cap: "Pre-Pre-Post Design um Limits of Agreement zu bestimmen."
-#| label: fig-ed-reliability-swc
+#| label: fig-ed-reliability-swe
 
 {
 s_1 <- 123
@@ -509,9 +533,11 @@ ggplot(dat, aes(time, y)) +
 }
 ```
 
-Es wurden drei Messzeitpunkte durchgeführt. Dabei dienen die ersten beiden Messzeitpunkte dazu die LOA zu bestimmen. Anhand der Literatur wurde eine Veränderung um zwei Einheit als relevant ermittelt. Daher gilt $\text{SWC}=2$ welcher anhand der grünen Balken in der Grafik eingezeichnet ist. Dadurch wird für die verwendet Messmethodik ein analytical goal von zwei Einheiten angegeben. Durch die Berechnung der LOA über die ersten beiden Messungen kann nun überprüft werden, ob die gewählte Methodik eine ausreichende Präzision hat um einen Unterschied in der Größenordnung des SWC aufzulösen. Wie in der Grafik zu sehen ist, sind die LOA innerhalb des SWC. D.h. die Messmethodik ist ausreichend präzise die gewünschte Veränderung zu identifizieren. Im Beispiel ist der Unterschied von Pre zu Post sogar deutlich außerhalb dieser Minimalanforderungen und es kann von einem relevanten Unterschied gesprochen werden. Ein ähnlicher Ansatz kann über den SEM erreicht werden. 
+Es wurden drei Messzeitpunkte durchgeführt. Dabei dienen die ersten beiden Messzeitpunkte dazu die LOA zu bestimmen. Anhand der Literatur wurde eine Veränderung um zwei Einheit als relevant ermittelt. Daher gilt $\text{SWE}=2$ welcher anhand der grünen Balken in der Grafik eingezeichnet ist. Dadurch wird für die verwendet Messmethodik ein analytical goal von zwei Einheiten angegeben. Durch die Berechnung der LOA über die ersten beiden Messungen kann nun überprüft werden, ob die gewählte Methodik eine ausreichende Präzision hat um einen Unterschied in der Größenordnung des SWE aufzulösen. Wie in der Grafik zu sehen ist, sind die LOA innerhalb des SWE. D.h. die Messmethodik ist ausreichend präzise die gewünschte Veränderung zu identifizieren. Im Beispiel ist der Unterschied von Pre zu Post sogar deutlich außerhalb dieser Minimalanforderungen und es kann von einem relevanten Unterschied gesprochen werden. Ein ähnlicher Ansatz kann über den SEM erreicht werden. 
 
 Eine weiter im klinischen Kontext verwendete Zielgröße ist der sogenannte **Minimal important change (MIC)**, d.h. die kleinste, wichtige Veränderung einer Zielgröße. In der Medizin wird der MIC als die kleinste Veränderung definiert, die von Patienten als vorteilhaft angesehen wird [@terwee2009]. Der MIC wird vor allem im Zusammenhang mit Fragebögen verwendet die Patienten vor und nach einer Interventionsphase ausfüllen. Der MIC wird dann als der Unterschied zwischen denjenigen Personen die eine kleine Verbesserung bemerken im Vergleich zu Personen die keine Verbesserung dokumentieren. @terwee2009 zeigen, dass in diesem Fall der MIC viermal größer als der SEM sein muss, damit MIC vom Messfehler unterschieden werden kann. 
+
+Der MIC ist dabei eine sogenannte **anchor-based** Schwelle [@norman2001]. Bei anchor-based Schwellen wird eine unabhängige Messmethode, ein externes Kriterium, verwendet um zu bestimmen was eine relevante Veränderung darstellt [siehe auch @terwee2021]. Im Falle des MIC ist dies ein externer Fragebogen der die Patienten zu ihrem Wohlbefinden befragt. Die anchor-based Schwellen sind dabei von den **distribution-based** Schwellen zu unterscheiden. Bei den distribution-based Schwellen wird der Unterschied in ein Verhältnis zu der Streuung der Daten, wie zum Beispiel bei Cohen's D [@norman2001]. In den meisten Fällen sind anchor-based Mehtoden den distribution-based Methoden vorzuziehen. Allerdings zeigte @wyrwich1999 das zumindest für den Bereich von Herzpatienten ein Schwellenwert von $1\times$SEM ähnlich Einschätzungen liefert wie eine expertenbasierte Schwelle.
 
 ## Zum Nachlesen 
 
