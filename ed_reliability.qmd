@@ -79,13 +79,13 @@ In @fig-ed-reliability-terminology ist ein schematischer Datensatz abgebildet an
 #| fig-cap: "Drei wiederholte Messungen an drei Versuchspersonen."
 
 df <- tibble(
-  x = c(0.9,1,1.1, 1.9,2.0,2.1,2.05,2.15,2.25),
+  x = c(0.9,1,1.1, 1.9,2.0,2.1,2.05,2.15,2.25)-0.8,
   y = 1,
   VP = rep(c('A','B','C'), each=3)
 )
 ggplot(df, aes(x,y,color=VP)) +
   geom_point(aes(shape=VP), size=4) +
-  scale_x_continuous("", labels=NULL)  +
+  scale_x_continuous("", breaks=seq(0,2,.5), limits=c(0.,1.5)) +
   scale_y_continuous("", breaks=NULL) +
   theme_minimal() +
   theme(legend.position = 'bottom')
@@ -179,7 +179,7 @@ Die Reliabilität ist definiert als das Verhältnis der Varianz der *True-Score-
 Der Wertebereich der Reliabilität liegt in $\text{Rel} \in [0,1]$ wobei eine Wert $0$ keine Reliabilität anzeigt, während ein Wert von $\text{Rel} = 1$ auf eine perfekte Reliabilität hindeutet.
 :::
 
-Veranschaulicht, wenn der Messfehler gleich Null ist, also $\sigma_{\epsilon}^2 = 0$ gilt, dann ist $\text{Rel} = 1$, während wenn der Messfehler sehr groß im Verhältnis zu $\sigma_{\tau}^2$ ist, dann geht der $\text{Rel}$ gegen Null. Diese Herleitung unterstreicht noch einmal die Abhängigkeit der Reliabilität von der Varianz der Stichprobe. Für einen gegebenen Messfehler wird die Reliabilität besser wenn die Varianz der Messobjekte $\sigma_{\tau}^2$ größer wird. Andersherum, für eine gegebene Varianz $\sigma_{\tau}^2$ zwischen den Objekten wird die Reliabilität größer wenn der Messfehler $\sigma_{\epsilon}^2$ kleiner wird.
+Veranschaulicht, wenn der Messfehler gleich Null ist, also $\sigma_{\epsilon}^2 = 0$ gilt, dann ist $\text{Rel} = 1$, während wenn der Messfehler sehr groß im Verhältnis zu $\sigma_{\tau}^2$ ist, dann geht der $\text{Rel}$ gegen Null. Diese Herleitung unterstreicht noch einmal die Abhängigkeit der Reliabilität von der Varianz der Stichprobe. Für einen gegebenen Messfehler wird die Reliabilität besser wenn die Varianz der Messobjekte $\sigma_{\tau}^2$ größer wird. Andersherum, für eine gegebene Varianz $\sigma_{\tau}^2$ zwischen den Objekten wird die Reliabilität größer wenn der Messfehler $\sigma_{\epsilon}^2$ kleiner wird. Daher ist die Reliabilität eine Funktion der Streuung in der Population und eine gegebene Reliabiltät ist nicht unbedingt ein Indikator für einen guten Test [@tighe2010].
 
 ::: {.callout-note}
 
@@ -315,7 +315,16 @@ ggplot(K_r, aes(K,r_star, group=r_f)) +
 
 In @fig-ed-reliability-sb-formula ist zu erkennen, dass der Zuwachs der Reliabilität ab einer Wiederholungszahl von $K > 7$ für die meisten Ausgangsniveau $\rho$ nur noch sehr gering ist. Insbesondere wenn die Ausgangsreliabilität schlecht ist, dann ist selbst mit einer hohen Anzahl von Wiederholungen kein exzellentes Niveau zu erreichen.
 
-Ursprünglich ist die SB-Formel entwickelt worden um die Anzahl von Items in einem Fragebogen abzuschätzen die das gleiche Messkonstrukt abbilden, daher ist der Übertrag auf alle möglichen Kontexte in den Sportwissenschaft nicht immer gegeben. Beispielsweise scheint es angebracht, bei Performance Messungen wie Sprüngen und Shuttle runs das Ergebnis der SB-Formel eher als eine obere Grenze anzusehen [@baumgartner1968]. Allerdings scheint die Anwendbarkeit besser als allgemein angenommen [@vet2017;@warrens2017]. 
+Ursprünglich ist die SB-Formel entwickelt worden um die Anzahl von Items in einem Fragebogen abzuschätzen die das gleiche Messkonstrukt abbilden, daher ist der Übertrag auf alle möglichen Kontexte in den Sportwissenschaft nicht immer gegeben. Beispielsweise scheint es angebracht, bei Performance Messungen wie Sprüngen und Shuttle runs das Ergebnis der SB-Formel eher als eine obere Grenze anzusehen [@baumgartner1968].
+
+
+@vet2017 und @warrens2017 haben einen interessanten Zusammenhang zwischen ICC und der Spearman-Brown-Formula gezeigt, die in zwei unterschiedlichen Disziplinen entwickelt wurden.
+
+\begin{equation*}
+\rho^*(K) = \frac{\sigma_{\tau}^2}{\sigma_{\tau}^2 + (\sigma_1^2 + \ldots + \sigma_q^2)/K}
+\end{equation*}
+
+D.h. eine direkte Umformung des ICCs in den Reliabilitätswerte, die zumindest für Modell 1 und Modell 2 zutrifft.
 
 ### Intraclass Correlation in `R`
 
@@ -355,15 +364,14 @@ SEM_{\text{consistency}} = \frac{SD_{\text{difference}}}{\sqrt{2}}
 
 Eine weitere Möglichkeit den SEM zu berechnen beruht auf der algebraischen Umformung der Gleichung für die Reliabilität. Die Idee ist, anhand von Angaben in der Literatur den Wert für den ICC zu bestimmen.
 
-\begin{equation*}
-SEM = s_y \sqrt{1 - ICC} 
-\end{equation*}
+\begin{equation}
+SEM = \sigma_Y \sqrt{1 - \rho} 
+\label{eq-ed-SEM-ICC}
+\end{equation}
 
-In dieser Formel steht $s_y$ für die Standardabweichung der Stichprobenwerte anhand derer der ICC bestimmt wurde. Unglücklicherweise ist diese Formel nicht korrekt, wenn der SEM-Wert für eine eigene Stichprobenmessung berechnet werden soll und dazu Werte aus der Literatur für den ICC übernommen werden. Wie bereits diskutiert, ist die Reliabilität immer an eine bestimmte Population gekoppelt. Wenn nun die eigene Population nicht der ursprünglichen Population anhand derer der ICC abgeschätzt wurde entspricht, dann kommt es zu einer Fehlabschätzung des SEM. @devet2011 raten daher von der Verwendung dieser Formel in solchen Fällen ab [p.112, vgl. auch @harvill1991].
+In dieser Formel steht $\sigma_Y$ für die Standardabweichung der Stichprobenwerte anhand derer die Reliabilität bestimmt wurde. Unglücklicherweise ist diese Formel nicht korrekt, wenn der SEM-Wert für eine eigene Stichprobenmessung berechnet werden soll und dazu Werte aus der Literatur für den ICC übernommen werden. Wie bereits diskutiert, ist die Reliabilität immer an eine bestimmte Population gekoppelt. Wenn nun die eigene Population nicht der ursprünglichen Population anhand derer der ICC abgeschätzt wurde entspricht, dann kommt es zu einer Fehlabschätzung des SEM. @devet2011 raten daher von der Verwendung dieser Formel in solchen Fällen ab [p.112, vgl. auch @harvill1991].
 
-Grundsätzlich lässt sich allerdings zeigen, dass der SEM die Bestimmung des Messfehler unabhängig von der Population erlaubt.
-
-Die Reliabilität ist in Formel\eqref{eq-ed-reliability}, zusammen mit der Definition von $\sigma^2(Y)$ in Formel \eqref{eq-y-tau-variance} folgt:
+Die Reliabilität ist in Formel\eqref{eq-ed-reliability}, zusammen mit der Definition von $\sigma^2_Y$ in Formel \eqref{eq-y-tau-variance} folgt:
 
 \begin{align*}
 SEM &= \sigma_Y\sqrt{1-\rho} \\
@@ -376,10 +384,18 @@ SEM &= \sigma_Y\sqrt{1-\rho} \\
 \Leftrightarrow SEM &= \sigma_{\epsilon}
 \end{align*}
 
-Daher ist unter den Annahmen der klassischen Testtheorie der Standardfehler tatsächlich ein von der Population unabhängig Maß. Dazu muss allerdings die Population anhand derer die Varianz der Werte $\sigma_Y^2$ der Population des Reliabilitätskoeffizienten $\rho$ entsprechen.
+Daher ist unter den Annahmen der klassischen Testtheorie der Standardfehler tatsächlich ein von der Population unabhängig Maß [vgl. auch @tighe2010]. Dazu muss allerdings die Population anhand derer die Varianz der Werte $\sigma_Y^2$ der Population des Reliabilitätskoeffizienten $\rho$ entsprechen.
+
+Eine weitere hilfreiche Einsicht die aus Formel\eqref{eq-ed-SEM-ICC} folgt, ergibt sich für einen perfekten Test mit einer Reliabilität von $\rho = 1$. In diesem Fall folgt:
+
+\begin{equation*}
+SEM = \sigma_Y^2\sqrt{1-\rho} = \sigma_Y^2\sqrt{1-1} = 0
+\end{equation*}
+
+D.h. ein perfekter Test hätte keinen Standardmessfehler [@harvill1991]. Der Standardmessfehler kann dahingehend interpretiert werden, dass er den *nichtreliablen Anteil der Merkmalsvarianz* angibt [@buhner2011, S.193].
 
 ::: {.callout-caution}
-In der Literatur sind immer wieder fehlerhafte Berechnung zum Konfidenzintervall für den SEM zu finden. Wenn ein Konfidenzintervall gewünscht wird, dann ist @mcmanus2012 eine sehr gute Quelle [siehe auch @dudek1979;@payne1989]. Hier wird im weiteren nicht näher darauf eingegangen, da noch zusätzliche Hintergrundinformation dazu gezogen werden müsste und dass zu weit führen würde.
+In der Literatur sind immer wieder fehlerhafte Zusammenhängen zwischen dem Konfidenzintervall für die wahren Werte $\tau$ und dem SEM zu finden. Der SEM gibt ist Maß für die tatsächliche Streuung der Werte. D.h. wenn der wahre Wert $\tau_i$ bekannt wäre, dann liegen $68\%$ der Werte $\pm$SEM um diesen wahren Wert $\tau_i$. $tau_i$ ist aber nicht bekannt [vgl. @mcmanus2012] . Hier wird im weiteren nicht näher darauf eingegangen, da noch zusätzliche Hintergrundinformation dazu gezogen werden müsste und dass zu weit führen würde [siehe auch @dudek1979;@payne1989].
 :::
 
 ### Variationskoeffizient 
@@ -537,7 +553,7 @@ Es wurden drei Messzeitpunkte durchgeführt. Dabei dienen die ersten beiden Mess
 
 Eine weiter im klinischen Kontext verwendete Zielgröße ist der sogenannte **Minimal important change (MIC)**, d.h. die kleinste, wichtige Veränderung einer Zielgröße. In der Medizin wird der MIC als die kleinste Veränderung definiert, die von Patienten als vorteilhaft angesehen wird [@terwee2009]. Der MIC wird vor allem im Zusammenhang mit Fragebögen verwendet die Patienten vor und nach einer Interventionsphase ausfüllen. Der MIC wird dann als der Unterschied zwischen denjenigen Personen die eine kleine Verbesserung bemerken im Vergleich zu Personen die keine Verbesserung dokumentieren. @terwee2009 zeigen, dass in diesem Fall der MIC viermal größer als der SEM sein muss, damit MIC vom Messfehler unterschieden werden kann. 
 
-Der MIC ist dabei eine sogenannte **anchor-based** Schwelle [@norman2001]. Bei anchor-based Schwellen wird eine unabhängige Messmethode, ein externes Kriterium, verwendet um zu bestimmen was eine relevante Veränderung darstellt [siehe auch @terwee2021]. Im Falle des MIC ist dies ein externer Fragebogen der die Patienten zu ihrem Wohlbefinden befragt. Die anchor-based Schwellen sind dabei von den **distribution-based** Schwellen zu unterscheiden. Bei den distribution-based Schwellen wird der Unterschied in ein Verhältnis zu der Streuung der Daten, wie zum Beispiel bei Cohen's D [@norman2001]. Schwellen basierend auf dem SEM bzw. LOA sind daher den distribution-based Schwellen zuzuordnen. In den meisten Fällen sind anchor-based Methoden den distribution-based Methoden vorzuziehen, da ein vorliegender Unterschied basierend auf der Verteilung für sich genommen keine Aussage über die Relevanz der Veränderung erlaubt [@turner2010]. Allerdings zeigte @wyrwich1999 das zumindest für den Bereich von Herzpatienten ein Schwellenwert von $1\times$SEM ähnlich Einschätzungen liefert wie eine expertenbasierte Schwelle. Insgesamt muss zu den verschiedenen Begrifflichkeiten aus dem klinischen Bereich wie MIC und MDC die Anwendungen vor allem Bereich der psychometrischen Testungen entwickelt wurden und daher nicht klar ist, wie weit dies für den sportwissenschaftlichen Bereich der Leistungserfassung ebenfalls zutrifft. 
+Der MIC ist dabei eine sogenannte **anchor-based** Schwelle [@norman2001]. Bei anchor-based Schwellen wird eine unabhängige Messmethode, ein externes Kriterium, verwendet um zu bestimmen was eine relevante Veränderung darstellt [@lydick1993;@terwee2021]. Im Falle des MIC ist dies ein externer Fragebogen der die Patienten zu ihrem Wohlbefinden befragt. Die anchor-based Schwellen sind dabei von den **distribution-based** Schwellen zu unterscheiden. Bei den distribution-based Schwellen wird der Unterschied in ein Verhältnis zu der Streuung der Daten, wie zum Beispiel bei Cohen's D [@norman2001]. Schwellen basierend auf dem SEM bzw. LOA sind daher den distribution-based Schwellen zuzuordnen. In den meisten Fällen sind anchor-based Methoden den distribution-based Methoden vorzuziehen, da ein vorliegender Unterschied basierend auf der Verteilung für sich genommen keine Aussage über die Relevanz der Veränderung erlaubt [@turner2010]. Allerdings zeigte @wyrwich1999 das zumindest für den Bereich von Herzpatienten ein Schwellenwert von $1\times$SEM ähnlich Einschätzungen liefert wie eine expertenbasierte Schwelle [vgl. auch @wyrwich1999b]. Insgesamt muss zu den verschiedenen Begrifflichkeiten aus dem klinischen Bereich wie MIC und MDC die Anwendungen vor allem Bereich der psychometrischen Testungen entwickelt wurden und daher nicht klar ist, wie weit dies für den sportwissenschaftlichen Bereich der Leistungserfassung ebenfalls zutrifft. 
 
 ## Zum Nachlesen 
 
