@@ -91,6 +91,7 @@ icc <- function(ratings)
 
 # MISC
 
+r_1 <- function(x) round(x, 1)
 r_2 <- function(x) round(x, 2)
 r_3 <- function(x) round(x, 3)
 paste_com <- function(x) paste(x, collapse=',')
