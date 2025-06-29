@@ -400,6 +400,26 @@ Die Bonferroni-Korrektur kontrolliert dadurch das Gesamt-$\alpha$ und ist anwend
 w_{\text{Bonferroni}} = t_{N-K,1-\alpha/(2m)}
 \end{equation}
 
+Eine Variante der Bonferroni-Korrektur die ein höhere Power hat, ist die Bonferroni-Holm-Korrektur \index{Mehrfachvergleiche!Bonferroni-Holm-Korrektur} [@holm1979]. Die Bonferroni-Holm-Korrektur ist ein sequentielles Verfahren zur Kontrolle des $\alpha$-Fehlers. Zunächst werden die p-Werte aller durchgeführten Tests der Größe nach aufsteigend sortiert. Jeder p-Wert wird dann mit einem progressiv angepassten Signifikanzniveau verglichen, wobei der kleinste p-Wert mit $\alpha/m$ verglichen wird, der zweitkleinste mit $\alpha/(m-1)$ usw. D.h. zunächst werden die p-Werte der Größe angeordnet.
+
+\begin{equation*}
+p_{(1)} < p_{(2)} < \cdots < p_{(m)}
+\end{equation*}
+
+Der p-Wert $p_{(i)}$ ist somit der $i$-kleinste p-Wert. Die p-Werte werden dann der Reihe nach verglichen mit:
+
+\begin{equation*}
+\alpha/m, \alpha/(m-1), \ldots , \alpha/1
+\end{equation*}
+
+Nun wird der Index $j$ des ersten p-Werts der die jeweilige Schwelle übertrifft bestimmt.
+
+\begin{equation*}
+p_{(j)} > \frac{\alpha}{m + 1 - j}
+\end{equation*}
+
+Dieser Index $j$ bestimmt die signifikanten Tests indem alle Tests mit $p_{(i)} < p_{(j)}$ als statistisch signifikant gewertet werden. Die Bonferroni-Holm-Korrektur ist ebenfalls wie die Bonferroni-Korrektor für pre-planned Vergleiche zu verwenden. 
+
 Eine weitere weit verbreitete Methode ist die **Tukey-Pairwise difference** Methode \index{Mehrfachvergleiche!Tukey-Korrektur}. Diese Methode ist optimiert darauf alle paarweisen Vergleiche durchzuführen und daher nur für einfache Kontraste anwendbar. Durch die Optimierung sind die Konfidenzintervalle unter der Tukey-Methode üblicherweise schmaler als die der Bonferroni-Methode. Die Tukey-Methode ist ebenfalls **pre-planned** und im Falle von ungleichen Stichproben in den Faktorstufen ist die Methode nur asymptotisch exact. Unter der Tukey-Methode berechnet sich der kritische Wert $w$ anhand eine speziellen Verteilung, der Studentized range statistics.
 
 \begin{equation}
@@ -449,6 +469,55 @@ tibble(
 Zwei weitere Methoden sind noch die Methode nach Dunnet und Fisher least significant difference (FisherLSD) \index{Mehrfachvergleiche!Fisher least-significant difference}. Die Dunnet Methode ist ebenfalls pre-planned und ist darauf optimiert ein Kontrollkondition mit den anderen Konditionen zu vergleichen. Die FisherLSD-Methode führt keine Anpassung durch sondern ist ein Spezialfall wenn der Faktor $K = 3$ Stufen hat und im ersten Schritt ein statistisch Signifikanter $F$-Wert gefunden wurde. Die drei individuellen Tests werden dann als normale t-Tests durchgeführt mit dem jeweils unkorrigierten $\alpha$. In diesem Fall, wenn der paarweise Vergleich nach einen signifikanten $F$-Test bei $K=3$ durchgeführt wird, ist eine gesonderte $\alpha$-Kontrolle nicht mehr notwendig.
 
 Zusammenfassend lässt sich sagen, dass schon vor der Durchführung des Experiments ein definierter Analyseplan vorliegen sollte. So könnte zum Beispiel festgelegt werden, welche Vergleiche von primären Interesse sind und entsprechend in einer Prä-Registrierung dokumentiert werden, die Power zu maximieren.
+
+### False Discovery Rate FDR \index{false discovery rate}
+
+Eine weitere Methode die in den letzten Jahren immer prominenter geworden ist, ist die **false discovery rate** (FDR) Methode nach @benjamini1995. Unter der fdr Methode ist der Ansatz etwas anders und es wird nicht der $\alpha$-Fehler sondern der mittlere Quotient der falsch positiven Befunde (V) und der Gesamtanzahl der positiven Befunde (R) kontrolliert. Die Gesamtanzahl setzt sich dabei zusammen aus den falsch positiven Befunden V, d.h. korrekte $H_0$ Hypothesen die abgelehnt wurden, und den korrekt positiven Befunden (S), d.h. falsche $H_0$ Hypothesen die abgelehnt wurden.
+
+\begin{equation}
+\text{FDR} = E(\text{FDR}) = E\left(\frac{V}{R}\right)= E\left(\frac{V}{V + S}\right)
+\label{eq-ed-linear-fdr}
+\end{equation}
+
+Das $E$ steht dabei wieder für den Erwartungswerts, das als der *Mittelwert* interpretiert werden kann. Die Methode ist dabei vor allem vor dem Hintergrund von Analysen entwickelt worden, bei denen die Anzahl der Tests $m$ sehr groß ist. In diesen Fällen ist beispielsweise die Bonferroni-Korrektur sehr konservativ und es werden nur sehr falsche $H_0$-Hypothesen abgelehnt, da das Fehlerniveau $\alpha^*$ sehr klein wird.
+
+Der FDR-Ansatz kann anhand eines einfachen Gedankenexperiments erläutert werden. Angenommen, es werden $m = 10$ Nullhypothesen getestet. Es wird nun eine Größe $P$ folgendermaßen definiert.
+
+\begin{equation*}
+P = \begin{cases}
+0 \text{ wenn keine korrekte } H_0 \text{ abgelehnt wird} \\
+1 \text{ wenn mindestens eine korrekte } H_0 \text{ abgelehnt wird}
+\end{cases}
+\end{equation*}
+
+Es soll der family wise error beispielsweise mittels Bonferroni kontrolliert werden. Dann ergibt sich ein $\alpha^* = \alpha / m = 0.005$. Mit diesem $\alpha^*$ werden die $m = 10$ Nullhypothesen getested. Wird eine $H_0$ fälschlicherweise abgelehnt ergibt sich $P = 1$, wird keine korrekte $H_0$ abgelehnt folgt $P = 0$. In Wirklichkeit kann $P$ nicht bestimmt werden, da nicht bekannt ist welche $H_0$ korrekt bzw. nicht korrekt sind. Wird das (Gedanken-)Experiment *wiederholt* durchgeführt, dann ergebt sich für jede Wiederholung entweder ein Wert von $P = 0$ oder $P = 1$. Insgesamt resultiert daraus eine Folge von Nullen und Einsen.
+
+\begin{equation*}
+1 0 0 0 1 0 0 0 1 0 1 0 1 0 0 0 1 1 0 0\ldots
+\end{equation*}
+
+Wenn der Mittelwert über diese Folge von Nullen und Einsen gebildet wird (der Erwartungswert), dann sollte der Wert nicht größer als $\alpha$ werden. D.h. die Methoden die bisher verwendet wurden, wie die Bonferroni-Korrektur, kontrollieren für die Größe dieses Mittelwerts, dem Erwartungswert $E(P)$, von $P$.
+
+Die FDR-Korrektur geht nun einen anderen Weg. Hier wird zunächst eine Größe $Q$ nach dem folgenden Schema definiert.
+
+\begin{equation*}
+Q = \begin{cases}
+0 \text{ wenn keine korrekte } H_0 \text{ abgelehnt wird} \\
+V/(V + S) \text{ wenn } V \text{ korrekte und } S \text{ falsche } H_0 \text{ abgelehnt werden}
+\end{cases}
+\end{equation*}
+
+Der Wert $Q$ kann dadurch als der Quotient der falsch positiven $H_0$ Hypothesen interpretiert werden. Seien alle $m H_0$-Hypothesen korrekt. Dann wird $Q$ immer Null sein, außer in den Fällen, in denen fälschlicherweise eine $H_0$ abgelehnt wird. In diesem Fall gilt dann aber $V/V = 1$, da per Annahme $S = 0$ alle $H_0$ korrekt sind. D.h. $Q$ wird nur die Werte Eins oder Null annehmen. In diesem Fall ist $Q$ gleich zu $P$. D.h. wenn alle $H_0$ Hypothesen korrekt sind, wird auch mit $Q$ der family wise error rate kontrolliert. 
+
+Nun seien aber von den $m = 10$ Experiment $7 H_0$-Hypothesen korrekt und $3 H_0$ Hypothesen falsch (d.h. die Alternativhypothesen sind korrekt). Es wird mit Bonferroni korrigiert und das Signifikanzniveau dementsprechend auf $\alpha^* = \alpha/m = 0.005$ herunter korrigiert. Die Größe $P$ verhält sich immer noch gleich und wird in weniger als $\alpha\%$ der Fälle gleich Eins sein. $Q$ ist in denen Fällen in denen $P=0$ ist ebenfalls $Q=0$ sein, da keine korrekte $H_0$ fälschlicherweise abgelehnt werden.
+
+Sei nun als weitere Annahme auch noch die Power ausreichend, so dass die falschen $H_0$ mit hoher Wahrscheinlichkeit abgelehnt werden. Wenn nun eine $H_0$ fälschlicherweise abgelehnt wird, folgt $V > 0$. Dann ist dazu in den meisten Fällen $S = 3$, da die falschen $H_0$ mit hoher Wahrscheinlichkeit (Power) abgelehnt werden. In Abhängigkeit von der Anzahl der abgelehnten $H_0$s wird $V \in [1,2,\ldots,7]$ sein. Mit einem $\alpha^* = 0.005$ werden aber selten mehr als eine korrekte $H_0$ abgelehnt. D.h. in den meisten Fällen resultiert $Q = 1/(1+3) = 1/4 = 0.25$ sein (Wenn V = 2 ist, dann wird $Q = 2/5 = 0.4$. Somit resultiert bei Wiederholung des Experiments eine Folge die in etwa so aussehen könnte.
+
+\begin{equation*}
+0 0 \frac{1}{4} \frac{1}{4} 0 0 0 0 \frac{2}{5} \frac{1}{4} 0 \frac{1}{4} 0 \ldots
+\end{equation*}
+
+Jedes Mal, wenn in der Folge der $P$s eine Eins steht, ist in der Folge der $Q$s ein Quotient der kleiner als Eins sein wird. Daher wird der Mittelwert der Folge der $Q$s deutlich kleiner ausfallen als derjenige der $P$s. Um insgesamt wieder eine mittelere Rate von $0.05$ zu kommen, kann somit das $\alpha^*$-Niveau für jeden individuellen Test liberaler angesetzt werdes führt dazu, dass die FDR-Methode eine höhere Power bei gleichzeitiger Kontrolle der Fehlerrate erreicht. Operational wird ein ähnliches Schema wie der bei der Bonferroni-Holm-Korrektur verwendet.
 
 ## Mehrfachvergleiche in `R`
 
@@ -510,7 +579,27 @@ Mit nachfolgender Berechnung der Konfidenzintervalle.
 confint(mod_contrast)
 ```
 
-Die Ergebnisse sind natürlich in beiden Folgen gleich und zeigen einen statistisch signifikanten Unterschied zwischen den Koffein und der Placebo Kondition, sowie einen statistisch signifikanten Unterschied zwischen der Tablettengabe unabhängig vom Wirkstoff und der Kontrollkondition. 
+Die Ergebnisse sind natürlich in beiden Ansätzen gleich und zeigen einen statistisch signifikanten Unterschied zwischen den Koffein und der Placebo Kondition, sowie einen statistisch signifikanten Unterschied zwischen der Tablettengabe unabhängig vom Wirkstoff und der Kontrollkondition. 
+
+Die Bonferroni-Holm-Korrektur kann mittels des `adjust`-Arguments `'holm'` angewendet werden.
+
+```{r}
+#| echo: true
+
+contrast(mod_em,
+         adjust = 'holm',
+         method = contrast_list)
+```
+
+Die Bejamini-Hochberg-Korrektur FDR kann mit Hilfe des Parameters `adjust='fdr'` verwendet werden.
+
+```{r}
+#| echo: true
+
+contrast(mod_em,
+         adjust='fdr',
+         method = contrast_list)
+```
 
 Sollen dagegen alle paarweisen Vergleiche beispielsweise mittels der Tukey-Methode berechnen kann die `pairs()` Methode auf die mittels `emmeans()` gefitteten Faktormittelwerte anwenden werden. 
 
