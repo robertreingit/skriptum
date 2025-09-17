@@ -11,11 +11,11 @@ knitr::opts_chunk$set(
 )
 ```
 
-Nachdem wir die Grunddatentypen in `R` kennengelernt haben, schauen wir uns nun drei zentrale Konstrukte der Programmierung an. Das sind Vergleiche, darauf aufbauend bedingte Anweisungen und Verzweigungen sowie Schleifen. Fangen wir mit den Vergleichen an.
+Nachdem die Grunddatentypen in `R` kennengelernt wurden, beschäftigt sich das folgende Kapitel mit drei zentralen Konstrukten der Programmierung. Das sind zunächst Vergleiche, darauf aufbauend bedingte Anweisungen und Verzweigungen sowie Schleifen. 
 
 ## Vergleiche 
 
-Bei Vergleichen wird zunächst einmal genau das gemacht, was im Namen drinsteht, es werden Sachen miteinander verglichen. Bei Programmieren mit `R` sind diese Dinge meistens Zahlen. Wenn Zahlen miteinander verglichen werden, dann kommen zunächst die aus der Schule bekannten Grundoperatoren zum Einsatz (siehe @tbl-comparisons).
+Bei Vergleichen wird zunächst einmal genau das gemacht, was im Namen drinsteht. Es werden Sachen miteinander verglichen. Bei Programmieren mit `R` sind diese Dinge meistens Zahlen. Wenn Zahlen miteinander verglichen werden, dann kommen zunächst die aus der Schule bekannten Grundoperatoren zum Einsatz (siehe @tbl-comparisons).
 
 | Operator | Vergleich |
 | --- | --- |
@@ -27,7 +27,7 @@ Bei Vergleichen wird zunächst einmal genau das gemacht, was im Namen drinsteht,
 
 : Vergleichsoperatoren {#tbl-comparisons}
 
-Der einzige Vergleichsoperator, der etwas ungewohnt erscheinen dürfte, ist der Vergleich auf Gleichheit `==`. Das einfache Gleichheitszeichen `=` ist ähnlich dem Zuweisungsoperator `<-`, daher wird ein weiteres Zeichen verwendet, und das ist eben das doppelte Gleichheitszeichen `==`. Letztendlich ist das aber wieder nur Syntax, die sich gemerkt werden muss. Wichtiger: In `R` ist das Ergebnis eines Vergleichs ein logischer Wert.
+Der einzige Vergleichsoperator, der etwas ungewohnt erscheinen dürfte, ist der Vergleich auf Gleichheit `==`. Das einfache Gleichheitszeichen `=` hät in `R` eine ähnlich Bedeutung wie der Zuweisungsoperator `<-`. Daher wird ein anderes Zeichen verwendet um einen Vergleich auf Gleichheit durchzuführen, und das ist eben das doppelte Gleichheitszeichen `==`. Letztendlich ist die Verwendung von `==` nur aber wieder ein Teil der Syntax, die sich die Anwenderin von `R` merken muss. Wichtiger: In `R` ist das Ergebnis eines Vergleichs ein **logischer Wert** die bereits im vorhergehenden Kapitel behandelt wurden.
 
 ```{r}
 #| echo: true
@@ -37,7 +37,7 @@ Der einzige Vergleichsoperator, der etwas ungewohnt erscheinen dürfte, ist der 
 6 == 6
 ```
 
-In allen drei Fällen sehen wir als Ergebnis der Vergleichsausdrücke einen logischen Wert. Die Vergleichsoperatoren funktionieren auch mit Vektoren.
+In allen drei Fällen wir als Rückgabewert des Vergleichsausdrücke ein logischer Wert erzeugt. Entsprechend wenn der Vergleich wahr ist, folgt ein `TRUE` und entsprechend ein `FALSE` wenn der Vergleich nicht wahr ist. Die Vergleichsoperatoren funktionieren auch mit Vektoren.
 
 ```{r}
 #| echo: true
@@ -50,7 +50,7 @@ v_1 < v_2
 
 Wenn beide Objekte Vektoren sind, wird der Vergleich Element für Element durchgeführt, während bei einem Vergleich mit einem Skalar alle Vektorelemente mit dem Skalar verglichen werden. In beiden Fällen ist das Ergebnis des Ausdrucks wieder ein Vektor der entsprechenden Länge mit logischen Einträgen.
 
-Zusammen mit dem Subsetting-Operator `[]` können wir mit relativ wenig Aufwand Werte, die eine bestimmte Bedingung erfüllen, aus einem Vektor extrahieren. Zum Beispiel aus dem Vektor `v_1` alle Werte, die kleiner als $4$ sind.
+Zusammen mit dem Subsetting-Operator `[]` können mit relativ wenig Aufwand Werte, die eine bestimmte Bedingung erfüllen, aus einem Vektor extrahiert werden. Sollen zum Beispiel aus dem Vektor `v_1` alle Werte kleiner als $4$ extrahier werden, kann dies mit der folgenden Anweisung erreicht werden.
 
 ```{r}
 #| echo: true
@@ -58,9 +58,17 @@ Zusammen mit dem Subsetting-Operator `[]` können wir mit relativ wenig Aufwand 
 v_1[v_1 < 4]
 ```
 
-Warum hat das funktioniert? Zuerst wird der Vergleich `v_1 < 4` von `R` durchgeführt, der Rückgabewert dieser Operation ist ein Vektor mit logischen Werten entsprechend des Vergleichs. Der Vektor hat die Länge von `v_1` und kann daher direkt dazu benutzt werden, Elemente aus `v_1`, die die Bedingung erfüllen, mit dem Subsetting-Operator `[]` zu extrahieren.
+Warum hat das funktioniert? Zuerst wird der Vergleich `v_1 < 4` von `R` durchgeführt, der Rückgabewert dieser Operation ist ein Vektor mit logischen Werten entsprechend des Vergleichs.
 
-Da wir logische Werte mit den logischen Operatoren verknüpfen können, ermöglicht dies auch komplizierte Vergleiche durchzuführen.
+```{r}
+#| echo: true
+
+v_1 < 4
+```
+
+Der logische Vektor hat die gleiche Länge wie `v_1` und kann daher direkt dazu benutzt werden, Elemente aus `v_1` zu indexieren. D.h. diejenigen Elemente, die die Bedingung erfüllen, können mit dem Subsetting-Operator `[]` extrahiert werden.
+
+Da logische Werte mit den logischen Operatoren verknüpft werden können, ermöglicht dies auch komplizierte Vergleiche durchzuführen. Sollen zum Beispiel alle Elemente die entweder kleiner $3$ oder größer $4$ sind extrahiert werden oder alle Elemente die größer oder gleich $3$ und kleiner oder gleich $4$ können dazu die folgenden Vergleiche verwendet werden.
 
 ```{r}
 #| echo: true
@@ -69,26 +77,25 @@ v_1[v_1 < 3 | v_1 > 4]
 v_1[v_1 >= 3 & v_1 <= 4]
 ```
 
-Die Vergleiche können wir nun verwenden um bedingte Anweisungen zu verstehen.
+Aufbauen auf Vergleichen können nun bedingte Anweisungen und Verzweigungen erstellt werden.
 
 ## Bedingte Anweisungen und Verzweigungen 
 
-In @fig-r-flow-ifelse ist das Grundgerüst einer bedingten Anweisung bzw. Verzweigung in Form einer Grafik dargestellt.
+In @fig-r-flow-ifelse ist das Grundgerüst einer bedingten Anweisung bzw. Verzweigung in Form einer Grafik dargestellt. Der Ablauf folgt von Oben nach Unten. 
 
 ```{mermaid}
 %%| label: fig-r-flow-ifelse
 %%| fig-cap: "Bedingte Anweisungen."
 
 flowchart
+Z(Start) --> A[condition]
 A[condition] --> B[TRUE]
 A[condition] --> C[FALSE]
 B --> D[Ausdruck A]
 C --> E[Ausdruck B]
 ```
 
-Wir haben einen Ausdruck `condition`, der entweder `WAHR` oder `FALSCH` sein kann, und entsprechend wird entweder `Ausdruck A` oder `Ausdruck B` ausgeführt. In `condition` wird üblicherweise in irgendeiner Form ein Vergleich vorgenommen.
-
-Syntaktisch wird die bedingte Anweisung in `R` folgendermaßen spezifiziert.
+Die bedingte Anweisung startet zunächst mit einem Ausdruck `condition` der zum Beispiel ein Vergleich wie `x < 3` sein kann. In Abhängigkeit von dem logischen Wert dieser Anweisung, der entweder `WAHR` oder `FALSCH` sein kann, und wird dann entsprechend entweder `Ausdruck A` oder `Ausdruck B` ausgeführt. Syntaktisch wird die bedingte Anweisung in `R` folgendermaßen ausgedrückt.
 
 ```{r}
 #| eval: false
@@ -106,7 +113,7 @@ if (condition) { # <1>
 2. Wenn `condition` `TRUE` ist, wird der `AusdruckA` innerhalb der geschweiften Klammern ausgeführt.
 3. Wenn `condition` `FALSE` ist, wird der `else`-Zweig, bzw. der `AusdruckB` zwischen den geschweiften Klammern nach `else` ausgeführt.
 
-Schauen wir uns ein einfaches Beispiel an:
+Hier ein einfaches Beispiel. Zunächst werden drei Variablen `m, a` und `b` definiert.
 
 ```{r}
 #| echo: true
@@ -114,6 +121,13 @@ Schauen wir uns ein einfaches Beispiel an:
 m <- 0
 a <- 10
 b <- 20
+```
+
+Nun folgt die `if`-Verzweigung. In Abhängigkeit davon ob `a` kleiner als `b`ist, soll der Variablen `m` entweder der Wert $10$ oder der Wert $20$ zugewiesen werden. Ausgedrückt in `R` folgt daraus.
+
+```{r}
+#| echo: true
+
 if (a < b) {
   m <- 10
 } else {
@@ -122,28 +136,56 @@ if (a < b) {
 m
 ```
 
-Was passiert hier? Der Wert von `m` wird unterschiedlich belegt, je nachdem welche Werte `a` und `b` haben. Mit diesem `ifelse`-Konstrukt können wir daher unterschiedliche Anweisungen in unseren Programmen ausführen lassen, abhängig von bestimmten Bedingungen. Wir könnten zum Beispiel unsere eigene Absolutfunktion schreiben.
+Was passiert hier? Der Wert von `m` wird unterschiedlich belegt, je nachdem welche Werte `a` und `b` haben.
+
+Das `ifelse`-Konstrukt erlaubt es daher unterschiedliche Anweisungen in einem Programmen, in Abhängigkeit von bestimmten Bedingungen, ausführen zu lassen. 
+
+Ein weiteres Beispiel, wäre zum Beispiel den Absolutwert einer Variablen zu bestimmen. Sei eine Variable `x` geben, mit deren Wert nicht direkt ersichtlich wird und im weiteren Programmverlauf ist es wichtig sicher zu stellen, dass `x` immer den positiven Wert hat. 
 
 ```{r}
 #| echo: true
 
-my_abs <- function(x) {
-  if (x < 0) {
-    -x
+x <- -3
+if (x < 0) {
+  x <- -1 * x
+}
+x
+```
+
+Hier fällt der `else`-Teil weg, da wenn `x` nicht kleiner $0$ ist, dann ist der Wert von `x` positiv und muss somit nicht verändert werden.
+
+Das `if-else`-Konstrukt auch ineinander verschachtelt angewendet werden. Sei zum Beispiel wieder eine Variable `x` gegeben und in deren Abhängigkeit soll eine weitere Variable `y` mit unterschiedlichen Werten belegt werden, nach dem Muster:
+
+\begin{equation*}
+y = \begin{cases}
+x < 0 & 3 \\
+0 <= x < 10 & 30 \\
+x >= 10 & 300
+\end{cases}
+\end{equation*}
+
+Um diese dreifache Möglichkeit abzubilden, werden können zwei Unterteilungen in einer übergeordneten Unterteilung geschachtelt.
+
+```{r}
+y <- 0
+x <- 3
+if (x < 0) {
+  y <- 3
+} else {
+  if (x < 10) {
+    y <- 30
   } else {
-    x
+    y <- 300
   }
 }
-my_abs(3)
-my_abs(0)
-my_abs(-3)
+y
 ```
+
+Hierbei ist es hilfreich im Code die Einrückungen zu beachten. Diese haben zwar keine Bedeutung für `R` aber helfen dabei sicherzustellen, dass der Programmablauf wie gewünscht programmiert wurde.
 
 ## `for`-Schleifen
 
-Als letztes Programmierkonstrukt kommen jetzt noch Schleifen. Schleifen sind eine der Paradedisziplinen von Computern: Eine Schleife ermöglicht es, Anweisungen wiederholt auszuführen, wenn zum Beispiel eine Liste oder ein Vektor für jedes Element durchlaufen werden soll und immer wiederkehrende Anweisungen ausgeführt werden sollen.
-
-Die Syntax für eine Schleife in `R` lautet:
+Als weiteres Programmierkonstrukt kommen nun Schleifen. Schleifen sind eine der Paradedisziplinen von Computern: Eine Schleife ermöglicht es, Anweisungen wiederholt auszuführen. Soll zum Beispiel eine Liste oder ein Vektor durchlaufen werden und für jedes Element sollen immer eine wiederkehrende Anweisungen ausgeführt werden, dann ist die Schleife das Mittel der Wahl. Die Syntax für eine Schleife in `R` lautet:
 
 ```{r}
 #| eval: false
@@ -155,10 +197,10 @@ for (variable in sequenz) { # <1>
 
 ```
 
-1. Zuerst kommt das Schlüsselwort `for`, gefolgt von einer Klammer. In der Klammer werden zwei Ausdrücke benötigt: Eine Variable, die hier `variable` heißt, fungiert als Schleifenzähler. Der Schleifenzähler durchläuft die Einträge der Variablen `sequenz` einen nach dem anderen. In den meisten Fällen handelt es sich hier um einen Vektor.
-2. Jedes Mal, wenn `variable` mit einem neuen Wert belegt worden ist, wird `Ausdruck` zwischen den geschweiften Klammern `{}` ausgeführt. Der jeweilige aktuelle Wert von `variable` steht im Ausdruck zur Verfügung. Der Code zwischen den geschweiften Klammern wird als **Schleifenblock** bezeichnet.
+1. Zuerst kommt das Schlüsselwort `for`, gefolgt von einer Klammer. In der Klammer werden zwei Ausdrücke benötigt: Eine Variable, die hier `variable` heißt, fungiert als **Schleifenzähler**. Der Schleifenzähler durchläuft die Einträge der Variablen `sequenz` einen nach dem anderen. In den meisten Fällen handelt es sich hier um einen Vektor und es werden die Elemente des Vektor nacheinander durchlaufen.
+2. Jedes Mal, wenn `variable` mit einem neuen Wert belegt worden ist, wird der `Ausdruck` zwischen den geschweiften Klammern `{}` ausgeführt. Der jeweilige **aktuelle** Wert von `variable` steht dabei im Ausdruck zur Verfügung. Der Code zwischen den geschweiften Klammern wird als **Schleifenblock** bezeichnet.
 
-Das klingt komplizierter, als es ist. Ein einfaches Beispiel:
+Tatsächlich ist die Beschreiubng komplizierter, als der tatsächliche Ablauf. Ein einfaches Beispiel:
 
 ```{r}
 #| echo: true
@@ -168,7 +210,9 @@ for (i in 1:5) {
 }
 ```
 
-In dem Beispiel durchläuft der Schleifenzähler `i` die Werte von $1$ bis $5$. Für den Schleifenzähler hat es sich in der Informatik eingebürgert, wenn möglich, die Bezeichner `i`, `j` oder `k` zu verwenden, ähnlich wie für Indexvariablen in der Mathematik. Der Vektor hätte auch in Form einer Variablen vorliegen können.
+Die Variable `i` stellt in diesem Beispiel den Schleifenzähler. D.h. `i` wird nacheinadner mit den Werten aus der Sequenz belegt. Die Sequenz ist hier der Vektor `1:5`, d.h. `i` nimmt nacheinander die Werte von $1$ bis $5$ an. Für den Schleifenzähler hat es sich in der Informatik eingebürgert, wenn möglich, die Bezeichner `i`, `j` oder `k` zu verwenden, ähnlich wie für Indexvariablen in der Mathematik. Eine Iteration besteht also aus den Schritten, `i` mit dem nächsten Element aus aus `1:5` belegen und dann die Anweisungen zwischen den geschweiften Klammern ausführen. In diesem Fall steht hier nur eine einzige Anweisung, nämlich `print(i)`, d.h. es wird der jeweilig aktuelle Wert von `i` ausgegeben. Dies führt zu der Ausgabe der jeweiligen Werte `1, 2, 3, 4, 5`.
+
+Die Sequenz hätte auch in Form eines Vektors in einer Variablen vorliegen können.
 
 ```{r}
 #| echo: true
@@ -179,7 +223,7 @@ for (i in s) {
 }
 ```
 
-Schauen wir uns das Beispiel noch etwas kleinteiliger an. Im nächsten Beispiel wird die `cat()`-Funktion verwendet, um Werte auf der Kommandozeile auszugeben. Das Zeichen `\n` ist lediglich ein Sonderzeichen für eine neue Zeile, damit die Ausgaben untereinander und nicht nebeneinander stehen.
+Sei das Beispiel nun etwas kleinteiliger analysiert. Dazu wird die `cat()`-Funktion verwendet, um Werte auf der Kommandozeile auszugeben. Das Zeichen `\n` ist lediglich ein Sonderzeichen für eine neue Zeile, damit die Ausgaben untereinander und nicht nebeneinander stehen.
 
 ```{r}
 #| echo: true
@@ -190,9 +234,9 @@ for (i in 1:5) {
 }
 ```
 
-Was passiert in dem Code? Wir haben einen Vektor mit den Elementen $1,2,\ldots ,5$. Der Schleifenzähler hat den Bezeichner `i`. `i` wird Element für Element mit den Einträgen aus dem Vektor belegt, und jedes Mal wird der Ausdruck zwischen den Klammern ausgeführt.
+Was passiert in dem Code? Es ist jetzt hoffentlich einfacher nachzuvollziehen wie `i` Element für Element mit den Einträgen aus dem Vektor belegt wird und danach jedes Mal der Ausdruck zwischen den Klammern ausgeführt wird.
 
-Ein weiteres Beispiel könnte den Vektor als Index für die Einträge in einen anderen Vektor mit Elementen verwenden. Sei ein Vektor mit den Zeichenketten `"mama"`, `"papa"`, `"daughter"` und `"son"` gegeben, und diese Werte sollen der Reihe nach ausgegeben werden. D.h. es soll durch die Werte **iteriert** werden. Dies könnte zu folgendem Programm führen.
+Eine Anwendung die oft vorkommt, verwendet den Schleifenzähler als Index für Einträge in einen anderen Vektor. Sei ein Vektor mit den Zeichenketten `"mama"`, `"papa"`, `"daughter"` und `"son"` gegeben, und diese Werte sollen der Reihe nach ausgegeben werden. Dies könnte zu folgendem Programm führen.
 
 ```{r}
 #| echo: true
@@ -204,7 +248,7 @@ for (i in 1:4) {
 }
 ```
 
-Da der Vektor `vec` ebenfalls ein Vektor ist, nur eben mit Zeichenketten, könnten wir auch direkt:
+Da die Variable `vec` ebenfalls ein Vektor ist, nur eben mit Zeichenketten, könnte dies auch so erreicht werden:
 
 ```{r}
 #| echo: true
@@ -215,8 +259,10 @@ for (i in vec) {
 }
 ```
 
+Wieder wird nacheinander der Schleifenzähler `i` mit den Elementen aus der Sequenz belegt, gefolgt von der Ausführung des Schleifenkörpers.
+
 ::: {#exm-r-flow-02}
-Sei der folgende Anwendungsfall gegeben: Wir haben Daten von drei Sprüngen bezüglich der vertikalen Höhe des COM und wollen aus den drei Kurven jeweils die maximale Höhe extrahieren. Seien die folgenden drei Kurven gegeben, die wir alle in einer Liste hinterlegt haben.
+Sei der folgende Anwendungsfall gegeben: Es wurde die vertikale Höhe des COM bei drei Sprüngen aufgenommen und es soll aus den drei Kurven jeweils die maximale Höhe extrahieren werden. Seien die folgenden, zugegebenermaßen sehr kurzen, drei Kurven gegeben, die alle in einer Liste hinterlegt wurden.
 
 ```{r}
 #| echo: true
@@ -226,7 +272,7 @@ com_kurven <- list(s1 = c(1,2,3,2,1),
                    s3 = c(1,1,2,5,4,3,2,1))
 ```
 
-Wir verwenden hier nur sehr "übersichtliche" Kurven, um uns auf das Programm konzentrieren zu können. Da die Signale in einer Liste hinterlegt sind, können wir durch die einzelnen Elemente mittels des `[[]]`-Operators iterieren. Wir definieren zunächst einen Vektor, der die Maximalhöhen aufnimmt, die wir mittels der `max()`-Funktion bestimmen. Mit einer `for`-Schleife führen wir die Iteration durch.
+Der Einfachheit halber wurden hier nur sehr "übersichtliche" Kurven verwendet. Da die Signale in einer Liste hinterlegt sind, kann durch die einzelnen Elemente mittels des `[[]]`-Operators iteriert werden. Zunächst wird ein Vektor `com_max_hoehen` definiert, der die Maximalhöhen aufnimmt. Diese werden nun mittels der `max()`-Funktion bestimmt. Mit einer `for`-Schleife kann nun durch die Elemente von `com_kurven` iteriert werden und der jeweilige maximale Wert extrahiert werden. Der SChleifenzähler `i` wird dabei dazu verwendet einmal die COM-Kurven zu extrahieren und dann die Maximalwerte in `com_max_hoehen` zu speichern.
 
 ```{r}
 #| echo: true
@@ -241,7 +287,7 @@ com_max_hoehen
 
 :::
 
-Tatsächlich ist die Anwendung der `for`-Schleifen seltener als in anderen Programmiersprachen, da für viele Anweisungen **vektorisierte Funktionen** zur Verfügung stehen. D.h., soll ein Vektor von Werten bearbeitet werden, dann arbeitet eine vektorisierte Funktion alle Elemente gleichzeitig ab und ist dabei meistens noch schneller. Im Hintergrund kann dann zwar immer noch eine `for`-Schleife zur Anwendung kommen, dies ist jedoch für die Benutzerin transparent. Ein Beispiel könnte ein Vektor mit Zeichenketten sein, von denen nur immer der letzte Buchstabe benötigt wird.
+Tatsächlich ist die Anwendung der `for`-Schleifen seltener als in anderen Programmiersprachen, da für viele Anweisungen sogenannte **vektorisierte Funktionen** zur Verfügung stehen. D.h., soll ein Vektor von Werten bearbeitet werden, dann arbeitet eine vektorisierte Funktion alle Elemente gleichzeitig ab und ist dabei meistens noch schneller. Im Hintergrund kann dann zwar immer noch eine `for`-Schleife zur Anwendung kommen, dies ist jedoch für die Benutzerin transparent. Ein Beispiel könnte ein Vektor mit Zeichenketten sein, von denen nur immer der letzte Buchstabe benötigt wird.
 
 ```{r}
 #| echo: true
@@ -277,9 +323,10 @@ Bevor größere Programme mit `for`-Schleifen erstellt werden, ist es meistens s
 Insgesamt ist eine `for`-Schleife ein Programmierkonstrukt, das immer wieder auftritt und daher bekannt sein sollte.
 
 ### Ein längeres Beispiel mit `for`
+
 Zur Vertiefung schauen wir uns ein längeres Beispiel für eine `for`-Schleife an.
 
-Problemstellung: Wir wollen eine Abschätzung darüber treffen, welche Unterschiede zwischen zwei Gruppen zu erwarten sind bei unterschiedlichen Treatments. Die Gruppen haben beide eine Größe von $n_1 = n_2 = n = 20$. Aus der Literatur wissen wir, dass die Gruppe unter Treatment 1 einen Mittelwert von $\mu_1 = 10$, während unter Treatment 2 im Mittel ein Wert von $\mu_2 = 15$ zu erwarten ist. Das Beispiel ist abstrakt, aber die Mittelwerte könnten zum Beispiel Weiten beim Medizinballwurf repräsentieren. Wir wollen jetzt abschätzen, welchen Unterschied wir zwischen den Gruppen erwarten würden, wenn beide Gruppen eine Standardabweichung von $\sigma = 2$ aufweisen. D.h. wir definieren uns erst einmal die Randwerte unserer Simulation.
+Problemstellung: Wir wollen eine Abschätzung darüber treffen, welche Unterschiede zwischen zwei Gruppen zu erwarten sind bei unterschiedlichen Treatments. Die Gruppen haben beide eine Größe von $n_1 = n_2 = n = 20$. Aus der Literatur wissen wir, dass die Gruppe unter Treatment 1 einen Mittelwert von $\mu_1 = 10$, während unter Treatment 2 im Mittel ein Wert von $\mu_2 = 15$ zu erwarten ist. Das Beispiel ist abstrakt, aber die Mittelwerte könnten zum Beispiel Weiten beim Medizinballwurf repräsentieren. Wir wollen jetzt abschätzen, welchen Unterschied wir zwischen den Gruppen erwarten würden, wenn beide Gruppen eine Standardabweichung von $\sigma = 2$ aufweisen. Dazu seien erst mal die Randwerte der Simulation definiert.
 
 ```{r}
 #| echo: true
@@ -295,13 +342,24 @@ Die Werte in den Gruppen folgen einer Normalverteilung. In `R` können wir Zufal
 ```{r}
 #| echo: true
 
-stichprobe_1 <- rnorm(n, mu_1, sigma)
-stichprobe_2 <- rnorm(n, mu_2, sigma)
-delta <- mean(stichprobe_1) - mean(stichprobe_2)
+stichprobe_1 <- rnorm(n, mu_1, sigma)  # <1>
+stichprobe_2 <- rnorm(n, mu_2, sigma)  # <2>
+delta <- mean(stichprobe_1) - mean(stichprobe_2) # <3>
+```
+
+1. Es wird eine normalverteilte Stichprobe mit $n = `r n`$ und Mittelwert $\mu = `r mu_1`$ erzeugt.
+2. Es wird eine normalverteilte Stichprobe mit $n = `r n`$ und Mittelwert $\mu = `r mu_2`$ erzeugt.
+3. Beide Stichproben werden mittels `mean()` jeweils gemittelt und der Unterschied wird berechnet
+
+Es wird der folgende Werte für den Unterschied *beobachtet*.
+
+```{r}
+#| echo: true
+
 delta
 ```
 
-Nun wollen wir diese Simulation nicht nur einmal, sondern ganz oft, z.B. $n_{\text{sim}} = 1000$ wiederholen, um eine realistische Abschätzung über die zu erwartenden Werte zu bekommen. Dafür setzen wir eine `for`-Schleife ein. 
+Nun soll diese Simulation nicht nur einmal, sondern ganz oft, z.B. $n_{\text{sim}} = 1000$ wiederholt werden. Dies ermöglicht eine realistische Abschätzung über die zu erwartenden Werte zu erhalten. D.h. es soll wiederholt die gleiche Anweisung durchgeführt werden, was perfekt zur `for`-Schleife passt. 
 
 ```{r}
 #| echo: true
@@ -314,13 +372,29 @@ for (i in 1:n_sim) {
 }
 ```
 
-Jetzt ergibt sich das Problem, dass wir noch einen Platz brauchen, um die jeweiligen Ergebnisse abzuspeichern. Dafür wird ein Vektor erstellt, der ausreichend bzw. genau so viele Einträge wie abzuspeichernde Werte hat. Mit der Funktion `numeric(n)` können wir einen numerischen Vektor der Länge `n` erstellen, der nur $0$ als Einträge hat. Kombiniert mit unserem Programm ergibt sich:
+Nun wurde zwar die Schleife `r n_sim`-mal ausgeführt, aber leider sind die einzelnen Unterschiede nicht mehr vorhanden, da `delta` bei jeder Iteration immer mit dem aktuellen Wert überschrieben wird. D.h. es ein *Platz* benötigt, um die jeweiligen Ergebnisse abzuspeichern. Dafür wird ein Vektor erstellt, der ausreichend bzw. genau so viele Einträge wie abzuspeichernde Werte hat. Mit der Funktion `numeric(n)` kann ein numerischer Vektor der Länge `n` erstellen werden. Standardmäßig belegt `numeric()` alle Einträge mit dem Wert $0$.
+
+```{r}
+#| echo: true
+
+numeric(5)
+```
+
+
+Für die Simulation brauchen Platz für `n_sim` Einträge. Daher wird mittels `numeric()` ein Platzhalter mit `n_sim` Elementen generiert. Da Unterschiede $\Delta$ gespeichert werden sollen, wird zur Übersicht der Name `delta_s` für den *Platzhalter* verwendet.
 
 ```{r}
 #| echo: true
 
 n_sim <- 1000
 delta_s <- numeric(n_sim)
+```
+
+Nun muss noch der Schleifenkörper so angepasst werden, dass die jeweils neu berechneten $\Delta$ an die jeweils nächste Stelle von `delta_s` geschrieben werden. Dazu kann wieder der Schleifenzähler `i` verwendet werden. Und es folgt:
+
+```{r}
+#| echo: true
+
 for (i in 1:n_sim) {
   stichprobe_1 <- rnorm(n, mu_1, sigma)
   stichprobe_2 <- rnorm(n, mu_2, sigma)
@@ -328,7 +402,7 @@ for (i in 1:n_sim) {
 }
 ```
 
-Jetzt sind alle Zwischenergebnisse in dem Vektor `delta_s` gespeichert, und wir können uns die Verteilung der Unterschiede z.B. mit Hilfe eines Histogramms anschauen.
+Nun sind alle Zwischenergebnisse in dem Vektor `delta_s` gespeichert und können im Programm weiter verwendet werden. Zum Beispiel ist es nun möglich die Verteilung der $\Delta$s zu betrachten. Dazu wird die Funktion `hist()` verwendet um ein Histogramm zu erstellen.
 
 ```{r}
 #| echo: true
@@ -336,11 +410,11 @@ Jetzt sind alle Zwischenergebnisse in dem Vektor `delta_s` gespeichert, und wir 
 hist(delta_s)
 ```
 
-Wenig überraschend sind Unterschiede in den Mittelwerten um \(-5\) Einheiten, aber es treten auch Unterschiede von \(-7\) und \(-3\) auf.
+Wenig überraschend bzw. vielleicht auch doch Überraschend, sind Unterschiede um den Mittelwerten von $-5$ Einheiten zentriert. Dies ist beruhigend da per Konstruktion die Unterschied der beiden Normalverteilungen $5$ Einheiten waren. Durch die Stichprobenvariabilität treten aber auch Unterschiede zwischen $-7$ und $-3$ auf.
 
 ## Wiederholungen mit `replicate()`
 
-Eine weitere Möglichkeit, `R` eine Gruppe von Anweisungen wiederholt durchführen zu lassen, kann mittels der Funktion `replicate()` erreicht werden. In den meisten Fällen wird `replicate()` verwendet, um eine Simulation durchzuführen. D.h. das Beispiel von eben könnte ebenfalls mittels `replicate()` programmiert werden. `replicate()` hat zwei Hauptargumente. Das erste `n` bestimmt die Anzahl der Wiederholungen, während das zweite Argument eine Anweisung ist, in den meisten Fällen eine Funktion.
+Eine weitere Möglichkeit in `R` eine Gruppe von Anweisungen wiederholt durchführen zu lassen, bietet die Funktion `replicate()`. Beispielsweise, wird in den meisten Fällen `replicate()` verwendet, um eine Simulation durchzuführen. D.h. das Beispiel von eben könnte ebenfalls mittels `replicate()` programmiert werden. `replicate()` hat zwei Hauptargumente. Das Argument bestimmt die Anzahl der Wiederholungen, während das zweite Argument eine Anweisung ist, in den meisten Fällen eine Funktion, die wiederholt ausgeführt werden soll.
 
 Nehmen wir als Anwendungsfall, dass wir wiederholt Mittelwerte $\bar{x}$ aus einer Zufallsstichprobe erzeugen wollen. Wir ziehen beispielsweise eine Stichprobe von $n = 20$ Werten aus einer Normalverteilung mit den Parametern $\mu = 3, \sigma = 0.7$. Und wir wollen uns die Stichprobenverteilung der Mittelwerte ansehen. Wir beginnen mit einem einfachen Proof-of-Concept.
 
