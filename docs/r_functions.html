@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.6.42">
+<meta name="generator" content="quarto-1.6.32">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -71,10 +71,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-2486e1f0a3ee9ee1fc393803a1361cdb.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-8da5b4427184b79ecddefad3d342027e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-f90a1b115807ea56b20e50efb3bb25e2.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -353,7 +353,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./mlm_prediction.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Vorhersagen bei der multiple linearen Regression</span></span></a>
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Polynome und Prädiktion</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -382,7 +382,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./ed_reliability.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Reliabilität</span></span></a>
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Messfehler und Reliabilität</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -501,28 +501,35 @@ window.Quarto = {
 </header>
 
 
-<p>Eine zentrale Tätigkeit im Umgang mit jeder Programmiersprache ist das Schreiben von eigenen Funktionen. Es ist zwar möglich, relativ weit zu kommen, ohne eigene Funktionen zu schreiben, aber es ergeben sich im Umgang mit Daten immer wieder Situationen, in denen immer wieder die gleichen Schritte durchgeführt werden. Dies führt dann oft zu Copy-and-Paste von Anweisungen. In solchen Fällen ist es oft hilfreich, in der Lage zu sein, eigene Funktionen schreiben zu können. Eine Funktion ist ein Block von Code, der einmal definiert wird und dann immer wieder verwendet werden kann. Funktionen bieten somit die Möglichkeit, eigenen Code in verschiedene logische Einheiten zu strukturieren und dadurch leichter lesbar und robuster zu machen. Letztendlich beruht der große Erfolg von <code>R</code> darauf, dass durch neue Funktionen die Funktionalität von <code>R</code> ständig erweitert werden kann. Daher ist ein zumindest rudimentäres Verständnis der Semantik von Funktionen in <code>R</code> enorm hilfreich.</p>
-<p>Ein erstes, hilfreiches mentales Template für Funktionen in Programmiersprachen sind Funktionen wie wir sie in der Mathematik kennengelernt haben.</p>
+<p>Eine zentrale Tätigkeit im Umgang mit jeder Programmiersprache ist das Schreiben von eigenen Funktionen. Es ist zwar möglich, relativ weit zu kommen, ohne eigene Funktionen zu schreiben, aber es ergeben sich im Umgang mit Daten immer wieder Situationen, in denen immer wieder die gleichen Schritte durchgeführt werden. Dies führt dann oft zu Copy-and-Paste von Anweisungen. In solchen Fällen ist es hilfreich, in der Lage zu sein, eigene Funktionen schreiben zu können. Eine Funktion ist ein zusammenhängeder Block von Code, der einmal definiert wird und dann immer wieder verwendet werden kann. Funktionen bieten somit die Möglichkeit, eigenen Code in verschiedene logische Einheiten zu strukturieren und dadurch leichter lesbar und robuster zu machen. Letztendlich beruht der große Erfolg von <code>R</code> darauf, dass durch neue Funktionen die Funktionalität von <code>R</code> ständig erweitert werden kann. Daher ist ein zumindest rudimentäres Verständnis der Semantik von Funktionen in <code>R</code> enorm hilfreich.</p>
+<p>Ein erstes, hilfreiches mentales Template für Funktionen in Programmiersprachen sind Funktionen aus der Mathematik.</p>
 <p><span class="math display">\[\begin{equation*}
 y = f(x)
 \end{equation*}\]</span></p>
-<p>Wir haben eine Funktion <span class="math inline">\(f()\)</span>, dieser Funktion <span class="math inline">\(f()\)</span> übergeben wir ein Argument (auch Parameter genannt) <span class="math inline">\(x\)</span>. Die Funktion <span class="math inline">\(f()\)</span> macht dann etwas mit diesem Parameter und gibt einen Rückgabewert zurück, den wir einer neuen Variable <span class="math inline">\(y\)</span> zuweisen. Sei zum Beispiel die folgende Funktion definiert.</p>
+<p>Es sein eine Funktion <span class="math inline">\(f()\)</span> gegeben, dieser Funktion <span class="math inline">\(f()\)</span> wird ein Argument (auch Parameter genannt) <span class="math inline">\(x\)</span> übergeben. Der Name des Parameters ist dabei willkürlich. Die Funktion <span class="math inline">\(f()\)</span> macht dann etwas mit diesem Parameter und gibt einen Rückgabewert zurück. Der Rückgabewert wird einer neuen Variable <span class="math inline">\(y\)</span> gewiesen. Sei zum Beispiel die folgende Funktion definiert.</p>
 <p><span class="math display">\[\begin{equation*}
 f(x) = x^2
 \end{equation*}\]</span></p>
-<p>. h. der Funktion <span class="math inline">\(f()\)</span> wird der Parameter <span class="math inline">\(x\)</span> übergeben. Dieser Wert wird anschließend quadriert und das Ergebnis der Berechnung wird zurückgegeben.</p>
-<p>In <code>R</code> werden Funktionen nach dem Muster NAME(PAR1, PAR2, …, PARk) aufgerufen. D. h. sobald ein rundes Klammerpaar auf einen Bezeichner folgt, geht <code>R</code> davon aus, dass die Anwenderin eine Funktion aufrufen möchte. Über <par1>, <par2>, …, <park> können der Funktion durch Komma getrennte Argumente, auch als Parameter bezeichnet, übergeben werden. Die Anzahl der Parameter hängt dabei von der Definition der Funktion ab. In der Mathematik wäre ein Beispiel für eine Funktion mit zwei Argumenten:</park></par2></par1></p>
+<p>Der Funktion <span class="math inline">\(f()\)</span> wird der Parameter <span class="math inline">\(x\)</span> übergeben. Dieser Wert wird anschließend quadriert und das Ergebnis der Berechnung wird zurückgegeben. Der Funktionsparameter <span class="math inline">\(x\)</span> ist dabei wieder willkürlich. Die Funktion hätte genauso auch wie folgt definiert werden können.</p>
+<p><span class="math display">\[\begin{equation*}
+f(y) = y^2
+\end{equation*}\]</span></p>
+<p>Letztendlich ist auch der <em>Name</em> der Funktion willkürlich und würde genauso funktionieren als:</p>
+<p><span class="math display">\[\begin{equation*}
+g(z) = z^2
+\end{equation*}\]</span></p>
+<p>Um in <code>R</code> eine Funktion anzuwenden, muss die Anweisung einem bestimmten Muster folgen. Dieses Muster folgt: NAME(<par_1>, <par_2>, …, <par_k>). D.h. sobald ein rundes Klammerpaar auf einen Bezeichner folgt, geht <code>R</code> davon aus, dass die Anwenderin eine Funktion aufrufen möchte. Über <par_1>, <par_2>, …, <par_k> können der Funktion durch Komma getrennte Parameter, auch als Argumente bezeichnet, übergeben werden. Die Anzahl der Parameter hängt dabei von der Definition der Funktion ab. In der Mathematik wäre ein Beispiel für eine Funktion mit zwei Argumenten:</par_k></par_2></par_1></par_k></par_2></par_1></p>
 <p><span class="math display">\[\begin{equation*}
 f(x,y) = x^2 + y^2
 \end{equation*}\]</span></p>
-<p>D.h. der Funktion <span class="math inline">\(f()\)</span> werden nun zwei Argumente <span class="math inline">\(x\)</span> und <span class="math inline">\(y\)</span> übergeben. In diesem Fall würde es tatsächlich auch keinen Unterschied machen, in welcher Reihenfolge die Argument übergeben werden, da die Operation innerhalb der Funktion symmetrisch auf beiden Argumenten ist. Rufen wir zum Beipiel <span class="math inline">\(f(2,3)\)</span> auf, erhalten wir den gleichen Wert wie bei <span class="math inline">\(f(3,2) = 25\)</span>. Dies ist bei der folgenden Funktion nicht mehr der Fall:</p>
+<p>D.h. der Funktion <span class="math inline">\(f()\)</span> werden nun zwei Argumente <span class="math inline">\(x\)</span> und <span class="math inline">\(y\)</span> übergeben. In diesem Fall würde es tatsächlich auch keinen Unterschied machen, in welcher Reihenfolge die Argument übergeben werden, da die Operation innerhalb der Funktion symmetrisch auf beiden Argumenten ist. Wird zum Beispiel <span class="math inline">\(f(2,3)\)</span> aufgerufen, wird der gleiche Wert wie bei <span class="math inline">\(f(3,2) = 25\)</span> erhalten. Dies ist bei der folgenden Funktion nicht mehr der Fall:</p>
 <p><span class="math display">\[\begin{equation*}
 f(x,y) = x^2 + 3y
 \end{equation*}\]</span></p>
-<p>Hier erhalten wir unterschiedliche Ergebnisse, je nachdem, ob wir die Funktion mit <span class="math inline">\(f(2, 3) = 13\)</span> oder mit <span class="math inline">\(f(3, 2) = 15\)</span> aufrufen. Das gleiche Problem entsteht auch, wenn wir Funktionen in <code>R</code> anwenden.</p>
+<p>Hier werden unterschiedliche Ergebnisse erhalten, je nachdem, ob wir die Funktion mit <span class="math inline">\(f(2, 3) = 13\)</span> oder mit <span class="math inline">\(f(3, 2) = 15\)</span> aufgerufen wird. Das gleiche Problem entsteht auch, wenn Funktionen in <code>R</code> angewendet werden.</p>
 <section id="funktionen-anwenden" class="level2" data-number="4.1">
 <h2 data-number="4.1" class="anchored" data-anchor-id="funktionen-anwenden"><span class="header-section-number">4.1</span> Funktionen anwenden</h2>
-<p>Wie wir bereits gesehen haben, gibt es in <code>R</code> eine Vielzahl von bereits vordefinierten Funktionen. Ein einfaches Beispiel ist die Wurzelfunktion. In <code>R</code> ist die Funktion mit dem Bezeichner <code>sqrt()</code> definiert.</p>
+<p>In den vorhergehenden Kapitel ist bereits gezeigt worden, dass es in <code>R</code> eine Vielzahl von bereits vordefinierten Funktionen gibt. Ein einfaches Beispiel ist die Wurzelfunktion. In <code>R</code> ist die Funktion mit dem Bezeichner <code>sqrt()</code> verwendbar.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> y <span class="ot">&lt;-</span> <span class="dv">9</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">sqrt</span>(y)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -530,46 +537,74 @@ f(x,y) = x^2 + 3y
 <pre><code>[1] 3</code></pre>
 </div>
 </div>
-<p>Im Beispiel wird zunächst der Wert <span class="math inline">\(9\)</span> der Bezeichner <code>y</code> zugewiesen. Im zweiten Schritt wird der Bezeichnet <code>y</code> an die Wurzelfunktion <code>sqrt()</code> übergeben. D.h. der Bezeichner <code>y</code> wird ein Parameter der Funktion. Für uns nicht einsehbar holt sich die <code>sqrt()</code>-Funktion den Wert aus <code>y</code>, berechnet den Wurzelwert und gibt diesen als Rückgabewert zurück.</p>
-<p>Ein weiteres Beispiel könnte beispielsweise die Berechnung des Mittelwerts oder die Summe der Datenreihe <span class="math inline">\((3, 5, 7)\)</span> sein. Wie wir bereits gesehen haben, wird in <code>R</code> eine geordnete Reihe von Zahlen als Vektor repräsentiert. Um den Vektor zu erstellen wird die Funktion <code>c()</code> (kurz für concatenation) verwendet.</p>
+<p>Im Beispiel wird zunächst der Wert <span class="math inline">\(9\)</span> dem Bezeichner <code>y</code> zugewiesen. Im zweiten Schritt wird der Bezeichnet <code>y</code> an die Wurzelfunktion <code>sqrt()</code> übergeben. D.h. der Bezeichner <code>y</code> wird ein Parameter der Funktion <code>sqrt()</code>. Für den Anwender nicht einsehbar, holt sich die <code>sqrt()</code>-Funktion den Wert aus <code>y</code>, berechnet die Wurzel und gibt das Ergebnis als Rückgabewert zurück. Das gleiche Ergebnis wird erhalten, wenn der <em>Wert</em> direkt an <code>sqrt()</code> übergeben wird.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> z <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">7</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">sqrt</span>(<span class="dv">9</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3</code></pre>
 </div>
-<p>Mit dieser Anweisung hat <code>R</code> einen Vektor mit den drei Einträgen erstellt. Um den Mittelwert <span class="math inline">\(\bar{z} = \frac{1}{3}\sum_{i=1}^3z_i\)</span> zu berechnen kann nun die Funktion <code>mean()</code> verwendet werden.</p>
+</div>
+<p>Ein weiteres einfaches Beispiel ist die Berechnung des Mittelwerts oder die Summe der Datenreihe <span class="math inline">\((3, 5, 7)\)</span>. In <code>R</code> wird eine geordnete Reihe von Zahlen als Vektor repräsentiert. Um eine Vektor zu erstellen wird die Funktion <code>c()</code> (kurz für concatenation) verwendet.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">mean</span>(z)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> z <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">7</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Mit dieser Anweisung hat <code>R</code> einen Vektor mit den drei Einträgen erstellt. Eine Besonderheit von <code>c()</code> ist dabei, dass der Funktion beliebig viele Parameter übergeben werden können.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1 2 3</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>, <span class="dv">7</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1 2 3 4 5 6 7</code></pre>
+</div>
+</div>
+<p>Wie ebenfalls in den vorhergehenden Kapitel gesehen, kann die Funktion <code>mean()</code> verwendet werden um den Mittelwert <span class="math inline">\(\bar{z} = \frac{1}{3}\sum_{i=1}^3z_i\)</span> eines Vektors zu berechnen.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">mean</span>(z)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 5</code></pre>
 </div>
 </div>
-<p>Vielleicht interessiert aber auch die Summe <span class="math inline">\(\bar{z} = \sum_{i=1}^3z_i\)</span> der Vektorelemente. Dafür kann die <code>sum()</code> Funktion verwendet werden.</p>
+<p>Vielleicht interessiert einen aber auch die Summe <span class="math inline">\(\bar{z} = \sum_{i=1}^3z_i\)</span> der Vektorelemente. Dafür kann die <code>sum()</code> Funktion verwendet werden.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">sum</span>(z)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">sum</span>(z)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 15</code></pre>
 </div>
 </div>
-<p>Dies sind jetzt nur einige wenige Beispiele, und einer der Skills im Umgang mit <code>R</code> besteht nun darin, sich die Namen der Funktionen zu merken. Dies kann am schnellsten durch den täglichen Umgang mit <code>R</code> erreicht werden. Am besten ab heute.</p>
+<p>Ein Unterschied zwischen <code>sum()</code> und <code>mean()</code> besteht dabei auch darin, in welcher Form Parameter übergeben werden können. So <em>funktioniert</em> zum Beispiel die Übergabe von Einzelwerten bei <code>sum()</code> nicht aber bei <code>mean()</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">sum</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 15</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">mean</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1</code></pre>
+</div>
+</div>
+<p>Daher ist es wichtig sich auch mit der Aufrufsyntax der Funktion auseinander zu setzen. Im zweiten Fall <code>mean(1, 2, 3, 4, 5)</code> für die Anwendung nicht zu einem Fehler, sondern es wird ein fehlerhafter Wert zurückgegeben, da die Funktion falsch angewendet wurde. Solche Fehler führen sind in Programmen oft nur sehr schwer aufzuspüren, da meist erst später im Code ein Problem auftaucht. Wie immer wird es mit zunehmender Erfahrung einfacher solche Problem zu erkennen. Dies sind jetzt nur einige wenige Beispiele, und einer der Skills im Umgang mit <code>R</code> besteht nun zunächst darin, sich die Namen der Funktionen zu merken. Dies kann am schnellsten durch den täglichen Umgang mit <code>R</code> erreicht werden. Am besten ab heute.</p>
 </section>
 <section id="eigene-funktionen-schreiben" class="level2" data-number="4.2">
 <h2 data-number="4.2" class="anchored" data-anchor-id="eigene-funktionen-schreiben"><span class="header-section-number">4.2</span> Eigene Funktionen schreiben</h2>
-<p>Im Folgenden wird die Syntax für die Definition eigener Funktionen gezeigt. Dabei werden nur die wichtigsten Elemente angesprochen, da um ein umfassendes Verständnis zu erlangen, deutlich tiefer in die Programmierung mit <code>R</code> eingestiegen werden müsste, als das zum jetzigen Zeitpunkt notwendig ist.</p>
-<p>Wollen wir zum Beispiel eine Funktion schreiben, die den gewichteten Mittelwert aus zwei Werten <span class="math inline">\(x\)</span> und <span class="math inline">\(y\)</span> berechnet. Die Gewichte <span class="math inline">\(w\)</span> seien Gewichte <span class="math inline">\((w_x = \frac{1}{3}, w_y = \frac{2}{3})\)</span>. Mathematisch würde dies folgende Definition nach sich ziehen:</p>
+<p>Im Folgenden wird auf die Syntax eingegangen die notwendig ist um eigene Funktionen zu definieren. Dabei werden nur die wichtigsten Elemente angesprochen, da um ein umfassendes Verständnis zu erlangen, deutlich tiefer in die Programmierung mit <code>R</code> eingestiegen werden müsste, als das zum jetzigen Zeitpunkt notwendig ist.</p>
+<p>Soll zum Beispiel eine Funktion geschrieben werden, die den gewichteten Mittelwert aus zwei Werten <span class="math inline">\(x\)</span> und <span class="math inline">\(y\)</span> berechnet. Die Gewichte <span class="math inline">\(w\)</span> seien die Werte <span class="math inline">\((w_x = \frac{1}{3}, w_y = \frac{2}{3})\)</span>. Mathematisch würde dies zur der folgenden Definition führen:</p>
 <p><span class="math display">\[\begin{equation*}
 f(x, y) = \frac{1}{3}x + \frac{2}{3}y
 \end{equation*}\]</span></p>
-<p>In <code>R</code> kann diese Funktion wie folgt ausgedrückt werden:</p>
+<p>D.h. die Funktion bekommt zwei Parameter übergeben. Die Werte der Parameter werden mit den jeweiligen Gewichten multipliziert und die Produkte anschließend addiert. In <code>R</code> kann diese Funktion beispielsweise wie folgt ausgedrückt werden:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> mein_gewichteter_mittelwert <span class="ot">&lt;-</span> <span class="cf">function</span>(x, y) { </span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   x <span class="sc">/</span> <span class="dv">3</span> <span class="sc">+</span> <span class="dv">2</span> <span class="sc">*</span> y <span class="sc">/</span> <span class="dv">3</span> </span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> mein_gewichteter_mittelwert <span class="ot">&lt;-</span> <span class="cf">function</span>(x, y) { </span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   x <span class="sc">/</span> <span class="dv">3</span> <span class="sc">+</span> <span class="dv">2</span> <span class="sc">*</span> y <span class="sc">/</span> <span class="dv">3</span> </span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Um eine eigene Funktion zu definieren, muss das <em>Schlüsselwort</em> <code>function()</code> verwendet werden. Wenn <code>R</code> den Ausdruck <code>function</code> auf der Eingabe sieht, dann interpretiert es den Ausdruck als Definition einer neuen Funktion. Auf das Schlüsselwort folgen runde Klammern <code>()</code>, die die benötigten Parameter der Funktion umschließen. Im Beispiel werden zwei Parameter definiert: <span class="math inline">\(x\)</span> und <span class="math inline">\(y\)</span>. Die Namen der Parameter sind dabei vollkommen willkürlich und müssen lediglich zum späteren Ausdruck in der Funktion passen. Es folgen dann zwei geschweifte Klammern <code>{}</code>, die den sogenannten Funktionskörper definieren. Im Funktionskörper sind die Anweisungen hinterlegt, welche die Funktionalität der Funktion bestimmen und die gewünschten Berechnungen ausführen. Konkret stehen hier die Ausdrücke, mit denen die Funktion ihren Ergebniswert berechnen kann. Um die Funktion aufrufbar zu machen, braucht sie wieder einen Bezeichner. Der Bezeichner wird, wie bereits bekannt, mittels des Zuweisungsoperators <code>&lt;-</code> definiert.</p>
-<p>In R-Studio sollte in der <strong>Environment</strong> nach dem Ausführen der Anweisung nun ein Eintrag mit dem Namen <code>mein_gewichteter_mittelwert</code> stehen. Der Name ist wiederum vollkommen willkürlich, und <code>R</code> kontrolliert nicht, ob mein Bezeichner semantisch dem entspricht, was die Funktion berechnet.</p>
-<p>Nachdem die Funktion definiert und ausgeführt wurde, kann die neue Funktion wie jede andere Funktion in <code>R</code> aufgerufen werden. Beim Aufruf der Funktion werden die Parameter entsprechend der übergebenen Werte in den Klammern im Funktionskörper ersetzt, und <code>R</code> führt die Anweisungen im Funktionskörper aus.</p>
-<p>Der Rückgabewert der Funktion, also deren Ergebnis, ist die <strong>letzte Anweisung</strong> des Funktionskörpers. Im vorliegenden Beispiel, da es nur eine Anweisung gibt, wird dieser Wert zurückgegeben.</p>
+<p>In der IDE sollte in der <strong>Environment</strong> nach dem Ausführen der Anweisung nun ein Eintrag mit dem Namen <code>mein_gewichteter_mittelwert</code> stehen. Der Name ist wiederum vollkommen willkürlich, und <code>R</code> kontrolliert nicht, ob der Bezeichner semantisch dem entspricht, was die Funktion berechnet. D.h. es entsteht kein Fehler wenn die Funktion <code>addieren()</code> heißt, aber in Wirklichkeit eine Multiplikation der Parameter durchgeführt wird.</p>
+<p>Nachdem die Definition der Funktion ausgeführt wurde, kann die neue Funktion wie jede andere Funktion in <code>R</code> aufgerufen werden. Beim Aufruf der Funktion werden die Parameter entsprechend der übergebenen Werte in den Klammern im Funktionskörper ersetzt, und <code>R</code> führt die Anweisungen im Funktionskörper aus.</p>
+<p>Der Rückgabewert der Funktion, also deren Ergebnis, ist die <strong>letzte Anweisung</strong> des Funktionskörpers. Im vorliegenden Beispiel, da es nur eine einzige Anweisung gibt, wird der berechnete Wert dieser Anweisung vom Funktionsaufruf zurückgegeben.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">mein_gewichteter_mittelwert</span>(<span class="dv">3</span>, <span class="dv">6</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">mein_gewichteter_mittelwert</span>(<span class="dv">3</span>, <span class="dv">6</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 5</code></pre>
 </div>
@@ -584,95 +619,95 @@ Hinweis
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Was die letzte Anweisung für den Rückgabewert bedeutet, ist etwas einfacher zu sehen, wenn wir die Funktion etwas komplizierter schreiben.</p>
+<p>Was die letzte Anweisung für den Rückgabewert bedeutet, ist etwas einfacher zu sehen, wenn die Funktion etwas komplizierter geschrieben wird.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> mein_gewichteter_mittelwert_2 <span class="ot">&lt;-</span> <span class="cf">function</span>(x, y) { </span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   a <span class="ot">&lt;-</span> x <span class="sc">/</span> <span class="dv">3</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   b <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> y <span class="sc">/</span> <span class="dv">3</span></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   a <span class="sc">+</span> b</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">mein_gewichteter_mittelwert_2</span>(<span class="dv">3</span>, <span class="dv">6</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> mein_gewichteter_mittelwert_2 <span class="ot">&lt;-</span> <span class="cf">function</span>(x, y) { </span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   a <span class="ot">&lt;-</span> x <span class="sc">/</span> <span class="dv">3</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   b <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> y <span class="sc">/</span> <span class="dv">3</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   a <span class="sc">+</span> b</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">mein_gewichteter_mittelwert_2</span>(<span class="dv">3</span>, <span class="dv">6</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 5</code></pre>
 </div>
 </div>
-<p>Hier haben wir mit <code>a</code> und <code>b</code> zunächst zwei Zwischenberechnungen durchgeführt und dann in der letzten Anweisung das Ergebnis für den Rückgabewert berechnet.</p>
+<p>In dieser Version werden mit <code>a</code> und <code>b</code> zunächst zwei Zwischenberechnungen durchgeführt und dann in der letzten Anweisung das Ergebnis für den Rückgabewert berechnet. Da die Anweisung <code>a + b</code> die letzte Anweisung im Funktionskörper ist, wird das Ergebnis dieser Anweisung zum Rückgabewert der Funktion.</p>
 </div>
 </div>
-<p>In anderen Programmiersprachen wird die Rückgabe explizit durch ein Schlüsselwort <code>return</code> gekennzeichnet. Dies ist in <code>R</code> möglich, aber nicht zwingend notwendig. Daher sind die beiden folgenden Funktionen gleichwertig:</p>
+<p>In vielen anderen Programmiersprachen wird der Rückgabewert explizit durch ein Schlüsselwort <code>return</code> gekennzeichnet. Dies ist in <code>R</code> möglich, aber nicht zwingend notwendig und eher unüblich. Daher sind die beiden folgenden Funktionen gleichwertig:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> foo_1 <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   x <span class="sc">+</span> <span class="dv">2</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> </span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="er">&gt;</span> foo_2 <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   ergebnis <span class="ot">&lt;-</span> x <span class="sc">+</span> <span class="dv">2</span> </span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   <span class="fu">return</span>(ergebnis)</span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> </span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="er">&gt;</span> <span class="fu">foo_1</span>(<span class="dv">1</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> foo_1 <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   x <span class="sc">+</span> <span class="dv">2</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> </span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="er">&gt;</span> foo_2 <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   ergebnis <span class="ot">&lt;-</span> x <span class="sc">+</span> <span class="dv">2</span> </span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   <span class="fu">return</span>(ergebnis)</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> </span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a><span class="er">&gt;</span> <span class="fu">foo_1</span>(<span class="dv">1</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 3</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">foo_2</span>(<span class="dv">1</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">foo_2</span>(<span class="dv">1</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 3</code></pre>
 </div>
 </div>
 <section id="benennung-der-argumente" class="level3" data-number="4.2.1">
 <h3 data-number="4.2.1" class="anchored" data-anchor-id="benennung-der-argumente"><span class="header-section-number">4.2.1</span> Benennung der Argumente</h3>
-<p>Ein Umstand, der Programmierneulingen immer wieder Probleme bereitet, ist die Benennung der Parameter. Wie immer in <code>R</code> sind die konkreten Namen der Bezeichner willkürlich, und es muss nur beachtet werden, dass die Bezeichner zu den Anweisungen passen. Hier wieder zweimal die gleiche Funktion in unterschiedlichen Versionen.</p>
+<p>Ein Umstand, der Programmierneulingen immer wieder Probleme bereitet, ist die Benennung der Funktionsparameter. Wie immer in <code>R</code> sind die konkreten Namen der Bezeichner willkürlich, und es muss nur beachtet werden, dass die Bezeichner zu den gewünschten Anweisungen passen. Hier wieder zweimal die gleiche Funktion in unterschiedlichen Versionen.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> f_1 <span class="ot">&lt;-</span> <span class="cf">function</span>(aa_bb) {</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   aa_bb <span class="sc">+</span> <span class="dv">2</span></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> </span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="er">&gt;</span> f_2 <span class="ot">&lt;-</span> <span class="cf">function</span>(langer_parameter_name) {</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   langer_parameter_name <span class="sc">+</span> <span class="dv">2</span></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> </span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="er">&gt;</span> <span class="fu">f_1</span>(<span class="dv">1</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> f_1 <span class="ot">&lt;-</span> <span class="cf">function</span>(aa_bb) {</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   aa_bb <span class="sc">+</span> <span class="dv">2</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> </span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="er">&gt;</span> f_2 <span class="ot">&lt;-</span> <span class="cf">function</span>(langer_parameter_name) {</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   langer_parameter_name <span class="sc">+</span> <span class="dv">2</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> </span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a><span class="er">&gt;</span> <span class="fu">f_1</span>(<span class="dv">1</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 3</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">f_2</span>(<span class="dv">1</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">f_2</span>(<span class="dv">1</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 3</code></pre>
 </div>
 </div>
-<p>Dies würde zu einem Fehler führen, wenn die Bezeichner und die Parameter nicht zueinander passen.</p>
+<p>Beide Definitionen führen zu dem gleichen Ergebnis, da die Ersetzung in <code>f_1()</code> von <code>aa_bb</code> durch <code>langer_parameter_name</code> zu der gleichen Definition führen würde. Allerdings würde es zu einem Fehler führen, wenn die Bezeichner und die Parameter nicht zueinander passen.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> f_3 <span class="ot">&lt;-</span> <span class="cf">function</span>(aa_bb) {</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   langer_parameter_name <span class="sc">+</span> <span class="dv">2</span></span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> </span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="er">&gt;</span> <span class="fu">f_3</span>(<span class="dv">1</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> f_3 <span class="ot">&lt;-</span> <span class="cf">function</span>(aa_bb) {</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   langer_parameter_name <span class="sc">+</span> <span class="dv">2</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> </span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="er">&gt;</span> <span class="fu">f_3</span>(<span class="dv">1</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-error">
 <pre><code>Error in f_3(1): Objekt 'langer_parameter_name' nicht gefunden</code></pre>
 </div>
 </div>
-<p>In diesem Fall beschwert sich <code>R</code>, dass es den Bezeichner <code>langer_parameter_name</code> nicht kennt und dementsprechend die Anweisung nicht ausführen kann. D. h. bei der Definition der Funktion müssen die Bezeichner zu den Anweisungen passen.</p>
+<p>In diesem Fall beschwert sich <code>R</code>, dass es den Bezeichner <code>langer_parameter_name</code> nicht finden kann und dementsprechend die Anweisung nicht ausführen kann. D. h. bei der Definition der Funktion müssen die Bezeichner zu den Anweisungen passen.</p>
 <p>Wenn eine Funktion mehrere Argumente hat, dann müssen die übergebenen Argumente zu den definierten Argumenten passen.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> f_4 <span class="ot">&lt;-</span> <span class="cf">function</span>(a, b, c) {</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   a <span class="sc">+</span> b <span class="sc">*</span> c</span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> </span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="er">&gt;</span> <span class="fu">f_4</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> f_4 <span class="ot">&lt;-</span> <span class="cf">function</span>(a, b, c) {</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   a <span class="sc">+</span> b <span class="sc">*</span> c</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> </span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="er">&gt;</span> <span class="fu">f_4</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 7</code></pre>
 </div>
 </div>
 <p>Dementsprechend, wenn Argumente beim Aufruf fehlen, kommt es zu einem Fehler.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">f_4</span>(<span class="dv">1</span>, <span class="dv">2</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">f_4</span>(<span class="dv">1</span>, <span class="dv">2</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-error">
 <pre><code>Error in f_4(1, 2): Argument "c" fehlt (ohne Standardwert)</code></pre>
 </div>
 </div>
 <p>Die Definition der Funktionsargumente wird auch als <strong>Signatur</strong> der Funktion bezeichnet. Die <strong>Signatur</strong> kann mittels der Funktion <code>formals()</code> abgefragt werden.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">formals</span>(f_4)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">formals</span>(f_4)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$a
 
@@ -686,98 +721,125 @@ $c</code></pre>
 </section>
 <section id="auflösen-der-argumente" class="level3" data-number="4.2.2">
 <h3 data-number="4.2.2" class="anchored" data-anchor-id="auflösen-der-argumente"><span class="header-section-number">4.2.2</span> Auflösen der Argumente</h3>
-<p>Im einfachsten Fall werden die übergebenen Argumente einfach der Reihenfolge nach den jeweiligen Bezeichnern zugeordnet. Es besteht aber die Möglichkeit, über das sogenannte <strong>named matching</strong> die Argumente in einer beliebigen Reihenfolge zu übergeben. In diesem Fall müssen die Argumentnamen explizit mit angegeben werden.</p>
+<p>Wenn eine Funktion mehr als ein Argument besitzt, dann ist natürlich die korrekte Reihenfolge bzw. korrekte Abbildung der Parameter auf die Bezeichner beim Aufruf der Funktion wichtig. Im einfachsten Fall werden die übergebenen Argumente einfach der Reihenfolge nach den jeweiligen Bezeichnern zugeordnet.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">f_4</span>(<span class="at">c =</span> <span class="dv">3</span>, <span class="at">a =</span> <span class="dv">1</span>, <span class="at">b =</span> <span class="dv">2</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">f_4</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 7</code></pre>
 </div>
 </div>
-<p>Dies kann auch gemischt gemacht werden, z. B.:</p>
+<p>Führt dementsprechend zu einem anderen Ergebnis als:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">f_4</span>(<span class="at">c =</span> <span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">2</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">f_4</span>(<span class="dv">3</span>, <span class="dv">2</span>, <span class="dv">1</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 5</code></pre>
+</div>
+</div>
+<p>Es besteht aber auch die Möglichkeit, über das sogenannte <strong>named matching</strong> die Argumente in einer beliebigen Reihenfolge zu übergeben. In diesem Fall müssen die Argumentnamen explizit mit angegeben werden.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">f_4</span>(<span class="at">c =</span> <span class="dv">3</span>, <span class="at">a =</span> <span class="dv">1</span>, <span class="at">b =</span> <span class="dv">2</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 7</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">f_4</span>(<span class="at">b =</span> <span class="dv">2</span>, <span class="at">c =</span> <span class="dv">3</span>, <span class="at">a =</span> <span class="dv">1</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 7</code></pre>
+</div>
+</div>
+<p>Dies Parameter übergabe kann auch gemischt der Reihenfolge und name matching folgent durchgeführt werden, z. B.:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">f_4</span>(<span class="at">c =</span> <span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">2</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 7</code></pre>
 </div>
 </div>
 <p>Hier wurde der Parameter <code>c</code> über <strong>named matching</strong> definiert, und die verbleibenden Argumente wurden dann der Reihenfolge nach übergeben. Was passiert im folgenden Beispiel?</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">f_4</span>(<span class="at">b =</span> <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">3</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">f_4</span>(<span class="at">b =</span> <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">3</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Es besteht auch die Möglichkeit, Funktionsargumenten Standardwerte (<strong>default values</strong>) bei der Definition der Funktion zu übergeben.</p>
+<p>Es besteht auch die Möglichkeit, Funktionsargumenten mit Standardwerten (<strong>default values</strong>) bei der Definition der Funktion zu belegen.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> f_5 <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">a =</span> <span class="dv">1</span>, <span class="at">b =</span> <span class="dv">2</span>, <span class="at">c =</span> <span class="dv">3</span>) {</span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   a <span class="sc">+</span> b <span class="sc">*</span> c</span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> f_5 <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">a =</span> <span class="dv">1</span>, <span class="at">b =</span> <span class="dv">2</span>, <span class="at">c =</span> <span class="dv">3</span>) {</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   a <span class="sc">+</span> b <span class="sc">*</span> c</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>In diesem Fall kann die Funktion sogar ganz ohne Argumente aufgerufen werden.</p>
+<p>In <code>f_5()</code> sind alle drei Argument mit Standardwerten belegt. In diesem Fall kann die Funktion sogar ganz ohne Argumente aufgerufen werden.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">f_5</span>()</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">f_5</span>()</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 7</code></pre>
 </div>
 </div>
-<p>Oder es können einzelne Argumente übergeben werden. Hier muss aber darauf geachtet werden, dass zunächst immer die Position verwendet wird, wenn nicht <strong>named matching</strong> verwendet wird.</p>
+<p>Werden keine Parameter übergeben, dann verwendet <code>R</code> die Standardwerte. Dies ermöglicht es auch nur einzelne Argumente zu übergeben. Hier muss aber darauf geachtet werden, dass zunächst immer die Position verwendet wird, wenn nicht <strong>named matching</strong> verwendet wird.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">f_5</span>(<span class="dv">3</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">f_5</span>(<span class="dv">3</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 9</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">f_5</span>(<span class="at">b =</span> <span class="dv">3</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">f_5</span>(<span class="at">b =</span> <span class="dv">3</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 10</code></pre>
 </div>
 </div>
+<p>Standardwerte können natürlich auch wieder gemischt Aufgerufen werden.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">f_5</span>(<span class="at">c=</span><span class="dv">10</span>, <span class="dv">20</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 40</code></pre>
+</div>
+</div>
+<p>In diesem Beispiel, wird zunächst der Bezeichner <code>c</code> mit dem Wert <code>10</code> belegt, anschließend erfolgt die Belegung von <code>a</code> mit dem Wert <code>20</code> der Reihenfolge folgend, der <em>fehlende</em> Wert von <code>b</code> wird dann mit dem Standardwert belegt.</p>
 <p>Zusammengenommen ergeben sich die folgenden Regeln bei der Übergabe von Argumenten:</p>
 <ol type="1">
 <li><strong>Positionale Argumente</strong> werden der Reihenfolge nach zugewiesen.</li>
 <li><strong>named matching</strong> wird explizit den Parametern zugeordnet, unabhängig von der Reihenfolge.</li>
 <li><strong>Standardwerte</strong> werden verwendet, wenn keine Argumente für die entsprechenden Parameter übergeben wurden.</li>
 </ol>
+<p>Es lohnt sich diese Regeln sich einzuprägen, da es immer wieder vorkommt, dass in fremden Code bestimmte bestimmte Kombinationen dieser Regeln vorkommen.</p>
 </section>
 <section id="scoping" class="level3" data-number="4.2.3">
 <h3 data-number="4.2.3" class="anchored" data-anchor-id="scoping"><span class="header-section-number">4.2.3</span> Scoping</h3>
-<p>In <code>R</code> gibt es Regeln, die festlegen, wie und wo Variablen in einer Funktion “sichtbar” sind oder verwendet werden können. Diese Regeln nennt man <strong>Scoping-Regeln</strong>. Sie bestimmen, wo <code>R</code> nach Variablen sucht, wenn sie innerhalb einer Funktion verwendet werden.</p>
-<p>Wenn du eine Funktion in <code>R</code> aufrufst und darin auf eine Variable zugreifen möchtest, muss <code>R</code> wissen, wo es nach dieser Variable suchen soll. Scoping beschreibt also die <strong>Regeln</strong>, nach denen <code>R</code> entscheidet, <strong>wo</strong> es nach dem Wert einer Variable sucht, wenn du sie innerhalb einer Funktion verwendest.</p>
+<p>Als letztes aber nicht minder wichtiges Konzept im Zusammenhang mit Funktionen wird nun noch das <em>scoping</em> behandelt, In <code>R</code>, wie in allen Programmiersprachen, gibt es bestimmte Regeln, die festlegen, wie und wo Variablen in einer Funktion “sichtbar” sind oder verwendet werden können. Diese Regeln nennt man <strong>Scoping-Regeln</strong>. Sie bestimmen, wo <code>R</code> nach Variablen sucht, wenn sie innerhalb einer Funktion verwendet werden.</p>
+<p>Wenn eine Funktion in <code>R</code> aufgerufen wird und darauf hin auf eine Variable zugegriffen werden soll, muss <code>R</code> wissen, wo es nach dieser Variable suchen soll. Scoping beschreibt daher die <strong>Regeln</strong>, nach denen <code>R</code> entscheidet, <strong>wo</strong> es nach dem Wert einer Variablen sucht, wenn sie innerhalb einer Funktion verwendet wird.</p>
 <p><code>R</code> verwendet hauptsächlich das sogenannte <strong>Lexical Scoping</strong>. Lexical Scoping bedeutet, dass <code>R</code> nach Variablen in der Umgebung der Funktion sucht, basierend darauf, wo die Funktion definiert wurde und nicht, wo sie aufgerufen wird. Das bedeutet, dass <code>R</code> beim Suchen nach einer Variable von <strong>innen nach außen</strong> schaut. Dabei beginnt <code>R</code> bei der Funktion selbst, um dann in den äußeren Umgebungen zu suchen, bis es die Variable findet. Wird die Variable nicht gefunden, dann wird ein Fehler geworfen.</p>
 <p>Wenn innerhalb einer Funktion eine Variable definiert wird, wird diese Variable nur in dieser Funktion verwendet. Die Variable hat keinen Einfluss auf Variablen außerhalb der Funktion. Dies wird als <strong>local Scope</strong> bezeichnet. In der folgenden Funktion wird im Funktionskörper eine Variable <span class="math inline">\(x\)</span> definiert und deren Wert ausgegeben.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> f_6 <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
-<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   x <span class="ot">&lt;-</span> <span class="dv">10</span></span>
-<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   <span class="fu">print</span>(x)</span>
-<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span>
-<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> </span>
-<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a><span class="er">&gt;</span> <span class="fu">f_6</span>() </span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> f_6 <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   x <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   <span class="fu">print</span>(x)</span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> </span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a><span class="er">&gt;</span> <span class="fu">f_6</span>() </span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 10</code></pre>
 </div>
 </div>
 <p>Die Variable <code>x</code> existiert <strong>nur innerhalb der Funktion</strong>. Sobald die Ausführung der Funktion beendet ist, “verschwindet” <code>x</code> wieder. Auf den Bezeichner <code>x</code> kann dann von außerhalb der Funktion nicht zugegriffen werden. Es wurde vorher schon gezeigt, dass, wenn ein Bezeichner verwendet wird, der nicht definiert ist, <code>R</code> dann einen Fehler wirft.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> f_7 <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
-<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   <span class="fu">print</span>(x)</span>
-<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> f_7 <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   <span class="fu">print</span>(x)</span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Das war allerdings nur die halbe Wahrheit, denn der folgende Code wirft keinen Fehler mehr.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> x <span class="ot">&lt;-</span> <span class="dv">5</span></span>
-<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> f_8 <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
-<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   <span class="fu">print</span>(x)</span>
-<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span>
-<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">f_8</span>()</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> x <span class="ot">&lt;-</span> <span class="dv">5</span></span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> f_8 <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   <span class="fu">print</span>(x)</span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span>
+<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">f_8</span>()</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 5</code></pre>
 </div>
 </div>
 <p>Was ist hier passiert? Bei Aufruf von <code>f_8()</code> trifft die Funktion auf den Bezeichner <code>x</code>, dieser ist weder innerhalb des Funktionskörpers noch als Funktionsargument definiert. Jetzt greift die von innen-nach-außen-Regel. <code>R</code> schaut jetzt in der Umgebung, in der die Funktion definiert wurde, nach, ob es dort ein <code>x</code> gibt (tatsächlich ist es etwas komplizierter, aber dieses einfache Modell reicht erst mal). Diese Art der Variablenauflösung hat einen entscheidenden Nachteil, nämlich, dass wenn sich der Wert von <code>x</code> in der Umgebung ändert, sich auch der zurückgegebene Wert der Funktion ändert, trotzdem die Funktion mit den gleichen Argumenten aufgerufen wurde.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> x <span class="ot">&lt;-</span> <span class="dv">5</span></span>
-<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">f_8</span>()</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> x <span class="ot">&lt;-</span> <span class="dv">5</span></span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">f_8</span>()</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 5</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> x <span class="ot">&lt;-</span> <span class="dv">10</span></span>
-<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">f_8</span>()</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> x <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">f_8</span>()</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 10</code></pre>
 </div>
@@ -797,43 +859,43 @@ Vorsicht
 </div>
 <p>Wenn ein Bezeichner in der Umgebung und innerhalb der Funktion den gleichen Namen hat, wird immer der Wert des in der Funktion definierten Bezeichners verwendet. Dies gilt, egal ob der Wert als Argument oder innerhalb des Funktionskörpers definiert wurde.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> x <span class="ot">&lt;-</span> <span class="dv">5</span></span>
-<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> f_9 <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
-<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   x <span class="ot">&lt;-</span> <span class="dv">10</span></span>
-<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   x</span>
-<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span>
-<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">f_9</span>()</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> x <span class="ot">&lt;-</span> <span class="dv">5</span></span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> f_9 <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   x <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   x</span>
+<span id="cb68-5"><a href="#cb68-5" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span>
+<span id="cb68-6"><a href="#cb68-6" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">f_9</span>()</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 10</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> f_10 <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
-<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   x <span class="sc">+</span> <span class="dv">2</span></span>
-<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span>
-<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">f_10</span>(<span class="dv">10</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> f_10 <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>   x <span class="sc">+</span> <span class="dv">2</span></span>
+<span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span> }</span>
+<span id="cb70-4"><a href="#cb70-4" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">f_10</span>(<span class="dv">10</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 12</code></pre>
 </div>
 </div>
 <p>In beiden Fällen verwenden die Funktionen <code>f_9()</code> und <code>f_10()</code> das im Funktionskörper bzw. in der Argumentliste definierte <code>x</code> und nicht das in der umschließenden Umgebung.</p>
-<p>Dies sollte für jetzt reichen. Wer tiefer in die Programmierung von Funktionen in <code>R</code> einsteigen möchte, sollte sich <a href="https://r4ds.hadley.nz/functions.html">R4DS</a> und <a href="https://adv-r.hadley.nz/functions.html">Advanced R</a> anschauen.</p>
+<p>Diese Informationstiefe sollte für die allermeisten Anwendungsfälle ausreichen. Sollten sich doch einmal weitere Fragen ergeben dann sind die Abschnitte zu Funktionen in <code>R</code>, in <a href="https://r4ds.hadley.nz/functions.html">R4DS</a> und <a href="https://adv-r.hadley.nz/functions.html">Advanced R</a> zu empfehlen.</p>
 </section>
 </section>
 <section id="funktionen-in-r-paketen" class="level2" data-number="4.3">
 <h2 data-number="4.3" class="anchored" data-anchor-id="funktionen-in-r-paketen"><span class="header-section-number">4.3</span> Funktionen in <code>R</code>-Paketen</h2>
 <p>Sollte sich der Fall ergeben, dass keine geeignete Funktion mit <code>R</code> mitgeliefert wird, dann können Zusatzfunktionen mittels sogenannter Pakete installiert werden. Ein Paket kann dabei als eine Sammlung von Funktionen und Anweisungen angesehen werden, mit deren Hilfe die Funktionalität von <code>R</code> erweitert werden kann. Daher wird zunächst Information darüber benötigt, in welchem Paket die gewünschte Funktionalität vorhanden ist. Hierfür reicht meistens eine kurze Suche mittels Google aus.</p>
 <p>Ist das Paket nun bekannt, dann sind zwei Schritte durchzuführen, wobei der 1. Schritt nur beim ersten Mal durchgeführt werden muss. Zunächst muss das benötigte Paket in der lokalen, d.&nbsp;h. derjenigen auf dem Rechner laufenden, <code>R</code>-Umgebung <strong>installiert</strong> werden, wenn es noch nicht bereits vorher installiert wurde (in R-Studio: Reiter unten-links <strong>Packages</strong>).</p>
-<p>Ein Paket kann mittels des Befehls <code>install.packages()</code> installiert werden. Der Name des Pakets muss als Zeichenkette an die Funktion übergeben werden. Wollen wir beispielsweise das Paket <code>performance</code> installieren, führen wir den folgenden Befehl aus:</p>
+<p>Ein Paket kann mittels des Befehls <code>install.packages()</code> installiert werden. Der Name des Pakets muss als Zeichenkette an die Funktion übergeben werden. Soll beispielsweise das Paket <code>performance</code> installiert, dann kann dies mit demfolgenden Befehl erreicht werden:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">install.packages</span>(<span class="st">"performance"</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">install.packages</span>(<span class="st">"performance"</span>)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Wenn mehrere Pakete in einem Schwung installiert werden sollen, dann übergibt man <code>install.packages()</code> einen Vektor mit den Namen der Pakete als Zeichenketten. Sollen zum Beispiel die Pakete <code>performance</code> und <code>ggplot2</code> installiert werden, dann kann die folgende Anweisung verwendet werden:</p>
+<p>Wenn mehrere Pakete in einem Schwung installiert werden sollen, dann können die Paketnamen an <code>install.packages()</code> mittels eines Vektors mit den Namen der Pakete als Zeichenketten übergeben werden. Sollen zum Beispiel die Pakete <code>performance</code> und <code>ggplot2</code> installiert werden, dann kann die folgende Anweisung verwendet werden:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">install.packages</span>(<span class="fu">c</span>(<span class="st">"performance"</span>, <span class="st">"ggplot2"</span>))</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">install.packages</span>(<span class="fu">c</span>(<span class="st">"performance"</span>, <span class="st">"ggplot2"</span>))</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><code>R</code> kontaktiert im Hintergrund einen sogenannten CRAN-Server im Internet und lädt das Paket sowie benötigte Abhängigkeiten automatisch herunter. Wenn alles gut läuft, dann ist das Paket nun in der lokalen Umgebung, also auf dem Rechner, <em>installiert</em>. Die Funktionalität des Pakets steht jedoch noch nicht direkt zur Verfügung! Das Paket muss mit einem weiteren Befehl in die derzeit aktive Arbeitsumgebung geladen werden.</p>
 <p>Um das Paket in die aktive Arbeitsumgebung zu laden, gibt es zwei Befehle in <code>R</code>: <code>library()</code> und <code>require()</code>. Bei <code>require()</code> überprüft <code>R</code> zunächst, ob das Paket schon geladen wurde, während bei <code>library()</code> das Paket einfach geladen wird, unabhängig davon, ob das Paket schon geladen ist. Um die Funktionalität von <code>performance</code> jetzt in der aktiven Session zu nutzen, kann dementsprechend <code>library()</code> benutzt werden:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">library</span>(performance)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">library</span>(performance)</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Hier muss der Name des Pakets nicht als Zeichenkette übergeben werden, sondern kann einfach als Bezeichner übergeben werden. Dieser zweite Schritt des Ladens des Pakets muss jedes Mal nach einem Neustart von <code>R</code> wieder durchgeführt werden. Wenn <code>R</code> startet, sind immer nur eine kleine Anzahl von Standardpaketen geladen, und Zusatzpakete werden durch <code>R</code> beim Start nicht automatisch geladen.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
@@ -872,9 +934,10 @@ Tipp
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Beim Erstellen von Skripten ist es meistens sinnvoll, alle benötigten Pakete ganz oben ins Skript zu schreiben, sodass die Pakete vor der Ausführung der anderen Anweisungen im Skript zur Verfügung stehen. So kann sichergestellt werden, dass der Code auch alle benötigten Pakete zur Verfügung hat. D. h. Pakete über die GUI in R-Studio zu laden, sollte eher vermieden werden.</p>
+<p>Beim Erstellen von Skripten ist es meistens sinnvoll, alle benötigten Pakete ganz oben ins Skript zu schreiben, damit die Pakete vor der Ausführung der anderen Anweisungen im Skript geladen werden und dann zur Verfügung stehen. So kann sichergestellt werden, dass der Code auch alle benötigten Pakete zur Verfügung hat. D. h. Pakete über die GUI in R-Studio bzw. Positron zu laden, sollte eher vermieden werden.</p>
 </div>
 </div>
+<p>Damit ist jetzt auch der Grundlagenteil zu <code>R</code> abgeschlossen. Die erworbenen Grundkenntnisse reichen für die allermeisten Anwendungen. Wenn etwas unklar ist, dann sollte das Wissen nun auch ausreichen um ChapGPT-Code zu <em>verbessern</em> bzw. Information aus der Hilfe oder der Fehlermeldung interpretieren zu können.</p>
 
 
 </section>
@@ -962,6 +1025,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
   clipboard.on('success', onCopySuccess);
   if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
     const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
       text: getTextToCopy,
       container: window.document.getElementById('quarto-embedded-source-code-modal')
@@ -1072,6 +1137,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
+      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {

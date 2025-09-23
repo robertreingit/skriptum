@@ -1,7 +1,7 @@
 # Funktionen in `R`  
 
 ```{r}
-#| echo: false
+#| echo: true 
 #| warning: false
 #| message: false
 source('_common.R')
@@ -11,90 +11,108 @@ knitr::opts_chunk$set(
 )
 ```
 
-Eine zentrale Tätigkeit im Umgang mit jeder Programmiersprache ist das Schreiben von eigenen Funktionen. Es ist zwar möglich, relativ weit zu kommen, ohne eigene Funktionen zu schreiben, aber es ergeben sich im Umgang mit Daten immer wieder Situationen, in denen immer wieder die gleichen Schritte durchgeführt werden. Dies führt dann oft zu Copy-and-Paste von Anweisungen. In solchen Fällen ist es oft hilfreich, in der Lage zu sein, eigene Funktionen schreiben zu können. Eine Funktion ist ein Block von Code, der einmal definiert wird und dann immer wieder verwendet werden kann. Funktionen bieten somit die Möglichkeit, eigenen Code in verschiedene logische Einheiten zu strukturieren und dadurch leichter lesbar und robuster zu machen. Letztendlich beruht der große Erfolg von `R` darauf, dass durch neue Funktionen die Funktionalität von `R` ständig erweitert werden kann. Daher ist ein zumindest rudimentäres Verständnis der Semantik von Funktionen in `R` enorm hilfreich. 
+Eine zentrale Tätigkeit im Umgang mit jeder Programmiersprache ist das Schreiben von eigenen Funktionen. Es ist zwar möglich, relativ weit zu kommen, ohne eigene Funktionen zu schreiben, aber es ergeben sich im Umgang mit Daten immer wieder Situationen, in denen immer wieder die gleichen Schritte durchgeführt werden. Dies führt dann oft zu Copy-and-Paste von Anweisungen. In solchen Fällen ist es hilfreich, in der Lage zu sein, eigene Funktionen schreiben zu können. Eine Funktion ist ein zusammenhängeder Block von Code, der einmal definiert wird und dann immer wieder verwendet werden kann. Funktionen bieten somit die Möglichkeit, eigenen Code in verschiedene logische Einheiten zu strukturieren und dadurch leichter lesbar und robuster zu machen. Letztendlich beruht der große Erfolg von `R` darauf, dass durch neue Funktionen die Funktionalität von `R` ständig erweitert werden kann. Daher ist ein zumindest rudimentäres Verständnis der Semantik von Funktionen in `R` enorm hilfreich. 
 
-Ein erstes, hilfreiches mentales Template für Funktionen in Programmiersprachen sind Funktionen wie wir sie in der Mathematik kennengelernt haben.
+Ein erstes, hilfreiches mentales Template für Funktionen in Programmiersprachen sind Funktionen aus der Mathematik.
 
 \begin{equation*}
 y = f(x)
 \end{equation*}
 
-Wir haben eine Funktion $f()$, dieser Funktion $f()$ übergeben wir ein Argument (auch Parameter genannt) $x$. Die Funktion $f()$ macht dann etwas mit diesem Parameter und gibt einen Rückgabewert zurück, den wir einer neuen Variable $y$ zuweisen. Sei zum Beispiel die folgende Funktion definiert.
+Es sein eine Funktion $f()$ gegeben, dieser Funktion $f()$ wird ein Argument (auch Parameter genannt) $x$ übergeben. Der Name des Parameters ist dabei willkürlich. Die Funktion $f()$ macht dann etwas mit diesem Parameter und gibt einen Rückgabewert zurück. Der Rückgabewert wird einer neuen Variable $y$ gewiesen. Sei zum Beispiel die folgende Funktion definiert.
 
 \begin{equation*}
 f(x) = x^2
 \end{equation*}
 
-. h. der Funktion $f()$ wird der Parameter $x$ übergeben. Dieser Wert wird anschließend quadriert und das Ergebnis der Berechnung wird zurückgegeben.
+Der Funktion $f()$ wird der Parameter $x$ übergeben. Dieser Wert wird anschließend quadriert und das Ergebnis der Berechnung wird zurückgegeben. Der Funktionsparameter $x$ ist dabei wieder willkürlich. Die Funktion hätte genauso auch wie folgt definiert werden können.
 
-In `R` werden Funktionen nach dem Muster NAME(PAR1, PAR2, ..., PARk) aufgerufen. D. h. sobald ein rundes Klammerpaar auf einen Bezeichner folgt, geht `R` davon aus, dass die Anwenderin eine Funktion aufrufen möchte. Über <PAR1>, <PAR2>, ..., <PARk> können der Funktion durch Komma getrennte Argumente, auch als Parameter bezeichnet, übergeben werden. Die Anzahl der Parameter hängt dabei von der Definition der Funktion ab. In der Mathematik wäre ein Beispiel für eine Funktion mit zwei Argumenten:
+\begin{equation*}
+f(y) = y^2
+\end{equation*}
+
+Letztendlich ist auch der *Name* der Funktion willkürlich und würde genauso funktionieren als:
+
+\begin{equation*}
+g(z) = z^2
+\end{equation*}
+
+Um in `R` eine Funktion anzuwenden, muss die Anweisung einem bestimmten Muster folgen. Dieses Muster folgt: NAME(<PAR_1>, <PAR_2>, ..., <PAR_k>). D.h. sobald ein rundes Klammerpaar auf einen Bezeichner folgt, geht `R` davon aus, dass die Anwenderin eine Funktion aufrufen möchte. Über <PAR_1>, <PAR_2>, ..., <PAR_k> können der Funktion durch Komma getrennte Parameter, auch als Argumente bezeichnet, übergeben werden. Die Anzahl der Parameter hängt dabei von der Definition der Funktion ab. In der Mathematik wäre ein Beispiel für eine Funktion mit zwei Argumenten:
 
 \begin{equation*}
 f(x,y) = x^2 + y^2
 \end{equation*}
 
-D.h. der Funktion $f()$ werden nun zwei Argumente $x$ und $y$ übergeben. In diesem Fall würde es tatsächlich auch keinen Unterschied machen, in welcher Reihenfolge die Argument übergeben werden, da die Operation innerhalb der Funktion symmetrisch auf beiden Argumenten ist. Rufen wir zum Beipiel $f(2,3)$ auf, erhalten wir den gleichen Wert wie bei $f(3,2) = 25$. Dies ist bei der folgenden Funktion nicht mehr der Fall:
+D.h. der Funktion $f()$ werden nun zwei Argumente $x$ und $y$ übergeben. In diesem Fall würde es tatsächlich auch keinen Unterschied machen, in welcher Reihenfolge die Argument übergeben werden, da die Operation innerhalb der Funktion symmetrisch auf beiden Argumenten ist. Wird zum Beispiel $f(2,3)$ aufgerufen, wird der gleiche Wert wie bei $f(3,2) = 25$ erhalten. Dies ist bei der folgenden Funktion nicht mehr der Fall:
 
 \begin{equation*}
 f(x,y) = x^2 + 3y
 \end{equation*}
 
-Hier erhalten wir unterschiedliche Ergebnisse, je nachdem, ob wir die Funktion mit $f(2, 3) = 13$ oder mit $f(3, 2) = 15$ aufrufen. Das gleiche Problem entsteht auch, wenn wir Funktionen in `R` anwenden.
+Hier werden unterschiedliche Ergebnisse erhalten, je nachdem, ob wir die Funktion mit $f(2, 3) = 13$ oder mit $f(3, 2) = 15$ aufgerufen wird. Das gleiche Problem entsteht auch, wenn Funktionen in `R` angewendet werden.
 
 ## Funktionen anwenden
 
-Wie wir bereits gesehen haben, gibt es in `R` eine Vielzahl von bereits vordefinierten Funktionen. Ein einfaches Beispiel ist die Wurzelfunktion. In `R` ist die Funktion mit dem Bezeichner `sqrt()` definiert.
+In den vorhergehenden Kapitel ist bereits gezeigt worden, dass es in `R` eine Vielzahl von bereits vordefinierten Funktionen gibt. Ein einfaches Beispiel ist die Wurzelfunktion. In `R` ist die Funktion mit dem Bezeichner `sqrt()` verwendbar.
 
 ```{r}
-#| echo: true
-
 y <- 9
 sqrt(y)
 ```
 
-Im Beispiel wird zunächst der Wert $9$ der Bezeichner `y` zugewiesen. Im zweiten Schritt wird der Bezeichnet `y` an die Wurzelfunktion `sqrt()` übergeben. D.h. der Bezeichner `y` wird ein Parameter der Funktion. Für uns nicht einsehbar holt sich die `sqrt()`-Funktion den Wert aus `y`, berechnet den Wurzelwert und gibt diesen als Rückgabewert zurück. 
-
-Ein weiteres Beispiel könnte beispielsweise die Berechnung des Mittelwerts oder die Summe der Datenreihe $(3, 5, 7)$ sein. Wie wir bereits gesehen haben, wird in `R` eine geordnete Reihe von Zahlen als Vektor repräsentiert. Um den Vektor zu erstellen wird die Funktion `c()` (kurz für concatenation) verwendet.
+Im Beispiel wird zunächst der Wert $9$ dem Bezeichner `y` zugewiesen. Im zweiten Schritt wird der Bezeichnet `y` an die Wurzelfunktion `sqrt()` übergeben. D.h. der Bezeichner `y` wird ein Parameter der Funktion `sqrt()`. Für den Anwender nicht einsehbar, holt sich die `sqrt()`-Funktion den Wert aus `y`, berechnet die Wurzel und gibt das Ergebnis als Rückgabewert zurück. Das gleiche Ergebnis wird erhalten, wenn der *Wert* direkt an `sqrt()` übergeben wird.
 
 ```{r}
-#| echo: true
- 
+sqrt(9)
+```
+
+Ein weiteres einfaches Beispiel ist die Berechnung des Mittelwerts oder die Summe der Datenreihe $(3, 5, 7)$. In `R` wird eine geordnete Reihe von Zahlen als Vektor repräsentiert. Um eine Vektor zu erstellen wird die Funktion `c()` (kurz für concatenation) verwendet.
+
+```{r}
 z <- c(3, 5, 7)
 ```
 
-Mit dieser Anweisung hat `R` einen Vektor mit den drei Einträgen erstellt. Um den Mittelwert $\bar{z} = \frac{1}{3}\sum_{i=1}^3z_i$ zu berechnen kann nun die Funktion `mean()` verwendet werden.
+Mit dieser Anweisung hat `R` einen Vektor mit den drei Einträgen erstellt. Eine Besonderheit von `c()` ist dabei, dass der Funktion beliebig viele Parameter übergeben werden können.
 
 ```{r}
-#| echo: true
+c(1, 2, 3)
+c(1, 2, 3, 4, 5, 6, 7)
+```
 
+Wie ebenfalls in den vorhergehenden Kapitel gesehen, kann die Funktion `mean()` verwendet werden um den Mittelwert $\bar{z} = \frac{1}{3}\sum_{i=1}^3z_i$ eines Vektors zu berechnen.
+
+```{r}
 mean(z)
 ```
 
-Vielleicht interessiert aber auch die Summe $\bar{z} = \sum_{i=1}^3z_i$ der Vektorelemente. Dafür kann die `sum()` Funktion verwendet werden.
+Vielleicht interessiert einen aber auch die Summe $\bar{z} = \sum_{i=1}^3z_i$ der Vektorelemente. Dafür kann die `sum()` Funktion verwendet werden.
 
 ```{r}
-#| echo: true
-
 sum(z)
 ```
 
-Dies sind jetzt nur einige wenige Beispiele, und einer der Skills im Umgang mit `R` besteht nun darin, sich die Namen der Funktionen zu merken. Dies kann am schnellsten durch den täglichen Umgang mit `R` erreicht werden. Am besten ab heute.
+Ein Unterschied zwischen `sum()` und `mean()` besteht dabei auch darin, in welcher Form Parameter übergeben werden können. So *funktioniert* zum Beispiel die Übergabe von Einzelwerten bei `sum()` nicht aber bei `mean()`.
+
+```{r}
+sum(1, 2, 3, 4, 5)
+mean(1, 2, 3, 4, 5)
+```
+
+Daher ist es wichtig sich auch mit der Aufrufsyntax der Funktion auseinander zu setzen. Im zweiten Fall `mean(1, 2, 3, 4, 5)` für die Anwendung nicht zu einem Fehler, sondern es wird ein fehlerhafter Wert zurückgegeben, da die Funktion falsch angewendet wurde. Solche Fehler führen sind in Programmen oft nur sehr schwer aufzuspüren, da meist erst später im Code ein Problem auftaucht. Wie immer wird es mit zunehmender Erfahrung einfacher solche Problem zu erkennen. Dies sind jetzt nur einige wenige Beispiele, und einer der Skills im Umgang mit `R` besteht nun zunächst darin, sich die Namen der Funktionen zu merken. Dies kann am schnellsten durch den täglichen Umgang mit `R` erreicht werden. Am besten ab heute.
 
 ## Eigene Funktionen schreiben
 
-Im Folgenden wird die Syntax für die Definition eigener Funktionen gezeigt. Dabei werden nur die wichtigsten Elemente angesprochen, da um ein umfassendes Verständnis zu erlangen, deutlich tiefer in die Programmierung mit `R` eingestiegen werden müsste, als das zum jetzigen Zeitpunkt notwendig ist.
+Im Folgenden wird auf die Syntax eingegangen die notwendig ist ein eigene Funktionen zu definieren. Dabei werden nur die wichtigsten Elemente angesprochen, da um ein umfassendes Verständnis zu erlangen, deutlich tiefer in die Programmierung mit `R` eingestiegen werden müsste, als das zum jetzigen Zeitpunkt notwendig ist.
 
-Wollen wir zum Beispiel eine Funktion schreiben, die den gewichteten Mittelwert aus zwei Werten $x$ und $y$ berechnet. Die Gewichte $w$ seien Gewichte $(w_x = \frac{1}{3}, w_y = \frac{2}{3})$. Mathematisch würde dies folgende Definition nach sich ziehen:
+Soll zum Beispiel eine Funktion geschrieben werden, die den gewichteten Mittelwert aus zwei Werten $x$ und $y$ berechnet. Die Gewichte $w$ seien die Werte $(w_x = \frac{1}{3}, w_y = \frac{2}{3})$. Mathematisch würde dies zur der folgenden Definition führen:
 
 \begin{equation*}
 f(x, y) = \frac{1}{3}x + \frac{2}{3}y
 \end{equation*}
 
-In `R` kann diese Funktion wie folgt ausgedrückt werden:
+D.h. die Funktion bekommt zwei Parameter übergeben. Die Werte der Parameter werden mit den jeweiligen Gewichten multipliziert und die Produkte anschließend addiert. In `R` kann diese Funktion beispielsweise wie folgt ausgedrückt werden:
 
 ```{r}
-#| echo: true
-
 mein_gewichteter_mittelwert <- function(x, y) { 
   x / 3 + 2 * y / 3 
 }

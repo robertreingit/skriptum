@@ -495,7 +495,7 @@ df |> mutate(pid = paste0('Proband_', row_number()), .before = 1)
 
 #### `pull()`
 
-Manchmal möchte man die Werte einer Variablen aus der Tabelle extrahieren. Dies kann mit dem Befehl `pull()` durchgeführt werden. Möchte ich zum Beispiel nur die Einträge für das Alter extrahieren, kann ich den folgenden Befehl benutzen:
+Manchmal ist es notwendig die Werte einer Variablen aus dem tibble zu extrahieren. D.h. es soll eine Spalte zu einem *normalen* `R` Vektor gemacht werden. Dies kann mit dem Befehl `pull()` durchgeführt werden. Sollen zum Beispiel nur die Einträge für das Alter extrahiert werden, kann der folgende Befehl benutzen werden:
 
 ```{r}
 #| echo: true
@@ -503,5 +503,31 @@ Manchmal möchte man die Werte einer Variablen aus der Tabelle extrahieren. Dies
 df |> pull(age)
 ```
 
-Wir erhalten in diesem Fall einen Vektor mit den Einträgen.
+`pull()` liefert einen Vektor mit den Einträgen aus der Spalte `age`. Wie immer bleibt das ursprüngliche tibble dabei unverändert.
+
+#### Gruppieren innnerhalb von `mutate()`
+
+In der `mutate()`-Funktion gibt es auch einen Parameter `.by` der erlaubt innerhalb von `mutate()` Gruppen zu bilden und über diese Gruppen Werte zu berechnen (Achtung: vor `by` ist ein Punkt `.`). Soll zum Beispiel die Abweichung der Sprunghöhen für Frauen und Männer vom jeweiligen Mittelwert berechnet werden und dabei eben nicht über Gruppen zusammengefasst werden, dann kann diese mit `.by` folgendermaßen ausgedrückt werden.
+
+```{r}
+#| echo: true
+
+df |> mutate(delta_cmj = cmj - mean(cmj), .by = gender)
+```
+
+D.h. diese Abweichungen sind nicht die Abweichungen vom Gesamtmittelwert,
+
+```{r}
+#| echo: true
+
+df |> mutate(delta_cmj = cmj - mean(cmj))
+```
+
+Sondern die Abweichungen von den jeweiligen Gruppenmittelwerten. Mit `group_by()` könnte das gleiche erreicht werden, ist aber etwas umständlicher.
+
+```{r}
+#| echo: true
+
+df |> group_by(gender) |> mutate(delta_cmj = cmj - mean(cmj)) |> ungroup()
+```
 
