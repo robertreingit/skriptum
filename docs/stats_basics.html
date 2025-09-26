@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.6.42">
+<meta name="generator" content="quarto-1.8.24">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -21,8 +21,9 @@ ul.task-list li input[type="checkbox"] {
   vertical-align: middle;
 }
 /* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -33,7 +34,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -86,15 +87,17 @@ div.csl-indent {
 <meta name="quarto:offset" content="./">
 <link href="./stats_significance.html" rel="next">
 <link href="./stats_title.html" rel="prev">
-<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dc55a5b9e770e841cd82e46aadbfb9b0.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-8da5b4427184b79ecddefad3d342027e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-70a47bd5681a7291082a5b9f83d58762.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -153,7 +156,7 @@ const typesetMath = (el) => {
     var macros = [];
     for (var i = 0; i < mathElements.length; i++) {
       var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
         window.katex.render(texText.data, mathElements[i], {
           displayMode: mathElements[i].classList.contains('display'),
           throwOnError: false,
@@ -171,7 +174,7 @@ window.Quarto = {
 
 </head>
 
-<body class="nav-sidebar floating">
+<body class="nav-sidebar floating quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -193,7 +196,9 @@ window.Quarto = {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="./index.html" class="sidebar-logo-link">
+      </a>
     <div class="sidebar-title mb-0 py-0">
       <a href="./">Skriptum - Fortgeschrittene Statistik</a> 
     </div>
@@ -376,7 +381,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./mlm_prediction.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Vorhersagen bei der multiple linearen Regression</span></span></a>
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Polynome und Prädiktion</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -405,7 +410,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./ed_reliability.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Reliabilität</span></span></a>
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Messfehler und Reliabilität</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -520,13 +525,14 @@ window.Quarto = {
 </header>
 
 
-<p>Starten wir mit einer übersichtlichen kleinen Welt, um das notwendige statistische Modell so einfach wie möglich zu halten. Die Welt, über die wir eine Aussage treffen wollen, besteht nur aus insgesamt 20 Personen. In <a href="#fig-small-world" class="quarto-xref">Abbildung&nbsp;<span>8.1</span></a> sind die Bewohner dieser Welt einzeln zu sehen. Die Gesamtheit aller Personen (allgemein Objekte), über die wir eine Aussage treffen wollen, bezeichnen wir als die Population.</p>
+<p>In den einleitenden Problem aus dem vorhergehenden Abschnitt mit einem Vergleich zwischen zwei Gruppen ist warum überhaupt die Berechnung einer Statistik notwendig ist. Bei der Beantwortung der Frage sind wahrscheinlich Begründungen gefallen wie: <em>“Weil das Ergebnis zufällig sein könnte”</em> oder <em>“Weil wir wissen wollen ob der Unterschied auch signifikant ist”</em> und ähnliche. Diese Antworten sind im Grunde genommen alle korrekt aber es sind zunächst ein paar Konzepte einzuführen um das Problem tatsächlich strukturiert angehen zu können. Diese Konzepte werden in dem folgenden Kapitel entwickelt.</p>
+<p>Zunächst wird einem übersichtlichen Konstrukt einer hypothetischen Welt gestartet um das notwendige statistische Modell so einfach wie möglich zu halten. Die Welt, über die eine Aussage getroffen werden soll, besteht aus nur insgesamt <span class="math inline">\(20\)</span> Personen. In <a href="#fig-small-world" class="quarto-xref">Abbildung&nbsp;<span>8.1</span></a> sind die Bewohner dieser Welt einzeln zu dargestellt. Um nicht <span class="math inline">\(20\)</span> Namen zu verwenden, sind die Bewohner durchnummeriert von <span class="math inline">\(1\)</span> bis <span class="math inline">\(20\)</span> mit einem Prefix <span class="math inline">\(P\)</span>.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-small-world" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-small-world-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="pics/small_world.png" class="img-fluid figure-img">
+<img src="pics/small_world.png" class="img-fluid figure-img" width="348">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-small-world-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Abbildung&nbsp;8.1: Eine kleine Welt
@@ -535,12 +541,14 @@ Abbildung&nbsp;8.1: Eine kleine Welt
 </div>
 </div>
 </div>
+<p>Der Gesamtheit aller Personen, oder auch allgemeiner Objekte, über die eine Aussage getroffen werden soll wird jetzt ein Name gegeben. Diese Menge soll als Population bezeichnet werden.</p>
 <div id="def-population" class="theorem definition">
 <p><span class="theorem-title"><strong>Definition 8.1 (Population)</strong></span> Die Gesamtheit aller Objekte/Dinge/Personen, über die eine Aussage getroffen werden soll, wird als Population oder Grundgesamtheit bezeichnet.</p>
 </div>
+<p>Jeder statistischen Aussage liegt zunächst eine Menge von Objekten/Personen zugrunde über die eine Aussage getroffen werden soll. Im vorliegenden Fall ist die Population sehr übersichtlich, während sie in den meisten Fällen deutlich größer ist. Zum Beispiel alle Personen zwischen <span class="math inline">\(15-64\)</span> Jahren (ungefähr <span class="math inline">\(5\)</span> Milliarden Personen) oder alle aktiven Tischtennisspieler in Deutschland (ungefähr <span class="math inline">\(500.000\)</span>) oder Sportstudierende in Deutschland (über 30.000) oder an Krebs neuerkrankte Personen in der EU (etwa <span class="math inline">\(3\)</span> Millionen). Die Population hängt damit immer mit der konkreten wissenschaftlichen Fragestellung zusammen die untersucht werden soll.</p>
 <section id="ein-experiment" class="level2" data-number="8.1">
 <h2 data-number="8.1" class="anchored" data-anchor-id="ein-experiment"><span class="header-section-number">8.1</span> Ein Experiment</h2>
-<p>Wir wollen nun ein Experiment, eine Krafttrainingsstudie, durchführen, um zu überprüfen, ob ein bestimmtes Training dazu führt, dass sich die Beinkraft erhöht. Allerdings haben wir nur sehr wenige Ressourcen zur Verfügung (bzw. wir sind faul) und können daher nur sechs Messungen durchführen. Aus einem kürzlich durchgeführten Zensus haben wir die Beinkraftwerte der gesamten Population. Eine einfache Möglichkeit, die Kraft darzustellen, ist eine Tabelle (siehe <a href="#tbl-sts-basics-world" class="quarto-xref">Tabelle&nbsp;<span>8.1</span></a>).</p>
+<p>Basierend auf einer theoretischen Überlegung ist zum Beispiel ein neuer Krafttrainingsansatz entwickelt worden. Nun soll mittels eines Experiments überprüft werden, ob der neue Ansatz dazu führt, dass sich die Beinkraft stärker erhöht als bei einem traditionellen Training. Unglücklicherweise stehen selbst bei der kleinen Welt nur sehr wenige Ressourcen zur Verfügung und es können daher nur sechs Messungen durchführt werden. Aus einem kürzlich durchgeführten Zensus sind jedoch die Beinkraftwerte der gesamten Population bekannt. Sei daher zunächst einmal die Verteilung der Kraftwerte betrachtet. Eine einfache Möglichkeit, die Kraft, eine numerische Variable, darzustellen, ist in Form einer Tabelle (siehe <a href="#tbl-sts-basics-world" class="quarto-xref">Tabelle&nbsp;<span>8.1</span></a>).</p>
 <div class="cell">
 <div id="tbl-sts-basics-world" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -644,7 +652,7 @@ Tabelle&nbsp;8.1: Kraftwerte (in Newton) der Lummerländer an der einbeinigen Be
 </figure>
 </div>
 </div>
-<p>Selbst bei 20 Werten ist die Darstellung mittels einer Tabelle allerdings leider wenig übersichtlich. Wir müssen Zeile für Zeile die Tabelle durchgehen und uns spezifische Kennwerte notieren, um Vergleiche zwischen den Werten durchführen zu können. Beispielsweise könnten wir notieren, dass der Maximalwert der Beinkraft bei <span class="math inline">\(3200\)</span>N für P17 und der Minimalwert von P13 bei <span class="math inline">\(1800\)</span>N liegt. Aber wirklich übersichtlich ist die Darstellung in Form einer Tabelle nicht. Für solche univariaten Daten (uni = eins) kann eine übersichtlichere Darstellung mittels eines sogenannten Dotplots erreicht werden (siehe <a href="#fig-sts-basics-lummer-dotplot" class="quarto-xref">Abbildung&nbsp;<span>8.2</span></a>).</p>
+<p>Selbst bei <span class="math inline">\(20\)</span> Werten ist die Darstellung der Rohwerte mittels einer Tabelle allerdings leider wenig übersichtlich. Die Werte müssen Zeile für Zeile in der Tabelle durchgegangen werden und spezifische Kennwerte müssen notiert werden, um Vergleiche zwischen den Werten durchführen zu können. Beispielsweise zeigt die Tabelle, dass der Maximalwert der Beinkraft bei <span class="math inline">\(3200\)</span>N für P17 und der Minimalwert von P13 bei <span class="math inline">\(1800\)</span>N liegen. Aber wirklich übersichtlich ist die Darstellung in Form einer Tabelle nicht. Für solche univariaten Daten (uni = eins) kann eine übersichtlichere Darstellung mittels eines sogenannten Dotplots erreicht werden (siehe <a href="#fig-sts-basics-lummer-dotplot" class="quarto-xref">Abbildung&nbsp;<span>8.2</span></a>).</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-sts-basics-lummer-dotplot" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -659,52 +667,55 @@ Abbildung&nbsp;8.2: Dotplot der Lummerlandkraftdaten
 </div>
 </div>
 </div>
-<p>Mittels eines Dotplots kann nun deutlich schneller abgelesen werden, welchen Wert das Minimum bzw. das Maximum annimmt. Die grafische Darstellung erlaubt weiterhin direkt abzuschätzen, in welchem Wertebereich der Großteil der Daten liegt. Allerdings wird durch diese Art der Darstellung die Information darüber, welche Person die jeweiligen Werte besitzt, nicht mehr dargestellt. Dies stellt jedoch nicht zwingend ein Problem dar, da wir in den meisten Fällen sowieso Aussagen über die Gruppe und weniger über einzelne Personen machen wollen. Ein Dotplot hat gleichzeitig den Vorteil, dass wir die Verteilung der Werte abschätzen können. In welchem Bereich liegen die meisten Datenwerte? Liegen die Werte eng beieinander oder streuen die Werte sehr stark? Gibt es einzelne Werte, die sehr unterschiedlich von den anderen Werten sind? Dies sind alles Fragen, die notwendig sind, um einen Datensatz und dessen Eigenschaften beurteilen zu können.</p>
-<p>Kommen wir zurück zu unserem Kraftexperiment. Wir wollen den Gesundheitsstatus unserer Lummerländer verbessern und führen dazu ein Krafttraining für die Beine durch. Da wir evidenzbasiert arbeiten wollen, möchten wir überprüfen, ob das Training wirklich zu einer Verbesserung der Beinkraft geführt hat. Um das Experiment zu vereinfachen, und da es sich mehr um ein Gedankenexperiment handelt, gehen wir von einem perfekten Krafttraining aus. Das heißt, wir führen eine perfekte Intervention durch, die zu der gleichen Verbesserung bei allen Teilnehmerinnen und Teilnehmern führt (Warum ist dies eine unrealistische Annahme?).</p>
-<p>Das Beinkrafttraining sei also perfekt und verbessert die Kraftleistung um genau <span class="math inline">\(+100\)</span>N. Dieser Kraftzuwachs ist unabhängig davon, welche Person aus unserer Population das Training durchführt. Um die Effektivität des Trainings abzuschätzen, vergleichen wir zwei Gruppen miteinander: eine Interventionsgruppe, die das Krafttraining durchläuft, und eine Kontrollgruppe. In beiden Gruppen sollen jeweils <span class="math inline">\(n_{\text{TRT}} = n_{\text{CON}} = 3\)</span> Teilnehmerinnen bzw. Teilnehmer einbezogen werden. Um die spätere Diskussion zu vereinfachen, führen wir nun etwas Terminologie ein.</p>
+<p>Der Dotplot erlaubt deutlich einfacher sich einen Überblick über die Daten zu verschaffen. Beispielsweise welchen Wert das Minimum bzw. das Maximum annimmt ist direkt ersichtlich. Die grafische Darstellung erlaubt weiterhin direkt abzuschätzen, in welchem Wertebereich der Großteil der Daten liegt. Allerdings wird durch diese Art der Darstellung die Information darüber, welche Person die jeweiligen Werte besitzt, nicht mehr dargestellt. Dies stellt jedoch nicht zwingend ein Problem dar, da in den meisten Fällen sowieso Aussagen über die Gruppe und weniger über einzelne Personen gemacht werden sollen. Ein Dotplot hat gleichzeitig den Vorteil, dass die Verteilung der Werte abgeschätzt werden kann. In welchem Bereich liegen die meisten Datenwerte? Liegen die Werte eng beieinander oder streuen die Werte sehr stark? Gibt es einzelne Werte, die sehr unterschiedlich von den anderen Werten sind? Dies sind alles Fragen, die notwendig sind, um einen Datensatz und dessen Eigenschaften beurteilen zu können. Generell erfordert es etwas Erfahrung und Ausprobieren um eine effektive Darstellung der Daten zu finden. Dies hängt auch oft mit der Fragestellung zusammen, da unterschiedliche Darstellungen üblicherweise auch unterschiedliche Aspekte der Daten betonen bzw. in den Hintergrund rücken.</p>
+<p>Zurück zum Kraftexperiment. Da in der kleinen Welt nur evidenzbasierte Entscheidungen getroffen werden, soll empirisch überprüft werden, ob das <em>neue</em> Training wirklich zu einer Verbesserung der Beinkraft führt. Um das Experiment zu vereinfachen, und da es sich mehr um ein Gedankenexperiment handelt, sei von von einem <em>perfekten</em> Krafttraining ausgegangen. Das heißt, Intervention ist dahingehend perfekt, dass die Intervention zu der gleichen Verbesserung bei allen Teilnehmerinnen und Teilnehmern führt. Dies ist natürlich eine unrealistische Annahme aber sie vereinfacht die Problembetrachtung bzw. Problemanalyse und ändert tatsächlich zunächst auch nichts an der inhaltlichen Problemstellung.</p>
+<p>Das Beinkrafttraining sei also perfekt und verbessert die Kraftleistung um einen einzigen präzisen Wert. Sei die Verbesserung mit <span class="math inline">\(+100\)</span>N gegeben. Dieser Kraftzuwachs ist unabhängig davon, welche Person aus der Population das Training durchführt. Um die Effektivität des Trainings abzuschätzen, sollen nun zwei Gruppen miteinander verglichen werden: eine Interventionsgruppe, welche das Krafttraining durchläuft, und eine Kontrollgruppe. In beiden Gruppen sollen jeweils <span class="math inline">\(n_{\text{TRT}} = n_{\text{CON}} = 3\)</span> Teilnehmerinnen bzw. Teilnehmer einbezogen werden. Die Kontrollgruppe führt ebenfalls ein Krafttraining durch. Das Krafttraining der Kontrollgruppe sei aber perfekt uneffektiv. D.h. es das Training führt zu keiner Verbesserung der Kraftfähigkeiten der Teilnehmerinnen und Teilnehmer. Um das Experiment besser zu charakterisieren, sind allerdings erst noch ein paar Begrifflichkeiten notwendig.</p>
 <div id="def-dep-var" class="theorem definition">
 <p><span class="theorem-title"><strong>Definition 8.2 (Abhängige Variable )</strong></span> Die abhängige Variable ist diejenige Variable, die in einer Studie beobachtet, gemessen oder analysiert wird. Die abhängige Variable wird oft als “Effekt” betrachtet.</p>
 </div>
 <div id="def-indep-var" class="theorem definition">
 <p><span class="theorem-title"><strong>Definition 8.3 (Unabhängige Variable )</strong></span> Die unabhängige Variable ist die Variable, die in einer Studie oder einem Experiment manipuliert oder kontrolliert wird. Die unabhängige Variable wird oft als “Ursache” betrachtet, da sie den potenziellen Einfluss auf die abhängige Variable repräsentiert.</p>
 </div>
-<p>In unserem Experiment ist die Gruppenzugehörigkeit die unabhängige Variable und die Beinkraft die abhängige Variable. Wir untersuchen den Effekt der Gruppenzugehörigkeit auf die Beinkraft. Die Gruppe ist die Ursache für mögliche Effekte auf die Beinkraft.</p>
-<p>Wir tun jetzt so, als ob wir die Daten aus dem Zensus nicht vorliegen hätten. Dies kommt der Durchführung eines tatsächlichen Experiments näher, da dort üblicherweise auch nicht vorher bekannt ist, welche Performance die Teilnehmerinnen und Teilnehmer vor dem Experiment haben. Es stellen sich nun zwei Fragen: 1) Wie wählen wir die sechs Personen aus unserer Population aus, und 2) wie teilen wir die sechs Personen in die beiden Gruppen auf?</p>
-<p>Wir könnten zum Beispiel die ersten drei Personen in die Interventionsgruppe und die letzten drei in die Kontrollgruppe stecken. Allerdings, wenn die Personen in irgendeiner Form nach der Beinkraft vorsortiert sind, z.B. allgemeiner Gesundheitsstatus, Arbeitstätigkeit usw., dann würde sich diese Sortierung auf die Gruppen übertragen. Das heißt, wir hätten eine sogenannte Störvariable, die unser Ergebnis verfälschen würde.</p>
+<p>Bezogen auf das vorliegende Experiment stellt die Gruppenzugehörigkeit somit die unabhängige Variable dar, während die Beinkraft die abhängige Variable darstellt. In dem Experiment wird somit der Effekt der Gruppenzugehörigkeit auf die Beinkraft untersucht. Die Zugehörigkeit zu einer der beiden Gruppe ist die Ursache für mögliche Effekte auf die Beinkraft.</p>
+<p>Im folgenden wird nun so getan, als ob die Daten aus dem Zensus nicht vorliegen würden. Es stellen sich nun zwei Fragen: 1) Wie werden die sechs Personen aus der Population ausgewählt, und 2) wenn sechs Personen ausgewählt worden sind, wie werden diese Personen in die beiden Gruppen aufgeteilt?</p>
+<p>Bezogen auf die zweite Frage, könnte eine Möglichkeit sein, die ersten drei Personen der Interventionsgruppe zuzuteilen und die verbleibenden drei Personen der Kontrollgruppe zuzuweisen. Implizit ist dabei festgelegt, dass die beiden Gruppen die gleiche Größe haben. Dies soll auch in der weiteren Diskussion beibehalten werden. Bei dieser sequentiellen Zuweisung kann es allerdings passieren, dass wenn die Personen in irgendeiner Form nach der Beinkraft schon vorsortiert sind, z.B. allgemeiner Gesundheitsstatus, Arbeitstätigkeit usw., dann würde sich diese Sortierung auf die Gruppen übertragen. Wenn die Personen von schwächer nach stärker sortiert sind, würden in der Interventionsgrupps die insgesamt schwächere Personen zugeteilt werden als in der Kontrollgruppe. Die initiale Beinkraft würde dann die Funktion einer sogenannten Störvariable einnehmen. Die Störvariable würde dazu führen, das das Ergebnis verfälscht würde.</p>
 <div id="def-confounder" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 8.4 (Störvariable)</strong></span> Eine Störvariable ist eine Variable, die einen Einfluss auf die abhängige Variable hat, deren Einfluss jedoch nicht kontrolliert wurde bzw. die Variable ist nicht von Hauptinteresse für die Untersuchung.</p>
+<p><span class="theorem-title"><strong>Definition 8.4 (Störvariable)</strong></span> Eine Störvariable ist eine Variable, die einen Einfluss auf die abhängige Variable hat, deren Einfluss jedoch nicht kontrolliert wurde. Eine Störvariable ist nicht von Hauptinteresse für die Untersuchung.</p>
 </div>
-<p>Im Zweifelsfall kann davon ausgegangen werden, dass es immer eine ganze Reihe von Störvariablen gibt. Unglücklicherweise auch Störvariablen, die zum Teil gar nicht bekannt sind. Das heißt, es wird ein Mechanismus benötigt, der Teilnehmerinnen und Teilnehmer auswählt und gleichzeitig dafür sorgt, dass Variablen, die gar nicht bekannt sind, möglichst gleichmäßig ausgewählt werden. Der Mechanismus, der dies sicherstellen kann, ist eine sogenannte Zufallsstichprobe (Warum?).</p>
+<p>In realen Fällen kann davon ausgegangen werden, dass immer eine ganze Reihe von Störvariablen vorliegen. Unglücklicherweise gehören dazu auch Störvariablen, die gar nicht bekannt sein müssen. Beispielsweise genetische Prädispositionen die noch nicht erforscht sind oder vielleicht noch nicht gemessen werden können. Daher wird ein Mechanismus benötigt der dafür sorgt, dass die Störvariablen möglichst wenig Einfluss auf den gesuchten Effekt ausüben. D.h. die Teilnehmerinnen und Teilnehmer müssen so den beiden Gruppen zugewiesen werden, dass die Störvariablen möglichst in gleichen Anteilen in den beiden Gruppen vorkommen. Der Mechanismus der dazu verwendet wird ist eine zufällige Zuteilung der Personen in die beiden Gruppen. Es wird eine Randomisierung durchgeführt.</p>
+<div id="def-randomisierung" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 8.5 (Randomisierung )</strong></span> Mit Randomisierung wird der Prozess der zufälligen Zuweisung von Probanden oder Elementen zu verschiedenen Gruppen oder Bedingungen in einem Experiment bezeichnet. Die Randomisierung wird verwendet, um sicherzustellen, dass die Auswahl und Zuordnung der Elemente frei von systematischer Beeinflussung erfolgt.</p>
+</div>
+<p>Mit Hilfe der Randomisierung kann sichergestellt werden, dass <em>im Mittel</em> die Störvariablen gleichmäßig auf die beiden Gruppen verteilt sind. Ohne diese Annahmen, dass die Störvariablen gleichmäßig verteilt sind, ist es nicht möglich eine ursächliche Beziehung zwischen der abhängigen und der unabhängigen Variablen zu etablieren. Sind die Störvariablen nicht gleich verteilt, dann könnte ein möglicher Unterschied zwischen den Variablen auch nur auf Grund der Störvariablen zustande kommen. Die Randomisierung der Stichprobe in die Gruppen ist natürlich kein <span class="math inline">\(100\%\)</span> Verfahren. <em>Per Zufall</em> kann es dazu kommen, dass Störvariablen nicht gleichmäßig verteilt sind, was bei unbekannten Störvariablen, auch nicht zu überprüfen ist. Dieses Problem wird umso größer umso kleiner die Anzahl der Personen ist. Seine zum Beispiel <span class="math inline">\(10\)</span> Personen gegeben, von denen <span class="math inline">\(3\)</span> Personen Merkmal A haben und <span class="math inline">\(7\)</span> Personen Merkmal B. Die Wahrscheinlichkeit dafür, dass alle As der gleichen Gruppe zugeteilt werden liegt bei knapp <span class="math inline">\(17\%\)</span>. Bei dem gleichen Verhältnis mit <span class="math inline">\(100\)</span> Personen und zwei Gruppen à <span class="math inline">\(50\)</span> Personen ist die Wahrscheinlichkeit nur noch <span class="math inline">\(3.2e-10\)</span>. Damit ist die zweite Frage der Zuteilung beantwortet. Bleibt noch die Frage wie die sechs Personen aus der Population ausgewählt werden sollen.</p>
+<p>Letztendlich ist bei der Auswahl der Stichprobe ein ähnliches Problem wie bei der Zuteilung in die beiden Gruppen zu lösen. Allerdings aus einer etwas anderen Perspektive. Die Ergebnisse die anhand der Stichprobe beobachtet werden, sollen letztendlich auf die Gesamtpopulation übertragen werden. D.h. wenn in der Population die eine Hälfe Merkmal A trägt und die andere Merkmal B und in der Stichprobe nur Personen mit Merkmal A sind, dann wird es schwierig bis unmöglich werden, das Ergebnis auf basierend auf der Stichprobe auf die Population zu übertragen. D.h. bei der Wahl der Stichprobe muss darauf geachtet werden, dass diese Stichprobe tatsächlich repräsentativ für die Population ist. Hier ist wieder das gleich Problem vorhanden, dass a-priori nicht klar ist, welche <em>Merkmale</em> relevant sind, daher können diese Merkmale auch nicht alle bestimmt werden und somit sichergestellt werden, dass die Merkmale in gleichem Maße in der Stichprobe repräsentiert sind, wie in der Population. Wieder ist die Lösung für das Problem eine Anwendung des Zufalls, nämlich indem eine sogenannte <strong>Zufallsstichprobe</strong> gewählt wird. Formaler:</p>
 <div id="def-sample" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 8.5 (Stichprobe)</strong></span> Eine Stichprobe ist eine Teilmenge der Objekte aus der Population.</p>
+<p><span class="theorem-title"><strong>Definition 8.6 (Stichprobe)</strong></span> Eine Stichprobe ist eine Teilmenge von Objekten aus der Population.</p>
 </div>
 <div id="def-random-sample" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 8.6 (Zufallsstichprobe)</strong></span> Eine Zufallsstichprobe ist eine Teilmenge der Objekte aus der Population, die <em>zufällig</em> ausgewählt wurde.</p>
+<p><span class="theorem-title"><strong>Definition 8.7 (Zufallsstichprobe)</strong></span> Eine Zufallsstichprobe ist eine Teilmenge von Objekten aus der Population, die <em>zufällig</em> ausgewählt wurde.</p>
 </div>
 <p>Bei der Zufallsstichprobe haben alle Personen in der Population vor dem Experiment die gleiche Wahrscheinlichkeit, gezogen zu werden. Dadurch kann sichergestellt werden, dass in der Stichprobe unterliegende Störvariablen, ob messbar oder nicht messbar, ebenso in der Stichprobe verteilt sind.</p>
 <div class="{exm-random-sample}">
-<p>Schauen wir uns ein einfaches Beispiel an. Sei eine Population der Größe <span class="math inline">\(N = 100\)</span> gegeben, in der <span class="math inline">\(30\)</span> Objekte das Merkmal A haben und <span class="math inline">\(70\)</span> Objekte das Merkmal B. Es werden nun wiederholt Zufallsstichproben der Größe 20 aus dieser Population gezogen und für jede Stichprobe wird der Anteil der As berechnet.</p>
+<p>Eine kleine Simulation veranschlicht das Prinzip. Sei eine Population der Größe <span class="math inline">\(N = 100\)</span> gegeben, in der <span class="math inline">\(30\)</span> Objekte das Merkmal A haben und <span class="math inline">\(70\)</span> Objekte das Merkmal B. Es werden nun wiederholt Zufallsstichproben der Größe <span class="math inline">\(N = 20\)</span> aus dieser Population gezogen und für jede Stichprobe wird der Anteil der As berechnet.</p>
+<p>In <code>R</code> lässt sich eine solche Simulation relativ einfach umsetzen, die hier der Übersicht halber <span class="math inline">\(20\)</span> mal durchgeführt wird.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pop <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"A"</span>,<span class="st">"B"</span>), <span class="fu">c</span>(<span class="dv">30</span>,<span class="dv">70</span>))</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pop <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"A"</span>,<span class="st">"B"</span>), <span class="fu">c</span>(<span class="dv">30</span>,<span class="dv">70</span>))</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>n_sam <span class="ot">&lt;-</span> <span class="dv">20</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">numeric</span>(n_sam)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_sam) {</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  sam <span class="ot">&lt;-</span> <span class="fu">sample</span>(pop, <span class="dv">20</span>)</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  res[i] <span class="ot">&lt;-</span> <span class="fu">mean</span>(sam <span class="sc">==</span> <span class="st">'A'</span>)</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>res</span></code><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>res</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] 0.30 0.40 0.30 0.35 0.10 0.30 0.30 0.25 0.15 0.30 0.50 0.30 0.30 0.40 0.25
 [16] 0.30 0.20 0.35 0.25 0.35</code></pre>
 </div>
 </div>
-<p>Wir sehen, dass tatsächlich in den meisten Fällen der Anteil von As in der Stichprobe in der Nähe der <span class="math inline">\(30\%\)</span> aus der Population liegt. Nicht in allen Fällen, es gibt Schwankungen um diesen Wert herum, aber im Großen und Ganzen spiegelt die Stichprobe in Bezug auf die Verteilung von Merkmalen A und B die Population gut wider. Das heißt, es handelt sich um eine <em>repräsentative</em> Stichprobe.</p>
+<p>Wir die Ausgabe von <code>res</code> zeigt, dass tatsächlich in den meisten Fällen der Anteil von As in der Stichprobe in der Nähe der <span class="math inline">\(30\%\)</span> aus der Population liegt. Nicht in allen Fällen, es gibt Schwankungen um diesen Wert herum, aber im Großen und Ganzen spiegelt die Stichprobe in Bezug auf die Verteilung von Merkmalen A und B die Population gut wieder. Das heißt, es handelt sich um eine <em>repräsentative</em> Stichprobe.</p>
 </div>
-<p>Nachdem jetzt geklärt ist, wie die Stichprobe aus der Population ermittelt wird, ist nun die nächste Frage, wie die Objekte aus der Stichprobe auf die beiden Gruppen verteilt werden. Die gleichen Überlegungen wie diejenigen zur Ermittlung der Stichprobe führen dazu, dass die Objekte zufällig in die beiden Gruppen verteilt werden müssen. In diesem Fall der Aufteilung wird allerdings von einer sogenannten Randomisierung gesprochen.</p>
-<div id="def-randomisierung" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 8.7 (Randomisierung )</strong></span> Mit Randomisierung wird der Prozess der zufälligen Zuweisung von Probanden oder Elementen zu verschiedenen Gruppen oder Bedingungen in einem Experiment bezeichnet. Die Randomisierung wird verwendet, um sicherzustellen, dass die Auswahl und Zuordnung der Elemente frei von systematischer Beeinflussung erfolgt.</p>
-</div>
-<p>Um jetzt für unser Experiment eine Stichprobe zu ermitteln, haben wir die Population durchnummeriert und mittels eines Zufallszahlengenerators die Zahlen <span class="math inline">\(i = \{3,7,8,9,10,20\}\)</span> ermittelt. Die entsprechenden Personen werden aus der Population anhand der ID ausgewählt. Anschließend teilt wieder ein Zufallszahlengenerator die sechs Personen in die beiden Gruppen auf (siehe <a href="#fig-stats-basics-sample-01" class="quarto-xref">Abbildung&nbsp;<span>8.3</span></a>).</p>
+<p>In Abhängigkeit von der Forschungsfragestellung kann die Anzahl der Merkmale relativ schnell anwachsen, in diesem Fall spielt die Größe der Stichprobe ebenfalls eine wichtige Rolle. Seien zum Beispiel für eine Fragestellung möglicherweise <span class="math inline">\(15\)</span> Merkmale wie Alter, Geschlecht, sportliche Aktivität usw. relevant und es wird eine Stichprobe mit <span class="math inline">\(N = 16\)</span> gewählt, dann ist es natürlich gar nicht möglich die Merkmale selbst wenn bekannt gleichmäßig in zwei Gruppen zu unterteilen. Daher ist die Repräsentativität einer solchen Stichprobe nur sehr eingeschränkt.</p>
+<p>Zurück zum <em>Kleine Welt Beispiel</em>. Um jetzt für das Experiment eine Stichprobe zu ermitteln, wird genutzt, dass die Population bereits durchnummeriert ist. Nun kann eine Zufallszahlengenerator verwendet werden, der zunächst sechs Zahlen für die Stichprobe bestimmt. Beispielsweise die Zahlen <span class="math inline">\(i = \{3,7,8,9,10,20\}\)</span>. Die entsprechenden Personen werden aus der Population anhand der ID ausgewählt. Anschließend teilt wieder ein Zufallszahlengenerator die sechs Personen in die beiden Gruppen auf (siehe <a href="#fig-stats-basics-sample-01" class="quarto-xref">Abbildung&nbsp;<span>8.3</span></a>).</p>
 <div class="cell" data-layout-align="default">
 <div class="cell-output-display">
 <div id="fig-stats-basics-sample-01" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -727,7 +738,7 @@ Abbildung&nbsp;8.3: Ablaufdiagramm der Gruppenzuweisung.
 </div>
 </div>
 </div>
-<p>Dieser Prozess der zufälligen Ziehung und Zuteilung ist extrem wichtig, um das Ergebnis des Experiments eindeutig zuordnen zu können und eine Generalisierung über die bestehenden Objekte hinaus durchführen zu können. Leider ist der erste Schritt, die zufällige Ziehung von Objekten aus der Population, in der Realität nur sehr schwer realisierbar.</p>
+<p>Wie bereits hergeleitet, ist dieser Prozess der zufälligen Ziehung und zufälligen Zuteilung kritisch, um das Ergebnis des Experiments eindeutig interpretieren zu können und eine Generalisierung über die bestehenden Objekte hinaus durchführen zu können. Leider ist der erste Schritt, die zufällige Ziehung von Objekten aus der Population, in der Realität nur sehr schwer realisierbar.</p>
 <p>In <a href="#tbl-sts-basics-experiment-1" class="quarto-xref">Tabelle&nbsp;<span>8.2</span></a> ist die Stichprobe und Zuteilung in die Gruppen zu sehen.</p>
 <div class="cell">
 <div id="tbl-sts-basics-experiment-1" class="cell quarto-float quarto-figure quarto-figure-center anchored">
@@ -783,7 +794,7 @@ Tabelle&nbsp;8.2: Zufällig ausgewählte Stichprobe der Größe <span class="mat
 </figure>
 </div>
 </div>
-<p>Mit diesen sechs Personen führen wir jetzt unser Experiment durch. Die drei Personen aus der Kontrollgruppe durchlaufen im Interventionszeitraum nur ein Stretchtraining, während die Interventionsgruppe zweimal die Woche für 12 Wochen unser perfektes Krafttraining durchführt. Nach diesem Zeitraum messen wir die Beinkraft aller Personen aus beiden Gruppen. Wir erhalten das folgende Ergebnis (siehe <a href="#tbl-sts-basics-sample-1" class="quarto-xref">Tabelle&nbsp;<span>8.3</span></a>). Nochmal zur Erinnerung, wir nehmen an, dass wir die Werte aus dem Census nicht kennen.</p>
+<p>Mit diesen sechs Personen sollen nun das Experiment durchgeführt werden. Die drei Personen aus der Kontrollgruppe durchlaufen im Interventionszeitraum nur ein Standardtraining, während die Interventionsgruppe zweimal die Woche für 12 Wochen das <em>perfekte</em> Krafttraining durchführt. Nach diesem Zeitraum wird die Beinkraft aller Personen aus beiden Gruppen gemessen. Es wird das folgende Ergebnis erhalten (siehe <a href="#tbl-sts-basics-sample-1" class="quarto-xref">Tabelle&nbsp;<span>8.3</span></a>). Es sei angenommen, dass die Werte aus dem Zensus nicht bekannt sind.</p>
 <div id="tbl-sts-basics-sample-1" class="quarto-layout-panel anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-sts-basics-sample-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -869,7 +880,7 @@ Tabelle&nbsp;8.3: Ergebnis der Intervention in Experiment 1 für die Kontroll- u
 </div>
 </figure>
 </div>
-<p>Für beide Gruppen ist in <a href="#tbl-sts-basics-sample-1" class="quarto-xref">Tabelle&nbsp;<span>8.3</span></a> jeweils noch der Mittelwert <span class="math inline">\(\bar{K}\)</span> dokumentiert, um die Gruppen leichter miteinander vergleichen zu können. Später werden wir noch weitere Maße kennenlernen, die es ermöglichen, zwei Mengen von Werten miteinander zu vergleichen. Der Mittelwert ist ein Maß, das uns schon bekannt sein sollte.</p>
+<p>Für beide Gruppen ist in <a href="#tbl-sts-basics-sample-1" class="quarto-xref">Tabelle&nbsp;<span>8.3</span></a> jeweils noch der Mittelwert <span class="math inline">\(\bar{K}\)</span> dokumentiert, um die Gruppen leichter miteinander vergleichen zu können. Später werden noch weitere Maße eingeführt, die es ermöglichen, zwei Mengen von Werten miteinander zu vergleichen. Der Mittelwert ist ein Maß, dass aber schon bekannt sein sollte.</p>
 <div id="def-Mittelwert" class="theorem definition">
 <p><span class="theorem-title"><strong>Definition 8.8 (Mittelwert)</strong></span> Der Mittelwert <span class="math inline">\(\bar{x}\)</span> über <span class="math inline">\(n\)</span> Werte berechnet sich nach der Formel:</p>
 <p><span id="eq-mean"><span class="math display">\[
@@ -877,16 +888,21 @@ Tabelle&nbsp;8.3: Ergebnis der Intervention in Experiment 1 für die Kontroll- u
 \tag{8.1}\]</span></span></p>
 <p>Der Mittelwert wird mit einem Strich über der Variable dargestellt.</p>
 </div>
-<p>Gleichzeitig haben wir das zentrale und namensgebende Konzept aus der Statistik kennengelernt, nämlich das der Statistik. Ein Wert, der mittels der Werte aus einer Stichprobe berechnet wird, wird als Statistik bezeichnet.</p>
+<p>Wenn die Schreibweise mit dem Summenzeichen <span class="math inline">\(\Sigma\)</span> etwas verwirrend erscheind, dann sind im Anhang noch mal die wichtigsten Infos zum Rechnen mit Summen angegeben. Mit dem Mittelwert ist auch gleichzeitig das zentrale und namensgebende Konzept aus der Statistik eingeführt worden. Die Statistik. Ein Wert, der mittels der Werte aus einer Stichprobe berechnet wird, wird als <strong>Statistik</strong> bezeichnet.</p>
 <div id="def-Statistik" class="theorem definition">
 <p><span class="theorem-title"><strong>Definition 8.9 (Statistik)</strong></span> Ein auf einer Stichprobe berechneter Wert wird als Statistik bezeichnet.</p>
 </div>
-<p>Der Definition folgend, ist somit der Mittelwert <span class="math inline">\(\bar{X}\)</span> einer Stichprobe eine Statistik. Das Gleiche würde gelten, wenn anstatt des Mittelwerts der Maximalwert oder der Minimalwert einer Stichprobe ermittelt wird. Beide Werte würden ebenfalls eine Statistik darstellen.</p>
-<p>Um nun den Unterschied zwischen den beiden Gruppen zu untersuchen, berechnen wir die Differenz <span class="math inline">\(D\)</span> zwischen den beiden Mittelwerten <span class="math inline">\(D = \bar{K}_{\text{TRT}} - \bar{K}_{\text{CON}}\)</span>. Die Differenz kann natürlich auch in die andere Richtung berechnet werden und es würde sich das Vorzeichen ändern. Hier gibt es keine Vorgaben, sondern die Richtung kann frei bestimmt werden. Wenn bekannt ist, in welcher Richtung der Unterschied berechnet wird, stellt dies kein Problem dar. Im vorliegenden Fall ziehen wir die Interventionsgruppe von der Kontrollgruppe ab, da wir davon ausgehen, dass die Intervention zu einer Krafterhöhung führt und wir dadurch einen positiven Unterschied erhalten, wenn das Training tatsächlich zu einer Steigerung der Kraftleistung führt (vgl. <a href="#eq-sts-basics-ex1-d" class="quarto-xref">Gleichung&nbsp;<span>8.2</span></a>).</p>
-<p><span id="eq-sts-basics-ex1-d"><span class="math display">\[
+<p>Der Definition folgend, ist somit der Mittelwert <span class="math inline">\(\bar{X}\)</span> einer Stichprobe eine Statistik. Das Gleiche würde gelten, wenn anstatt des Mittelwerts der Maximalwert oder der Minimalwert einer Stichprobe ermittelt wird. Da beide Werte anhand der Werte aus der Stichprobe berechnet werden, stellen der Maximalwert und der Minimalwert ebenfalls eine Statistik dar.</p>
+<p>Um nun den Unterschied zwischen den beiden Gruppen zu bestimmen, gibt es eine ganze Reihe von verschiednen Ansätzen. Ein sehr direkte und auch intuitiv nachvollziehbare Möglichkeit ist die Differenz <span class="math inline">\(D\)</span> zwischen den beiden Mittelwerten zu berechnen. Dabei ist es notwendig eine Richtung zu bestimmen bzw. welcher der beiden Mittelwerte den Minuenden und welcher den Subtrahenden darstellt. Hier gibt es keine Vorgaben, sondern die Richtung kann frei bestimmt werden und muss nur entsprechend dokumentiert werden. Im vorliegenden Fall soll die Interventionsgruppe von der Kontrollgruppe abgezogen werden. Da ausgegangen wird, dass die Intervention zu einer Krafterhöhung führt sollte mit dieser Konvention ein positiven Unterschied erhalten werden. Dies führt dann zur Definition <span class="math inline">\(\eqref{eq-sts-basics-ex1-d}\)</span>.</p>
+<p><span class="math display">\[\begin{equation}
+D := \bar{K}_{\text{TRT}} - \bar{K}_{\text{CON}}
+\label{eq-sts-basics-ex1-d}
+\end{equation}\]</span></p>
+<p>Für das Beispiel des kleine Welt Experiment werden dementsprechend der folgenden Wert erhalten:</p>
+<p><span class="math display">\[
 D = 2424N - 2198N = 226 N
-\tag{8.2}\]</span></span></p>
-<p>Da der Wert D wiederum auf den Daten der Stichprobe berechnet wird, handelt es sich ebenfalls um eine Statistik.</p>
+\]</span></p>
+<p>Da der Wert <span class="math inline">\(D\)</span> wiederum auf den Daten der Stichprobe berechnet wird, handelt es sich ebenfalls um eine Statistik.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-sts-basics-ex-1-dotplot" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -901,9 +917,8 @@ Abbildung&nbsp;8.4: Dotplot der beiden Stichproben. Senkrechte Striche zeigen di
 </div>
 </div>
 </div>
-<p>In <a href="#fig-sts-basics-ex-1-dotplot" class="quarto-xref">Abbildung&nbsp;<span>8.4</span></a> sind die Werte der beiden Gruppen, deren Mittelwerte <span class="math inline">\(\bar{K}_{\text{CON}}\)</span> und <span class="math inline">\(\bar{K}_{\text{TRT}}\)</span> und der Unterschied <span class="math inline">\(D\)</span> zwischen diesen abgebildet. Wie erwartet zeigt die Interventionsgruppe den höheren Kraftwert im Vergleich zu der Kontrollgruppe. Allerdings ist der Wert mit <span class="math inline">\(D = 226\)</span> größer als der tatsächliche Zuwachs von <span class="math inline">\(\Delta_{\text{Training}} = 100\)</span> (Warum ist das so?).</p>
-<p>Der Unterschied zwischen den beiden Gruppen ist natürlich auch zum Teil auf die Unterschiede, die zwischen den beiden Gruppen vor der Intervention bestanden haben, zurückzuführen. Was wäre denn passiert, wenn wir eine andere Stichprobe gezogen hätten?</p>
-<p>Sei <span class="math inline">\(i = \{12,2,19,4,8,16\}\)</span> eine zweite Stichprobe. Dies würde zu den folgenden Werten nach der Intervention führen.</p>
+<p>In <a href="#fig-sts-basics-ex-1-dotplot" class="quarto-xref">Abbildung&nbsp;<span>8.4</span></a> sind die Werte der beiden Gruppen, deren Mittelwerte <span class="math inline">\(\bar{K}_{\text{CON}}\)</span> und <span class="math inline">\(\bar{K}_{\text{TRT}}\)</span> und der Unterschied <span class="math inline">\(D\)</span> zwischen diesen graphisch abgetragen. Wie erwartet zeigt die Interventionsgruppe den höheren Kraftwert im Vergleich zu der Kontrollgruppe. Allerdings ist der Wert mit <span class="math inline">\(D = 226\)</span> größer als der tatsächliche Zuwachs von <span class="math inline">\(\Delta_{\text{Training}} = 100\)</span>. Der Unterschied zwischen den beiden Gruppen ist natürlich auch zum Teil auf die Unterschiede, die zwischen den beiden Gruppen vor der Intervention bestanden haben, zurückzuführen. Dies führt zu der Frage was denn passiert wäre, wenn eine andere Stichprobe gezogen worden wäre?</p>
+<p>Sei <span class="math inline">\(i = \{12,2,19,4,8,16\}\)</span> eine zweite Zufallsstichprobe. Dies würde zu den folgenden Werten nach der Intervention führen.</p>
 <div class="cell">
 <div id="tbl-sts-basics-sample-2" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -972,8 +987,8 @@ Abbildung&nbsp;8.5: Dotplot der beiden Stichproben in Experiment 2. Senkrechte S
 </div>
 </div>
 </div>
-<p>In <a href="#fig-sts-basics-ex-2-dotplot" class="quarto-xref">Abbildung&nbsp;<span>8.5</span></a> sind wieder die Datenpunkte, Mittelwerte und der Unterschied in den Mittelwerten zwischen den beiden Gruppen abgetragen. In diesem Fall ist allerdings die Differenz zwischen den beiden Gruppen genau in der anderen Richtung <span class="math inline">\(D = -308\)</span>. Daher würden wir dieses Ergebnis genau in der anderen Richtung interpretieren. Das Krafttraining führt nicht nur zu keiner Verbesserung in der Kraftfähigkeit, sondern sogar zu einer Verschlechterung!</p>
-<p>Es hätte aber auch sein können, dass wir noch eine andere Stichprobe gezogen hätten, z.B. <span class="math inline">\(i = \{6,5,7,20,14,16\}\)</span>. Mit dieser Stichprobe würden wir zu folgendem Ergebnis kommen (siehe <a href="#tbl-sts-basics-ex-3" class="quarto-xref">Tabelle&nbsp;<span>8.5</span></a>).</p>
+<p>In <a href="#fig-sts-basics-ex-2-dotplot" class="quarto-xref">Abbildung&nbsp;<span>8.5</span></a> sind wieder die Datenpunkte, Mittelwerte und der Unterschied in den Mittelwerten zwischen den beiden Gruppen abgetragen. In diesem Fall ist allerdings die Differenz zwischen den beiden Gruppen genau in der anderen Richtung <span class="math inline">\(D = -308\)</span>. Daher würde dieses Ergebnis tatsächlich genau in der anderen Richtung hin interpretiert werden. Das Krafttraining führt nicht nur zu keiner Verbesserung in der Kraftfähigkeit, sondern sogar zu einer Verschlechterung!</p>
+<p>Es hätte aber auch sein können, dass noch eine andere Stichprobe gezogen worden wäre, z.B. <span class="math inline">\(i = \{6,5,7,20,14,16\}\)</span>. Mit dieser Stichprobe würden das folgende Ergebnis beobachtet werden (siehe <a href="#tbl-sts-basics-ex-3" class="quarto-xref">Tabelle&nbsp;<span>8.5</span></a>).</p>
 <div class="cell">
 <div id="tbl-sts-basics-ex-3" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -1009,18 +1024,17 @@ Tabelle&nbsp;8.5: Mittelwertsdaten aus Experiment 3 und der Unterschied <span cl
 </figure>
 </div>
 </div>
-<p>In diesem Fall haben wir zwar wieder einen positiven Unterschied zwischen den beiden Gruppen in der zu erwartenden Richtung gefunden. Der Unterschied von <span class="math inline">\(D = 19\)</span> ist allerdings deutlich kleiner als der tatsächliche Unterschied <span class="math inline">\(\Delta = 100\)</span>. Daher würden wir möglicherweise das Ergebnis so interpretieren, dass wir das Krafttraining als ineffektiv bewerten und keine Empfehlung für das Training aussprechen.</p>
-<p>Zu beachten ist, dass keines der Ergebnisse 100% korrekt ist. Entweder ist der Unterschied zwischen den beiden Gruppen deutlich zu groß, in der falschen Richtung oder deutlich zu klein. Das Ergebnis des Experiments hängt ursächlich damit zusammen, welche Zufallsstichprobe gezogen wird. Dieses Phänomen gilt generell für jedes Ergebnis eines Experiments. Das Phänomen, dass der Wert der berechneten Statistik zwischen Wiederholungen des Experiments schwankt, wird als Stichprobenvariabilität bezeichnet.</p>
+<p>In diesem Fall haben ist zwar ein positiver Unterschied zwischen den beiden Gruppen in der zu erwartenden Richtung gefunden worden, der Unterschied von <span class="math inline">\(D = 19\)</span> ist allerdings deutlich kleiner als der tatsächliche Unterschied <span class="math inline">\(\Delta = 100\)</span>. Daher könnte das Ergebnis möglicherweise so interpretieren werden, das das Krafttraining als ineffektiv bewertet wird und keine Empfehlung für das Training ausgesprochen wird.</p>
+<p>Zu beachten ist, dass keines der Ergebnisse 100% korrekt ist. Entweder ist der Unterschied zwischen den beiden Gruppen deutlich zu groß, in der falschen Richtung oder deutlich zu klein. Das Ergebnis des Experiments hängt ursächlich damit zusammen, welche Zufallsstichprobe gezogen wurde und wie diese Stichprobe in die Gruppen unterteilt wird. Denn natürlich würden sich die <span class="math inline">\(D\)</span>-Werte ebenfalls ändern, wenn die Stichprobe gleich gehalten würde aber die Zuteilung geändert wird. Daraus folgt, dass bei Wiederholungen des Experiments generell jeweils unterschiedliche Werte beobachtet werden und dieses Phänomen ist eine Folge der notwendigen Randomisierungsschritte. Allgemein wird das Phänomen, dass der Wert der berechneten Statistik zwischen Wiederholungen des Experiments schwankt, als Stichprobenvariabilität bezeichnet.</p>
 <div id="def-sample-variability" class="theorem definition">
 <p><span class="theorem-title"><strong>Definition 8.10 (Stichprobenvariabilität)</strong></span> Durch die Anwendung von Zufallsstichproben variiert eine auf den Daten berechnete Statistik. Diese Variabilität wird als Stichprobenvariabilität bezeichnet.</p>
 </div>
-<p>Streng genommen führt die Stichprobenvariabilität allein noch nicht dazu, dass sich die Statistik zwischen Wiederholungen des Experiments verändert, sondern die zu untersuchenden Werte in der Population müssen selbst auch eine Streuung aufweisen. Wenn wir eine Population untersuchen würden, bei der alle Personen die gleiche Beinkraft hätten, würden unterschiedliche Stichproben immer den gleichen Mittelwert haben und wiederholte Durchführungen des Experiments würden immer wieder zu demselben Ergebnis führen. Dieser Fall ist in der Realität jedoch praktisch nie gegeben, und sämtliche Parameter, für die wir uns interessieren, zeigen immer eine natürliche Streuung in der Population. Diese Streuung in der Population führt daher zu dem besagten Effekt, dass das gleiche Experiment mehrmals wiederholt zu unterschiedlichen Zufallsstichproben führt und dementsprechend immer zu unterschiedlichen Ergebnissen führt. Das Ergebnis ist inhärent variabel bzw. unsicher.</p>
-<p>Daher ist eine der zentralen Aufgaben der Statistik, mit dieser Variabilität umzugehen und Forscher in die Lage zu versetzen, trotzdem rationale Entscheidungen zu treffen. Eine implizite Kernannahme dabei ist, dass wir mit Hilfe von Daten überhaupt etwas über die Welt lernen können. Das heißt, dass uns die Erhebung von Daten auch in die Lage versetzt, rationale Entscheidungen zu treffen. Entscheidungen wie ein spezialisiertes Krafttraining mit einer klinischen Population durchzuführen oder eine bestimmte taktische Variante mit meiner Mannschaft zu trainieren, um die Gegner besser auszuspielen. Alle diese Entscheidungen sollten rational vor dem Hintergrund von Variabilität und Unsicherheit getroffen werden und auch möglichst oft zu korrekten Entscheidungen führen. Wie wir sehen werden, kann uns die Statistik leider nicht garantieren, immer die korrekte Entscheidung zu treffen. Nochmals auf den Punkt gebracht nach <span class="citation" data-cites="wild2000">Wild und Seber (<a href="references.html#ref-wild2000" role="doc-biblioref">2000, p.28</a>)</span>:</p>
+<p>Streng genommen führt die Stichprobenvariabilität allein noch nicht dazu, dass sich die Statistik zwischen Wiederholungen des Experiments verändert, sondern die zu untersuchenden Werte in der Population müssen selbst auch eine Streuung aufweisen. Wenn eine Population untersucht würde, bei der alle Personen die gleiche Beinkraft hätten, würden unterschiedliche Stichproben immer den gleichen Mittelwert haben und wiederholte Durchführungen des Experiments würden immer wieder zu demselben Ergebnis führen. Dieser Fall ist in der Realität jedoch praktisch nie gegeben, und sämtliche interessante Parameter zeigen immer eine natürliche Streuung in der Population. Diese Streuung in der Population führt daher zu dem besagten Phänomen, dass das gleiche Experiment mehrmals wiederholt zu unterschiedlichen Zufallsstichproben und dementsprechend immer zu unterschiedlichen Ergebnissen führt. Das Ergebnis ist inhärent variabel bzw. <strong>unsicher</strong>. Dieses grundlegende Prinzip liegt allen Datenanalysen zugrunde. Bei nicht-experimentellen Daten ergeben sich noch weitere Probleme, im weiteren wird aber vor allem die experimentelle Herangehensweise mit randomisierten Experimenten behandelt, da dieses die dominante Herangehensweise darstellen kausale Effekte zwischen abhängigen und unabhängigen Variablen zu erstellen. Die zentrale Aufgabe der Disziplin Statistik ist somit mit dieser Variabilität umzugehen und Forscherinnen in die Lage zu versetzen, trotz dieser Unsicherheit rationale Entscheidungen zu treffen.</p>
+<p>Eine implizite Kernannahme bei diesem Ansatz ist, dass mit Hilfe von Daten überhaupt etwas über die Welt erlernt werden kann. Das heißt, dass die Erhebung von Daten einen in die Lage versetzt, rationale Entscheidungen zu treffen. Entscheidungen wie ein spezialisiertes Krafttraining mit einer klinischen Population durchzuführen oder eine bestimmte taktische Variante mit meiner Mannschaft zu trainieren, um die Gegner besser auszuspielen. Alle diese Entscheidungen sollten rational vor dem Hintergrund von Variabilität und Unsicherheit getroffen werden und zwar möglichst so, das möglichst oft korrekte Entscheidungen getroffen werden. Wie noch gezeigt wird, kann auch die Statistik leider nicht garantieren, dass immer die korrekte Entscheidung getroffen wird. Es kann auch mal vorkommen, dass beim Würfelwurf zehnmal hintereinander ein sechs gewürfelt wird, ohne dass der Würfel in irgendeiner Art und Weise manipuliert wurde. Nochmals auf den Punkt gebracht nach <span class="citation" data-cites="wild2000">Wild und Seber (<a href="references.html#ref-wild2000" role="doc-biblioref">2000, p.28</a>)</span>:</p>
 <blockquote class="blockquote">
 <p>The subject matter of statistics is the process of finding out more about the real world by collecting and then making sense of data.</p>
 </blockquote>
-<p>Untersuchen wir jedoch zunächst das Phänomen weiter, dass Wiederholungen desselben Experiments zu unterschiedlichen Ergebnissen führen. In unserem Lummerlandbeispiel haben wir nämlich den Vorteil, dass uns die Wahrheit bekannt ist. Diesen Umstand können wir uns zunutze machen.</p>
-<p>In <a href="#fig-sts-basics-d-dist-1" class="quarto-xref">Abbildung&nbsp;<span>8.6</span></a> ist die Verteilung unserer bisherigen drei <span class="math inline">\(D\)</span>s abgetragen.</p>
+<p>Sei zunächst noch einmal das Phänomen weiter untersucht, dass Wiederholungen desselben Experiments zu unterschiedlichen Ergebnissen führen. Im Beispiel liegt der unrealistische Vorteil vor, dass die tatsächliche <em>Wahrheit</em> bekannt ist. Dieser Umstand soll nun verwendet werden. In <a href="#fig-sts-basics-d-dist-1" class="quarto-xref">Abbildung&nbsp;<span>8.6</span></a> ist die Verteilung der drei bisherigen <span class="math inline">\(D\)</span>s abgetragen.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-sts-basics-d-dist-1" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -1039,7 +1053,7 @@ Abbildung&nbsp;8.6: Bisherige Verteilung der Unterschiede <span class="math inli
 </section>
 <section id="die-stichprobenverteilung" class="level2" data-number="8.2">
 <h2 data-number="8.2" class="anchored" data-anchor-id="die-stichprobenverteilung"><span class="header-section-number">8.2</span> Die Stichprobenverteilung</h2>
-<p>Wir können einfach mal das Experiment weiter wiederholen. In <a href="#fig-sts-basics-sample-combination" class="quarto-xref">Abbildung&nbsp;<span>8.7</span></a> sind 15 verschiedene Stichproben abgetragen. Wir haben in jeder Zeile jeweils sechs TeilnehmerInnen gezogen. Drei für die Kontrollgruppe und drei für die Interventionsgruppe. Für jede dieser Zeilen können wir jeweils den Gruppenmittelwert berechnen und den Unterschied <span class="math inline">\(D\)</span> bestimmen.</p>
+<p>Um die Frage zu beantworten, kann das Experiment einfach noch mehrere Male wiederholt werden. In <a href="#fig-sts-basics-sample-combination" class="quarto-xref">Abbildung&nbsp;<span>8.7</span></a> sind dazu <span class="math inline">\(15\)</span> weitere Zufallsstichproben abgetragen. In jeder Zeile sind alle <span class="math inline">\(20\)</span> Personen der Population angetragen und die sechs jeweils gezogenen TeilnehmerInnen sind farbig markiert. Drei für die Kontrollgruppe und drei für die Interventionsgruppe. Für jede dieser Zeilen können nun wieder die Gruppenmittelwerte berechnet und der Unterschied <span class="math inline">\(D\)</span> bestimmen werden.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-sts-basics-sample-combination" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -1054,15 +1068,41 @@ Abbildung&nbsp;8.7: Beispiele für verschiedene Möglichkeiten, zwei Stichproben
 </div>
 </div>
 </div>
-<p>Warum eigentlich bei 15 aufhören? Wir haben ja den Vorteil, dass unsere Population relativ übersichtlich ist. Vielleicht können wir uns ja noch aus unserer Schulzeit an Kombinatorik erinnern. Da haben wir den Binomialkoeffizienten kennengelernt. Die Anzahl der möglichen Kombinationen von <span class="math inline">\(k\)</span> Elementen aus einer Menge von <span class="math inline">\(n\)</span> Elementen berechnet sich nach:</p>
-<p><span id="eq-binom-coef"><span class="math display">\[
-\text{Anzahl} = \binom{n}{k} = \frac{n!}{k!(n-k)!}
-\tag{8.3}\]</span></span></p>
-<p>In unserem Fall wollen wir zunächst sechs Elemente aus <span class="math inline">\(N = 20\)</span> auswählen und dann drei Elemente aus den sechs gezogenen Elementen auswählen, um diese entweder der Interventionsgruppe oder der Kontrollgruppe zuzuweisen (Warum brauchen wir uns nur eine Gruppe anzuschauen?). Die Anzahl der möglichen Stichprobenkombinationen ist folglich:</p>
-<p><span id="eq-count-experiment"><span class="math display">\[
+<p>Tatsächlich ist es nicht notwendig sich nur auf <span class="math inline">\(15\)</span> Zufallsstichproben zu beschränken. Dadurch, dass die Population relativ übersichtlich ist, ist es relativ einfach möglich alle Möglichkeiten zu ermitteln. Die Herleitung benötigt allerdings etwas Mathematik aus der Schule, im speziellen die Kombinatorik, die sich mit dem Zählen von Möglichkeiten befasst. Beispielsweise mit der Frage, wie viele Möglichkeiten es gibt aus einer Urne mit <span class="math inline">\(20\)</span> nummerierten Kugeln sechs Kugeln zu ohne Zurücklegen zu ziehen. Eine direkte Herleitung könnte so gehen. Bei sechs Kugeln ohne zurückziehen, kann die erste Kugel <span class="math inline">\(20\)</span> unterschiedliche Werte haben, die zweite <span class="math inline">\(19\)</span> unterschiedliche Werte, da eine Kugel schon entnommen wurde, die dritte Kugel hat <span class="math inline">\(18\)</span> mögliche Werte usw bis zur sechsten Kugel für die es <span class="math inline">\(15\)</span> Möglichkeiten gibt.</p>
+<p><span class="math display">\[\begin{equation*}
+\text{Möglichkeiten} = 20 \cdot 19 \cdot 18 \cdot 17 \cdot 16 \cdot 15
+\end{equation*}\]</span></p>
+<p>Mit der Definition der Fakultät <span class="math inline">\(!\)</span>,</p>
+<p><span class="math display">\[\begin{equation*}
+n! = n \cdot (n-1) \cdot (n-2) \cdots 1
+\end{equation*}\]</span></p>
+<p>kann dies kürzer geschrieben werden mit:</p>
+<p><span class="math display">\[\begin{equation*}
+\text{Möglichkeiten} = \frac{20!}{(20-6)!} = \frac{20!}{14!}
+\end{equation*}\]</span></p>
+<p>Da die Reihenfolge der Ziehung keine Rolle spielt müssen noch zum Beispiel die Fälle <span class="math inline">\([1,2,3,4,5,6]\)</span> und <span class="math inline">\([2,3,4,5,6,1]\)</span> und alle weiteren Permutationen der Menge <span class="math inline">\(\{1,2,3,4,5,6\}\)</span> berücksichtigt werden. Hier funktioniert auch wieder das Abzählverfahren von eben. Wenn die sechs Kugel gezogen wurden und es sind sechs freie Plätze vorhanden, dann kann der erste Platz mit sechs Kugeln belegt werden, der zweite Platz mit fünf Kugeln, der dritte Platz mit vier Kugeln usw.. Das heißt es ergibt sich insgesamt:</p>
+<p><span class="math display">\[\begin{equation*}
+\text{Permutationen} = 6 \cdot 5 \cdot 4 \cdot 3 \cdot 2 \cdot 1 = 6!
+\end{equation*}\]</span></p>
+<p>D.h. die oben hergeleitete Anzahl von Möglichkeiten muss noch durch diese Anzahl der Permutationen geteilt werden um insgesamt die Anzahl der Möglichkeiten sechs Kugeln aus zwanzig Kugeln ohne zurücklegen und ohne Rücksicht auf die Reihenfolge zu bestimmten.</p>
+<p><span class="math display">\[\begin{equation*}
+\text{Möglichkeiten sechs aus zwanzig} = \frac{20!}{14!6!} = 3.876\times 10^{4}
+\end{equation*}\]</span></p>
+<p>Wenn der Ansatz verallgemeinert wird mit <span class="math inline">\(N = 20\)</span> und <span class="math inline">\(K = 6\)</span> folgt daraus die Formel für den sogenannten <strong>Binomialkoeffizienten</strong> der als <span class="math inline">\(N\)</span> über <span class="math inline">\(K\)</span> gelesen wird.</p>
+<p><span class="math display">\[\begin{equation}
+\text{Anzahl} = \binom{N}{K} = \frac{N!}{K!(N-K)!}
+\label{eq-binom-coef}
+\end{equation}\]</span></p>
+<p>Die Anzahl der Möglichkeiten sechs aus zwanzig zu ziehen ist damit hergeleitet. Es fehlt noch die Aufteilung in die beiden Gruppen. Sei dazu die Treamentgruppe betrachtet, d.h. aus den sechs gezogenen Personen (Kugeln) sollen drei in die Treatmentgruppe gesteckt werden. Wenn diese drei Personen bestimmt wurden, ist automatisch auch die Kontrollgruppe bestimmt und die Kontrollgruppe braucht nicht weiter betrachtet werden. Letztendlich ist diese Problemstellung genau wieder die gleiche wie auch bei der Ziehung der Stichprobe. Daher folgt mit <span class="math inline">\(N = 6\)</span> und <span class="math inline">\(K = 3\)</span>.</p>
+<p><span class="math display">\[\begin{equation*}
+\text{Gruppenzuteilung} = \binom{6}{3} = 20
+\end{equation*}\]</span></p>
+<p>Insgesamt folgt für die Anzahl der möglichen Stichprobenkombinationen somit:</p>
+<p><span class="math display">\[\begin{equation*}
 \text{Anzahl} = \binom{20}{6}\binom{6}{3} = 7.752\times 10^{5}
-\tag{8.4}\]</span></span></p>
-<p>Das sind jetzt natürlich selbst bei dieser kleinen Population eine große Menge an einzelnen Experimenten, aber dafür sind Computer da: Die können all diese Experimente in kurzer Zeit durchführen. In <a href="#fig-sts-basics-all-combinations-d100" class="quarto-xref">Abbildung&nbsp;<span>8.8</span></a> ist die Verteilung aller möglichen Experimentausgänge, d.h. alle Differenzen <span class="math inline">\(D\)</span> zwischen der Interventions- und der Kontrollgruppe, abgebildet.</p>
+\label{eq-count-experiment}
+\end{equation*}\]</span></p>
+<p>Dies sind natürlich selbst bei dieser kleinen Population eine große Menge an <em>einzelnen</em> Experimenten. Aber dafür sind Computer da (Stichwort <code>for</code>-Schleife). In <code>R</code> stellt diese Aufgabe kein Problem dar. In <a href="#fig-sts-basics-all-combinations-d100" class="quarto-xref">Abbildung&nbsp;<span>8.8</span></a> ist die Verteilung aller möglichen Experimentenausgänge, d.h. alle möglichen Differenzen <span class="math inline">\(D\)</span> zwischen der Interventions- und der Kontrollgruppe, abgebildet.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-sts-basics-all-combinations-d100" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -1077,16 +1117,27 @@ Abbildung&nbsp;8.8: Verteilung aller möglichen Differenzen zwischen Kontroll- u
 </div>
 </div>
 </div>
-<p>Auf der x-Achse sind die möglichen Differenzen <span class="math inline">\(D\)</span> abgetragen, während auf der y-Achse die relative Häufigkeit, d.h. die Häufigkeit für einen bestimmten <span class="math inline">\(D\)</span>-Wert geteilt durch die Anzahl <span class="math inline">\(7.752\times 10^{5}\)</span> aller möglichen Werte. Die Verteilung der <span class="math inline">\(D\)</span>s wird als Stichprobenverteilung bezeichnet.</p>
+<p>Auf der x-Achse sind die möglichen Differenzen <span class="math inline">\(D\)</span> abgetragen, während auf der y-Achse die relative Häufigkeit, d.h. die Häufigkeit für einen bestimmten <span class="math inline">\(D\)</span>-Wert geteilt durch die Anzahl <span class="math inline">\(7.752\times 10^{5}\)</span> aller möglichen Werte. Diese Verteilung der Statistik <span class="math inline">\(D\)</span>s wird als <strong>Stichprobenverteilung</strong> bezeichnet.</p>
 <div id="def-sample-distribution" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 8.11</strong></span> Die Stichprobenverteilung einer Statistik beschreibt die Verteilung der Statistik. Beispielsweise wenn die Statistik der Mittelwert <span class="math inline">\(\bar{x}\)</span> ist, dann beschreibt die Stichprobenverteilung die Verteilung der möglichen Mittelwerte.</p>
+<p><span class="theorem-title"><strong>Definition 8.11</strong></span> Die Stichprobenverteilung einer Statistik beschreibt die Verteilung der Statistik. Wenn beispielsweise die Statistik der Mittelwert <span class="math inline">\(\bar{x}\)</span> ist, dann beschreibt die Stichprobenverteilung die Verteilung der möglichen Mittelwerte.</p>
 </div>
-<p><a href="#fig-sts-basics-all-combinations-d100" class="quarto-xref">Abbildung&nbsp;<span>8.8</span></a> zeigt, dass die überwiegende Anzahl der Ausgänge tatsächlich auch im Bereich von <span class="math inline">\(\Delta = 100\)</span> liegt. Noch präziser: Das Maximum der Verteilung, also die höchste relative Häufigkeit, liegt genau auf der roten Linie. Dies sollte uns etwas beruhigen, denn es zeigt, dass unsere Art der Herangehensweise mittels zweier Stichproben auch tatsächlich in den meisten Fällen einen nahezu korrekten Wert ermittelt. Allerdings zeigt die Stichprobenverteilung auch, dass Werte am rechten Ende, die deutlich zu hoch sind, wie auch Werte am linken Ende der Verteilung, die deutlich in der falschen Richtung liegen, möglich sind. Das bedeutet, wenn wir das Experiment nur einmal durchführen, können wir uns eigentlich nie sicher sein, welches dieser vielen Experimente wir durchgeführt haben. Es ist zwar wahrscheinlicher, dass wir eines aus der Mitte der Verteilung durchgeführt haben, einfach da die Anzahl größer ist, aber wir haben keine 100%-ige Garantie, dass wir nicht <em>Pech</em> gehabt haben und das Experiment ganz links mit <span class="math inline">\(D = -500\)</span> oder aber das Experiment ganz rechts mit <span class="math inline">\(D = 700\)</span> durchgeführt haben. Diese Unsicherheit wird leider keine Art von Experiment vollständig auflösen können. Eine weitere Eigenschaft der Verteilung ist ihre Symmetrie bezüglich des Maximums mit abnehmenden relativen Häufigkeiten, je weiter von Maximum <span class="math inline">\(D\)</span> entfernt ist (Warum macht das heuristisch Sinn?).</p>
-<p>Die Darstellungsform von <a href="#fig-sts-basics-all-combinations-d100" class="quarto-xref">Abbildung&nbsp;<span>8.8</span></a> wird als Histogramm bezeichnet und eignet sich vor allem dazu, die Verteilung einer Variablen z.B. <span class="math inline">\(x\)</span> darzustellen. Dazu wird der Wertebereich von <span class="math inline">\(x\)</span> zwischen dem Minimalwert <span class="math inline">\(x_{\text{min}}\)</span> und dem Maximalwert <span class="math inline">\(x_{\text{max}}\)</span> in <span class="math inline">\(k\)</span> gleich große Intervalle unterteilt, und die Anzahl der Werte innerhalb jedes Intervalls wird abgezählt und durch die Anzahl der Gesamtwerte geteilt, um die relative Häufigkeit zu erhalten.</p>
+<p><a href="#fig-sts-basics-all-combinations-d100" class="quarto-xref">Abbildung&nbsp;<span>8.8</span></a> zeigt, dass die überwiegende Anzahl der Ausgänge tatsächlich auch im Bereich von <span class="math inline">\(\Delta = 100\)</span> liegt. Noch präziser: Das Maximum der Verteilung, also die höchste relative Häufigkeit, liegt genau auf der roten Linie. Dies sollte tatsächlich etwas beruhigen, denn es zeigt, dass die Art der Herangehensweise mittels zweier Stichproben auch tatsächlich in den meisten Fällen einen nahezu korrekten Wert ermittelt. Allerdings zeigt die Stichprobenverteilung auch, dass Werte am rechten Ende, die deutlich zu hoch sind, wie auch Werte am linken Ende der Verteilung, die deutlich in der falschen Richtung liegen, möglich sind. Das bedeutet, wenn ein Experiment nur einziges Mal durchgeführt, kann man sich eigentlich nie sicher sein, welches dieser vielen Experimente durchgeführt wurde. Es ist zwar wahrscheinlicher, dass eines aus der Mitte der Verteilung durchgeführt wird, einfach da die Anzahl größer ist, aber es gibt keine 100%-ige Garantie, dass ein Experiment eine <em>Niete</em> ist und das Experiment ganz links mit <span class="math inline">\(D = -500\)</span> oder aber auch Experiment ganz rechts mit <span class="math inline">\(D = 700\)</span> durchgeführt wurde. Diese Unsicherheit kann leider keine Art von Experiment vollständig auflösen können. Eine weitere Eigenschaft der Verteilung ist ihre Symmetrie bezüglich des Maximums mit abnehmenden relativen Häufigkeiten, je weiter von Maximum <span class="math inline">\(D\)</span> entfernt ist (Warum macht das heuristisch Sinn?).</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Hinweis
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Die Darstellungsform von <a href="#fig-sts-basics-all-combinations-d100" class="quarto-xref">Abbildung&nbsp;<span>8.8</span></a> wird als Histogramm bezeichnet und eignet sich vor allem dazu, die Verteilung einer Variablen z.B. <span class="math inline">\(x\)</span> darzustellen. Dazu wird der Wertebereich von <span class="math inline">\(x\)</span> zwischen dem Minimalwert <span class="math inline">\(x_{\text{min}}\)</span> und dem Maximalwert <span class="math inline">\(x_{\text{max}}\)</span> in <span class="math inline">\(k\)</span> gleich große Intervalle unterteilt, und die Anzahl der Werte innerhalb jedes Intervalls wird abgezählt und durch die Anzahl der Gesamtwerte geteilt, um die relative Häufigkeit zu bestimmen.</p>
 <p>Zum Beispiel für die Werte:</p>
 <p><span class="math display">\[
 x_i \in \{1,1.5,1.8,2.1,2.2,2.7,2.8,3.5,4 \}
-\]</span> könnte das Histogram ermittelt werden, indem der Bereich von <span class="math inline">\(x_{\text{min}} = 1\)</span> bis <span class="math inline">\(x_{\text{max}} = 4\)</span> in vier Intervalle unterteilt wird und dann die Anzahl der Werte in den jewiligen Intervallen ermittelt wird (siehe <a href="#fig-sts-basics-hist-example" class="quarto-xref">Abbildung&nbsp;<span>8.9</span></a>). Die ermittelte Anzahl würde dann noch durch die Gesamtanzahl <span class="math inline">\(9\)</span> der Elemente geteilt um die relative Häufigkeit zu berechnen.</p>
+\]</span></p>
+<p>könnte das Histogram ermittelt werden, indem der Bereich von <span class="math inline">\(x_{\text{min}} = 1\)</span> bis <span class="math inline">\(x_{\text{max}} = 4\)</span> in vier Intervalle unterteilt wird und dann die Anzahl der Werte in den jeweiligen Intervallen ermittelt wird (siehe <a href="#fig-sts-basics-hist-example" class="quarto-xref">Abbildung&nbsp;<span>8.9</span></a>). Die ermittelte Anzahl würde dann noch durch die Gesamtanzahl <span class="math inline">\(9\)</span> der Elemente geteilt um die relative Häufigkeit zu berechnen.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-sts-basics-hist-example" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -1102,7 +1153,9 @@ Abbildung&nbsp;8.9: Beispiel für die Darstellung eines Histogramms für die Dat
 </div>
 </div>
 <p>Die Form des Histogramms hängt davon ab, wie viele Intervalle verwendet werden. Die Auflösung wird mit mehr Intervallen besser, aber gleichzeitig verringert sich die Anzahl pro Intervall. Andersherum wird die Auflösung mit weniger Intervallen geringer, aber die Anzahl der Elemente pro Intervall wird größer und somit stabiler. Daher sollte in den meisten praktischen Fällen die Anzahl variiert werden, um sicherzugehen, dass nicht nur zufällig eine spezielle Darstellung gefunden wurde.</p>
-<p>Zurück zu unserer Verteilung von <span class="math inline">\(D\)</span> unter <span class="math inline">\(\Delta = 100\)</span>N in <a href="#fig-sts-basics-all-combinations-d100" class="quarto-xref">Abbildung&nbsp;<span>8.8</span></a>. Wie schon besprochen, sind alle Werte zwischen etwa <span class="math inline">\(D = -500N\)</span> und <span class="math inline">\(D = 700\)</span>N plausibel bzw. möglich. Schauen wir uns doch einmal an, was passiert, wenn das Training überhaupt nichts bringt und es keine Verbesserung gibt, also <span class="math inline">\(\Delta = 0\)</span>.</p>
+</div>
+</div>
+<p>Wie schon besprochen, sind alle Werte zwischen etwa <span class="math inline">\(D = -500N\)</span> und <span class="math inline">\(D = 700\)</span>N plausibel bzw. möglich nach <a href="#fig-sts-basics-all-combinations-d100" class="quarto-xref">Abbildung&nbsp;<span>8.8</span></a>. Sei einmal betrachtet, was passiert, wenn das Training überhaupt nichts bringt und es keine Verbesserung gibt, also <span class="math inline">\(\Delta = 0\)</span>.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-sts-basics-all-combinations-d0" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -1122,7 +1175,7 @@ Abbildung&nbsp;8.10: Verteilung aller möglichen Differenzen zwischen Kontroll- 
 D = \frac{1}{3}\sum_{i=1}^3 x_{\text{KON}i} - \frac{1}{3}\sum_{j=1}^3 (x_{\text{TRT}j} + \Delta) = \bar{x}_{\text{KON}} - \bar{x}_{\text{TRT}} + \Delta
 \]</span></p>
 <p>Daher bleibt die Form der Verteilung genau gleich und wird lediglich um den Wert <span class="math inline">\(\Delta\)</span> im Vergleich zur Nullintervention nach rechts verschoben. Mit Nullintervention ist umgangssprachlich die Intervention gemeint, bei der nichts passiert, also <span class="math inline">\(\Delta = 0\)</span> gilt.</p>
-<p>Als Zwischenfazit sollten wir jetzt verstanden haben, dass jede Statistik, die wir auf einer Stichprobe berechnen, inherent unsicher ist. In der Realität haben wir nicht nur die Variabilität aufgrund der Randomisierung, sondern auch viele andere Einflussgrößen, die das Ergebnis eines Experiments bei Wiederholungen beeinflussen können. Mithilfe der Statistik versuchen wir, die Unsicherheit zu quantifizieren, und lassen dies später in unsere Entscheidungsprozesse einfließen.</p>
+<p>Als Zwischenfazit sollte nun nachvollziehbar sein,dass jede Statistik, die auf einer Stichprobe berechnet wurde, inhärent unsicher ist. In der Realität ist der Sachverhalt noch komplexer und es tritt nicht nur die Variabilität aufgrund der Randomisierung auf, sondern es kommen viele weitere Einflussgrößen zu tragen, die das Ergebnis eines Experiments bei Wiederholungen beeinflussen können. Mithilfe der Statistik wird nun versucht, diese Unsicherheit zu quantifizieren bzw. abzuschätzen und in den späteren Entscheidungsprozesse auf der Basis der beobachteten Daten einfließen zu lassen.</p>
 </section>
 <section id="unsicherheit-in-lummerland" class="level2" data-number="8.3">
 <h2 data-number="8.3" class="anchored" data-anchor-id="unsicherheit-in-lummerland"><span class="header-section-number">8.3</span> Unsicherheit in Lummerland</h2>
@@ -1141,7 +1194,7 @@ Abbildung&nbsp;8.11: Verteilung aller möglichen Differenzen zwischen Kontroll- 
 </div>
 </div>
 </div>
-<p>In <a href="#fig-sts-basics-all-combinations-both" class="quarto-xref">Abbildung&nbsp;<span>8.11</span></a> ist klar zu sehen, dass die beiden Graphen zu großen Teilen überlappen, und das auch noch in einem Bereich, in dem beide Ergebnisse ihre höchsten relativen Häufigkeiten haben, also auch die größte Wahrscheinlichkeit, unter den jeweiligen Annahmen aufzutreten. Unser Problem besteht darin, dass wir in der Realität nicht wissen, welchen Effekt unser Training auf die Stichprobe hat. Wenn wir dies wüssten, müssten wir das Experiment ja gar nicht durchführen. Normalerweise haben wir nur ein einziges Ergebnis, nämlich den Ausgang unseres einen Experiments.</p>
+<p>In <a href="#fig-sts-basics-all-combinations-both" class="quarto-xref">Abbildung&nbsp;<span>8.11</span></a> ist klar zu sehen, dass die beiden Graphen zu großen Teilen überlappen, und das auch noch in einem Bereich, in dem beide Ergebnisse ihre höchsten relativen Häufigkeiten haben, also auch die größte Wahrscheinlichkeit, unter den jeweiligen Annahmen aufzutreten. Unser Problem besteht nun darin, dass wir in der Realität nicht wissen, welchen Effekt unser Training auf die Stichprobe hat. Wenn wir dies wüssten, müssten wir das Experiment ja gar nicht durchführen. Normalerweise haben wir nur ein einziges Ergebnis, nämlich den Ausgang unseres einen Experiments.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-sts-basics-all-combinations-decision" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -1180,236 +1233,243 @@ Wild, Christopher J, und Georg AF Seber. 2000. <em>Chance encounters: A first co
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
-window.document.addEventListener("DOMContentLoaded", function (event) {
-  const toggleBodyColorMode = (bsSheetEl) => {
-    const mode = bsSheetEl.getAttribute("data-mode");
-    const bodyEl = window.document.querySelector("body");
-    if (mode === "dark") {
-      bodyEl.classList.add("quarto-dark");
-      bodyEl.classList.remove("quarto-light");
-    } else {
-      bodyEl.classList.add("quarto-light");
-      bodyEl.classList.remove("quarto-dark");
-    }
-  }
-  const toggleBodyColorPrimary = () => {
-    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
-    if (bsSheetEl) {
-      toggleBodyColorMode(bsSheetEl);
-    }
-  }
-  toggleBodyColorPrimary();  
-  const icon = "";
-  const anchorJS = new window.AnchorJS();
-  anchorJS.options = {
-    placement: 'right',
-    icon: icon
-  };
-  anchorJS.add('.anchored');
-  const isCodeAnnotation = (el) => {
-    for (const clz of el.classList) {
-      if (clz.startsWith('code-annotation-')) {                     
-        return true;
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
       }
+      return false;
     }
-    return false;
-  }
-  const onCopySuccess = function(e) {
-    // button target
-    const button = e.trigger;
-    // don't keep focus
-    button.blur();
-    // flash "checked"
-    button.classList.add('code-copy-button-checked');
-    var currentTitle = button.getAttribute("title");
-    button.setAttribute("title", "Kopiert");
-    let tooltip;
-    if (window.bootstrap) {
-      button.setAttribute("data-bs-toggle", "tooltip");
-      button.setAttribute("data-bs-placement", "left");
-      button.setAttribute("data-bs-title", "Kopiert");
-      tooltip = new bootstrap.Tooltip(button, 
-        { trigger: "manual", 
-          customClass: "code-copy-button-tooltip",
-          offset: [0, -8]});
-      tooltip.show();    
-    }
-    setTimeout(function() {
-      if (tooltip) {
-        tooltip.hide();
-        button.removeAttribute("data-bs-title");
-        button.removeAttribute("data-bs-toggle");
-        button.removeAttribute("data-bs-placement");
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Kopiert");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Kopiert");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
       }
-      button.setAttribute("title", currentTitle);
-      button.classList.remove('code-copy-button-checked');
-    }, 1000);
-    // clear code selection
-    e.clearSelection();
-  }
-  const getTextToCopy = function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
       for (const childEl of codeEl.children) {
         if (isCodeAnnotation(childEl)) {
           childEl.remove();
         }
       }
       return codeEl.innerText;
-  }
-  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
-    text: getTextToCopy
-  });
-  clipboard.on('success', onCopySuccess);
-  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
-      text: getTextToCopy,
-      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
     });
-    clipboardModal.on('success', onCopySuccess);
-  }
-    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
-    var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp('/' + window.location.host + '/');
-    var isInternal = (href) => {
-        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
     }
-    // Inspect non-navigation links and adorn them if external
- 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
-    for (var i=0; i<links.length; i++) {
-      const link = links[i];
-      if (!isInternal(link.href)) {
-        // undo the damage that might have been done by quarto-nav.js in the case of
-        // links that we want to consider external
-        if (link.dataset.originalHref !== undefined) {
-          link.href = link.dataset.originalHref;
-        }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }
-    }
-  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
-    const config = {
-      allowHTML: true,
-      maxWidth: 500,
-      delay: 100,
-      arrow: false,
-      appendTo: function(el) {
-          return el.parentElement;
-      },
-      interactive: true,
-      interactiveBorder: 10,
-      theme: 'quarto',
-      placement: 'bottom-start',
-    };
-    if (contentFn) {
-      config.content = contentFn;
-    }
-    if (onTriggerFn) {
-      config.onTrigger = onTriggerFn;
-    }
-    if (onUntriggerFn) {
-      config.onUntrigger = onUntriggerFn;
-    }
-    window.tippy(el, config); 
-  }
-  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
-  for (var i=0; i<noterefs.length; i++) {
-    const ref = noterefs[i];
-    tippyHover(ref, function() {
-      // use id or data attribute instead here
-      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
-      try { href = new URL(href).hash; } catch {}
-      const id = href.replace(/^#\/?/, "");
-      const note = window.document.getElementById(id);
-      if (note) {
-        return note.innerHTML;
-      } else {
-        return "";
-      }
-    });
-  }
-  const xrefs = window.document.querySelectorAll('a.quarto-xref');
-  const processXRef = (id, note) => {
-    // Strip column container classes
-    const stripColumnClz = (el) => {
-      el.classList.remove("page-full", "page-columns");
-      if (el.children) {
-        for (const child of el.children) {
-          stripColumnClz(child);
-        }
-      }
-    }
-    stripColumnClz(note)
-    if (id === null || id.startsWith('sec-')) {
-      // Special case sections, only their first couple elements
-      const container = document.createElement("div");
-      if (note.children && note.children.length > 2) {
-        container.appendChild(note.children[0].cloneNode(true));
-        for (let i = 1; i < note.children.length; i++) {
-          const child = note.children[i];
-          if (child.tagName === "P" && child.innerText === "") {
-            continue;
-          } else {
-            container.appendChild(child.cloneNode(true));
-            break;
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
           }
         }
-        if (window.Quarto?.typesetMath) {
-          window.Quarto.typesetMath(container);
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
         }
-        return container.innerHTML
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
       } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
         if (window.Quarto?.typesetMath) {
           window.Quarto.typesetMath(note);
         }
-        return note.innerHTML;
-      }
-    } else {
-      // Remove any anchor links if they are present
-      const anchorLink = note.querySelector('a.anchorjs-link');
-      if (anchorLink) {
-        anchorLink.remove();
-      }
-      if (window.Quarto?.typesetMath) {
-        window.Quarto.typesetMath(note);
-      }
-      if (note.classList.contains("callout")) {
-        return note.outerHTML;
-      } else {
-        return note.innerHTML;
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
       }
     }
-  }
-  for (var i=0; i<xrefs.length; i++) {
-    const xref = xrefs[i];
-    tippyHover(xref, undefined, function(instance) {
-      instance.disable();
-      let url = xref.getAttribute('href');
-      let hash = undefined; 
-      if (url.startsWith('#')) {
-        hash = url;
-      } else {
-        try { hash = new URL(url).hash; } catch {}
-      }
-      if (hash) {
-        const id = hash.replace(/^#\/?/, "");
-        const note = window.document.getElementById(id);
-        if (note !== null) {
-          try {
-            const html = processXRef(id, note.cloneNode(true));
-            instance.setContent(html);
-          } finally {
-            instance.enable();
-            instance.show();
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
           }
         } else {
-          // See if we can fetch this
-          fetch(url.split('#')[0])
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
           .then(res => res.text())
           .then(html => {
             const parser = new DOMParser();
             const htmlDoc = parser.parseFromString(html, "text/html");
-            const note = htmlDoc.getElementById(id);
+            const note = htmlDoc.querySelector('main.content');
             if (note !== null) {
-              const html = processXRef(id, note);
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
               instance.setContent(html);
             } 
           }).finally(() => {
@@ -1417,185 +1477,161 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             instance.show();
           });
         }
-      } else {
-        // See if we can fetch a full url (with no hash to target)
-        // This is a special case and we should probably do some content thinning / targeting
-        fetch(url)
-        .then(res => res.text())
-        .then(html => {
-          const parser = new DOMParser();
-          const htmlDoc = parser.parseFromString(html, "text/html");
-          const note = htmlDoc.querySelector('main.content');
-          if (note !== null) {
-            // This should only happen for chapter cross references
-            // (since there is no id in the URL)
-            // remove the first header
-            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
-              note.children[0].remove();
-            }
-            const html = processXRef(null, note);
-            instance.setContent(html);
-          } 
-        }).finally(() => {
-          instance.enable();
-          instance.show();
-        });
-      }
-    }, function(instance) {
-    });
-  }
-      let selectedAnnoteEl;
-      const selectorForAnnotation = ( cell, annotation) => {
-        let cellAttr = 'data-code-cell="' + cell + '"';
-        let lineAttr = 'data-code-annotation="' +  annotation + '"';
-        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
-        return selector;
-      }
-      const selectCodeLines = (annoteEl) => {
-        const doc = window.document;
-        const targetCell = annoteEl.getAttribute("data-target-cell");
-        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
-        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
-        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
-        const lineIds = lines.map((line) => {
-          return targetCell + "-" + line;
-        })
-        let top = null;
-        let height = null;
-        let parent = null;
-        if (lineIds.length > 0) {
-            //compute the position of the single el (top and bottom and make a div)
-            const el = window.document.getElementById(lineIds[0]);
-            top = el.offsetTop;
-            height = el.offsetHeight;
-            parent = el.parentElement.parentElement;
-          if (lineIds.length > 1) {
-            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
-            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
-            height = bottom - top;
-          }
-          if (top !== null && height !== null && parent !== null) {
-            // cook up a div (if necessary) and position it 
-            let div = window.document.getElementById("code-annotation-line-highlight");
-            if (div === null) {
-              div = window.document.createElement("div");
-              div.setAttribute("id", "code-annotation-line-highlight");
-              div.style.position = 'absolute';
-              parent.appendChild(div);
-            }
-            div.style.top = top - 2 + "px";
-            div.style.height = height + 4 + "px";
-            div.style.left = 0;
-            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
-            if (gutterDiv === null) {
-              gutterDiv = window.document.createElement("div");
-              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
-              gutterDiv.style.position = 'absolute';
-              const codeCell = window.document.getElementById(targetCell);
-              const gutter = codeCell.querySelector('.code-annotation-gutter');
-              gutter.appendChild(gutterDiv);
-            }
-            gutterDiv.style.top = top - 2 + "px";
-            gutterDiv.style.height = height + 4 + "px";
-          }
-          selectedAnnoteEl = annoteEl;
-        }
-      };
-      const unselectCodeLines = () => {
-        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
-        elementsIds.forEach((elId) => {
-          const div = window.document.getElementById(elId);
-          if (div) {
-            div.remove();
-          }
-        });
-        selectedAnnoteEl = undefined;
-      };
-        // Handle positioning of the toggle
-    window.addEventListener(
-      "resize",
-      throttle(() => {
-        elRect = undefined;
-        if (selectedAnnoteEl) {
-          selectCodeLines(selectedAnnoteEl);
-        }
-      }, 10)
-    );
-    function throttle(fn, ms) {
-    let throttle = false;
-    let timer;
-      return (...args) => {
-        if(!throttle) { // first call gets through
-            fn.apply(this, args);
-            throttle = true;
-        } else { // all the others get throttled
-            if(timer) clearTimeout(timer); // cancel #2
-            timer = setTimeout(() => {
-              fn.apply(this, args);
-              timer = throttle = false;
-            }, ms);
-        }
-      };
-    }
-      // Attach click handler to the DT
-      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
-      for (const annoteDlNode of annoteDls) {
-        annoteDlNode.addEventListener('click', (event) => {
-          const clickedEl = event.target;
-          if (clickedEl !== selectedAnnoteEl) {
-            unselectCodeLines();
-            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
-            if (activeEl) {
-              activeEl.classList.remove('code-annotation-active');
-            }
-            selectCodeLines(clickedEl);
-            clickedEl.classList.add('code-annotation-active');
-          } else {
-            // Unselect the line
-            unselectCodeLines();
-            clickedEl.classList.remove('code-annotation-active');
-          }
-        });
-      }
-  const findCites = (el) => {
-    const parentEl = el.parentElement;
-    if (parentEl) {
-      const cites = parentEl.dataset.cites;
-      if (cites) {
-        return {
-          el,
-          cites: cites.split(' ')
-        };
-      } else {
-        return findCites(el.parentElement)
-      }
-    } else {
-      return undefined;
-    }
-  };
-  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
-  for (var i=0; i<bibliorefs.length; i++) {
-    const ref = bibliorefs[i];
-    const citeInfo = findCites(ref);
-    if (citeInfo) {
-      tippyHover(citeInfo.el, function() {
-        var popup = window.document.createElement('div');
-        citeInfo.cites.forEach(function(cite) {
-          var citeDiv = window.document.createElement('div');
-          citeDiv.classList.add('hanging-indent');
-          citeDiv.classList.add('csl-entry');
-          var biblioDiv = window.document.getElementById('ref-' + cite);
-          if (biblioDiv) {
-            citeDiv.innerHTML = biblioDiv.innerHTML;
-          }
-          popup.appendChild(citeDiv);
-        });
-        return popup.innerHTML;
+      }, function(instance) {
       });
     }
-  }
-});
-</script>
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="./stats_title.html" class="pagination-link" aria-label="Statistik - Die Grundlagen">
