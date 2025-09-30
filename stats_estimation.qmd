@@ -1,4 +1,4 @@
-# Parameterschätzung 
+# Inductive Behavior
 
 ```{r}
 #| echo: false
@@ -20,6 +20,293 @@ mu_lummer <- 0
 sd_lummer <- 230
 sample_k9 <- readr::read_csv('data/sample_k9.csv')
 ```
+
+## Was passiert wenn eine "andere" Hypothese zutrifft? 
+
+In @fig-stats-sig-power-01 ist neben der uns schon bekannten Stichprobenverteilung unter der $H_0$ für unsere kleine Welt eine weitere Verteilung unter einer Alternativhypothese, die wir mit $H_1$ bezeichnen. Unter der $H_1$ ist der wahre Unterschied zwischen den beiden Verteilungen $\Delta = 500N$.
+
+```{r}
+#| fig-cap: "Differenzen mit kritischen Regionen (rot) mit einer Wahrscheinlichkeit von $\\alpha$, wenn $H_0$ zutrifft, und unter einer Alternativhypothese $H_1: \\Delta = 500N$."
+#| label: fig-stats-sig-power-01
+
+differences <- readr::read_csv('data/combinations_differences.csv')
+n_sim <- dim(differences)[1]
+sigma <- sd(differences$d)
+xx <- -750:1250
+n_pts <- length(xx)
+q_crit <- qnorm(0.975, 0, sd = sigma)
+dat_power <- tibble(
+  x = rep(xx,2),
+  y = c(dnorm(xx,0,sigma), dnorm(xx,500,sigma)),
+  hypo = rep(c("H0","H500"), c(n_pts, n_pts))
+)
+low <- tibble(x = seq(-750,-q_crit), y = dnorm(x, 0, sigma), hypo='H50')
+up <- tibble(x = seq(q_crit, 750), y = dnorm(x, 0, sigma), hypo='H50')
+ggplot(dat_power, aes(x,y,fill=hypo,ymin=0,ymax=y)) +
+  geom_ribbon(alpha=.5) +
+  geom_area(data = up, fill='red', alpha=0.8) +
+  geom_area(data = low, fill='red', alpha=.8) +
+  geom_line() +
+  scale_fill_discrete('Hypothese') +
+  labs(x = 'Differenzen[N]', y = 'relative Häufigkeit') 
+```
+
+In @fig-stats-sig-power-01 ist zu sehen, dass sich die beiden Verteilungen überschneiden. Der kritische Bereich unter der $H_0$ fängt etwa bei $500N$ an, sodass der Bereich zwischen etwa $100-400N$ unter beiden Verteilungen wohl relativ *wahrscheinlich* ist. Das heißt, wenn wir einen Wert in diesem Bereich beobachten würden, könnten wir nicht wirklich trennscharf argumentieren, aus welcher Stichprobenverteilung der Wert tatsächlich stammt. In @fig-stats-sig-power-02 haben wir den Bereich unter der $H_1$, der links des kritischen Bereichs von $H_0$ liegt, grün eingefärbt. Da es sich hier wieder um eine Fläche handelt, bestimmt diese Fläche eine Wahrscheinlichkeit. Wie könnte diese Wahrscheinlichkeit verbal beschrieben werden?
+
+```{r}
+#| fig-cap: "Differenzen mit kritischen Regionen (rot) mit einer Wahrscheinlichkeit von $\\alpha$, wenn $H_0$ zutrifft, und $\\beta$ (grün), wenn $H_1$ zutrifft."
+#| label: fig-stats-sig-power-02
+
+beta <- tibble(
+  x = -300:q_crit,
+  y = dnorm(x, 500, sigma)
+)
+ggplot(dat_power, aes(x,y,fill=hypo,ymin=0,ymax=y)) +
+  geom_ribbon(alpha=.5) +
+  geom_area(data = up, fill='red', alpha=0.8) +
+  geom_area(data = low, fill='red', alpha=.8) +
+  geom_area(data = beta, fill='green', alpha=0.5) +
+  geom_line() +
+  scale_fill_discrete('Hypothese') +
+  labs(x = 'Differenzen[N]', y = 'relative Häufigkeit') 
+```
+
+Die Werte zwischen den beiden kritischen Bereichen beschreiben diejenigen Werte, bei denen wir die $H_0$ beibehalten würden, da wir diese Werte nicht als *überraschend* unter der $H_0$ einschätzen. Dementsprechend würden wir uns irren, wenn in der Realität allerdings die $H_1$-Hypothese zutreffen würde. Daher beschreibt die grüne Fläche in @fig-stats-sig-power-02 ebenfalls die Wahrscheinlichkeit, sich zu irren – aber dieses Mal, wenn die Alternativhypothese $H_1$ zutrifft. Diese Irrtumswahrscheinlichkeit bezeichnet man als $\beta$-Wahrscheinlichkeit.
+
+::: {#def-beta-error}
+## $\beta$-Wahrscheinlichkeit
+
+Die $\beta$-Wahrscheinlichkeit \index{$\beta$-Wahrscheinlichkeit} beschreibt die Wahrscheinlichkeit, sich gegen die Alternativhypothese $H_1$ zu entscheiden, wenn diese zutrifft. Die $\beta$-Wahrscheinlichkeit wird auch als Fehler II. Art bezeichnet.
+:::
+
+Wenn wir jetzt das Komplement der grünen Fläche nehmen, dann erhalten wir wiederum eine Wahrscheinlichkeit. In @fig-stats-sig-power-03 ist diese Fläche blau eingezeichnet.
+
+```{r}
+#| fig.cap: "$1-\\beta$ = Power des Tests (blaue Fläche)."
+#| label: fig-stats-sig-power-03
+
+beta <- tibble(
+  x = -300:q_crit,
+  y = dnorm(x, 500, sigma)
+)
+power <- tibble(
+  x = q_crit:max(dat_power$x),
+  y = dnorm(x, 500, sigma)
+)
+ggplot(dat_power, aes(x,y,fill=hypo,ymin=0,ymax=y)) +
+  geom_ribbon(alpha=.5) +
+  geom_area(data = up, fill='red', alpha=0.8) +
+  geom_area(data = low, fill='red', alpha=.8) +
+  geom_area(data = beta, fill='green', alpha=0.5) +
+  geom_area(data = power, fill='blue', alpha=0.5) +
+  geom_line() +
+  scale_fill_discrete('Hypothese') +
+  labs(x = 'Differenzen[N]', y = 'relative Häufigkeit') 
+```
+
+Diese Fläche beschreibt die Wahrscheinlichkeit, sich für die Alternativhypothese $H_1$ zu entscheiden, wenn diese auch tatsächlich zutrifft, und wird als die Power bezeichnet.
+
+::: {#def-power}
+## Power \index{Power}
+
+Die Power bezeichnet die Wahrscheinlichkeit, sich für die Alternativhypothese $H_1$ zu entscheiden, wenn diese in der Realität zutrifft.
+:::
+
+Nochmal zu @fig-stats-sig-power-03: Die Werte unter der blauen Fläche werden mit einer Wahrscheinlichkeit beobachtet, die derjenigen der blauen Fläche entspricht. Jedes Mal, wenn so ein Wert eintritt, liegt dieser im kritischen Bereich unter der $H_0$ (rote Fläche) und wir entscheiden uns gegen die $H_0$.
+
+Zusammengefasst haben wir die folgende Liste bezüglich der Terme $\alpha$, $\beta$ und Power:
+- $\alpha$: Die Wahrscheinlichkeit, sich gegen die $H_0$ zu entscheiden, wenn die $H_0$ zutrifft. Das $\alpha$-Level wird vor dem Experiment festgelegt, um zu kontrollieren, welche Fehlerrate toleriert wird.
+- $\beta$: Die Wahrscheinlichkeit, sich gegen die $H_1$ zu entscheiden, wenn die $H_1$ zutrifft.
+- Power := $1 - \beta$: Die Wahrscheinlichkeit, sich für die $H_1$ zu entscheiden, wenn die $H_1$ zutrifft. Sollte ebenfalls **vor** dem Experiment festgelegt werden.
+
+Die verschiedenen Entscheidungsmöglichkeiten haben wir schon einmal zusammengefasst (siehe @tbl-stats-sig-power).
+
+| Entscheidung\\Realität | $H_0$ | $H_1$ |
+| --- | --- | --- |
+| $H_0$ | korrekt | $\beta$ |
+| $H_1$ | $\alpha$ | korrekt |
+
+: Entscheidungsmöglichkeiten und Fehlerarten  {#tbl-stats-sig-power}
+
+## Wie kann die Power erhöht werden? 
+
+Die Frage, die sich nun stellt, ist: Wie kann wir die Power erhöht werden? In @fig-stats-sig-power-04 haben sind nochmals die beiden Verteilungen bei $\Delta = 500$ und $\Delta = 0$ abgetragen.
+
+```{r}
+#| fig-cap: "Verteilungen wenn $\\Delta$=500 und $\\Delta$=0 in unserem kleine Welt Beispiel mit n = 3."
+#| label: fig-stats-sig-power-04
+
+dat <- tibble(
+  di = c(differences$d + 500, differences$d),
+  hypo = rep(c('H500','H0'), c(n_sim,n_sim))
+)
+p_h500 <- ggplot(dat, aes(di, fill=hypo)) +
+  geom_density(alpha=0.5) +
+  labs(x = 'Differenzen[N]', y = 'relative Häufigkeit') +
+  scale_fill_discrete("Hypothese", labels=c(
+    expression(H[0]  ), expression(H[500])
+  ))
+print(p_h500)
+```
+
+Eine Entscheidung ist speziell problematisch im Bereich zwischen $0$ und $500$. Hier überlappen die beiden Verteilungen, und es entstehen dementsprechend Schwierigkeiten, einen beobachteten Wert in diesem Bereich eindeutig einer der beiden Hypothesen zuzuordnen. Die Power kann daher erhöht werden, indem die Überlappung der beiden Verteilungen verkleinert wird. Dazu sind zwei Möglichkeiten vorhanden: Entweder der Unterschied zwischen den beiden $\Delta$s wird vergrößert (d.h., das Krafttraining müsste effizienter werden) oder die beiden Verteilungen werden schmaler gemacht, indem die Streuung der Werte verkleinert wird.
+
+In @fig-stats-sig-power-05 sind alle Parameter gleich geblieben wie in @fig-stats-sig-power-04, aber die Stichprobengröße wurde von $n = 3$ auf $n = 9$ erhöht.
+
+```{r}
+#| fig-cap: "Stichprobenverteilungen der Differenz unter $H_0$ und $H_1:\\delta=500$N bei einer Stichprobengröße von n = 9"
+#| label: fig-stats-sig-power-05
+
+sample_k9 <- readr::read_csv('data/sample_k9.csv')
+sigma <- sample_k9$sd[1]
+d <- sample_k9$m[2]
+xx = seq(-4*sigma,d+4*sigma)
+n_pts = length(xx)
+dat_k9 <- tibble(
+  x = rep(xx,2),
+  y = c(dnorm(xx, 0, sigma), dnorm(xx, d, sigma)),
+  hypo = rep(c('H0','H500'), c(n_pts, n_pts))
+)
+ggplot(dat_k9, aes(x,y,fill=hypo, ymin=0, ymax=y)) +
+  geom_ribbon(alpha=0.5) +
+  geom_line() +
+  scale_fill_discrete("Hypothese", labels=c(
+    expression(H[0]  ), expression(H[500])
+  )) +  
+  lims(x = c(-750, 1250)) +
+  labs(x = 'Differenzen[N]', y = 'relative Häufigkeiten') 
+```
+
+Es ist zu beobachten, dass die Position der Verteilungen gleich geblieben ist. Dies sollte nicht weiter verwundern, da immer noch die beiden Hypothesen $H_0: \Delta = 0$N und $H_1: \Delta = 500$N miteinander verglichen werden. Aber durch die Erhöhung der Stichprobengröße ist die Streuung der $D$s unter beiden Hypothesen kleiner geworden. Dies führt dazu, dass die Verteilungen nun steiler sind und dementsprechend weniger stark überlappen. Die Streuung der Statistik wird, wie schon oben erwähnt, als Standardfehler $s_e$ bezeichnet und beschreibt die Standardabweichung der Statistik. Der Standardfehler ist **nicht** gleich der Standardabweichung in der Population bzw. der Stichprobe (siehe @fig-stats-sig-standard-error-deriv).
+
+```{r}
+#| label: fig-stats-sig-standard-error-deriv
+#| fig-cap: "Zusammenhang zwischen den Parametern der Population, der Stichprobe und dem Standardfehler"
+
+df <- tibble(x = c(0, 1), y = c(0,1))
+df_n1 <- tibble(
+  x = seq(0,.6,length.out=100),
+  y = 0.1*dnorm(x, 0.3, 0.12)
+)
+df_n2 <- tibble(
+  x = seq(1.6, 2., length.out=100),
+  y = 0.04*dnorm(x, 1.8, 0.05)
+)
+df_sample <- tibble(
+    y = 0,
+    x = runif(13, 0.8, 1.2) 
+)
+
+ggplot(df, aes(x,y)) +
+  ggforce::geom_circle(data = tibble(x = 1, y = 0.9, r = 0.05),
+             aes(x0 = x, y0 = y, r = r), fill='light blue') + 
+  geom_curve(data = tibble(
+    x = .3, y = .7, xend = .95, yend=.95
+  ),
+  aes(x, y, xend=xend, yend=yend), curvature=-.5,
+  arrow = arrow(length=unit(.1, 'inches'), type='closed')) +
+  ggforce::geom_circle(data = tibble(x = 0.3, y = 0.7, r = 0.3),
+             aes(x0 = x, y0 = y, r = r), fill='light blue') +
+  geom_point(data = df_sample) +
+  geom_point(x = mean(df_sample$x), y = 0, color='red', size=2) +
+  geom_segment(data = tibble(
+    x = 1.6, xend = 2,
+    y = seq(.6, 1, length.out=10),
+    yend = y
+  ), aes(x=x, y=y, xend=xend, yend=yend), linetype='dotted') +
+  geom_point(data = tibble(
+    x = runif(10, 1.7, 1.9),
+    y = seq(.6, 1, length.out=10)
+  ), color='red') +
+  geom_segment(data = tibble(x=.3, y=0, yend=.35), aes(x,y,xend=x,yend=yend), color='red',
+               linetype = 'dashed') +
+  geom_segment(data = tibble(x=.15,xend=.45,y=.15), aes(x,y,xend=xend,yend=y), color='green',
+               linetype='dashed',
+               arrow = arrow(length=unit(.1, 'inches'), type='closed', ends='both')) +
+  geom_segment(data = tibble(x=1.8, y=0, yend=.35), aes(x,y,xend=x,yend=yend), color='red',
+               linetype = 'dashed') +
+  geom_segment(data = tibble(x=1.75,xend=1.85,y=.15), aes(x,y,xend=xend,yend=y), color='green',
+               linetype='dashed',
+               arrow = arrow(length=unit(.1, 'inches'), type='closed', ends='both')) +
+  geom_line(data = df_n1) + 
+  geom_line(data = df_n2) + 
+  geom_curve(data = tibble(x=1, y=0.64, xend=mean(df_sample$x), yend=0.05),
+             aes(x,y,xend=xend,yend=yend), curvature = -0.1,
+             arrow = arrow(length=unit(.1, 'inches'), type='closed')) +
+  geom_curve(data = tibble(x=mean(df_sample$x), y=0.05, xend=1.55, yend=1),
+             aes(x,y,xend=xend,yend=yend), curvature = -0.2,
+             arrow = arrow(length=unit(.1, 'inches'), type='closed'),
+             linetype = 'dotted') +
+  geom_curve(data = tibble(x=.95, y=0.85, xend=0.95, yend=.75),
+             aes(x,y,xend=xend,yend=yend), curvature = 0.3,
+             arrow = arrow(length=unit(.08, 'inches'), type='closed')) +  
+  annotate("text", x = 0.3, y = 0.7,
+           label=expression(paste('\U03BC, ',sigma)), size=5) +
+  annotate("text", x = 1, y = 0.7,
+           label=expression(paste(bar(x),', s')), size=5) +
+  annotate("text",
+           x = c(0.3, 1,  1.8, 1.8, 1,.3),
+           y = c(1.1, 1.1, 1.1,-.1,-.1,-.1),
+           label= c("Population","Stichprobe","Mehrere Stichproben",
+                    "Stichprobenverteilung", "Daten", "Verteilung")) +
+  annotate("text", x = 1.8, y = .4,
+          label=expression(paste("Standardfehler ",s[e])), size=5) +
+  scale_x_continuous(limits = c(0,2.3)) +
+  scale_y_continuous(limits = c(-0.1,1.2)) +
+  coord_equal() + theme_void()
+```
+
+Warum führt die Erhöhung der Stichprobengröße dazu, dass die Verteilungen steiler werden? Die Statistik die in diesen Fällen betrachtet wurde war der Unterschied $d$ zwischen den Gruppen. Durch die Erhöhung der Stichprobe kommt es nun dazu, dass dieser Unterschied $d$ weniger stark schwankt, denn dadurch, dass mehr Probandinnen betrachtet werden, ist die Chance das zwei extreme Mittelwerte in den beiden Gruppen auftachen kleiner. Die Vergrößerung der Stichprobe führt dazu, dass extreme Werte eher *rausgemittelt* werden. Dies führt dann dazu, dass wenn die Mittelwerte weniger schwanken auch die Unterschiede zwischen den beiden Mittelwerten weniger schwanken. In der Folge ist die Standardabweichung der Differenzen $d$, der Standardfehler kleiner und die beiden Verteilungen unter der $H_0$ und der $H_1$ respektive werden steiler.
+
+::: {.callout-note}
+
+Für den Standardfehler des Mittelwerts, also wenn die Statistik der Mittlwert ist, dann gilt der folgende Zusammenhang:
+
+| Population | Stichprobe |
+| --- | --- | 
+| $\sigma_{\bar{X}}=\sqrt{\frac{\sigma^2}{n}} = \frac{\sigma}{\sqrt{n}}$ | $s_e=\sqrt{\frac{s^2}{n}}=\frac{s}{\sqrt{n}}$ | 
+
+: Standardfehler des Mittelwerts, n = Stichprobengröße {#tbl-stats-sig-standard-error}
+
+In @tbl-stats-sig-standard-error ist zu sehen, dass ein wurzelförmiger Zusammenhang zwischen dem Standardfehler $s_e$ und der Stichprobengröße besteht. Dieser Zusammenhang wird uns in verschiedenen Berechnungen zum Standardfehler verschiedener Statistiken immer wieder begegnen.
+
+:::
+
+::: {#exm-se-average}
+## Standardfehler des Mittelwerts
+
+Die Gleichheit des Standardfehler des Mittelwerts mit der Standardabweichung der Stichprobenverteilung der Mittelwerte ist im folgenden Beispiel einfach zu nachzuvollziehen. Dazu werden $1000$ Stichproben der Größe $N = 10$ aus einer Normalverteilung mit $\mu = 0$ und $sigma=2$ gezogen und für jede Stichprobe wird der Mittelwert berechnet. Der theoretische Standardfehler ist:
+
+\begin{equation*}
+s_e = \frac{\sigma}{\sqrt{n}} = \frac{2}{\sqrt{10}} \approx 0.63
+\end{equation*}
+```{r}
+#| echo: true
+
+n_sim <- 1000
+N <- 10
+mu <- 0
+sigma <- 2
+x_bars <- replicate(n_sim, mean(rnorm(N, mean=mu, sd=sigma)))
+sd(x_bars)
+```
+
+Es ist zu beobachten, dass der empirische Standardfehler, im Rahmen der Stichprobenvariabilität, den theoretischen Wert tatsächlich sehr gut approximiert. Bei mehr Simulationsdurchgängen wird entsprechend der Unterschied immer kleiner.
+:::
+
+```{r}
+#| label: fig-stats-sig-sqrtfcn
+#| fig-cap: "Funktionaler Zusammenhang zwischen $x$ und $\\sqrt{x}$."
+
+tibble(x = seq(0, 100), y = sqrt(x)) |> 
+  ggplot(aes(x,y)) +
+  geom_line() +
+  labs(x = 'x', y = expression(y==sqrt(x)))
+```
+
+In @fig-stats-sig-sqrtfcn ist zur Erinnerung aus der Schule die Funktion $y = \sqrt{x}$ abgetragen. Daran sehen wir, dass die Funktionswerte für kleine Werte von $x$ steil ansteigen und später dann anfangen, immer langsamer größer zu werden. Angewendet auf unsere Power-Frage: Wenn der Standardfehler mit der Wurzel der Stichprobengröße $n$ kleiner wird, dann ist dies besonders bei kleinen Stichprobengrößen von Bedeutung, also zum Beispiel der Unterschied zwischen $n = 10$ und $n = 20$. Der gleiche Stichprobenunterschied dagegen zwischen $n = 110$ und $n = 120$ fällt nicht mehr ganz so stark ins Gewicht. Das heißt, bei kleinen Stichproben sollte um jede zusätzliche Teilnehmerin bzw. jeden zusätzlichen Teilnehmer gekämpft werden. Allgemein gilt: Je größer die Stichprobengröße, desto größer die Power.
+
+
 
 Bisher haben wir die Daten mittels Hypothesentests betrachtet. D. h., wir haben eine $H_0$- und $H_1$-Hypothese formuliert und dann anhand der Stichprobenverteilung abgeschätzt, wie kompatibel unser beobachteter Wert mit der $H_0$-Hypothese ist. Dadurch haben wir eine dichotome Betrachtung der Daten durchgeführt: Entweder war der beobachtete Wert statistisch signifikant unter der $H_0$ oder eben nicht. Diese Unterteilung der Entscheidung in nur zwei verschiedene Ausgänge – neben dem Problem, dass wir eine Frage beantworten, die wir oftmals gar nicht gestellt haben – bringt jedoch einige grundlegende Nachteile mit sich, die wir nun genauer betrachten.
 
@@ -426,18 +713,133 @@ ggplot2::ggplot(df_1,ggplot2::aes(x, y, xmin=xmin, xmax=xmax)) +
 Da die $H_0$-Hypothese nicht im Konfidenzintervall enthalten ist, können wir herleiten, dass ein statistisch signifikantes Ergebnis erzielt wurde.
 :::
 
-## Die Fisher vs. Neyman-Pearson Kontroverse
+## (Exkurs) Power und false discovery rate
 
-Damit sind jetzt die wichtigsten Komponenten von statistischen Analysen, zumindest so wie sie in den meisten Fällen in der Literatur angewendet werden, erarbeitet. Hypothesentestung, p-Werte, Konfidenzintervalle, Typ-I und Typ-II Fehler und Konfidenzintervalle. Tatsächlich sind diese verschiedenen Konzepte einer Mischung aus zwei Ansätzen die im Laufe der Zeit miteinander verschmolzen wurden und zum Teil auf widersprüchlichen Ansätzen beruhen. Ein Großteil der in der Statistik verwendet Methoden geht auf die Arbeiten von Ronald A. Fisher (1890-1962) zurück. Unter Fishers statistschen System war die Nullhypothese $H_0$ zentral und die Ablehnung derer basierend auf dem dazugehörenden p-Wert. Aus Fishers Ansatz erfolgte auch die Konzepte der $H_0$ Hypothese als diejenige unter der *nichts* passiert. Der p-Wert ist dabei eine Funktion eines *einzelnen* Datensatzes. Unter Fisher waren die Konzepte Typ-I und Typ-II Fehler nicht vorhanden. Dieser Ansatz wurde unter dem Begriff *inductive inference* zusammengefasst (@fisher1935). Zu diesem Zweck wird eine $H_0$-Hypothese aufgestellt und diese wird anhand der Daten mittels des p-Werts beurteilt. Der p-Wert wird unter Fisher als mögliche Evidence gegen die $H_0$ Hypothese angesehen. D.h. wenn ein sehr *kleiner* p-Wert beobachtet wird, wird dies als Evidenz gegen die Annahme der $H_0$ betrachtet. Allerdings hat sich Fisher gegen die *Annahme* der $H_0$ ausgesprochen, sondern fehlende Evidenz als nicht Ausreichend um die $H_0$ abzulehnen, also provisorisch beizubehalten [loucca2008, S.20]. Aus Fishers inductive inference kommt auch die Begrifflichkeit der *Signifikanz*. Induktiv deswegen, weil von den Daten auf die Allgemeinheit geschlossen wird und dieser Schritt ist immer mit Unsicherheit behaftet.
+Der folgende Abschnitt betrachtet, wie sich die durchschnittliche Power auf die Literatur insgesamt auswirkt. Sei eine bestimmte Anzahl von Studien bzw. Veröffentlichungen gegeben. Ein Teil dieser Studien wird signifikante Ergebnisse dokumentieren, während der andere Teil keine signifikanten Ergebnisse gefunden hat. Innerhalb der signifikanten Ergebnisse wird ein Teil der Ergebnisse auf einem tatsächlichen Effekt beruhen, während der andere Teil zwar statistisch signifikant ist, aber eigentlich kein Effekt vorliegt – es wurde also ein Typ-I-Fehler begangen. Den Anteil der Studien, bei denen kein Effekt vorliegt, bezeichnen wir mit $P(H_0)$. Allgemeiner formuliert, ist das die Wahrscheinlichkeit für eine Studie mit einem Nulleffekt. Wenn $N$ die Gesamtzahl der betrachteten Studien bezeichnet, dann berechnet sich die Anzahl der Studien, bei denen ein Nulleffekt vorliegt, folgendermaßen:
 
-Dem Gegenüber steht der Ansatz mit einer Nullhypothese $H_0$ und einer Altervativhypothese $H_1$ der den Arbeiten der Statistiker Jerzy Neyman (1894-1981) und Egon S. Pearson (1895-1980) beruht. Unter diesem System ist die Minimierung eines Entscheidungsfehler bei Wiederholung des Experiments die zentrale Kernidee. Wie können Entscheidungen getroffen werden die im Mittel die Anzahl der fehlerhaften Entscheidungen bei wiederholter Durchführung des Experiments minimieren? Aus diesem Ansatz haben Pearson-Neyman die Konzepte Typ-I und Typ-II Fehler, Power und Konfidenzintervalle entwickelt [@neyman1935; @lehmann1993]. Unter diesem System hat der p-Wert keine ausgezeichnete Bedeutung. Zentrall ist die Entscheidung die $H_0$ anzunehmen bzw. die $H_0$ abzulehnen um über **viele Wiederholungen des Experiments** hinweg optimale Entscheidungen zu treffen. Optimale Entscheidungen bedeutet möglichst wenige falsche Entscheidungen zu treffen. Der Hintergrund vor dem Neyman und Pearson die Theorie entwickelt haben, ist stärker durch einen industriellen Kontext geprägt um zum Beispiel bei einem Fließband sicher zu stellen, dass die Qualität der Produkte einem bestimmten Standard entspricht. In diesem Zusammenhang ist die *Wiederholung* von Experimenten, die zufällige Auswahl von Objekten, dementsprechend einfacher nachvollziehbar. Unter dem System von Pearson-Neyman ist die Durchführung eines Experiments dabei ohne die explizite Berechnung der Power und folglich der expliziten Aufstellung einer $H_1$ Hypothese bedeutungslos. Auch erklärt sich hier die Interpretation von Konfidenzintervallen als eine Überdeckungswahrscheinlichkeit bei Wiederholung des Experiments. Pearson-Neyman haben diesen Ansatz unter dem Begriff *inductive behavior* zusammengefasst. Das konkrete Niveau der Signifikanz, der p-Wert, ist weniger von Bedeutung, sondern nur welche Entscheidung getroffen wird und wie die Anzahl der Fehlentscheidungen minimiert werden können.
+\begin{equation*}
+N_{H_0} = P(H_0) \cdot N
+\end{equation*}
 
-D.h. unter Fisher ist die Begriffe der Evidenz und der damit verbundene **p-Wert** und der **Signifikanz**test zentral. Dagegen sind unter Neyman-Pearson die Konzepte Fehler, $\alpha$ bzw. $\beta$, und **Hypothesen**test zentral. Damit verbunden ist auch beispielsweise, das das Konzept der Power unter Fischers Signifikanztest keine Rolle spielt, da keine $H_1$ vorhanden ist. Es lässt sich zeigen, dass diese beiden Ansätze auf Basis der gleichen Daten zu unterschiedlichen Aussagen kommen können, d.h. im Widerspruch zueinander stehen (@berger2003, @lehmann1993). Die Unterschiede in der Auffassung wie Daten statistisch bewertet werden sollen, hat zu einer regelrechten Fehde vor allem zwischen Fisher und Pearson geführt (@neyman1956, @loucca2008). Unglücklicherweise sind im Laufe der Jahre die beiden Ansätze bei Anwendern der Statistik immer mehr verschmolzen und haben dazu geführt, dass ein Großteil der wissenschaftlichen Analysen mit einem in sich widersprüchlichen statistischen System durchgeführt wird (@hubbard2003, @hager2013, @gigerenzer2004, @nuzzo2014). Ironischerweise sind beide Seiten sich einig darüber gewesen, dass das Signifikanzlevel bzw. der Fehlerlevel mit $5$% nicht sakrosankt sein ist, sondern entsprechend der Fragestellung angepasst werden sollte (@lehmann1993). Beide Ansätze haben zudem zwei Abstrahierungen in die statistische Analyse die sich nicht mit der Realität überein bringen lassen. Aus Fishers Ansatz ist dies das Konzept einer unendlich großen Population aus der Stichproben gezogen werden, während bei Neyman-Pearson die (unendlich oft) wiederholte Testung benötigt wird.
+Werden diese Studien mit der Irrtumswahrscheinlichkeit $\alpha$ multipliziert, dann erhält man die Anzahl der Studien, die zwar einen Nulleffekt, also eigentlich keinen Effekt haben, aber aufgrund der Irrtumswahrscheinlichkeit *geirrt* haben und einen statistisch signifikanten Effekt beobachten.
 
-Die Verschmelzung der beiden Konzepte hat auch dazu geführt, dass der p-Wert und das $\alpha$-Level miteinander vermischt werden. Der p-Wert ist eine Aussage über die Daten unter der Annahme der $H_0$. Das $\alpha$-Level ist dagegen eine Aussage über die Fehlerrate über viele Experimente hinweg. Bei einem einzelnen Experiment wird entweder ein Fehler oder eben nicht gemacht. Ein p-Wert von $p = 0.03$ ist daher keine Aussage über Fehlerrate, sondern eine Aussage darüber mit welcher Wahrscheinlichkeit ein beobachteter oder ein extremerer Wert unter einer angenommenen $H_0$ auftritt. In dieser Aussage taucht das Konzept eines Fehlers nicht auf. Tatsächlich ist die Missinterpretation nicht nur unter AnwenderInnen sondern auch unter StatistikerInnen weit verbreitet (@hubbard2003). Allerdings sollte auch erwähnt werden, dass die Ansicht, dass die beiden Systeme nicht miteinander vereinbar sind nicht von allen geteilt wird [vgl. @mayo2018, S.173ff]
+\begin{equation*}
+N_{H_0, \text{signifikant}} = P(H_0) \cdot \alpha \cdot N
+\end{equation*}
+
+Ein einfaches Beispiel wäre, wenn $N = 200$ Studien gegeben wären und $P(H_0) = 0.5$, dann liegt bei $100$ Studien kein Effekt vor. Aber aus diesen $100$ Studien werden sich $\alpha$ der Fälle irren. Dies führt dazu, dass daher $5$ statistisch signifikante Ergebnisse beobachtet werden. In @fig-stats-sig-fdr-01 ist dies graphisch veranschaulicht.
+
+```{r}
+#| fig-cap: "Anteil der signifikanten Nulleffekte (große Punkte) bei $N = 200$ Studien und $P(H_0) = 0.5$."
+#| label: fig-stats-sig-fdr-01
+
+fdr_1 <- tibble(
+  x = rep(1:20,10),
+  y = rep(1:10,each=20),
+  h0 = rep(c("H_0","H_1"), each=100),
+  sig = rep(1:0, c(5,195))
+)
+ggplot(fdr_1, aes(x,y, color=h0)) +
+  geom_point() +
+  geom_point(data = fdr_1 |> dplyr::filter(sig == 1),
+             size=4) +
+  scale_color_discrete(
+    "Effekt",
+    labels = c(expression(H[0]),expression(H[1]))) +
+  theme_void()
+```
+
+Die gleichen Überlegungen können für diejenigen Studien gemacht werden, bei denen tatsächlich ein Effekt vorliegt. Die Anzahl der Studien mit einem Effekt ist genau das Komplement zu denjenigen, bei denen der Nulleffekt vorliegt. Formal:
+
+\begin{equation*}
+N_{H_1} = (1-P(H_0))\cdot N
+\end{equation*}
+
+Die Anzahl derjenigen Studien, bei denen ein Effekt vorliegt und die auch als statistisch signifikant beobachtet werden, ist abhängig von der Power $\rho$. Dementsprechend berechnet sich die Anzahl der statistisch signifikanten Studien, bei denen auch ein Effekt vorliegt, folgendermaßen:
+
+\begin{equation*}
+N_{H_1,\text{signifikant}} = (1-P(H_0))\cdot \rho \cdot N
+\end{equation*}
+
+Im Beispiel mit $N = 200$ Studien und $P(H_0) = 0.5$ würde bei $100$ Studien ein Effekt vorliegen und bei einer Power von $\rho = 0.8$ würde bei $80$ dieser Studien ein statistisch signifikantes Ergebnis beobachtet werden (siehe @fig-stats-sig-fdr-02).
+
+```{r}
+#| fig-cap: "Anteil der signifikanten Null- und $H_1$-Effekten (große Punkte) bei $N = 200$ Studien, $P(H_0) = 0.5$ und Power $\\rho = 0.8$."
+#| label: fig-stats-sig-fdr-02
+
+fdr_2 <- tibble(
+  x = rep(1:20,10),
+  y = rep(1:10,each=20),
+  h0 = rep(c("H_0","H_1"), each=100),
+  sig = c(rep(1:0, c(5,95)), rep(1:0, c(80,20)))
+)
+ggplot(fdr_2, aes(x,y, color=h0)) +
+  geom_point() +
+  geom_point(data = fdr_2 |> dplyr::filter(sig == 1),
+             size=4) +
+  scale_color_discrete(
+    "Effekt",
+    labels = c(expression(H[0]),expression(H[1]))) +
+  theme_void()
+```
+
+Nun kann der Anteil aller Studien mit statistisch signifikanten Ergebnisse untersucht werden mit denjenigen bei denen zwar ein statisch signifikantes Ergebnis beobachtete wurde aber tatsächlich ein Nulleffekt zugrundeliegt ins Verhältnis zueinander gesetzt werden. Dies führt zu der sogenannten false discovery rate (fdr). Formal ist fdr wie folgt definiert (siehe @bartovs2022).
+
+\begin{equation}
+\begin{aligned}
+\text{fdr} &= \frac{P(H_0)\cdot \alpha \cdot N}{P(H_0)\cdot \alpha \cdot N + (1-P(H_0))\cdot \rho \cdot N} \\
+&=\frac{P(H_0)\cdot \alpha}{P(H_0)\cdot \alpha + (1-P(H_0))\cdot \rho}  
+\end{aligned}
+\label{eq-stats-sig-fdr}
+\end{equation}
+
+Die fdr bestimmt somit den Anteil der statistisch signifikanten Ergebnisse, bei denen es sich um einen falschen Befund handelt. Das heißt, der Anteil an Studien bei denen ein Effekt in Form eines statistisch signifikanten Ergebnisses beobachtet, obwohl eigentlich kein Effekt vorliegt. Es werden in @fig-stats-sig-fdr-02a die großen $H_0$-Punkte durch die Gesamtanzahl der großen Punkte, der signifikanten Punkte geteilt.
+
+```{r}
+#| fig-cap: "Signifikante Null- und $H_1$-Effekte bei $N = 200$ Studien, $P(H_0) = 0.5$ und Power $\\rho = 0.8$."
+#| label: fig-stats-sig-fdr-02a
+
+ggplot(fdr_2, aes(x,y, color=h0)) +
+  geom_point(data = fdr_2 |> dplyr::filter(sig == 1),
+             size=4) +
+  scale_color_discrete(
+    "Effekt",
+    labels = c(expression(H[0]),expression(H[1]))) +
+  lims(y = c(1,10)) +
+  theme_void()
+```
+
+Die Formel \eqref{eq-stats-sig-fdr} für die fdr kann nun verwendet werden, um den Zusammenhang der false discovery rate mit der Power für eine gegebene Nulleffektswahrscheinlichkeit $P(H_0)$ und und eine gegebene Irrtumswahrscheinlichkeit $\alpha$ zu betrachten (siehe @fig-stats-sig-fdr-03).
+
+```{r}
+#| fig-cap: "Zusammenhang zwischen der Power $\\rho$ und der false discovery rate fdr bei $\\alpha = 0.05$."
+#| label: fig-stats-sig-fdr-03
+
+alpha <- 0.05
+p_H_0 <- c(0.25, 0.5, 0.75, 0.8)
+fdr <- function(rho, p_H_0 = 0.5, alpha = 0.05) p_H_0 * alpha/(p_H_0 * alpha + (1-p_H_0)*rho)
+n <- 100
+tibble(
+  power = rep(seq(.1, .99, length.out = n),length(p_H_0)),
+  p_H_0 = rep(p_H_0, each=n),
+  fdr = fdr(power, p_H_0, alpha),
+  p_H_0f = forcats::as_factor(p_H_0)
+) |> 
+ggplot(aes(power, fdr, color=p_H_0f, group=p_H_0f)) +
+  geom_line() +
+  scale_colour_discrete(expression(p(H[0]))) +
+  labs(x = expression(paste("Power ",rho))) +
+  lims(y = c(0,1))
+```
+
+In @fig-stats-sig-fdr-03 ist zu erkennen, dass die fdr besonders hoch ist, wenn die Power in der Literatur niedrig ist. Gleichzeitig steigt die fdr an, wenn die Wahrscheinlichkeit für keinen Effekt $P(H_0)$ ansteigt. In @fig-stats-sig-fdr-03 ist dieser Effekt besonders groß, wenn die Grundrate der tatsächlichen Effekte $1-P(H_0)$ niedrig ist bzw. eben $P(H_0)$ sehr hoch ist. Wenn nur $20\%$ der Studien tatsächlich Effekte zugrunde liegen, sind $2/3$ der Ergebnisse falsch positiv. Daher, wenn die mittlere Power in der Literatur in einer wissenschaftlichen Disziplin durch vorwiegend kleine Studien niedrig ist, sinkt die Wahrscheinlichkeit, dass ein gegebenes statistisch signifikantes Ergebnis tatsächlich durch einen Effekt hervorgerufen wurde. Für eine Forschungsdisziplin ist es daher wichtig, dass die Studien über eine ausreichende Power verfügen, um einerseits die gewünschten Effekte tatsächlich beobachten zu können und andererseits die Literatur durch falsch-positive Ergebnisse nicht zu verfälschen (siehe @button2013). Bei dieser Betrachtung fließen Probleme wie p-hacking oder HARKing noch gar nicht mit ein.
 
 ## Things to know
 
+- $H_0$ und $H_1$
+- $\alpha$-Fehler
+- $\beta$-Fehler
+- Power
 - Konfidenzintervall
 - Dualität von Konfidenzintervall und Hypothesentest 
 - Konfidenzintervall - Faustregel

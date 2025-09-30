@@ -526,7 +526,7 @@ Die Form des Histogramms hängt davon ab, wie viele Intervalle verwendet werden.
 
 :::
 
- Wie schon besprochen, sind alle Werte zwischen etwa $D = -500N$ und $D = 700$N plausibel bzw. möglich nach @fig-sts-basics-all-combinations-d100. Sei einmal betrachtet, was passiert, wenn das Training überhaupt nichts bringt und es keine Verbesserung gibt, also $\Delta = 0$.
+Wie bereits besprochen, sind alle Werte zwischen etwa $D = -500N$ und $D = 700$N plausibel bzw. möglich nach @fig-sts-basics-all-combinations-d100. Sei einmal betrachtet, was passiert, wenn das Training überhaupt nichts bringt und es keine Verbesserung gibt, also $\Delta = 0$.
 
 ```{r}
 #| fig-cap: "Verteilung aller möglichen Differenzen zwischen Kontroll- und Interventionsgruppe, wenn $\\Delta = 0$ (rote Linie)."
@@ -548,14 +548,10 @@ $$
 
 Daher bleibt die Form der Verteilung genau gleich und wird lediglich um den Wert $\Delta$ im Vergleich zur Nullintervention nach rechts verschoben. Mit Nullintervention ist umgangssprachlich die Intervention gemeint, bei der nichts passiert, also $\Delta = 0$ gilt.
 
-Als Zwischenfazit sollte nun nachvollziehbar sein,dass jede Statistik, die auf einer Stichprobe berechnet wurde, inhärent unsicher ist. In der Realität ist der Sachverhalt noch komplexer und es tritt nicht nur die Variabilität aufgrund der Randomisierung auf, sondern es kommen viele weitere Einflussgrößen zu tragen, die das Ergebnis eines Experiments bei Wiederholungen beeinflussen können. Mithilfe der Statistik wird nun versucht, diese Unsicherheit zu quantifizieren bzw. abzuschätzen und in den späteren Entscheidungsprozesse auf der Basis der beobachteten Daten einfließen zu lassen.
-
-## Unsicherheit in Lummerland
-
-Spielen wir das Spiel mit den beiden Stichprobenverteilungen weiter. Gehen wir davon aus, dass nur eine dieser beiden Annahmen korrekt ist. Entweder ist die Intervention effektiv $\Delta = `r d_gr`$ oder sie bringt nichts, also $\Delta = 0$. Wenn wir diese beiden Verteilungen übereinanderlegen, erhalten wir @fig-sts-basics-all-combinations-both. Wir haben die Darstellung jetzt etwas verändert und eine Kurve durch die relativen Häufigkeiten gelegt. Dieser Graph wird jetzt nicht mehr als Histogramm, sondern als Dichtegraph\index{Dichtegraph} bezeichnet.
+Sei nun davon ausgegangen, dass eine dieser beiden Annahmen korrekt ist. Entweder ist die Intervention effektiv mit $\Delta = `r d_gr`$ oder die Intervention zieht keine Verbesserung nach $\Delta = 0$. Wenn die beiden Verteilungen übereinander gelegt, entsteht die Abbildung @fig-sts-basics-all-combinations-both. Die Darstellungsform ist etwas verändert worden und eine Kurve wurde durch die relativen Häufigkeiten gelegt. Dieser Graph wird jetzt nicht mehr als Histogramm, sondern als **Dichtegraph**\index{Dichtegraph} bezeichnet.
 
 ```{r}
-#| fig.cap: "Verteilung aller möglichen Differenzen zwischen Kontroll- und Interventionsgruppe bei $\\Delta = 0$ und $\\Delta = 100$."
+#| fig-cap: "Verteilung aller möglichen Differenzen zwischen Kontroll- und Interventionsgruppe bei $\\Delta = 0$ und $\\Delta = 100$."
 #| label: fig-sts-basics-all-combinations-both
 
 n_sim <- dim(differences)[1]
@@ -572,11 +568,11 @@ p_both <- ggplot(dat, aes(di)) +
 print(p_both)
 ```
 
-In @fig-sts-basics-all-combinations-both ist klar zu sehen, dass die beiden Graphen zu großen Teilen überlappen, und das auch noch in einem Bereich, in dem beide Ergebnisse ihre höchsten relativen Häufigkeiten haben, also auch die größte Wahrscheinlichkeit, unter den jeweiligen Annahmen aufzutreten. Unser Problem besteht nun darin, dass wir in der Realität nicht wissen, welchen Effekt unser Training auf die Stichprobe hat. Wenn wir dies wüssten, müssten wir das Experiment ja gar nicht durchführen. Normalerweise haben wir nur ein einziges Ergebnis, nämlich den Ausgang unseres einen Experiments.
+In @fig-sts-basics-all-combinations-both ist klar zu sehen, dass die beiden Graphen zu großen Teilen überlappen. Dazu kommt weiterhin, dass die Überlappung in dem Bereich liegt, in dem beide Verteilungen ihre höchsten relativen Häufigkeiten haben. D.h. die Bereiche in die Verteilungen die größte Wahrscheinlichkeit haben beobachtbare Werte zu generieren. Das Problem besteht nun darin, dass bei der Durchführung eines Experiments nicht a-priori bekannt ist, welchen Effekt das Training auf die Stichprobe hat. Wenn der Effekt bereits bekannt wäre, dann müsste das Experiment gar nicht mehr durchgeführt werden. Nach der Durchführung des Experiments wird nun ein Unterschied $d$ zwischen den beiden Gruppen betrachtet (siehe @fig-sts-bascis-all-combinations-decision)
 
 ```{r}
 #| label: fig-sts-basics-all-combinations-decision
-#| fig.cap: "Zuweisung eines beobachteten Unterschieds $D$ nach einem Experiment"
+#| fig-cap: "Zuweisung eines beobachteten Unterschieds $d$ (roter Punkt) nach einem Experiment"
 
 p_both + 
   annotate("segment", x = 50, y = 0, xend = 0, yend = 0.0018, color = 'black', 
@@ -586,9 +582,9 @@ p_both +
   geom_point(data = tibble(di = 50, y = 0, hypo = 'H0'), aes(y=y), color = 'red', size=4) 
 ```
 
-Wenn wir jetzt unser Experiment einmal durchgeführt haben und ein einziges Ergebnis für $D$ erhalten, zum Beispiel $D = 50$, dann haben wir ein Zuweisungsproblem (siehe @fig-sts-basics-all-combinations-decision). Wie weisen wir unser Ergebnis den beiden möglichen Realitäten zu? Einmal kann es sein, dass das Krafttraining nichts gebracht hat und wir lediglich eine der vielen möglichen Stichprobenkombinationen beobachtet haben, die zu einem positiven Wert für $D$ führen. Oder aber das Krafttraining ist effektiv gewesen und hat zu einer Verbesserung von $\Delta = 100$N geführt, und wir haben lediglich eine Stichprobenkombination gezogen, die zu einem Ergebnis von $D = 50$ führt. In der Realität wissen wir jedoch nicht, welche der beiden Annahmen korrekt ist, und wir können es auch nie vollständig wissen. Denn egal, wie viele Experimente wir durchführen, es bleibt immer die Möglichkeit, dass wir zufällig nur Werte aus dem linken oder rechten Teil der Verteilung beobachten. Diese Unsicherheit lässt sich leider durch keine Art von Experiment vollständig auflösen.
+Sei zum Beispiel der Wert $d = 50$ beobachtet. Dann entsteht ein Zuweisungsproblem (siehe @fig-sts-basics-all-combinations-decision). Wie wird das beobachtete Ergebnis den beiden möglichen Realitäten zugewiesen? Einmal kann es sein, dass das Krafttraining nichts gebracht hat und lediglich eine der vielen möglichen Stichprobenkombinationen beobachtet wurde, die zu einem positiven Wert für $D$ führen. Oder aber das Krafttraining ist effektiv gewesen und hat zu einer Verbesserung von $\Delta = 100$N geführt, und es wurde lediglich eine Stichprobenkombination gezogen, die zu einem Ergebnis von $D = 50$ führt. In der Realität ist leider nicht bekannt, welche der beiden Annahmen korrekt ist, und es kann leider nie vollständig bekannt sein. Denn egal wie viele Experimente durchgeführt werden, es bleibt immer die Möglichkeit, dass zufällig nur Werte aus dem linken oder rechten Teil der Verteilung beobachtet wurden. Es ist eben auch mit einem fairen Würfel möglich zehnmal hintereinander eine sechs zu würfeln. Diese Unsicherheit lässt sich leider durch keine Art von Experiment vollständig auflösen.
 
-Die Methoden der Statistik liefern uns nun Werkzeuge an die Hand, um trotzdem rational zu entscheiden, welche der beiden Annahmen möglicherweise wahrscheinlicher ist. Gleichzeitig ermöglicht uns die Statistik, abzuschätzen bzw. zu berechnen, wie groß die Unsicherheit dieser Entscheidung ist. Die Statistik sagt dabei immer nur etwas über die beobachteten Daten aus, jedoch nichts über die zugrundeliegenden wissenschaftlichen Theorien.
+Als Fazit sollte nun nachvollziehbar sein, dass jede Statistik, die auf einer Stichprobe berechnet wurde, inhärent unsicher ist. In der Realität ist der Sachverhalt noch komplexer und es tritt nicht nur die Variabilität aufgrund der Randomisierung auf, sondern es kommen viele weitere Einflussgrößen zum tragen, die das Ergebnis eines Experiments bei Wiederholungen beeinflussen können. Mithilfe einer statistischen Analyse wird nun versucht, diese Unsicherheit zu quantifizieren bzw. abzuschätzen und in den Entscheidungsprozesse auf der Basis der beobachteten Daten einfließen zu lassen. Die Methoden der Statistik liefern daher Werkzeuge an die Hand, um trotzdem rational zu entscheiden, welche Annahmen möglicherweise plausibler ist. Die statistische Analyse kann dabei immer nur etwas über die beobachteten Daten aussagen und nur indirekt etwas über die zugrundeliegenden wissenschaftlichen Theorien.
 
 ## Things to know
 
