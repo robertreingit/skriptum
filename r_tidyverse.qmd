@@ -354,6 +354,15 @@ df |> mutate(cmj_m = cmj / 100) |> select(-cmj)
 ```
 :::
 
+Eine Variante von `mutate()` ist `transmute()` welches nur die neu erstellten Spalten beibehält und *alle* anderen Spalten ausschließt.
+
+```{r}
+#| echo: true
+
+df |> transmute(cmj_m = cmj / 100)
+```
+
+
 ### `summarize()`
 
 Mit der `summarize()`-Funktion werden alle Beobachtungen (Zeilen) in eine Zeile zusammengefasst. Wollen wir zum Beispiel die durchschnittliche Sprunghöhe über alle Beobachtungen berechnen:
@@ -467,6 +476,8 @@ df_exp |> left_join(anthro_2, by = join_by(pid == id))
 
 ### Spezialthemen
 
+Die folgenden Abschnitte behandeln ein paar Spezialthemen, die im *normalen Tagesgeschäft* eher selten auftreten, aber es dann manchmal ganz praktisch ist die verschiedenen Möglichkeiten schon mal gesehen zu haben um sich bei Bedarf den Ansatz nochmal gezielt nachschauen zu können.
+
 #### `rowid_to_column()` und `row_number()`
 
 Manchmal ist es von Vorteil, wenn eine Variable vorhanden ist, die die Zeilen eindeutig identifiziert. Eine einfache Lösung ist die Funktion `rowid_to_column()`, mit der ein fortlaufender Zähler an der ersten Stelle eingefügt wird.
@@ -530,4 +541,74 @@ Sondern die Abweichungen von den jeweiligen Gruppenmittelwerten. Mit `group_by()
 
 df |> group_by(gender) |> mutate(delta_cmj = cmj - mean(cmj)) |> ungroup()
 ```
+
+#### Zeilenweise Berechnungen mit `rowwise()`
+
+Manchmal kommt es vor, dass man eine Berechnung über mehrere Spalten hinweg für jede Zeile durchführen muss, aber nicht `pivot_longer()` verwenden möchte. Sei zum Beispiel der folgende Datensatz gegeben:
+
+```{r}
+#| echo: true
+
+df_row <- tibble(
+    vo2_1 = 1:4,
+    vo2_2 = 11:14,
+    vo2_3 = 21:24,
+    vo2_4 = 31:34,
+    vo2_5 = 41:44,
+    vo2_6 = 51:54
+)
+df_row
+```
+
+Die Aufgabe nun besteht darin, für jede Zeile den Mittelwert der `vo2`s zu berechnen. Der direkte Ansatz mit `mutate()` führt zu:
+
+```{r}
+#| echo: true
+
+df_row |> mutate(
+  vo2_bar = mean(vo2_1 + vo2_2 + vo2_3 + vo2_4 + vo2_5 + vo2_6)
+)
+```
+
+Bei der `rowwise()` wird die Funktion der Verben im tidyverse verändert.
+
+```{r}
+#| echo: true
+
+df_row |>
+  rowwise() |> 
+  mutate(vo2_bar = mean(c(vo2_1, vo2_2, vo2_3, vo2_4, vo2_5, vo2_6)))
+```
+
+Hier mussten die Spalten nicht mehr addiert werden, sondern die Art und Weise wie `mean()` arbeitet ist jetzt entlang der Zeilen. Dies unterscheidet sich von der normalen Ausführung. Hier nochmal zum Vergleich.
+
+```{r}
+#| echo: true
+
+df_row |>
+  mutate(vo2_bar = mean(c(vo2_1, vo2_2, vo2_3, vo2_4, vo2_5, vo2_6)))
+```
+
+Hier wurde ein Mittelwert über alle Spalte berechnet. Die Anwendung von `rowwise()` ist vor allem in Verbindung mit `c_across()` praktisch, da `c_across()` die **tidy select** Mechanismen erlaubt und könnte im Beispiel wie folgt angewendet werden.
+
+```{r}
+#| echo: true
+
+df_row |> 
+  rowwise() |> 
+  mutate(vo2_bar = mean(c_across(vo2_1:vo2_6)))
+```
+
+Im Ausdruck ist zu sehen, das das `tibble` noch die Eigenschaft `# Rowwise:` besitzt. Um wieder den normalen Bearbeitungsmodus einzusetzen muss noch ein `ungroup()` angewendet werden.
+
+```{r}
+#| echo: true
+
+df_row |> 
+  rowwise() |> 
+  mutate(vo2_bar = mean(c_across(vo2_1:vo2_6))) |> 
+  ungroup()
+```
+
+Wie schon angesprochen kommen die Spezialthemen eher nur selten zum Einsatz und die Kenntnis von `filter()`, `select()`, `mutate()`, `summarize()`, `group_by()` reicht für den überwiegenden Teil der Datenverarbeitungsaufgaben die im Alltag auftreten. Es gilt wie immer, erst die wiederholte Anwendung der Methoden erleichtert den Umgang, daher sollte man sich nicht am Anfang davon demotivieren lassen, dass alles noch etwas unübersichtlich erscheint.
 
