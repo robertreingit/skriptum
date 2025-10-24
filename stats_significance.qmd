@@ -458,10 +458,10 @@ flowchart TD
     F --> G[H0 ablehnen]
 ```
 
-Es wird eine Stichprobenverteilung unter der $H_0$ bestimmt, beispielsweise $H_0: \mu = \Delta = 0$ und es werden rechts und links jeweils ein Bereich der Verteilung abgeschnitten. Dieser Bereich wird als *unwahrscheinlich* unter dieser speziellen $H_0$ angesehen. Diesen Bereich wird auch als **kritischer** Bereich bezeichnet. Wenn der beobachteter Wert im kritischen Bereich liegt, dann wird diese Beobachtung als Evidenz **gegen die Korrektheit der Annahme**, dass die $H_0$ gilt, angesehen. Die $H_0$ wird abgelehnt.
+Es wird eine Stichprobenverteilung unter der $H_0$ bestimmt, beispielsweise $H_0: \mu = \Delta = 0$ und es werden rechts und links jeweils ein Bereich der Verteilung abgeschnitten. Dieser Bereich wird als *unwahrscheinlich* unter dieser speziellen $H_0$ angesehen. Wenn der beobachteter Wert in diesem Bereich liegt, dann wird diese Beobachtung als Evidenz **gegen die Korrektheit der Annahme**, dass die $H_0$ gilt, angesehen. Die $H_0$ wird abgelehnt.
 
 ```{r}
-#| fig-cap: "Die $H_0$ Verteilung wenn nichts passiert unterteilt in Regionen die zur Entscheidung für die $H_0$ (grün) und gegen die $H_0$ (rot, kritische Regionen) führen."
+#| fig-cap: "Die $H_0$ Verteilung wenn nichts passiert unterteilt in Regionen die zur Entscheidung für die $H_0$ (grün) und gegen die $H_0$ (rot) führen."
 #| label: fig-stats-sig-decision-regions
 
 ggplot(dat_0, aes(x,v,ymin=0, ymax=v)) +
@@ -481,7 +481,7 @@ ggplot(dat_0, aes(x,v,ymin=0, ymax=v)) +
   scale_y_continuous('Dichte')
 ```
 
-Wenn der Stichprobenwert der Statistik in der *kritischen* Region auftritt (siehe @fig-stats-sig-decision-regions), dann wird von einem **statistisch signifikanten Ergebnis** gesprochen: *Unter der $H_0$ bin ich überrascht, diesen Wert zu sehen!* Allerdings ist dieser Wert **nicht unmöglich**, sondern lediglich unwahrscheinlich, wenn die Annahme $H_0$ korrekt ist. Unwahrscheinlich ist dabei kein absolutes Maß, sondern nur eine **willkürliche** Festsetzung, die getroffen wurde. Als nächstes soll die Bedeutung der $5\%$ noch etwas genauer betrachtet werden. Dazu wird eine neues Konzept, der p-Wert benötigt.
+Wenn der Stichprobenwert der Statistik in der roten Region auftritt (siehe @fig-stats-sig-decision-regions), dann wird von einem **statistisch signifikanten Ergebnis** gesprochen: *Unter der $H_0$ bin ich überrascht, diesen Wert zu sehen!* Allerdings ist dieser Wert **nicht unmöglich**, sondern lediglich unwahrscheinlich, wenn die Annahme $H_0$ korrekt ist. Unwahrscheinlich ist dabei kein absolutes Maß, sondern nur eine **willkürliche** Festsetzung, die getroffen wurde. Als nächstes soll die Bedeutung der $5\%$ noch etwas genauer betrachtet werden. Dazu wird eine neues Konzept, der p-Wert benötigt.
 
 ## Der p-Wert
 
@@ -493,7 +493,7 @@ Sei der **p-Wert** zunächst mit Hilfe seiner Definition eingeführt. Da mittler
 Der p-Wert gibt die Wahrscheinlichkeit für den beobachteten oder einen noch extremeren Wert unter der $H_0$ an.
 :::
 
-In @fig-stats-sig-p-value-01 ist eine Verteilung unter der $H_0$ eingezeichnet, zusammen mit den kritischen Bereichen für ein gegebenes $\alpha$ und dem beobachteten Wert.
+In @fig-stats-sig-p-value-01 ist eine Verteilung unter der $H_0$ eingezeichnet, zusammen mit dem Bereichen für den ein beobachteter Wert einen p-Wert von kleiner $P = 0.05$ hat.
 
 ```{r}
 #| fig-cap: "Der beobachtete Wert der Statistik (schwarzer Punkt) zusammen mit der Verteilung unter der $H_0$. Die gelben Flächen zeigen den p-Wert für den Wert der beobachteten Statistik an."
@@ -523,9 +523,9 @@ ggplot(dat_0, aes(x,v,ymin=0, ymax=v)) +
   labs(x = 'Werte', y = 'Dichte') 
 ```
 
-Der p-Wert ist nun die Wahrscheinlichkeit, unter der Annahme der $H_0$, das beobachtete oder ein extremeren Wert auftritt. Dies resultiert inder gelben Fläche. Ein extremerer Wert bedeutet in diesem Fall einen größeren Wert, also alle Werte rechts vom beobachteten Wert. Jetzt irritiert allerdings, dass auf der linken Seite ebenfalls eine gelbe Fläche eingezeichnet. Was hier passiert, ist, dass der beobachtete Wert an $\mu$ in den anderen kritischen Bereich *gespiegelt* (salopp) wurde und wieder das gleiche Prinzip mit den extremeren Werten angewendet. Hier bedeutet "extremer" links vom gespiegelten beobachteten Wert. Es wieder eine Fläche erhalten und somit eine Wahrscheinlichkeit. Die beiden gelben Flächen zusammen ergeben dann den p-Wert.
+Der p-Wert ist nun die Wahrscheinlichkeit, unter der Annahme der $H_0$, das beobachtete oder ein extremeren Wert auftritt. Dies resultiert in der gelben Fläche. Ein extremerer Wert bedeutet in diesem Fall einen größeren Wert, also alle Werte rechts vom beobachteten Wert. Jetzt irritiert allerdings, dass auf der linken Seite ebenfalls eine gelbe Fläche eingezeichnet. Was hier passiert, ist, dass der beobachtete Wert an $\mu$ in den anderen Randbereich der Verteilung *gespiegelt* (salopp) wurde und wieder das gleiche Prinzip mit den extremeren Werten angewendet. Hier bedeutet "extremer" links vom gespiegelten beobachteten Wert. Es wieder eine Fläche erhalten und somit eine Wahrscheinlichkeit. Die beiden gelben Flächen zusammen ergeben dann den p-Wert.
 
-Dass die Wahrscheinlichkeit für eine Seite dazugenommen wird, bei der gar kein Wert beobachtet haben, wird später verständlich, wenn der Unterschied zwischen gerichteten und ungerichteten Hypothesen betrachtet wird. Hier reicht zunächst die Einstufung, dass Werte als überraschend betrachtet werden, anhand ihres Abstandes zum Mittelwert egal ob der Abstand in positiver oder negativer Richtung vorliegt. D.h. ein beobachteter Wert von $d = 2.5$ hat den gleichen Überraschungswert wie ein beobachteter werden von $d = -2.5$. Zur Begrifflichkeit "extrem" kann schon mal zusammenfassen, dass "extrem" immer in Bezug auf das $\mu$ der Stichprobenverteilung zu verstehen ist, also weg vom Mittelwert $\mu$.
+Dass die Wahrscheinlichkeit für eine Seite dazugenommen wird, bei der gar kein Wert beobachtet haben, wird später verständlich, wenn der Unterschied zwischen gerichteten und ungerichteten Hypothesen betrachtet wird. Hier reicht zunächst die Einstufung, dass Werte als überraschend betrachtet werden, anhand ihres Abstandes zum Mittelwert egal ob der Abstand in positiver oder negativer Richtung vorliegt. D.h. ein beobachteter Wert von $d = 2.5$ hat den gleichen Überraschungswert wie ein beobachteter werden von $d = -2.5$. Zur Begrifflichkeit "extrem" kann schon mal zusammengefasst werden, dass "extrem" immer in Bezug auf das $\mu$ der Stichprobenverteilung zu verstehen ist, also weiter weg vom Mittelwert $\mu$.
 
 In @fig-stats-sig-p-value-02 sind verschiedene Beispiele für beobachtete Werte und die dazugehörigen p-Werte und deren Flächen abgebildet.
 
@@ -589,9 +589,7 @@ knitr::include_graphics("pics/altman_1995.png")
 
 Kurz gesagt, wenn wir kein statistisch signifikantes Ergebnis gefunden haben, bedeutet dies nicht, dass es keinen Unterschied gibt. Tatsächlich wird der beobachtete Wert der Statistik praktisch nie exakt $=0$ sein, und wir werden daher praktisch immer einen Unterschied finden. Allerdings ist der beobachtete Unterschied nicht *überraschend* unter der $H_0$ aufgrund der Stichprobenvariabilität. Dennoch gilt: Die Abwesenheit von Evidenz ist nicht gleichzusetzen mit der Evidenz für Abwesenheit.
 
-Es wurde bereits erwähnt, dass Werte jenseits von $2\times \sigma_e$ etwa eine Wahrscheinlichkeit von $5\%$ unter der $H_0$ haben. Dies bedeutet, dass die Wahrscheinlichkeit, Werte im kritischen Bereich zu beobachten, bei etwa $5\%$ liegt, **wenn die $H_0$ zutrifft**. Oder anders: Wenn die $H_0$ in der Realität zutrifft, also den DGP korrekt beschreibt, und das Experiment $100$-mal wiederholt wird, dann würde ich etwa $5$ Experimente erwarten, bei denen der beobachtete Wert im kritischen Bereich liegt.
-
-Die Art und Weise wie der p-Wert hier eingeführt wurde, entspricht der ursprüngliche Art nach @fisher1935b. Unter dieser Betrachtungsweise wird der größe des p-Werts eine Bedeutung zugemessen. D.h. ein kleinerer p-Wert wird als stärkere Evidenz gegen die $H_0$ angesehen, als eine größerer p-Wert. Der p-Wert hat Beweiskraft (evidential value, @greenland2023). Allerdings hat Fisher selbst unterstrichen, dass ein einzelnes Experiment wenig Aussagekraft hat und eine **signifikantes** Ergebnis erst vorliegt, wenn “*[...] a phenomenon is experimentally demonstrable when we know how to conduct an experiment which will rarely fail to give us a statistically significant result*” [@fisher1935, p.16] 
+Es wurde bereits erwähnt, dass Werte jenseits von $2\times \sigma_e$ etwa eine Wahrscheinlichkeit von $5\%$ unter der $H_0$ haben. Dies bedeutet, dass die Wahrscheinlichkeit, Werte in diesem Bereich zu beobachten, bei etwa $5\%$ liegt, **wenn die $H_0$ zutrifft**. Die Art und Weise wie der p-Wert hier eingeführt wurde, folgt der ursprüngliche Interpretation nach @fisher1935b. Unter dieser Betrachtungsweise wird der Größe des p-Werts eine Bedeutung zugemessen. D.h. ein kleinerer p-Wert wird als stärkere Evidenz gegen die $H_0$ angesehen, als eine größerer p-Wert. Der p-Wert hat Beweiskraft (evidential value, @greenland2023). Allerdings hat Fisher selbst unterstrichen, dass ein einzelnes Experiment wenig Aussagekraft hat und eine **signifikantes** Ergebnis erst vorliegt, wenn “*[...] a phenomenon is experimentally demonstrable when we know how to conduct an experiment which will rarely fail to give us a statistically significant result*” [@fisher1935, p.16] 
 
 Die Interpretation der Größe des p-Wert führt oft leider zu einer Missinterpretation. Der p-Wert erlaubt erscheint darüber eine Aussage zu machen, mit welcher Wahrscheinlichkeit die $H_0$ zutrifft. Dies ist leider nicht korrekt. Ob die $H_0$ zutrifft oder nicht, als $P(H_0)$ hat entweder die Wahrscheinlichkeit $P(H_0) = 1$ oder $P(H_0) = 0$. Entweder die $H_0$ trifft zu oder sie trifft nicht zu. Daher die Wert $1$ oder $0$. Über diese Wahrscheinlichkeit wird hier keine Aussage gemacht, sondern nur, ob unter der Annahme, dass die $H_0$ zutrifft, der beobachtete Wert in einem *wahrscheinlichen* oder einem *unwahrscheinlichen* Bereich liegt. Was dabei als *wahrscheinlich* gilt, ist dabei durch eine willkürliche Festlegung bestimmt. Eine gewählte Grenze von $P = 0.05$ hat keine physikalische Realität!
 
