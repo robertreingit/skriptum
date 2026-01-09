@@ -1,4 +1,4 @@
-# Split-plot Design 
+# Split-Unit Designs
 
 ```{r}
 #| echo: false
@@ -14,6 +14,7 @@ require(emmeans)
 require(lme4)
 ```
 
+## Split-plot
 
 ```{r defs_sp}
 my_tbl <- function(df, ...) {
@@ -40,7 +41,7 @@ df_1 <- tibble(
 s2f <- function(str) unlist(strsplit(as.character(str),""))
 ```
 
-## Farming
+### Farming
 
 ```{r}
 #| layout-ncol: 2
@@ -51,7 +52,7 @@ include_graphics('pics/fertilizer.jpg')
 ```
 
 
-## CRD
+### CRD
 
 ```{r}
 #| layout-ncol: 3
@@ -118,7 +119,7 @@ ggplot(aes(x, y)) +
   labs(title = 'Split plot + CRBD')
 ```
 
-## Example - Soccer
+### Example - Soccer
 
 Das folgende hypothetische Beispiel ist adaptiert nach Kowalski et al. (2007)]
 
@@ -141,7 +142,6 @@ head(df) |> kable(booktabs = TRUE,
                   linesep = "")
 ```
 
-## Example - Soccer
 
 ```{r}
 #| fig-cap: "Data from full Experiment"
@@ -152,7 +152,7 @@ ggplot(df, aes(pitch, eps, color=twogoals)) +
   labs(x = 'Pitch size', y = 'EPS')
 ```
 
-## Whole-plot analysis
+Whole-plot analysis
 
 ```{r}
 df_bars <- df |> group_by(game) |> summarize(eps = mean(eps), pitch = pitch[1])
@@ -165,7 +165,7 @@ ggplot(df_bars, aes(pitch, eps)) +
   labs(x = 'Pitch size', y = 'EPS')
 ```
 
-## Whole-plot analysis Analysis of variance
+Whole-plot analysis Analysis of variance
 
 ```{r}
 df_bars |> kable(booktabs=TRUE, digits=2)
@@ -178,7 +178,7 @@ mod_whole_plot <- aov(eps ~ pitch, df_bars)
 summary(mod_whole_plot)
 ```
 
-## Error components split-plot analysis
+Error components split-plot analysis
 
 ```{r}
 #| out-width: "90%"
@@ -188,7 +188,7 @@ include_graphics('pics/split_plot_error.png')
 ```
 
 
-## Complete Split-plot analysis
+Complete Split-plot analysis
 
 ```{r}
 #| echo: true 
@@ -197,7 +197,7 @@ summary(mod_sp)
 ```
 
 
-## Model
+Model
 
 \begin{align*}
 Y_{hij} &= \mu + \alpha_i + \epsilon_{i(h)}^W \\
@@ -210,7 +210,48 @@ Y_{hij} &= \mu + \alpha_i + \epsilon_{i(h)}^W \\
 | $i=1,\ldots,a$
 | $j=1,\ldots,b$
 
-## A more common example 
+
+
+### Effect size 
+
+\begin{align*}
+\hat{\omega}^2_{\text{between}} &= \frac{SS_A -(a-1)MS_{S/A}}{SS_A + SS_{S/A}+MS_{S/A}} \\
+\hat{\omega}^2_{\text{within}} &= \frac{(b-1)(MS_b - MS_{B\times S/A})}{SS_B + SS_{B\times S/A}+SS_{S/A}+MS_{S/A}} \\
+\hat{\omega}^2_{AB} &= \frac{(a-1)(b-1)(MS_{AB}-MS_{B\times S/A})}{SS_{AB}+SS_{B\times S/A}+MS_{S/A}}
+\end{align*}
+
+| $A=$`group`, $B=$`time`, $AB=$`group:time`, $S/B=$`Error: id`, $B\times S/A=$`Error: within` im Beispiel
+
+### Effect size in `R`
+
+```{r}
+#| echo: true
+
+#effectsize::omega_squared(mod)
+```
+
+
+### Multiple comparisons
+
+```{r}
+#| echo: true
+
+#mod_em <- emmeans(mod, ~time*group)
+#pairs(mod_em)
+```
+
+Which comparisons are meaninful?! 
+
+```{r}
+#| echo: true
+
+#mod_em2 <- emmeans(mod, ~time|group)
+#pairs(mod_em2)
+```
+
+## Longitudinal und Pretest-Posttest Designs
+
+A more common example 
 
 ```{r}
 #| fig-cap: "Hypothetical two-arm RCT"
@@ -257,7 +298,6 @@ summary(mod)
 
 ## Again, standard analysis is not correct!
 
-\small
 ```{r}
 #| echo: true
 
@@ -267,7 +307,6 @@ summary(mod_falsch)
 
 ## Alternative analysis using mixed models
 
-\small
 ```{r}
 #| echo: true
 
@@ -275,46 +314,9 @@ mod_lmer <- lmer(CMJ ~ time*group + (1|id), df_1)
 anova(mod_lmer)
 ```
 
+## Cross-over designs
 
-## Effect size 
-
-\begin{align*}
-\hat{\omega}^2_{\text{between}} &= \frac{SS_A -(a-1)MS_{S/A}}{SS_A + SS_{S/A}+MS_{S/A}} \\
-\hat{\omega}^2_{\text{within}} &= \frac{(b-1)(MS_b - MS_{B\times S/A})}{SS_B + SS_{B\times S/A}+SS_{S/A}+MS_{S/A}} \\
-\hat{\omega}^2_{AB} &= \frac{(a-1)(b-1)(MS_{AB}-MS_{B\times S/A})}{SS_{AB}+SS_{B\times S/A}+MS_{S/A}}
-\end{align*}
-
-| $A=$`group`, $B=$`time`, $AB=$`group:time`, $S/B=$`Error: id`, $B\times S/A=$`Error: within` im Beispiel
-
-## Effect size in `R`
-
-```{r}
-#| echo: true
-
-effectsize::omega_squared(mod)
-```
-
-
-## Multiple comparisons
-
-\tiny
-```{r}
-#| echo: true
-
-mod_em <- emmeans(mod, ~time*group)
-pairs(mod_em)
-```
-
-## Which comparisons are meaninful?! 
-
-\small
-```{r}
-#| echo: true
-
-mod_em2 <- emmeans(mod, ~time|group)
-pairs(mod_em2)
-```
-
+TBD
 
 ## Further reading
 
