@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>17&nbsp; Maximum-Likelihood – Skriptum - Fortgeschrittene Statistik</title>
+<title>17&nbsp; Maximum-Likelihood (MLE) – Skriptum - Fortgeschrittene Statistik</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,6 +19,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -125,7 +160,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./slm_title.html">Das einfache Regressionmodell</a></li><li class="breadcrumb-item"><a href="./likelihood.html"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Maximum-Likelihood</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./slm_title.html">Das einfache Regressionmodell</a></li><li class="breadcrumb-item"><a href="./likelihood.html"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Maximum-Likelihood (MLE)</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Suchen" onclick="window.quartoOpenSearch();">
@@ -288,7 +323,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./likelihood.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Maximum-Likelihood</span></span></a>
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Maximum-Likelihood (MLE)</span></span></a>
   </div>
 </li>
       </ul>
@@ -439,17 +474,20 @@ window.Quarto = {
    
   <ul>
   <li><a href="#likelihood" id="toc-likelihood" class="nav-link active" data-scroll-target="#likelihood"><span class="header-section-number">17.1</span> Likelihood</a></li>
-  <li><a href="#maximum-likelihood" id="toc-maximum-likelihood" class="nav-link" data-scroll-target="#maximum-likelihood"><span class="header-section-number">17.2</span> Maximum-likelihood</a></li>
-  <li><a href="#maximum-likelihood-methode-bei-der-einfachen-linearen-regression" id="toc-maximum-likelihood-methode-bei-der-einfachen-linearen-regression" class="nav-link" data-scroll-target="#maximum-likelihood-methode-bei-der-einfachen-linearen-regression"><span class="header-section-number">17.3</span> Maximum-likelihood Methode bei der einfachen linearen Regression</a></li>
+  <li><a href="#maximum-likelihood-methode-bei-der-einfachen-linearen-regression" id="toc-maximum-likelihood-methode-bei-der-einfachen-linearen-regression" class="nav-link" data-scroll-target="#maximum-likelihood-methode-bei-der-einfachen-linearen-regression"><span class="header-section-number">17.2</span> Maximum-likelihood Methode bei der einfachen linearen Regression</a>
+  <ul class="collapse">
+  <li><a href="#maximum-likelihood-bei-der-einfachen-regression-in-r" id="toc-maximum-likelihood-bei-der-einfachen-regression-in-r" class="nav-link" data-scroll-target="#maximum-likelihood-bei-der-einfachen-regression-in-r"><span class="header-section-number">17.2.1</span> Maximum-likelihood bei der einfachen Regression in <code>R</code></a></li>
+  </ul></li>
+  <li><a href="#take-away" id="toc-take-away" class="nav-link" data-scroll-target="#take-away"><span class="header-section-number">17.3</span> Take-away</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./slm_title.html">Das einfache Regressionmodell</a></li><li class="breadcrumb-item"><a href="./likelihood.html"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Maximum-Likelihood</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./slm_title.html">Das einfache Regressionmodell</a></li><li class="breadcrumb-item"><a href="./likelihood.html"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Maximum-Likelihood (MLE)</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Maximum-Likelihood</span></h1>
+<h1 class="title"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Maximum-Likelihood (MLE)</span></h1>
 </div>
 
 
@@ -466,24 +504,128 @@ window.Quarto = {
 </header>
 
 
+<p>Bei der Herleitung der Gerade bei der einfachen linearen Regression wurde zunächst ein Kriterium angesetzt, die Minimierung der quadrierten Abweichungen der beobachteten Punkte <span class="math inline">\(Y_i\)</span> von den auf der Gerade liegenden vorhergesagten Punkten <span class="math inline">\(\hat{Y}_i\)</span>, den Residuen. Bei diesem Ansatz sind zunächst keine statistischen Überlegungen notwendig gewesen. Anschließend im Rahmen der Inferenz zu den Modellparametern <span class="math inline">\(\beta_0\)</span> und <span class="math inline">\(\beta_1\)</span> wurde dann die Modellannahme der Normalverteilung der Residuen <span class="math inline">\(\epsilon_i \sim \mathbf{N}(0,\sigma^2)\)</span> dazugenommen um eine statistische Analyse der Modellkoeffizienten und der statistischer Signifikanz bzw. Hypothesentestung einzuführen. Im folgenden wird eine alternative Herleitung entwickelt über die Maximum-Likelihood Methode. Diese Herleitung bildet dabei ein grundlegendes Verfahren, dass im Fall der linearen Regression zu den gleichen Ergebnissen kommt, aber einen allgemeineren Ansatz darstellt der dann auch im späteren Verlauf die Betrachtung von Modellen erlaubt die mit dem RMS Ansatz nicht möglich sind.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tipp
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Um den folgenden Inhalten einfacher folgen zu können, kann es sinnvoll sein, sich noch einmal kurz die Inhalte aus <a href="appendix_math.html" class="quarto-xref"><span>Anhang A</span></a> aus den Abschnitten Logarithmus, Ableitungen und Extremwerte zu vergegenwärtigen.</p>
+</div>
+</div>
 <section id="likelihood" class="level2" data-number="17.1">
 <h2 data-number="17.1" class="anchored" data-anchor-id="likelihood"><span class="header-section-number">17.1</span> Likelihood</h2>
+<p>Im ersten Schritt muss zunächst der Begriff des Likelihood erarbeitet werden. Die Likelihood ist eng mit dem Konzept der Dicht- bzw. Wahrscheinlichkeitfunktion verbunden. Sei zum Beispiel nochmal das Beispiel des n-fachen MÜnzwurfes betrachtet, welches mit Hilfe der Binomialverteilung (siehe <a href="stats_distributions.html#eq-binom-distribution" class="quarto-xref">Gleichung&nbsp;<span>11.4</span></a>) beschrieben werden kann.</p>
+<p><span class="math display">\[
+\text{Binom}(Y, N, p) = P(Y = y \mid N, p) = \binom{N}{y}p^y (1-p)^{N-y} = \binom{N}{y}p^y q^{N-y}
+\]</span></p>
+<p>Hier ist <span class="math inline">\(Y\)</span> die Anzahl der Köpfe, <span class="math inline">\(N\)</span> die Anzahl der Würfe und <span class="math inline">\(p\)</span> die Wahrscheinlichkeit bei einem Wurf Kopf zu beobachten. In <a href="#fig-likelihood-binom-1" class="quarto-xref">Abbildung&nbsp;<span>17.1</span></a> ist die Binomialverteilung für den Fall <span class="math inline">\(N = 10, p = 0.05\)</span> dargestellt.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-likelihood-binom-1" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-likelihood-binom-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="likelihood_files/figure-html/fig-likelihood-binom-1-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-likelihood-binom-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;17.1: Beispiel für die Binomialverteilungen mit <span class="math inline">\(N=10, p=0.5\)</span>.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Nun kann die Schreibweise <span class="math inline">\(\text{Binom}(Y,N,p)\)</span> etwas umgeändert werden, wenn für der Parameter <span class="math inline">\(p\)</span> durch <span class="math inline">\(\theta\)</span> ersetzt werden. Dies hat inhaltlich keine Folgen sondern ist lediglich eine Änderung der Schreibweise. Es folgt <span class="math inline">\(\text{Binom}(Y,N,p)=\text{Binom}(Y,N,\theta)\)</span>. Seien nun die Daten <span class="math inline">\(y\)</span> beobachtet worden. D.h. es wurde ein <em>Münzexperiment</em>, z.B. <span class="math inline">\(N = 10\)</span>-mal durchgeführt worden und es wurde sechsmal Kopf beobachtet worden, d.h. <span class="math inline">\(y = 6\)</span>. Der unbekannte Parameter in <span class="math inline">\(\text{Binom}\)</span> ist nun lediglich <span class="math inline">\(\theta\)</span>, da <span class="math inline">\(\text{Binom}(6, 10, \theta)\)</span> gilt. Wird zunächst die Reihenfolge der Parameter nach <span class="math inline">\(\text{Binom}(\theta, 6, 10)\)</span> geändert, kann dieser Ausdruck als Funktion von <span class="math inline">\(\theta\)</span> interpretiert werden. Wenn nun noch die Werte <span class="math inline">\(y = 6\)</span> und <span class="math inline">\(N = 10\)</span> als <em>gegeben</em> interpretiert werden, dann wird eine Funktion <span class="math inline">\(\text{Binom}(\theta)\)</span> erhalten. D.h. in Verbindung mit einem beobachteten Datensatz, durch den zwei der drei Parameter von <span class="math inline">\(\text{Binom}\)</span> definiert werden, wird eine <em>neue</em> Funktion erhalten, welche nur noch einen Parameter <span class="math inline">\(\theta\)</span> besitzt. Dieser Parameter war ursprüngliche das <span class="math inline">\(p\)</span>, die Wahrscheinlichkeit Kopf bei einem Wurf zu beobachten, wird nun aber mit dem Symbol <span class="math inline">\(\theta\)</span> bezeichnet. Diese Umbenennung erscheint zunächst als überflüssige Arbeit, hilft im weiteren Verlauf, da beispielsweise in der Literatur die Konvention herrscht den <em>freien</em> Parameter der Likelihood-Funktion mit dem Symbol <span class="math inline">\(\theta\)</span> zu bezeichnen. Wird nun noch eine weitere Umbenennung vorgenommen, und <span class="math inline">\(\text{Binom}\)</span> durch das Symbol <span class="math inline">\(\mathcal{L}\)</span> ersetzt, wird aus <span class="math inline">\(\text{Binom}(\theta) \equiv \mathcal{L}(\theta)\)</span>. Das stylisierte L in <span class="math inline">\(\mathcal{L}\)</span> steht dann, entsprechend für Likelihood.</p>
+<p>Die Likelihood-Funktion <span class="math inline">\(\mathcal{L}(\theta)\)</span> kann nun entsprechend für verschiedene Wert von <span class="math inline">\(\theta\)</span>, im vorliegenden Fall <span class="math inline">\(p\)</span> Kopf, abgetragen werden, wenn die beobachteten Daten <span class="math inline">\(X\)</span> als gegeben angesehen werden. In <a href="#fig-likelihood-binom-2" class="quarto-xref">Abbildung&nbsp;<span>17.2</span></a> ist die Likelihood-Funktion nun für Werte zwischen <span class="math inline">\(0\)</span> und <span class="math inline">\(1\)</span> für <span class="math inline">\(\theta\)</span> abgetragen.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-likelihood-binom-2" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-likelihood-binom-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="likelihood_files/figure-html/fig-likelihood-binom-2-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-likelihood-binom-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;17.2: Likelihood <span class="math inline">\(\mathcal{L}(\theta)\)</span> für <span class="math inline">\(N=10, y=6\)</span>.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Zunächst fällt auf, dass im Unterschied zu <a href="#fig-likelihood-binom-1" class="quarto-xref">Abbildung&nbsp;<span>17.1</span></a> der Graph in diesem Fall kontinuierlich ist. Die Wahrscheinlichkeitsfunktion der Binomialverteilung ist diskrete, da Wahrscheinlichkeiten für eine endliche Anzahl von Ausgängen (=Anzahl der Köpfe) berechnet werden. Im Gegensatz dazu, ist der Likelihood-Graph kontinuierlich, da er eine Funktion von <span class="math inline">\(\theta\)</span> ist und in diesem Fall <span class="math inline">\(\theta\)</span> alle Werte in <span class="math inline">\([0,1]\)</span> annehmen kann.</p>
+<p>Der Likelihood-Graph ändert sich nun entsprechend, wenn ein anderes Ergebnis beobachtet wird. Seien zum Beispiel bei <span class="math inline">\(N = 10\)</span> Würfen nur drei Köpfe (<span class="math inline">\(y = 3\)</span>) beobachte worden ergibt sich der folgende Graph:</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-likelihood-binom-3" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-likelihood-binom-3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="likelihood_files/figure-html/fig-likelihood-binom-3-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-likelihood-binom-3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;17.3: Likelihood <span class="math inline">\(\mathcal{L}(\theta)\)</span> für <span class="math inline">\(N=10, y=3\)</span>.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>In <a href="#fig-likelihood-binom-3" class="quarto-xref">Abbildung&nbsp;<span>17.3</span></a> ist zu sehen, dass sich die Form der Likelihood-Funktion <span class="math inline">\(\mathcal{L}(\theta)\)</span> verändert hat. D.h. die Ausprägung des Likelihood-Graphen ist immer von den als gegeben angenommen Daten <span class="math inline">\(Y\)</span> abhängig. Die zentrale Einsicht ist aber immernoch, dass die ursprüngliche Dichte- bzw. Wahrscheinlichkeitsfunktion als eine Funktion eines Modellparameters interpretiert werden, während die beobachteten Daten als fixiert angesehen werden. Insgesamt kann nun eine Definition für die Likelihood gegeben werden.</p>
+<div id="def-likelihood" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 17.1 (Likelihood )</strong></span> Seien <span class="math inline">\(X\)</span> die beobachtete Daten und <span class="math inline">\(\theta\)</span> ein unbekannter Parameter eines statistischen Modells. Die <strong>Likelihood-Funktion</strong> <span class="math inline">\(\mathcal{L}(\theta)\)</span> ist die Wahrscheinlichkeit (bzw. Dichte) der beobachteten Daten, aufgefasst als Funktion des Parameters <span class="math inline">\(\theta\)</span>:</p>
+<p><span class="math display">\[\begin{align*}
+\mathcal{L}(\theta) &amp;= P(\theta \mid X = x) \quad \text{diskrete Verteilung} \\
+\mathcal{L}(\theta) &amp;= f_X(\theta \mid X = x) \quad \text{kontinuierliche Verteilung}
+\end{align*}\]</span></p>
+<p>Die Daten <span class="math inline">\(X\)</span> werden als <strong>fixiert</strong> betrachtet, während der Parameter <span class="math inline">\(\theta\)</span> variiert. Die Likelihood <span class="math inline">\(\mathcal{L}\)</span> misst, wie plausibel verschiedene Parameterwerte <span class="math inline">\(\theta\)</span>, für die gegeben Daten <span class="math inline">\(X\)</span>, sind.</p>
+</div>
+<p>Eine wichtige Eigenschaft der Likelihood ist, dass es sich <strong>nicht um Wahrscheinlichkeitsverteilung</strong> handelt. Das Integral <span class="math inline">\(\int \mathcal{L}(\theta)d\theta\)</span> ist nicht <span class="math inline">\(1\)</span> wie es für eine Dichtefunktion notwendig wäre.</p>
+<p>Nun stellt sich daher die Frage wofür die Likelihood-Funktion <span class="math inline">\(\mathcal{L}(\theta)\)</span> überhaupt nützlich ist. Die Antwort ist, dass sich mit Hilfe der Likelihood-Funktion Vergleiche anstellen lassen, wie <em>plausibel</em> verschiedene Wert für <span class="math inline">\(\theta\)</span> unter den beobachteten Daten sind. <span class="math inline">\(\mathcal{L}(\theta)\)</span> ermöglicht es, denjenigen Parameterwert zu bestimmen, für den die Wahrscheinlichkeit der beobachteten Daten maximal wird. In <a href="#fig-likelihood-binom-1" class="quarto-xref">Abbildung&nbsp;<span>17.1</span></a> zeigt <span class="math inline">\(\mathcal{L}(\theta)\)</span> ein Maximum für <span class="math inline">\(p \equiv \theta = 0.6\)</span>. Dagegen ist im zweiten Beispiel in <a href="#fig-likelihood-binom-2" class="quarto-xref">Abbildung&nbsp;<span>17.2</span></a> das Maximum bei <span class="math inline">\(\theta = 0.3\)</span>. Das Maximum von <span class="math inline">\(\mathcal{L}(\theta)\)</span> kann nun als derjenige Wert von <span class="math inline">\(\theta\)</span> interpretiert werden, der unter den beobachteten Daten als <em>plausibelsten</em> erscheint. D.h. die Frage nach dem Besten Modellparameterwert, wird nun eine Optimierungsaufgabe für die Likelihood-Funktion <span class="math inline">\(\mathcal{L}(\theta)\)</span>. Die Likelihood-Funktion wird verwendet um einen Schätzer für den Modellparameter <span class="math inline">\(\theta\)</span> zu erhalten. Unter dieser Betrachungsweise wird damit auch das Konzept des <em>Maximum Likelihood-Schätzers</em> einsehbar.</p>
+<div id="def-maximum-likelihood" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 17.2 (Maximum-Likelihood )</strong></span> Seien <span class="math inline">\(x\)</span> die beobachteten Daten und <span class="math inline">\(\theta\)</span> ein unbekannter Parameter eines statistischen Modells mit Likelihood-Funktion <span class="math inline">\(\mathcal{L}(\theta)\)</span>. Der <strong>Maximum-Likelihood-Schätzer (ML-Schätzer)</strong> ist derjenige Parameterwert <span class="math inline">\(\hat{\theta}\)</span>, der die Likelihood maximiert:</p>
+<p><span class="math display">\[
+\hat{\theta} = \arg\max_{\theta} \mathcal{L}(\theta).
+\]</span></p>
+<p>Das heißt: Der Maximum-Likelihood-Schätzer ist der Parameterwert, unter dem <strong>die beobachteten Daten am wahrscheinlichsten sind</strong>.</p>
+</div>
+<p>Sei nun wieder das Beispiel der Binomialverteilung gegeben und es wurden bei <span class="math inline">\(N = 10\)</span> insgesamt sechsmal Kopf (<span class="math inline">\(y = 6\)</span>) beobachtet. Angewendet auf <a href="stats_distributions.html#eq-binom-distribution" class="quarto-xref">Gleichung&nbsp;<span>11.4</span></a> ergibt sich somit.</p>
+<p><span class="math display">\[
+\mathcal{L}(\theta) = \binom{10}{6}\theta^6 (1-\theta)^{10-6} = \binom{10}{6}\theta^6(1-\theta)^4
+\]</span></p>
+<p>Für diese Funktion soll nun das Maximum bestimmt werden. Allerdings ist das direkte Maximieren der Likelihood-Funktion rechnerisch oft aufwendig. Um sich dies zu vereinfachen wird ein mathematischer Trick angewendet. Es ist möglich unter bestimmten Voraussetzungen, die die Logarithmusfunktion erfüllt (siehe Anhang A), das Maximum einer Funktion <span class="math inline">\(f(x)\)</span> bzw. im vorliegenden Fall <span class="math inline">\(\mathcal{L}(\theta)\)</span> zu bestimmen nachdem die Logarithmusfunktion <span class="math inline">\(log(x)\)</span> auf <span class="math inline">\(f(x)\)</span> angewendet wurde. D.h. es wird eine neue Funktion <span class="math inline">\(log(f(x))\)</span> verwendet. Dies wird gemacht, da der Logarithmus, nach den Rechenregeln <span class="math inline">\(\log(a\cdot b) = \log(a) + \log(b)\)</span> aus der Multiplikation eine Addition macht. Angewendet auf die Likelihood-Funktion resultiert daraus der Loglikelihood <span class="math inline">\(\ell(\theta) = \log \mathcal{L}(\theta)\)</span>.</p>
+<p>Angewendet auf den vorliegenden Fall führt dieser Ansatz zu unter Beachtung einer weiteren Rechenregel für den Logarithmus <span class="math inline">\(\log(a^b) = b\log(a)\)</span>:</p>
+<p><span class="math display">\[\begin{align*}
+\ell(\theta) &amp;= \log \mathcal{L}(\theta) \\
+&amp;= \log\left(\binom{10}{6}\cdot \theta^6 \cdot (1-\theta)^{4}\right) \\
+&amp;= \log\left(\binom{10}{6}\right) + \log\left(\theta^6\right) + \log\left((1-\theta)^{4}\right) \\
+&amp;= \log \binom{10}{6} + 6 \log(\theta) + 4\log(1-p)
+\end{align*}\]</span></p>
+<p>Um nun das Maximum dieser Funktion zu bestimmen, muss die Ableitung berechnet werden und gleich Null gesetzt werden. Bei der Berechnung der Ableitung kann der erste Term direkt gestrichen werden, da es sich um eine Konstante handelt, deren Ableitung gleich Null ist. Dadurch erhält man die Gleichung unter Beachtung das <span class="math inline">\(\frac{d \log(x)}{dx} = \frac{1}{x}\)</span> und der Kettenregel (siehe Anhang A):</p>
+<p><span class="math display">\[
+\frac{d \ell{\theta}}{d\theta} = \frac{6}{\theta} - \frac{4}{1-p} = 0.
+\]</span></p>
+<p>Durch Umformen folgt daraus:</p>
+<p><span class="math display">\[
+\hat{\theta} = \frac{6}{10}.
+\]</span></p>
+<p>Dieses Ergebnis sollte intuitiv auch nachvollziehbar sein, wenn bei <span class="math inline">\(N = 10\)</span> Münzwürfen sechsmal Kopf beobachtet wurde, dann ist der <em>beste</em> Schätzer wohl <span class="math inline">\(\hat{p} = \hat{\theta} = \frac{y}{N}\)</span>. Der Maximum-Likelihood-Schätzer für die Erfolgswahrscheinlichkeit <span class="math inline">\(p\)</span> ist also der Anteil der beobachteten Erfolge an der Gesamtzahl der Versuche und entspricht genau der relativen Häufigkeit der Erfolge. Die Maximum-Likelihood-Methode liefert in diesem Fall also ein Ergebnis, das sehr gut mit unserer intuitiven Vorstellung übereinstimmt.</p>
 <p>Im Zuge der theoretischen Verteilungen wird die Dichtefunktion betrachtet. Für eine gegebene Zufallsvariable kann die Dichte für einen gegebenen Wert, z.B. <span class="math inline">\(y_i\)</span>, über die Dichtefunktion berechnet werden. Wenn eine Zufallsvariable <span class="math inline">\(X\)</span> einer Normalverteilung folgt, wird die Verteilung von <span class="math inline">\(X\)</span> mittels der bekannten Dichtefunktion der Normalverteilung beschrieben:</p>
 <p><span class="math display">\[\begin{equation*}
 f(X|\mu,\sigma^2) = \frac{1}{\sqrt{2 \pi \sigma^2}} \exp\left(-\frac{1}{2}\frac{(X - \mu)^2}{\sigma^2}\right)
 \end{equation*}\]</span></p>
 <p>Hier wird die Dichte von <span class="math inline">\(X\)</span> als eine Funktion von <span class="math inline">\(\mu\)</span> und <span class="math inline">\(\sigma^2\)</span> aufgefasst. Das bedeutet, die Werte für <span class="math inline">\(\mu\)</span> und <span class="math inline">\(\sigma\)</span> müssen vorgegeben sein, da diese benötigt werden, um die Dichte zu berechnen.</p>
-<p>Nun erfolgt ein Perspektivwechsel. Es ist möglich, die Zufallsvariable <span class="math inline">\(X\)</span> als gegeben anzusehen und die Dichte für verschiedene Werte von <span class="math inline">\(\mu\)</span> und <span class="math inline">\(\sigma^2\)</span> abzutragen. Der Einfachheit halber wird angenommen, dass <span class="math inline">\(\sigma^2\)</span> bekannt ist und <span class="math inline">\(\mu\)</span> ermittelt werden soll. Eine mögliche Fragestellung lautet: Für einen beobachteten Wert <span class="math inline">\(x\)</span>, welcher Wert für <span class="math inline">\(\mu\)</span> ist am plausibelsten? Dazu können verschiedene Dichtewerte für ein gegebenes <span class="math inline">\(x\)</span> in Abhängigkeit von <span class="math inline">\(\mu\)</span> dargestellt werden. Die Funktion wird interpretiert als:</p>
+<p>Für die Likelihood erfolgt nun wieder der Perspektivwechsel. Die Zufallsvariable <span class="math inline">\(X\)</span> wird als gegeben angesehen und die Dichte für verschiedene Werte von <span class="math inline">\(\mu\)</span> und <span class="math inline">\(\sigma^2\)</span> abzutragen. Der Einfachheit halber wird angenommen, dass <span class="math inline">\(\sigma^2\)</span> ebenfalls bekannt und konstant ist. Die Problemstellung ist nun, analog zu dem Binomialbeispiel, einen Wert für <span class="math inline">\(\mu\)</span> zu ermitteln der am plausibelsten ist. Dazu können nun wieder verschiedene Dichtewerte für ein gegebenes <span class="math inline">\(x\)</span> in Abhängigkeit von <span class="math inline">\(\mu\)</span> darstellen, also die Likelihood.</p>
 <p><span class="math display">\[
-f(\mu|x,\sigma^2) = \frac{1}{\sqrt{2 \pi \sigma^2}} \exp\left(-\frac{1}{2}\frac{(X - \mu)^2}{\sigma^2}\right)
+\mathcal{L}(\mu) = f(\mu|x,\sigma^2) = \frac{1}{\sqrt{2 \pi \sigma^2}} \exp\left(-\frac{1}{2}\frac{(X - \mu)^2}{\sigma^2}\right)
 \]</span></p>
-<p>Diese Funktion wird als die Likelihood-Funktion bezeichnet. Das Maximum dieser Funktion kann als derjenige Wert interpretiert werden, bei dem <span class="math inline">\(\mu\)</span> die maximal mögliche Dichte einnimmt.</p>
-<p>Ein Beispiel illustriert dies: Ein Wert <span class="math inline">\(x = 3\)</span> wird beobachtet, und es ist bekannt, dass <span class="math inline">\(\sigma = 1\)</span> ist. Natürlich reicht ein einzelner Wert nicht aus, um definitive Aussagen zu treffen, aber das Prinzip soll verdeutlicht werden. Eine Tabelle wird erstellt, die verschiedene Werte von <span class="math inline">\(\mu_i = [0,1,2,3,4,5,6]\)</span> enthält und die Dichte <span class="math inline">\(f(\mu|x=3,\sigma^2=1)\)</span> für jeden dieser Werte berechnet (siehe <a href="#tbl-slm-inf-ml-01" class="quarto-xref">Tabelle&nbsp;<span>17.1</span></a>).</p>
+<p>Das Maximum dieser Funktion stellt dementsprechend wieder den Maximumlikelihood-Wert dar und ist derjenige Wert der am plausibelsten ist.</p>
+<p>Sei der Wert <span class="math inline">\(x = 3\)</span> beobachtet, und es ist bekannt, dass <span class="math inline">\(\sigma = 1\)</span> ist. Natürlich reicht ein einzelner Wert nicht aus, um definitive Aussagen zu treffen, aber das Prinzip soll verdeutlicht werden. Eine Tabelle wird erstellt, die verschiedene Werte von <span class="math inline">\(\mu_i = [0,1,2,3,4,5,6]\)</span> enthält und die Likelihood <span class="math inline">\(\mathcal{L}(\mu) = f(\mu|x=3,\sigma^2=1)\)</span> für jeden dieser Werte berechnet (siehe <a href="#tbl-slm-inf-ml-01" class="quarto-xref">Tabelle&nbsp;<span>17.1</span></a>).</p>
 <div class="cell">
 <div id="tbl-slm-inf-ml-01" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-slm-inf-ml-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Tabelle&nbsp;17.1: Dichte für verschiedene Werte für <span class="math inline">\(\mu\)</span> für <span class="math inline">\(x = 3\)</span>
+Tabelle&nbsp;17.1: Likelihood für verschiedene Werte für <span class="math inline">\(\mu\)</span> für <span class="math inline">\(x = 3\)</span>
 </figcaption>
 <div aria-describedby="tbl-slm-inf-ml-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -530,82 +672,101 @@ Tabelle&nbsp;17.1: Dichte für verschiedene Werte für <span class="math inline"
 </figure>
 </div>
 </div>
-<p>Beim Betrachten der Werte in <a href="#tbl-slm-inf-ml-01" class="quarto-xref">Tabelle&nbsp;<span>17.1</span></a> zeigt sich, dass der Wert bei <span class="math inline">\(\mu = 3\)</span> die größte Dichte aufweist. Um dies weiter zu verdeutlichen, wird das Ganze als kontinuierlicher Graph dargestellt.</p>
+<p>Beim Betrachten der Werte in <a href="#tbl-slm-inf-ml-01" class="quarto-xref">Tabelle&nbsp;<span>17.1</span></a> zeigt sich, dass der Wert bei <span class="math inline">\(\mu = 3\)</span> die größte Dichte aufweist. Um dies weiter zu verdeutlichen, wird das Ganze als kontinuierlicher Graph dargestellt (siehe <a href="#fig-likelihood-normal-01" class="quarto-xref">Abbildung&nbsp;<span>17.4</span></a>)</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="fig-slm-inf-ml-01" class="quarto-float quarto-figure quarto-figure-center anchored">
+<div id="fig-likelihood-normal-01" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-slm-inf-ml-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="likelihood_files/figure-html/fig-slm-inf-ml-01-1.png" class="img-fluid figure-img" width="672">
+<div aria-describedby="fig-likelihood-normal-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="likelihood_files/figure-html/fig-likelihood-normal-01-1.png" class="img-fluid figure-img" width="672">
 </div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-slm-inf-ml-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Abbildung&nbsp;17.1: Likelihood-Funktion für <span class="math inline">\(x = 3\)</span>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-likelihood-normal-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;17.4: Likelihood-Funktion von <span class="math inline">\(\mathcal{L}(\mu) = \frac{1}{\sqrt{2 \pi}} \exp\left(-\frac{1}{2}(3 - \mu)^2\right)\)</span>.
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>In <a href="#fig-slm-inf-ml-01" class="quarto-xref">Abbildung&nbsp;<span>17.1</span></a> ist zu erkennen, dass das Maximum der Likelihood-Funktion beim Wert <span class="math inline">\(\mu = 3\)</span> liegt. Die Normalverteilung mit <span class="math inline">\(\mathcal{N}(\mu=3, \sigma=1)\)</span> ist diejenige, die die höchste Dichte produziert und daher auch die höchste Likelihood hat, den beobachteten Wert zu erzeugen. Dies ist intuitiv nachvollziehbar: Wenn ein Wert aus einer Normalverteilung stammt und nur ein einziger Wert vorliegt, macht es Sinn, diejenige Normalverteilung mit dem Mittelwert <span class="math inline">\(\mu\)</span> zu wählen, die an der Stelle des beobachteten Werts liegt.</p>
-<p>Das Beispiel wird erweitert: Zwei Werte <span class="math inline">\(x_1 = 1\)</span> und <span class="math inline">\(x_2 = 2\)</span> werden betrachtet. Es wird angenommen, dass die beiden Werte unabhängig voneinander sind. Dadurch können die Dichten für die beiden Werte multipliziert werden. Die Likelihood-Funktion <span class="math inline">\(L\)</span> hat dann die folgende Form:</p>
+<p>In <a href="#fig-likelihood-normal-01" class="quarto-xref">Abbildung&nbsp;<span>17.4</span></a> ist zu erkennen, dass das Maximum der Likelihood-Funktion beim Wert <span class="math inline">\(\mu = 3\)</span> liegt. Die Normalverteilung mit <span class="math inline">\(\mathcal{N}(\mu=3, \sigma=1)\)</span> ist diejenige, die die höchste Dichte produziert und daher auch die höchste Likelihood hat, den beobachteten Wert zu erzeugen. Dies ist intuitiv nachvollziehbar: Wenn ein Wert aus einer Normalverteilung stammt und nur ein einziger Wert vorliegt, macht es Sinn, diejenige Normalverteilung mit dem Mittelwert <span class="math inline">\(\mu\)</span> zu wählen, die an der Stelle des beobachteten Werts liegt.</p>
+<p>Sei diese Beispiel erweitert: Es werden zwei Werte <span class="math inline">\(x_1 = 1\)</span> und <span class="math inline">\(x_2 = 2\)</span> beobachtet. Es wird angenommen, dass beide Werte unabhängig voneinander sind und aus der gleichen Normalverteilung stammen. Dadurch das die Wert unabhängig voneinander sind, die Dichten für die beiden Werte miteinander multipliziert werden. Analog wie bei zwei Münzwürfen, die Wahrscheinlichkeit Kopf für beide Münzen zu beobachten ist <span class="math inline">\(P(KK) = \frac{1}{2}\cdot \frac{1}{2} = \frac{1}{4}\)</span>. Die Likelihood-Funktion <span class="math inline">\(\mathcal{L}\)</span> folgt dementsprechend:</p>
 <p><span class="math display">\[\begin{equation*}
-L = f(\mu|x_1,\sigma) \cdot f(\mu|x_2,\sigma)
+\mathcal{L} = f(\mu|x_1,\sigma) \cdot f(\mu|x_2,\sigma)
 \end{equation*}\]</span></p>
-<p>Ein Graph von <span class="math inline">\(L\)</span> für verschiedene <span class="math inline">\(\mu\)</span> bei gegebenem <span class="math inline">\(\sigma = 1\)</span> wird erstellt:</p>
+<p>Ein Graph von <span class="math inline">\(\mathcal{L}\)</span> für verschiedene <span class="math inline">\(\mu\)</span> bei gegebenem <span class="math inline">\(\sigma = 1\)</span> hat die folgende Form (<a href="#fig-likelihood-normal-02" class="quarto-xref">Abbildung&nbsp;<span>17.5</span></a>).</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="fig-slm-inf-ml-02" class="quarto-float quarto-figure quarto-figure-center anchored">
+<div id="fig-likelihood-normal-02" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-slm-inf-ml-02-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="likelihood_files/figure-html/fig-slm-inf-ml-02-1.png" class="img-fluid figure-img" width="672">
+<div aria-describedby="fig-likelihood-normal-02-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="likelihood_files/figure-html/fig-likelihood-normal-02-1.png" class="img-fluid figure-img" width="672">
 </div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-slm-inf-ml-02-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Abbildung&nbsp;17.2: Likelihood-Funktion <span class="math inline">\(L\)</span> für <span class="math inline">\(x_1 = 1\)</span> und <span class="math inline">\(x_2 = 2\)</span>.
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-likelihood-normal-02-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;17.5: Likelihood-Funktion <span class="math inline">\(L\)</span> für <span class="math inline">\(x_1 = 1\)</span> und <span class="math inline">\(x_2 = 2\)</span>.
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>In <a href="#fig-slm-inf-ml-02" class="quarto-xref">Abbildung&nbsp;<span>17.2</span></a> liegt das Maximum von <span class="math inline">\(L\)</span> bei <span class="math inline">\(\mu = 1.5\)</span>, was dem Mittelwert <span class="math inline">\(\bar{x} = \frac{1}{2}\sum_{i=1}^2 x_i\)</span> entspricht. Intuitiv ist dies nachvollziehbar: Wenn beiden Werten die gleiche Bedeutung zugemessen wird, liegt die Verteilung, die genau in der Mitte zwischen den beiden Werten liegt, am ehesten mit der Erzeugung der beiden Werte im Einklang.</p>
-<p>Die Likelihood-Funktion <span class="math inline">\(L\)</span> beschreibt die Wahrscheinlichkeit, mit der eine gegebene Stichprobe, in Abhängigkeit von den Parametern, aus einer bestimmten Verteilung stammt. Sie gibt an, wie gut die beobachteten Daten zu einem bestimmten Satz von Parametern passen. Formal wird die Likelihood-Funktion <span class="math inline">\(L\)</span> als gemeinsame Wahrscheinlichkeitsdichte der Stichprobe betrachtet, interpretiert als Funktion der Parameter <span class="math inline">\(\theta\)</span>. Die beobachteten Werte werden als festgelegt, die Parameter als Variablen betrachtet. Es handelt sich dabei jedoch nicht um eine Dichtefunktion; das Integral der Likelihood-Funktion ist daher nicht <span class="math inline">\(1\)</span>.</p>
+<p>In <span class="quarto-unresolved-ref">?fig-slm-inf-ml-02</span> liegt das Maximum von <span class="math inline">\(L\)</span> bei <span class="math inline">\(\mu = 1.5\)</span>, was dem Mittelwert <span class="math inline">\(\bar{x} = \frac{1}{2}\sum_{i=1}^2 x_i\)</span> entspricht. Intuitiv ist dies nachvollziehbar: Wenn beiden Werten die gleiche Bedeutung zugemessen wird, liegt die Verteilung, die genau in der Mitte zwischen den beiden Werten liegt, am ehesten mit der Erzeugung der beiden Werte im Einklang.</p>
+<p>Die Berechnung führt zum gleichen Ergebnis. Es wird wieder der Loglikelihood <span class="math inline">\(\log\mathcal{L}\)</span> verwendet und der Konsistenz wegen wird das Symbol <span class="math inline">\(\mu\)</span> durch das Symbol <span class="math inline">\(\theta\)</span> ersetzt und <span class="math inline">\(\sigma^2=1, x_1=1, x_2=2\)</span>.</p>
+<p><span class="math display">\[
+\begin{align*}
+\log\mathcal{L}(\theta) &amp;=  \log\left( \frac{1}{\sqrt{2\pi}}\exp\left(-\frac{1}{2}(1-\theta)^2\right)\frac{1}{\sqrt{2\pi}}\exp\left(-\frac{1}{2}(2-\theta)^2\right)\right) \\
+&amp;= \log\left( \left(\frac{1}{\sqrt{2\pi}}\right)^2\exp\left(-\frac{1}{2}(1-\theta)^2\right)\exp\left(-\frac{1}{2}(2-\theta)^2\right)\right) \\
+&amp;= \log\left( \left(\frac{1}{\sqrt{2\pi}}\right)^2\exp\left(-\frac{1}{2}(1-\theta)^2 -\frac{1}{2}(2-\theta)^2\right)\right) \\
+&amp;= 2 \log\left(\frac{1}{\sqrt{2\pi}}\right) - \frac{1}{2}(1-\theta)^2 -\frac{1}{2}(2-\theta)^2
+\end{align*}
+\]</span></p>
+<p>Dieser Ausdruck wird nun wieder nach <span class="math inline">\(\frac{d}{d\theta}\)</span> abgeleitet wobei der erste Term verschwindet und es folgt.</p>
+<p><span class="math display">\[
+\begin{align*}
+\frac{d}{d\theta}\ell(\theta) &amp;= \frac{d}{d\theta}\left( - \frac{1}{2}(1-\theta)^2 -\frac{1}{2}(2-\theta)^2\right) \\
+&amp;= \frac{d}{d\theta}\left( - \frac{1}{2}(1-\theta)^2\right) + \frac{d}{d\theta}\left(-\frac{1}{2}(2-\theta)^2\right) \\
+&amp;=  -\frac{1}{2}\cdot 2(1-\theta) \cdot(-1) -\frac{1}{2}\cdot 2(2-\theta)\cdot (-1) \\
+&amp;=  (1-\theta) + (2-\theta) \\
+&amp;=  3-2\theta \\
+\end{align*}
+\]</span></p>
+<p>Durch Nullsetzen folgt:</p>
+<p><span class="math display">\[
+3-2\theta = 0 \Leftrightarrow \theta = \frac{3}{2} = 1.5
+\]</span></p>
+<p>D.h. mit <span class="math inline">\(\theta = \mu\)</span> wurde über die Maximumlikelihood-Methode der gleiche Wert erhalten, welcher auch intuitive am meisten Sinn macht. Allgemein wird also für die Anwendung der Maximumlikelihood-Methode immer ein theoretisches, statistisches Modell benötigt und es wird der plausibelste Modellparameterwert <span class="math inline">\(\theta\)</span> anhand des Modells bestimmt. Dieser Wert ist dann der <strong>Maximumlikelihood-Schätzer</strong> <span class="math inline">\(\hat{\theta}\)</span>.</p>
 </section>
-<section id="maximum-likelihood" class="level2" data-number="17.2">
-<h2 data-number="17.2" class="anchored" data-anchor-id="maximum-likelihood"><span class="header-section-number">17.2</span> Maximum-likelihood</h2>
-</section>
-<section id="maximum-likelihood-methode-bei-der-einfachen-linearen-regression" class="level2" data-number="17.3">
-<h2 data-number="17.3" class="anchored" data-anchor-id="maximum-likelihood-methode-bei-der-einfachen-linearen-regression"><span class="header-section-number">17.3</span> Maximum-likelihood Methode bei der einfachen linearen Regression</h2>
-<p>Eine alternative Herleitung für <span class="math inline">\(\beta_0\)</span> und <span class="math inline">\(\beta_1\)</span> kann über die sogenannte Maximum-Likelihood-Methode durchgeführt werden. Dabei gehen die Verteilungsannahmen der Variablen direkt in die Herleitung ein.</p>
-<p>Im Fall der Regression hat die Likelihood-Funktion <span class="math inline">\(L\)</span> für einen einzelnen Wert die folgende Form:</p>
-<p><span class="math display">\[\begin{equation}
-L(\beta_0, \beta_1, \sigma^2|y_i) = \frac{1}{\sqrt{2\pi\sigma^2}} \exp\left(-\frac{(y_i - \beta_0 - \beta_1 x_i)^2}{2\sigma^2}\right)
-\label{eq-slm-inf-lik-01}
-\end{equation}\]</span></p>
-<p>Die Parameter <span class="math inline">\(\theta\)</span> der Likelihood-Funktion sind <span class="math inline">\(\beta_0, \beta_1\)</span> und <span class="math inline">\(\sigma\)</span>. Da bei der Regressionsanalyse mehrere Wertepaare <span class="math inline">\((y_i, x_i)\)</span> vorliegen, können die jeweiligen Likelihoods multipliziert werden. Dies führt zu einer Gesamt-Likelihood-Funktion <span class="math inline">\(L\)</span> in der folgenden Form:</p>
-<p><span class="math display">\[\begin{align*}
-L(\beta_0, \beta_1, \sigma^2) &amp;= \prod_{i=1}^{N} f(y_i | x_i; \beta_0, \beta_1, \sigma^2) \\
+<section id="maximum-likelihood-methode-bei-der-einfachen-linearen-regression" class="level2" data-number="17.2">
+<h2 data-number="17.2" class="anchored" data-anchor-id="maximum-likelihood-methode-bei-der-einfachen-linearen-regression"><span class="header-section-number">17.2</span> Maximum-likelihood Methode bei der einfachen linearen Regression</h2>
+<p>Dieser Ansatz lässt sich auch auf das Modell der einfachen linearen Regression anwenden. Bei der einfachen linearen Regression wird angenommen, dass die <span class="math inline">\(Y\)</span>-Werte für jeden <span class="math inline">\(X\)</span>-Wert einer Normalverteilung mit einer Varianz <span class="math inline">\(\sigma^2\)</span> folgen. Formal:</p>
+<p><span id="eq-likelihood-reg-00"><span class="math display">\[
+Y_i = \mathcal{N}(\beta_0 + \beta_1 X_i, \sigma^2)
+\tag{17.1}\]</span></span></p>
+<p>Für einen einzelnen Wert bedeutet dies nun für die Likelihood-Funktion <span class="math inline">\(\mathcal{L}\)</span>:</p>
+<p><span id="eq-likelihood-reg-01"><span class="math display">\[
+\mathcal{L}(\beta_0, \beta_1, \sigma^2|y_i) = \frac{1}{\sqrt{2\pi\sigma^2}} \exp\left(-\frac{(y_i - \beta_0 - \beta_1 x_i)^2}{2\sigma^2}\right)
+\tag{17.2}\]</span></span></p>
+<p>In diesem Fall ist also <span class="math inline">\(\theta\)</span> nicht ein einzelnen Wert sondern ein Vektor <span class="math inline">\(\theta = (\beta_0, \beta_1, \sigma^2)\)</span>. Mit einem einzelnen Wert lässt sich <span class="math inline">\(\theta\)</span> nicht bestimmen, da wird nach Ableitung drei Gleichung mit drei Unbekannten erhalten würden, die nicht gelöst werden können. Nun kommt die nächste Annahme zum tragen, nämlich das bei mehreren Werten diesen unabhängig voneinander sind. Dann können die <em>individuellen</em> Likelihoods miteinander multipliziert werden.Dies führt zu einer Gesamt-Likelihood-Funktion <span class="math inline">\(\mathcal{L}\)</span> in der folgenden Form:</p>
+<p><span class="math display">\[
+\begin{align*}
+L(\beta_0, \beta_1, \sigma^2\mid x_i, y_i) &amp;= \prod_{i=1}^{N} f(\beta_0, \beta_1, \sigma^2\mid x_i, y_i) \\
 &amp;= \prod_{i=1}^{N} \frac{1}{\sqrt{2\pi\sigma^2}} \exp\left(-\frac{(y_i - \beta_0 - \beta_1 x_i)^2}{2\sigma^2}\right)
-\end{align*}\]</span></p>
+\end{align*}
+\]</span></p>
 <p>Durch Anwendung der Rechenregel <span class="math inline">\(e^a e^b = e^{a+b}\)</span> kann die Formel vereinfacht werden:</p>
-<p><span class="math display">\[\begin{align*}
-L(\beta_0, \beta_1, \sigma^2|y_i) &amp;= \left(\frac{1}{\sqrt{2\pi \sigma^2}}\right)^N \exp\left(-\frac{\sum_{i=1}^N (y_i - \beta_0 - \beta_1 x_i)^2}{2 \sigma^2}\right) \\
+<p><span class="math display">\[
+\begin{align*}
+\mathcal{L}(\beta_0, \beta_1, \sigma^2|y_i) &amp;= \left(\frac{1}{\sqrt{2\pi \sigma^2}}\right)^N \exp\left(-\frac{\sum_{i=1}^N (y_i - \beta_0 - \beta_1 x_i)^2}{2 \sigma^2}\right) \\
 &amp;= \left(\frac{1}{2\pi \sigma^2}\right)^{N/2} \exp\left(-\frac{\sum_{i=1}^N (y_i - \beta_0 - \beta_1 x_i)^2}{2 \sigma^2}\right)
-\end{align*}\]</span></p>
-<p>Das Maximum von <span class="math inline">\(L\)</span> wird gefunden, indem die Funktion abgeleitet und gleich Null gesetzt wird. Um die Berechnungen zu vereinfachen, wird der Logarithmus der Likelihood-Funktion verwendet, da diese Transformation die Maximierungsstelle der Funktion nicht verändert.</p>
-<p>Wenn die Eigenschaften der Logarithmusfunktion, speziell des natürlichen Logarithmus, beachtet werden, wird klar, warum es sinnvoll sein kann, die Likelihood-Funktion mit dem Logarithmus zu transformieren: Produkte werden zu Summen, mit denen einfacher gearbeitet werden kann:</p>
-<p><span class="math display">\[\begin{align*}
-\log(xy) &amp;= \log(x) + \log(y) \\
-\log\left(\frac{x}{y}\right) &amp;= \log(x) - \log(y) \\
-\log(x^n) &amp;= n\log(x) \\
-\log(\exp(x)) &amp;= x \\
-\log(1) &amp;= 0
-\end{align*}\]</span></p>
-<p>Der Logarithmus angewendet auf <span class="math inline">\(L(\beta_0, \beta_1, \sigma^2)\)</span> ergibt die folgende Funktion:</p>
-<p><span class="math display">\[\begin{align*}
-\ell(\beta_0, \beta_1, \sigma^2) &amp;= \ln L(\beta_0, \beta_1, \sigma^2) \\
+\end{align*}
+\]</span></p>
+<p>Das Maximum von <span class="math inline">\(\mathcal{L}\)</span> wird wie immer gefunden, indem die Likelihoodfunktion abgeleitet und gleich Null gesetzt wird. Um die Berechnungen zu vereinfachen, wird wieder der Logarithmus der Likelihood-Funktion verwendet. Die Loglikelihood <span class="math inline">\(\ell(\beta_0, \beta_1, \sigma^2\)</span> ergibt die folgende Funktion:</p>
+<p><span class="math display">\[
+\begin{align*}
+\ell(\beta_0, \beta_1, \sigma^2) &amp;= \ln \mathcal{L}(\beta_0, \beta_1, \sigma^2) \\
 &amp;= \ln \left[\left(\frac{1}{2\pi \sigma^2}\right)^{N/2} \exp\left(-\sum_{i=1}^N \frac{(y_i - \beta_0 - \beta_1 x_i)^2}{2 \sigma^2}\right)\right] \\
 &amp;= \ln \left[\left(\frac{1}{2\pi \sigma^2}\right)^{N/2} \right] + \ln \left[\exp\left(-\sum_{i=1}^N \frac{(y_i - \beta_0 - \beta_1 x_i)^2}{2 \sigma^2}\right)\right] \\
 &amp;= \frac{N}{2} \ln \left[\left(\frac{1}{2\pi \sigma^2}\right) \right] -\sum_{i=1}^N \frac{(y_i - \beta_0 - \beta_1 x_i)^2}{2 \sigma^2} \\
 &amp;= -\frac{n}{2}\ln(2\pi) - \frac{n}{2}\ln(\sigma^2) - \frac{1}{2\sigma^2}\sum_{i=1}^{N}(y_i - \beta_0 - \beta_1 x_i)^2
-\end{align*}\]</span></p>
+\end{align*}
+\]</span></p>
 <p>Durch partielle Ableitung der Funktion <span class="math inline">\(\ell(\beta_0, \beta_1, \sigma^2)\)</span> nach <span class="math inline">\(\beta_0\)</span> und <span class="math inline">\(\beta_1\)</span> und anschließendes Nullsetzen ergibt sich das gleiche Gleichungssystem wie bei den vorherigen Herleitungen durch Minimierung der quadrierten Abweichungen, d.h. den Normalengleichungen. Beispielsweise ergibt sich für <span class="math inline">\(\beta_0\)</span>:</p>
 <p><span class="math display">\[\begin{align*}
 \frac{\partial \ell(\beta_0, \beta_1, \sigma^2)}{\partial \beta_0} &amp;= \frac{\partial}{\partial \beta_0} \left[-\frac{n}{2}\ln(2\pi) - \frac{n}{2}\ln(\sigma^2) - \frac{1}{2\sigma^2}\sum_{i=1}^{N}(y_i - \beta_0 - \beta_1 x_i)^2\right] \\
@@ -621,7 +782,87 @@ L(\beta_0, \beta_1, \sigma^2|y_i) &amp;= \left(\frac{1}{\sqrt{2\pi \sigma^2}}\ri
 \Leftrightarrow\mkern40mu &amp;&amp; \bar{y} - \beta_1 \bar{x} = \beta_0\nonumber \\
 \Leftrightarrow\mkern40mu &amp;&amp; \beta_0= \bar{y} - \beta_1 \bar{x}
 \end{alignat}\]</span></p>
-<p>Die Herleitung für <span class="math inline">\(\beta_1\)</span> entspricht ebenfalls derjenigen, die aus den Normalengleichungen resultiert. Der Unterschied liegt darin, dass bei den Normalengleichungen keine Annahmen über die Verteilung der Werte gemacht wurden. Stattdessen wurde eine Methode gesucht, die die quadrierten Residuen minimiert. Im Gegensatz dazu basiert die Herleitung der Gleichungen durch die Maximum-Likelihood-Methode auf spezifischen Verteilungsannahmen. Im Fall der linearen Regression führen beide Methoden zum gleichen Ergebnis. Die Maximum-Likelihood-Methode kann jedoch auch in Fällen angewendet werden, bei denen die Methode der quadrierten Abweichungen nicht funktioniert. Für die Anwendung ist es entscheidend, das zugrunde liegende Prinzip und den Unterschied zwischen den beiden Ansätzen zu verstehen.</p>
+<p>Die Herleitung für <span class="math inline">\(\beta_1\)</span> entspricht ebenfalls derjenigen, die auf Basis der Normalengleichungen (siehe <a href="slm_basics.html#eq-slm-basics-norm" class="quarto-xref">Gleichung&nbsp;<span>13.5</span></a>) hergeleitet wurden. Der Unterschied liegt darin, dass bei den Normalengleichungen keine Annahmen über die Verteilung der Werte gemacht wurden. Stattdessen wurde eine Methode gesucht, die die quadrierten Residuen minimiert. Im Gegensatz dazu basiert die Herleitung der Gleichungen durch die Maximum-Likelihood-Methode auf spezifischen Verteilungsannahmen und stellt damit ein allgemeineres Verfahren da. Im Fall der linearen Regression führen beide Methoden zum gleichen Ergebnis. Die Maximum-Likelihood-Methode kann jedoch auch in Fällen angewendet werden, bei denen die Methode der quadrierten Abweichungen nicht funktioniert. Für die Anwendung ist es entscheidend, das zugrunde liegende Prinzip und den Unterschied zwischen den beiden Ansätzen zu verstehen.</p>
+<section id="maximum-likelihood-bei-der-einfachen-regression-in-r" class="level3" data-number="17.2.1">
+<h3 data-number="17.2.1" class="anchored" data-anchor-id="maximum-likelihood-bei-der-einfachen-regression-in-r"><span class="header-section-number">17.2.1</span> Maximum-likelihood bei der einfachen Regression in <code>R</code></h3>
+<p>Es folgt ein kleines Beispiel um zu zeigen, wie über die Maximumlikelihood-Methode numerisch die Modellparameter bestimmt werden können, wenn es nicht möglich die Parameter über eine geschlossene Gleichung zu lösen. Es seien <span class="math inline">\(N = 20\)</span> zufällige Punkte generiert und <span class="math inline">\(\sigma\)</span> sei bekannt mit <span class="math inline">\(\sigma=1\)</span> und zwischen <span class="math inline">\(X\)</span> und <span class="math inline">\(Y\)</span> besteht der Zusammenhang <span class="math inline">\(Y = 2 + 3x\)</span>. Seien nun die Daten beobachtet worden und es sollen die Parameter <span class="math inline">\(\hat{\beta_0}\)</span> und <span class="math inline">\(\hat{\beta_1}\)</span> anhand der Daten bestimmt werden.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">20</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>sigma <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">20</span>, <span class="dv">3</span>, <span class="dv">7</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">+</span> <span class="dv">3</span><span class="sc">*</span>x <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">20</span>, <span class="dv">0</span>, sigma)</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Als Streudiagramm sehen die Daten wie folgt aus (siehe <a href="#fig-likelihood-reg-lik" class="quarto-xref">Abbildung&nbsp;<span>17.6</span></a>).</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-likelihood-reg-lik" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-likelihood-reg-lik-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="likelihood_files/figure-html/fig-likelihood-reg-lik-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-likelihood-reg-lik-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;17.6: Beispieldaten mit <span class="math inline">\(N=20\)</span>.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Über die <code>lm()</code>-Funktion ist die Berechnung der Koeffizienten simpel.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(y<span class="sc">~</span>x)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(mod)</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(Intercept)           x 
+   4.134989    2.602081 </code></pre>
+</div>
+</div>
+<p>Nun soll die Likelihood <span class="math inline">\(\mathcal{L}(\theta)\)</span> bzw. die Loglikelihood <span class="math inline">\(\ell(\theta)\)</span> und deren Maximum numerisch bestimmt werden. Um die Likelihood zu bestimmen wird die Funktion <code>dnorm()</code> verwendet, mit der die Dichtewerte für die Daten berechnet werden können (siehe <a href="#eq-likelihood-reg-01" class="quarto-xref">Gleichung&nbsp;<span>17.2</span></a>). Der Mittelwert der Normalverteilung für ein bestimmtes <span class="math inline">\(X\)</span> folgt der Geraden, also <span class="math inline">\(\beta_0 + \beta_1 \cdot X\)</span> (siehe <a href="#eq-likelihood-reg-00" class="quarto-xref">Gleichung&nbsp;<span>17.1</span></a>), während <span class="math inline">\(\sigma^2 = 1\)</span> gegeben ist. Es wird dazu eine neue Funktion in <code>R</code> erstellt, die der Einfachheit halber <code>log_likelihood</code> genannt wird. Der Parameter von <code>log_likelihood()</code> wird der Konvention folgend mit <span class="math inline">\(\theta\)</span> bezeichnet und ist ein Vektor mit zwei Einträgen <span class="math inline">\(\theta = (\beta_0, \beta_1)\)</span>.</p>
+<p>Für jedes Wertpaar wird nun die Dichte bestimmt indem der jeweilige <span class="math inline">\(y_i\)</span> Wert als erstes Argument an <code>dnorm()</code> übergeben wird und der dazugehörigen Mittelwert <span class="math inline">\(\mu\)</span> mittels der Regressionsgleichung <span class="math inline">\(\beta_0 + \beta_1 * x_i\)</span> berechnet wird. Die Funktion <code>dnorm()</code> hat ein zusätzliches Argument <code>log</code> mit dem angegeben wird, ob der Dichtewert oder der Logarithmus des Dichtewertes zurückgegeben werden soll. Dies ist dem Umstand geschuldet, dass diese Funktion tatsächlich oft dazu benutzt wird den Loglikelihood <span class="math inline">\(\ell\)</span> zu berechnen. Da <code>dnorm()</code> auch Vektoren verarbeiten kann, werden alle Werte direkt übergeben. <code>dnorm()</code> berechnet den Loglikelihood für jeden Wert und gibt diese in einem Vektor der gleichen Länge zurück. Dieser Vektor muss dann nur aufaddiert werden um den Loglikelihood zu bestimmen.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>log_likelihood <span class="ot">&lt;-</span> <span class="cf">function</span>(theta) {</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  beta_0 <span class="ot">&lt;-</span> theta[<span class="dv">1</span>]</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  beta_1 <span class="ot">&lt;-</span> theta[<span class="dv">2</span>]</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  ll <span class="ot">&lt;-</span> <span class="fu">dnorm</span>(y, beta_0 <span class="sc">+</span> beta_1 <span class="sc">*</span> x, sigma, <span class="at">log=</span>T)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="sc">-</span><span class="fu">sum</span>(ll)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Um nun, das Maximum dieser Funktion zu finden wird die Funktion <code>optim()</code> verwendet. Diese berechnet für eine übergebene Funktion das <strong>Minimum</strong>. Daher wird in <code>log_likelihood()</code> die negative Summe <code>-sum(ll)</code> zurück gegeben. Ein Maximum der Funktion <span class="math inline">\(f(x)\)</span> ist ein Minimum der Funktion <span class="math inline">\(-f(x)\)</span>. Als ersten Parameter benötigt <code>optim()</code> Startwerte für <span class="math inline">\(\theta\)</span> für die Optimierung. Diese sind jetzt einfach auf <span class="math inline">\(\theta_{\text{Start}} = c(1,2)\)</span> gesetzt worden.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>theta_start <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">optim</span>(theta_start, log_likelihood)</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$par
+[1] 4.135080 2.602148
+
+$value
+[1] 26.03103
+
+$counts
+function gradient 
+      73       NA 
+
+$convergence
+[1] 0
+
+$message
+NULL</code></pre>
+</div>
+</div>
+<p>Der Rückgabewert von <code>optim()</code> hat einen Eintrag <code>par</code> der die gefunden Werte für das Maximum (respektive Minimum) enthält. Diese stimmen auch tatächlich mit denjenigen von <code>coef(mod)</code> überein. Dies zeigt somit auch noch mal direkter, wie mittels der Likelihood-Funktion Modellparameter bestimmt werden können, sobald eine statistisches Modell des DGP vorhanden ist. D.h. dieser Ansatz funktioniert auch für deutlich kompliziertere Modell bei denen eine algebraische Herleitung nicht mehr möglich ist.</p>
+</section>
+</section>
+<section id="take-away" class="level2" data-number="17.3">
+<h2 data-number="17.3" class="anchored" data-anchor-id="take-away"><span class="header-section-number">17.3</span> Take-away</h2>
+<ol type="1">
+<li>Das Ziel von MLE ist sehr intuitiv: Finde genau die Parameterwerte <span class="math inline">\(\theta\)</span>, die die beobachteten Daten am wahrscheinlichsten machen.<br>
+</li>
+<li>Die Likelihood ist keine Wahrscheinlichkeit, sondern nur zum Vergleich.</li>
+<li>Meistens wird die <span class="math inline">\(\log\mathcal{L}\)</span> maximiert. Das Maximieren von <span class="math inline">\(\log\mathcal{L}\)</span> ist dasselbe wie Maximieren von <span class="math inline">\(\mathcal{L}\)</span></li>
+<li>Bei normalverteilten Residuen ist MLE äquivalent zur Methode der kleinsten Quadrate.</li>
+<li>MLE ist sehr allgemein gültig und kann auch bei komplizierteren Fällen angewendet werden. Die Ergebnisse beruhen dann nicht auf einer geschlossen Lösungsgleichung sondern werden über numerische Optimierung ermittelt.</li>
+</ol>
 
 
 </section>

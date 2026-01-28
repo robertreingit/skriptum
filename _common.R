@@ -89,6 +89,18 @@ icc <- function(ratings)
   )
 }
 
+binom_dist <- function(p = 0.5, n = 10) {
+  tibble(
+    x = 0:n,
+    p = dbinom(x, n, p)
+  ) |> 
+    ggplot(aes(x, p, xend=x, yend=0)) +
+    geom_segment(size=1.5) +
+    geom_point(size=4) +
+    scale_x_continuous('Anzahl Kopf', breaks = 0:n) +
+    scale_y_continuous('Wahrscheinlichkeit')
+}
+
 # MISC
 
 r_1 <- function(x) round(x, 1)
