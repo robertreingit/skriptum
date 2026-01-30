@@ -1,4 +1,4 @@
-# Maximum-Likelihood (MLE)
+# Maximum-Likelihood 
 
 ```{r}
 #| echo: false
@@ -89,9 +89,9 @@ Nun stellt sich daher die Frage wofür die Likelihood-Funktion $\mathcal{L}(\the
 
 ::: {#def-maximum-likelihood}
 
-## Maximum-Likelihood \index{Maximum Likelihood}
+## Maximum-Likelihood (ML) \index{Maximum Likelihood}
 
-Seien $x$ die beobachteten Daten und $\theta$ ein unbekannter Parameter eines statistischen Modells mit Likelihood-Funktion $\mathcal{L}(\theta)$. Der **Maximum-Likelihood-Schätzer (ML-Schätzer)** ist derjenige Parameterwert $\hat{\theta}$, der die Likelihood maximiert:
+Seien $x$ die beobachteten Daten und $\theta$ ein unbekannter Parameter eines statistischen Modells mit Likelihood-Funktion $\mathcal{L}(\theta)$. Der **Maximum-Likelihood-Schätzer (ML-Schätzer, MLE)** ist derjenige Parameterwert $\hat{\theta}$, der die Likelihood maximiert:
 
 $$
 \hat{\theta} = \arg\max_{\theta} \mathcal{L}(\theta).
@@ -201,7 +201,7 @@ tibble(mu = seq(-2, 8, length.out = 1000),
   labs(y = 'Dichte')
 ```
 
-In @fig-slm-inf-ml-02 liegt das Maximum von $L$ bei $\mu = 1.5$, was dem Mittelwert $\bar{x} = \frac{1}{2}\sum_{i=1}^2 x_i$ entspricht. Intuitiv ist dies nachvollziehbar: Wenn beiden Werten die gleiche Bedeutung zugemessen wird, liegt die Verteilung, die genau in der Mitte zwischen den beiden Werten liegt, am ehesten mit der Erzeugung der beiden Werte im Einklang.
+In @fig-likelihood-normal-02 liegt das Maximum von $L$ bei $\mu = 1.5$, was dem Mittelwert $\bar{x} = \frac{1}{2}\sum_{i=1}^2 x_i$ entspricht. Intuitiv ist dies nachvollziehbar: Wenn beiden Werten die gleiche Bedeutung zugemessen wird, liegt die Verteilung, die genau in der Mitte zwischen den beiden Werten liegt, am ehesten mit der Erzeugung der beiden Werte im Einklang.
 
 Die Berechnung führt zum gleichen Ergebnis. Es wird wieder der Loglikelihood $\log\mathcal{L}$ verwendet und der Konsistenz wegen wird das Symbol $\mu$ durch das Symbol $\theta$ ersetzt und $\sigma^2=1, x_1=1, x_2=2$.
 
@@ -234,6 +234,171 @@ $$
 
 D.h. mit $\theta = \mu$ wurde über die Maximumlikelihood-Methode der gleiche Wert erhalten, welcher auch intuitive am meisten Sinn macht. Allgemein wird also für die Anwendung der Maximumlikelihood-Methode immer ein theoretisches, statistisches Modell benötigt und es wird der plausibelste Modellparameterwert $\theta$ anhand des Modells bestimmt. Dieser Wert ist dann der **Maximumlikelihood-Schätzer** $\hat{\theta}$.
 
+::: {#exm-likelihood-exponential}
+
+## Exponentialverteilung
+
+
+Es sei das folgende Problem betrachtet. Ein Hersteller von LED-Glühbirnen ist daran interessiert die Lebensdauer (in Jahren) der produzierten Birnen zu bestimmen. Eine Verteilung die bei der Modellierung von Zeitspannen verwendet wird, ist die Exponentialverteilung. Die Dichtefunktion der Exponentialverteilung hat einen Parameter $\lambda$ und die Form:
+
+$$
+f_{\lambda}(x) = \begin{cases}
+\lambda e^{-\lambda x} & x \geq 0 \\
+  0 & x < 0
+\end{cases}
+$$ {#eq-exponential-distribution}
+
+In @fig-likelihood-expdist sind Exponentialverteilungen für $\lambda=0.5, 1, 2$ abgetragen. Der y-Achsenabschnitt ist offenbar immer der $\lambda$-Wert.
+
+```{r}
+#| fig-cap: "Dichtefunktion der Exponentialverteilung für $lambda=0.5, 1, 2$"
+#| label: fig-likelihood-expdist
+
+exp_dist <- function(x, lambda) { lambda*exp(-lambda*x)}
+exp_df <- expand_grid(x = seq(0, 10, length=100), lambda=c(0.5, 1, 2)) |> mutate(d = exp_dist(x, lambda), lambda=factor(lambda))
+ggplot(exp_df, aes(x, d, color=lambda, group=lambda)) + 
+  geom_line() +
+  scale_color_discrete(expression(lambda)) +
+  scale_y_continuous("Dichte")
+```
+
+Der Erwartungswert der Exponentialverteilung ist $E[X]=\frac{1}{\lambda}$ was auch die Standardabweichung $\sigma_{\lambda} = \frac{1}{\lambda}$ ist.
+
+Um nun die Lebenszeit der Glühbirnen zu bestimmen, wurden drei Glühbirnen $x_1, x_2, x_3$ bis zum Versagen *beobachtet*. Per Konstruktion ist die Lebensdauer der drei Birnen unabhängig voneinander. Daher können die Likelihoods der drei Birnen miteinander multipliziert werden. Formal folgt daher mit @eq-exponential-distribution:
+
+$$
+\begin{align*}
+\mathcal{L}(\lambda \mid x_1, x_2, x_3) &= (\lambda e^{-\lambda x_1)}\cdot (\lambda e^{-\lambda x_2})\cdot (\lambda e^{-\lambda x_3}) \\
+&= \lambda^3 e^{-\lambda(x_1 + x_2 + x_3)}
+\end{align*}
+$$
+
+Seien nun die folgenden Werte beobachtet worden:
+
+$$
+x_1=2, x_2=3, x_3=1
+$$
+
+Daraus folgt:
+
+$$
+\mathcal{L}(\lambda\mid x_1=2, x_2=3,x_3=1) = \lambda^3e^{-\lambda6}
+$$
+
+Unter Anwendung des natürlichen Logarithmus folgt:
+
+$$
+\begin{align*}
+\ell(\lambda) &= \log(\lambda^3 e^{-6\lambda}) \\
+&= \log(\lambda^3) + \log(e^{-6\lambda}) \\
+&= 3\log(\lambda) -6\lambda
+\end{align*}
+$$
+
+Ableiten und Nullsetzen führt zu.
+
+$$
+\frac{d}{d\lambda}\ell(\lambda) = \frac{3}{\lambda} - 6 = 0 \Rightarrow \hat{\lambda} = \frac{1}{2}
+$$
+
+Dementsprechend liegt die mittlere Lebensdauer der Glühbirnen aus dem Betrieb bei zwei Jahren.
+
+In @fig-likelihood-explik sind die Graphen Likelihood und Likelihoodfunktion abgetragen.
+
+```{r}
+#| layout-ncol: 2
+#| fig-cap: "Likelihood und Loglikelihoodfunktion für das Glühbirnenbeispiel"
+#| label: fig-likelihood-explik
+#| fig-subcap:
+#|   - "Likelihood"
+#|   - "Loglikelihood"
+
+like_exp <- function(lambda) { lambda**3 * exp(-lambda*6) }
+log_like_exp <- function(lambda) {3*log(lambda) -6*lambda }
+
+df_exp_lik <- tibble(
+  lambda = seq(0, 3, length=100),
+  lik = like_exp(lambda),
+  loglik = log_like_exp(lambda)
+)  
+
+ggplot(df_exp_lik, aes(lambda, lik)) +
+  geom_vline(xintercept=0.5, color='red', linetype='dashed') +
+  geom_line() +
+  labs(x = expression(lambda), y = 'Loglikelihood')
+ggplot(df_exp_lik, aes(lambda, loglik)) +
+  geom_vline(xintercept=0.5, color='red', linetype='dashed') +
+  geom_line() +
+  labs(x = expression(lambda), y = 'Loglikelihood')
+```
+
+:::
+
+::: {#exm-likelihood-normalaverage}
+
+## MLE von $\mu$ bei der Normalverteilung bei allgemeinem $N$
+
+Im folgenden wird der Schätzer für den Parameter $\mu$ bei der Normalverteilung $\mathcal{N}(\mu,\sigma^2)$ für allgemeines $N$ hergeleitet. Seien als $N$ Datenwerte aus der $\mathcal{N}(\mu, \sigma^2)$ beobachtet werden und es soll anhand der Wert der Populationsparameter $\mu$ mittels MLE bestimmt werden.
+
+Die beobachteten Werte sind unabhängig voneinander und stammen aus der gleichen Verteilung (unabhängig und gleichverteilt = [engl] independently and identically distributed IID). Jeder indiviudelle Wert $X_i$ folgt der Verteilung:
+
+$$
+f_{X_i}(x_i) = \frac{1}{2\pi\sigma^2}e^{-\frac{(x_i - \mu)^2}{2\sigma^2}}
+$$
+
+Da die Werte IID sind, können für den Likelihood die individuellen Dichten miteinander multipliziert werden.
+
+$$
+\begin{align*}
+\mathcal{L}(\mu,\sigma^2\mid x_1,\ldots,x_N) &= \frac{1}{\sqrt{2\pi\sigma^2}}e^{-\frac{(x_1 - \mu)^2}{2\sigma^2}} \cdots \frac{1}{\sqrt{2\pi\sigma^2}}e^{-\frac{(x_N - \mu)^2}{2\sigma^2}} \\
+& = \left(\frac{1}{\sqrt{2\pi\sigma^2}}\right)^Ne^{-\sum_{i=1}^N\frac{(x_i - \mu)^2}{2\sigma^2}}
+\end{align*}
+$$
+
+Wiederum Anwendung der Logarithmusfunktion führt zu:
+
+$$
+\begin{align*}
+\ell(\mu,\sigma^2|x1,\ldots,x_N) &= \log\left(\left(\frac{1}{\sqrt{2\pi\sigma^2}}\right)^N\cdot e^{-\sum_{i=1}^N\frac{(x_i - \mu)^2}{2\sigma^2}}\right) \\
+ &= \log\left(\left(\frac{1}{\sqrt{2\pi\sigma^2}}\right)^N\right) + \log\left(e^{-\sum_{i=1}^N\frac{(x_i - \mu)^2}{2\sigma^2}}\right) \\
+ &= N \log\left(\frac{1}{\sqrt{2\pi\sigma^2}}\right) -\sum_{i=1}^N\frac{(x_i - \mu)^2}{2\sigma^2} \\
+ &= -N \log\left(\sqrt{2\pi\sigma^2}\right) -\sum_{i=1}^N\frac{(x_i - \mu)^2}{2\sigma^2} \\
+\end{align*} 
+$$
+
+Die Loglikelihood-Funktion hat zwei Parameter $\mu$ und $\sigma$ von denen hier nur der MLE für $\mu$ bestimmt werden soll. Daher wird die Loglikelihood-Funktion partiell nach $\mu$ abgeleitet und gleich Null gesetzt.
+
+$$
+\frac{\partial}{\partial\mu} \ell(\mu,\sigma^2|x1,\ldots,x_N) = \frac{\partial}{\partial\mu}\left( -N \log\left(\sqrt{2\pi\sigma^2}\right) -\sum_{i=1}^N\frac{(x_i - \mu)^2}{2\sigma^2}\right)
+$$
+
+Der erste Term ist nur von $\sigma$ abhängig und wird daher unter der partiellen Ableitung als Konstante behandelt. Dementsprechend wird der erste Term gleich NULL. 
+
+$$
+\begin{align*}
+\frac{\partial}{\partial\mu} \ell(\mu,\sigma^2|x1,\ldots,x_N) &= \frac{\partial}{\partial\mu}\left(-\sum_{i=1}^N\frac{(x_i - \mu)^2}{2\sigma^2}\right) \\
+ &= -\frac{1}{2\sigma^2}\sum_{i=1}^N\frac{\partial}{\partial\mu}(x_i - \mu)^2 \\
+ &= -\frac{1}{2\sigma^2}\sum_{i=1}^N 2(x_i - \mu)\cdot(-1) \\
+ &= \frac{2}{2\sigma^2}\sum_{i=1}^N (x_i - \mu) \\
+ &= \frac{1}{\sigma^2}\sum_{i=1}^N (x_i - \mu) \\
+\end{align*}
+$$
+
+Dieser Term wird nun gleich Null gesetzt und es folgt:
+
+$$
+\begin{align*}
+\frac{1}{\sigma^2}\sum_{i=1}^N (x_i - \mu) &= 0  \\
+\sum_{i=1}^N x_i - \sum_{i=1}^N\mu &= 0 \\
+\sum_{i=1}^N x_i - N\mu &= 0 \\
+\sum_{i=1}^N x_i &= N\mu  \\
+\hat{\mu} &= \frac{1}{N}\sum_{i=1}^N x_i = \bar{x} \\
+\end{align*}
+$$
+
+Dies zeigt, das der MLE-Schätzer für den Populationsparameter $\mu$ von $N$ Beobachtungen aus einer Normalverteilung $\mathcal{N}(\mu,\sigma^2)$ der Mittelwert $\bar{X}$ ist, wie das schon vorher gezeigt wurde und auch intuitiv sinnvoll erscheint.
+
+:::
 ## Maximum-likelihood Methode bei der einfachen linearen Regression 
 
 Dieser Ansatz lässt sich auch auf das Modell der einfachen linearen Regression anwenden. Bei der einfachen linearen Regression wird angenommen, dass die $Y$-Werte für jeden $X$-Wert einer Normalverteilung mit einer Varianz $\sigma^2$ folgen. Formal:
@@ -274,7 +439,8 @@ $$
 &= \ln \left[\left(\frac{1}{2\pi \sigma^2}\right)^{N/2} \exp\left(-\sum_{i=1}^N \frac{(y_i - \beta_0 - \beta_1 x_i)^2}{2 \sigma^2}\right)\right] \\
 &= \ln \left[\left(\frac{1}{2\pi \sigma^2}\right)^{N/2} \right] + \ln \left[\exp\left(-\sum_{i=1}^N \frac{(y_i - \beta_0 - \beta_1 x_i)^2}{2 \sigma^2}\right)\right] \\
 &= \frac{N}{2} \ln \left[\left(\frac{1}{2\pi \sigma^2}\right) \right] -\sum_{i=1}^N \frac{(y_i - \beta_0 - \beta_1 x_i)^2}{2 \sigma^2} \\
-&= -\frac{n}{2}\ln(2\pi) - \frac{n}{2}\ln(\sigma^2) - \frac{1}{2\sigma^2}\sum_{i=1}^{N}(y_i - \beta_0 - \beta_1 x_i)^2
+&= -\frac{N}{2}\ln(2\pi\cdot\sigma^2)  - \frac{1}{2\sigma^2}\sum_{i=1}^{N}(y_i - \beta_0 - \beta_1 x_i)^2 \\
+&= -\frac{N}{2}\ln(2\pi) - \frac{N}{2}\ln(\sigma^2) - \frac{1}{2\sigma^2}\sum_{i=1}^{N}(y_i - \beta_0 - \beta_1 x_i)^2
 \end{align*}
 $$
 
@@ -294,7 +460,7 @@ Wenn dieser Ausdruck gleich Null gesetzt wird, ergibt sich der gleiche Ausdruck 
 \Leftrightarrow\mkern40mu && n \bar{y} - n \beta_0- \beta_1 n \bar{x} = 0 \nonumber \\
 \Leftrightarrow\mkern40mu && \bar{y} - \beta_0- \beta_1 \bar{x} = 0 \nonumber \\
 \Leftrightarrow\mkern40mu && \bar{y} - \beta_1 \bar{x} = \beta_0\nonumber \\
-\Leftrightarrow\mkern40mu && \beta_0= \bar{y} - \beta_1 \bar{x} 
+\Leftrightarrow\mkern40mu && \hat{\beta}_0= \bar{y} - \beta_1 \bar{x} 
 \end{alignat}
 
 Die Herleitung für $\beta_1$ entspricht ebenfalls derjenigen, die auf Basis der Normalengleichungen (siehe @eq-slm-basics-norm) hergeleitet wurden. Der Unterschied liegt darin, dass bei den Normalengleichungen keine Annahmen über die Verteilung der Werte gemacht wurden. Stattdessen wurde eine Methode gesucht, die die quadrierten Residuen minimiert. Im Gegensatz dazu basiert die Herleitung der Gleichungen durch die Maximum-Likelihood-Methode auf spezifischen Verteilungsannahmen und stellt damit ein allgemeineres Verfahren da. Im Fall der linearen Regression führen beide Methoden zum gleichen Ergebnis. Die Maximum-Likelihood-Methode kann jedoch auch in Fällen angewendet werden, bei denen die Methode der quadrierten Abweichungen nicht funktioniert. Für die Anwendung ist es entscheidend, das zugrunde liegende Prinzip und den Unterschied zwischen den beiden Ansätzen zu verstehen.
@@ -367,3 +533,6 @@ Der Rückgabewert von `optim()` hat einen Eintrag `par` der die gefunden Werte f
 4. Bei normalverteilten Residuen ist MLE äquivalent zur Methode der kleinsten Quadrate.
 5. MLE ist sehr allgemein gültig und kann auch bei komplizierteren Fällen angewendet werden. Die Ergebnisse beruhen dann nicht auf einer geschlossen Lösungsgleichung sondern werden über numerische Optimierung ermittelt.
 
+## Zum Weiterlesen
+
+Kurze Einführungen zu MLE sind in @myung2003 und im Abschnitt in Kapitel 2 in @bishop2023 zu finden. Kapitel 2 aus @roback2021 beschäftigt sich ausschließlich mit Maximum Likelihood. Eine komplettes Buch zum Thema ist @rohde2014.
