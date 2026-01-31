@@ -19,13 +19,13 @@ p <- ggplot(jump, aes(v_ms, jump_m)) + geom_point() +
        y = 'Sprungweite[m]') 
 ```
 
-Wenn ein einfaches lineares Modell gefittet wurde, ist eine zentrale Fragestellung welche Vorhersagen anhand des Modells getroffen werden können. Wir hatten schon vorher gesehen, dass Vorhersagen mittels eines *hats* über der Variable angezeigt werden. Beim einfachen linearen Regressionmodell liegen die vorhergesagten Werte $\hat{y}_i$ auf der berechneten Regressionsgerade. Da die Regressionsgerade anhand des Modells berechnet wird, berechnet sich der Werte $\hat{y}_i$ für einen gegeben $x$-Wert nach. 
+Wenn ein einfaches lineares Modell gefittet wurde, ist eine zentrale Fragestellung welche Vorhersagen anhand des Modells getroffen werden können. Es wurde schon vorher gezeigt, dass Vorhersagen mittels eines *hat* Symbols $\hat{}$ über einer Variable angezeigt wird. Beim einfachen, linearen Regressionmodell liegen die vorhergesagten Werte $\hat{y}_i$ auf der berechneten Regressionsgerade. Da die Regressionsgerade anhand des Modells berechnet wird, berechnet sich der Werte $\hat{y}_i$ für einen gegeben $x$-Wert nach. 
 
-\begin{equation}
+$$
 \hat{y} = \hat{\beta_0} + \hat{\beta_0} x
-\end{equation}
+$$
 
-Wie schon mehrfach besprochen ist die Regressionsgerade inherent unsicher. Wir haben Unsicherheiten bezüglich der geschätzen Modellkoeffizienten $\hat{\beta}_0$ und $\hat{\beta}_1$ und diese Unsicherheit überträgt sich daher auf die geschätzen Werte $\hat{y}_i$. Dies Unsicherheit muss daher bei deren Interpretation der Werte berücksichtigt werden.
+Wie schon mehrfach besprochen ist die ermittelte Regressionsgerade inherent **unsicher**. Die anhand der Daten geschätzten Modellkoeffizienten $\hat{\beta}_0$ und $\hat{\beta}_1$ sind ja eben nur Schätzer und wenn die Daten noch einmal erhoben werden würden, dann würden mit großer Wahrscheinlichkeit andere Modellparameter berechnet werden. Diese Unsicherheit drückt sich in den Standardfehlern $\hat{\sigma}_{\beta_0}$ und $\hat{\sigma}_{\beta_1}$ aus, die letztendlich auch nur Schätzer der wahren Werte $\sigma_{\beta_0}$ und $\sigma_{\beta_1}$ sind. Diese Unsicherheit in den Modellparametern überträgt sich nun aber auch auf die geschätzten Werte $\hat{y}_i$ und muss bei deren Interpretation der Vorhersagewerte berücksichtigt werden.
 
 ### Berechnung von $\hat{y}_i$ in `R`
 
@@ -42,7 +42,7 @@ p +
                mapping = aes(y = y_hat), color = 'red')
 ```
 
-In `R` können die vorhergesagten Werte des mittels `lm()` gefitteten Modells mit der Hilfsfunktion `predict()` bestimmt werden. Wenn der Funktion `predict()` keine weiteren Parameter außer dem `lm`-Objekt übergeben werden, berechnet `predict()` die vorhergesagten Werte $\hat{y}_i$ für alle die $x$-Werte die auch zum fitten des Modells benutzt wurden. Die Reihenfolge der Werte $\hat{y}_i$ enspricht dabei den Werten im Original-`data.frame()`.
+In `R` können die vorhergesagten Werte des mittels `lm()` gefitteten Modells mit der Hilfsfunktion `predict()` bestimmt werden. Wenn der Funktion `predict()` keine weiteren Parameter außer dem `lm`-Objekt übergeben werden, berechnet `predict()` die vorhergesagten Werte $\hat{y}_i$ für alle die $x$-Werte die auch zur Anpassung des Modells verwendet wurden. Die Reihenfolge der Werte $\hat{y}_i$ entspricht dabei den Werten im Original-`tibble()`.
 
 
 ```{r}
@@ -51,7 +51,7 @@ In `R` können die vorhergesagten Werte des mittels `lm()` gefitteten Modells mi
 predict(mod)[1:5] 
 ```
 
-Der Übersicht halber haben uns nur die ersten fünf Werte ausgeben lassen. Als kleine Anwendung, können wir mittels `predict()` die Residuen auch von Hand ohne die `resid()`-Funktion berechnen.
+Um den Ausdruck übersichtlich zu halten, werden nur die ersten fünf Werte ausgegeben. Als kleine Anwendung, könnten mittels `predict()` die Residuen auch von Hand ohne die `resid()`-Funktion berechnet werden.
 
 ```{r}
 #| echo=T
@@ -60,9 +60,9 @@ Der Übersicht halber haben uns nur die ersten fünf Werte ausgeben lassen. Als 
 resid(mod)[1:5]
 ```
 
-Meistens liegt das Interesse jedoch weniger auf den vorhergesagten Werten $\hat{y}_i$ für die gemessenen Werte, sondern es sollen Werte vorhergesagt werden für $x$-Werte die nicht im Datensatz enthalten sind. Operational ändert sich nichts, es wird immer noch das gefittete Modell verwendetet und es müssen lediglich neue $x$-Werte übergeben werden.
+Meistens liegt das Interesse jedoch weniger auf den vorhergesagten Werten $\hat{y}_i$ für die gemessenen Werte, sondern es sollen Werte vorhergesagt werden für *neue* $X$-Werte die nicht im Datensatz enthalten sind. Operational ändert sich nichts, es wird immer noch das gefittete Modell verwendetet und es müssen lediglich die neuen $X$-Werte an `predict()` übergeben werden.
 
-In `R` kann dies mittels des zweite Parameter in `predict()` erreicht werden. Soll zum Beispiel die Sprungweite für eine Anlaufgeschwindigkeit von $v = 11.5[m/s]$ berechnen werden, muss zunächst ein neues `tibble()` erstellt werden, welches den gewünschten $x$-Wert enthält. Dabei muss der Spaltenname in dem neuen `tibble()` demjenigen im Original-`tibble()` entsprechen. Ansonsten funktioniert die Anwendung von `predict()` nicht.
+In `R` kann dies mittels des zweite Parameter in `predict()` erreicht werden. Soll zum Beispiel die Sprungweite für eine Anlaufgeschwindigkeit von $v = 11.5[m/s]$ berechnen werden, muss zunächst ein neues `tibble()` erstellt werden, welches den gewünschten $x$-Wert enthält. Dabei muss der Spaltenname in dem neuen `tibble()` demjenigen im Original-`tibble()` entsprechen. Ansonsten funktioniert die Anwendung von `predict()` nicht und es wird ein Fehler geworfen. D.h. zunächst wird eine neues `tibble()` mit dem gewünschten $x$-Wert erstellt.
 
 ```{r}
 #| echo: true
@@ -71,7 +71,7 @@ df <- tibble(v_ms = 11.5)
 df
 ```
 
-Dieses `tibble()` kann nun zusammen mit dem `lm()`-Objekt an `predict()` übergeben werden.
+Wie gesagt, der Name der Spalte mit dem neuen $x$-Wert ist der gleiche wie im original Daten-`tibble()`. Das neue `tibble()` kann nun zusammen mit dem `lm()`-Objekt an `predict()` übergeben werden um den vorhergesagten Wert $\hat{y}_{\text{neu}}$ zu berechnen.
 
 ```{r}
 #| echo: true
@@ -83,7 +83,7 @@ D.h., bei einer Anlaufgeschwindigkeit von $v = 11.5[m/s]$ ist anhand des Modells
 
 ## Unsicherheit in der Vorhersage 
 
-Wie schon angesprochen ist unser Modell mit Unsicherheiten behaftet. Diese drücken sich in den Standardfehler für die beiden Koeffizienten $\hat{\beta_0}$ und $\hat{\beta_1}$ aus (siehe @tbl-pred-01).
+Wie schon angesprochen ist das an die Daten angepasste Modell mit Unsicherheiten behaftet. Diese Unsicherheiten drücken sich in den Standardfehler für die beiden Koeffizienten $\hat{\beta_0}$ und $\hat{\beta_1}$ aus (siehe @tbl-pred-01).
 
 ```{r}
 #| label: tbl-pred-01
@@ -97,49 +97,45 @@ broom::tidy(mod) |> select(term, estimate, "std.error") |>
   )
 ```
 
-Der vorhergesagte Wert $\hat{y}$ ist daher für sich alleine ist noch nicht brauchbar, da auch Informationen über dessen Unsicherheit notwendig sind um die Ergebnisse korrekt zu interpretieren.
-
-Es können zwei unterschiedliche Anwendungsfälle voneinander unterschieden werden. 
+Der vorhergesagte Wert $\hat{y}$ ist daher für sich alleine ist noch nicht brauchbar, da auch Informationen über dessen Unsicherheit notwendig sind um die Ergebnisse korrekt zu interpretieren. Wenn die Unsicherheit groß ist, dann ist die Interpretation eher schwierig, als wenn die Untersicherheit klein ist. Die Größe der Unsicherheit wird mittels eines Konfidenzintervalls kommuniziert. Wenn das Intervall sehr breit ist, ist die Unsicherheit entsprechend geringer, wenn das Intervall eng ist, ist die mit der Vorhersage verbundene Unsicherheit geringer. Es können hier zwei unterschiedliche Anwendungsfälle voneinander unterschieden werden. 
 
 1. Der mittlere, erwartete Wert $\hat{\bar{y}}_{neu}$ (auch $\hat{E}[y|x]$)
 2. Die Vorhersage eines einzelnen Wertes  $\bar{y}_{neu}$
 
-Im konkreten Fall werden damit zwei unterschiedliche Fragestellungen beantwortet. Im 1. Fall lautet die Frage, ich habe eine Trainingsgruppe und möchte wissen was der mittlere Wert der Gruppe anhand des Modells ist, wenn alle eine bestimmte Anlaufgeschwindigkeit $v_{neu}$ haben. Im 2. Fall lautet die Frage welche Weite eine einzelne Athletin für die Anlaufgeschwindigkeit $v_{neu}$ springen sollte. In beiden Fällen werden die Athleten nicht genau den Wert des Regressionsmodells treffen. Heuristisch können wir aber einsehen, dass im 1. Fall der Gruppenvorhersage die auftretenden Streuungen nach oben bzw. nach unten sich gegenseitig im Schnitt ausbalancieren sollten. Im 2. Fall der einzelnen Athletin ist dies nicht der Fall. Daher ist die Vorhersage im 2. Fall mit einer höhere Unsicherheit behatete. Diese Unterschied sollte sich dementsprechend in den Varianzen der beiden Vorhersagen wiederspiegeln.
+Im konkreten Fall werden damit zwei unterschiedliche Fragestellungen beantwortet. Im 1. Fall lautet die Frage, ich habe eine Trainingsgruppe und möchte wissen was der mittlere Wert der Gruppe anhand des Modells ist, wenn alle eine bestimmte Anlaufgeschwindigkeit $v_{neu}$ haben. Im 2. Fall lautet die Frage welche Weite eine einzelne Athletin für die Anlaufgeschwindigkeit $v_{neu}$ springen sollte. In beiden Fällen werden die Athleten nicht genau den Wert des Regressionsmodells treffen. Heuristisch sollte aber einleuchtend sein, dass im 1. Fall der Gruppenvorhersage die auftretenden Streuungen nach oben bzw. nach unten sich gegenseitig im Schnitt ausbalancieren sollten. Im 2. Fall der einzelnen Athletin ist dies nicht der Fall. Daher ist die Vorhersage im 2. Fall mit einer höhere Unsicherheit behaftet als im 1. Fall. Dieser Unterschied sollte sich dementsprechend in den Streuungen bzw. den entsprechenden Varianzen der beiden Vorhersagen wiederspiegeln.
 
-Der vorhergesagte Wert $\hat{y}_{neu}$ ist in beiden Fällen gleich und entspricht der oben beschriebenen Methode anhand des Modell $y_{neu} = \hat{\beta}_0 + \hat{\beta}_1 \times x_{\text{neu}}$.
+In beiden Fällen ist der vorhergesagte Wert $\hat{y}_{neu}$ jedoch gleich und entspricht der oben beschriebenen Methode anhand des Modell $y_{\text{neu}} = \hat{\beta}_0 + \hat{\beta}_1 \cdot x_{\text{neu}}$. D.h. es wird der zu $x_{\text{neu}}$ entsprechende Wert $y_{\text{neu}}$ auf der Gerade berechnet.
 
-Die Varianz für den ersten Fall, für den erwarteten Mittelwert errechnet nach:
+Die Varianz für den ersten Fall, für den erwarteten Mittelwert errechnet sich nach:
 
-\begin{equation}
-Var(\hat{\bar{y}}_{neu}) = \hat{\sigma}^2 \left[\frac{1}{n} + \frac{(x_{neu} - \bar{x})^2}{\sum(x_i - \bar{x})^2}\right] = \hat{\sigma}_{\hat{\bar{y}}_{neu}}^2
-\label{eq-slm-pred-hatbary}
-\end{equation}
+$$
+Var(\hat{\bar{y}}_{\text{neu}}) = \hat{\sigma}^2 \left[\frac{1}{n} + \frac{(x_{\text{neu}} - \bar{x})^2}{\sum(x_i - \bar{x})^2}\right] = \hat{\sigma}_{\hat{\bar{y}}_{\text{neu}}}^2
+$$ {#eq-slm-pred-hatbary}
 
-Das dazugehörige Konfidenzintervall errechnet sich mittels:
+Die Wurzel der Varianz ist stellt wie immer den Standardfehler von $\hat{\bar{y}}_{\text{neu}}$ dar. Das dazugehörige Konfidenzintervall errechnet sich wie immer mittels dem Muster Statistik $\pm$ Quantile der theoretischen Verteilung multipliziert mit dem Standardfehler mittels:
 
-\begin{equation}
-\hat{\bar{y}}_{neu} \pm q_{t(1-\alpha/2;n-2)} \times \hat{\sigma}_{\hat{\bar{y}}_{neu}}
-\end{equation}
+$$
+\hat{\bar{y}}_{\text{neu}} \pm q_{t(1-\alpha/2;n-2)} \cdot \hat{\sigma}_{\hat{\bar{y}}_{\text{neu}}}
+$$
 
 Die Varianz für die Vorhersage eines einzelnen Wertes errechnet sich dagegen nach:
 
-\begin{equation}
-Var(\hat{y}_{neu}) = \hat{\sigma}^2 \left[1 + \frac{1}{n} + \frac{(x_{neu} - \bar{x})^2}{\sum(x_i - \bar{x})^2}\right] = \hat{\sigma}^2 + \hat{\sigma}_{\hat{\bar{y}}_{neu}}^2 = \hat{\sigma}_{\hat{y}_{neu}}^2
-\label{eq-slm-pred-haty}
-\end{equation}
+$$
+Var(\hat{y}_{\text{neu}}) = \hat{\sigma}^2 \left[1 + \frac{1}{n} + \frac{(x_{\text{neu}} - \bar{x})^2}{\sum(x_i - \bar{x})^2}\right] = \hat{\sigma}^2 + \hat{\sigma}_{\hat{\bar{y}}_{neu}}^2 = \hat{\sigma}_{\hat{y}_{\text{neu}}}^2
+$$ {#eq-slm-pred-haty}
 
-In Formel \eqref{eq-slm-pred-haty} sehen wir, dass sich die Varianz für einen einezelnen vorhergesagten Wert $\hat{y}$ aus zwei Komponenten zusammensetzt. Einmal die Varianz aufgrund des vorhgesagten Mittelwerts und zusätzlich die Varianz auf Grund des Modells $\sigma^2$. Insgesamt für das zu dem folgenden Konfidenzintervall:
-
-\begin{equation}
-\hat{y}_{neu} \pm q_{t(1-\alpha/2;n-2)} \times \hat{\sigma}_{\hat{y}_{neu}}
-\end{equation}
-
-Da wir $\sigma^2$ in den seltensten Fällen kennen, sondern ebenfalls anhand der Daten schätzen, wird der bereits besprochene Schätzer $\hat{\sigma}^2 = MSE$ verwendet.
-
-In beiden Berechnungen (Formeln \eqref{eq-slm-pred-haty} und \eqref{eq-slm-pred-hatbary}) ist der folgende Term enthalten:
+Anhand von @eq-slm-pred-haty ist zu erkennen, dass sich die Varianz für einen einzelnen vorhergesagten Wert $\hat{y}$ aus zwei Komponenten zusammensetzt. Einmal die Varianz aufgrund des vorhergesagten Mittelwerts und zusätzlich die Residuenvarianz auf Grund des Modells $\sigma^2$. Insgesamt für das zu dem folgenden Konfidenzintervall:
 
 $$
-\frac{(x_{neu} - \bar{x})^2}{\sum(x_i - \bar{x})^2}
+\hat{y}_{\text{neu}} \pm q_{t(1-\alpha/2;n-2)} \cdot \hat{\sigma}_{\hat{y}_{\text{neu}}}
+$$
+
+Da $\sigma^2$ überlicherweise auch nicht bekannt ist, sondern ebenfalls anhand der Daten geschätzt wird, wird der bereits besprochene Schätzer $\hat{\sigma}^2 = MSE$ verwendet.
+
+In beiden Berechnungen (@eq-slm-pred-haty und @eq-slm-pred-hatbary) ist der folgende Term enthalten:
+
+$$
+\frac{(x_{\text{neu}} - \bar{x})^2}{\sum(x_i - \bar{x})^2}
 $$
 
 enthalten. Anhand des Zählers kann abgeleitet werden, dass die Unsicherheit der Vorhersage mit dem Abstand vom Mittelwert der $x$-Werte zunimmt. Rein heuristisch macht dies Sinn, da davon ausgegangen werden kann, dass um den Mittelwert der $x$-Werte auch die meiste Information über $y$ vorhanden ist und dementsprechend umso weiter die Werte sich vom $\bar{x}$ entfernen die Information abnimmt. Im Nenner ist wiederum wie auch beim Standardfehler $\sigma_{\beta_1}$ des Steigungskoeffizienten $\beta_1$ zu sehen, dass die Varianz abnimmt mit der Streuung der $x$-Werte. Daher, wenn eine Vorhersage in einem bestimmten Bereich von $x$-Werten durchgeführt werden soll, dann sollte darauf geachtet werden möglichst diesen Bereich auch zu samplen um die Unsicherheit so klein wie möglich zu halten.
@@ -163,20 +159,19 @@ predict(mod, newdata = df, interval = 'confidence')
 predict(mod, newdata = df, interval = 'prediction')
 ```
 
-Wir sehen hier, das das Konfidenzintervall, wie erwartet für den individuellen Wert $\hat{y}$ weiter ist, als das Konfidenzband für den mittleren Wert $\hat{\bar{y}}$.
+Wir erwartet ist das Konfidenzintervall für den individuellen Wert $\hat{y}$ breiter als das Konfidenzband für den mittleren Wert $\hat{\bar{y}}$. In diesem konkreten Fall ist der Unterschied allerdings nicht besonder groß.
 
 ### Konfidenzband für die Regressiongerade
 
-In oftmals ist auch ein Konfidenzband für die gesamte Regressiongerade von Interesse. In diesem Fall kann das Konfidenzband über die folgende Formel nach der Working-Hotelling-Methode abgeschätzt werden.
+Oftmals ist auch ein Konfidenzband für die gesamte Regressiongerade von Interesse. In diesem Fall kann das Konfidenzband über die folgende Formel nach der Working-Hotelling-Methode abgeschätzt werden. Die Working-Hotelling-Methode ist ein Verfahren, um bei der einfachen linearen Regression **ein gleichzeitiges Konfidenzband** für die Regressionsgerade zu bestimmen. Im Gegensatz zu einem gewöhnlichen Konfidenzintervall, das nur für einen einzelnen $X$-Wert gilt, liefert dieses Band eine Unsicherheitsabschätzung für alle Mittelwertvorhersagen entlang der **gesamten Geraden** unabhängig davon wie viele Werte tatsächlich benötigt werden. Dies wird dadurch erreicht, dass anstatt einer $t$-Quantile ein $F$-Quantile verwendet wird.
 
-\begin{equation}
+$$
 \bar{Y} \pm W \sigma_{\hat{\bar{Y}}_{new}}
-\label{eq-slm-pred-hotelling}
-\end{equation}
+$$ {#eq-slm-pred-hotelling}
 
 Mit $W^2 = 2 F(1-\alpha,2, n-2)$, wobei $F(1-\alpha,2,n-2)$ die Quartile der $F$-Verteilung mit $df_1 = 2$ bzw. $df_2 = n-2$ Freiheitsgraden ist.
 
-In @fig-slm-pred-confband ist das Konfidenzband nach Formel \eqref{eq-slm-pred-hotelling} abgetragen.
+In @fig-slm-pred-confband ist das Konfidenzband nach @eq-slm-pred-hotelling abgetragen.
 
 ```{r}
 #| label: fig-slm-pred-confband
@@ -201,15 +196,24 @@ p +
   lims(x = c(6,12))
 ```
 
-Wir können sehen, das das Konfidenzband für Band gegen Ende der Werte breiter wird. Insbesondere wenn die Vorhersage außerhalb des Bereichs der beobachteten Daten geht, wird die Unsicherheit und damit das Band breiter.
+Es ist zu erkennen, das das Konfidenzband gegen die jeweiligen Ende der Werte breiter wird. Insbesondere wenn die Vorhersage außerhalb des Bereichs der beobachteten Daten geht, wird die Unsicherheit und damit das Band breiter. 
 
-Weiterführende Informationen findet ihr beispielsweise in [@kutner2005, S.52ff].
+Um das Konfidenzband in `R` zu bestimmen, muss der $W$ Wert bestimmt werden. Für das Sprungbeispiel mit $N = dim(jump)[1]$ und $\alpha = 0.05$ ergibt sich somit.
+
+```{r}
+#| echo: true
+
+N <- 43
+alpha <- 0.05
+W_sqr <- 2*pf(1-alpha, 2, N - 2)
+
+```
 
 ## Die Modellgüte beurteilen 
 
 ### Root-mean-square $\hat{\sigma}^2$
 
-Wie wir bereits bei der betrachtung von Vorhersagen gesehen haben, ist die Verbundene Unsicherheit ursächlich in den Formeln \eqref{eq-slm-pred-haty} und \eqref{eq-slm-pred-hatbary} von der Residualvarianz $\sigma^2$ bzw. derem Schätzer $\hat{\sigma}^2 = MSE$ abhängig. Daher kann dieser Wert, der auch als Standardschätzfehler bezeichnet wird, auch direkt als ein Kriterium der Modellgüte interpretiert werden. Insbesondere die Wurzel aus diesem Wert kann direkt interpretiert werden, da sie die gleichen Einheiten wie die abhängige Variable $y$ besitzt. Dabei ist weniger die absolute Höhe der Residualsvarianz von Interesse sondern immer in Bezug auf die konkrete Fragestellung.
+Wie wir bereits bei der betrachtung von Vorhersagen gesehen haben, ist die Verbundene Unsicherheit ursächlich in den Formeln @eq-slm-pred-haty und @eq-slm-pred-hatbary von der Residualvarianz $\sigma^2$ bzw. derem Schätzer $\hat{\sigma}^2 = MSE$ abhängig. Daher kann dieser Wert, der auch als Standardschätzfehler bezeichnet wird, auch direkt als ein Kriterium der Modellgüte interpretiert werden. Insbesondere die Wurzel aus diesem Wert kann direkt interpretiert werden, da sie die gleichen Einheiten wie die abhängige Variable $y$ besitzt. Dabei ist weniger die absolute Größe der Residualvarianz von Interesse sondern der Wert ist immer im Verhältnis zur der konkrete Fragestellung, der Streuung der Daten und deren Einheiten.
 
 Im vorliegenden Fall haben wir beispielsweise für das Sprungbeispiel $\hat{\sigma} = `r round(sigma(mod),2)`$ beobachtet. D.h. im Mittel liegen unser Modell knapp einen viertel Meter daneben. Ob eine derart große Abweichung das Modell unbrauchbar bei der Entscheidungsfindung ist, ist keine Entscheidung die über die Statistik getroffen werden kann, sondern diese Entscheidung muss durch die Anwenderin des Modell getroffen werden.
 
@@ -253,7 +257,7 @@ simple$ys <- paste0('list(x[',1:n,'],y[',1:n,'])')
 simple$yshat <- paste('hat(y)[',1:n,']')
 ```
 
-Im Folgenden schauen wir uns noch einen weiteren Parameter an, der oft verwendet wird die Modellgüte zu beurteilen. Fangen wir dazu mit einem einfachen Modell mit nur vier Datenpunkten an.
+Im Folgenden wird eine weitere Statistik eingeführt, die oft verwendet wird um die Modellgüte zu beurteilen. Sei dazu ein einfaches Modell mit nur vier Datenpunkten betrachtet.
 
 ```{r}
 knitr::kable(simple[,1:2],
@@ -272,31 +276,28 @@ ggplot(simple, aes(x,y)) +
   geom_abline(intercept = coef(mod0)[1], slope = coef(mod0)[2], col = 'red')
 ```
 
-Schauen wir uns nun noch einmal die möglichen Abweichung bzw. Quadratsummen im einfachen Regressionmodell an. Bezeichnen wir als die **Gesamtvarianz** die quadrierten Abweichungen der $Y$-Werte vom Mittelwert $\mu_Y$ und bezeichnen diese als $SSTO$ . Oder bezogen auf die beobachteten Daten $y_i$ ist die Gesamtvarianz Summe der quadrierten Abweichungen der $y_i$-Werte vom Gesamtmittelwert $\bar{y}$ (siehe Formel \eqref{eq-slm-pred-sstot})
+Schauen wir uns nun noch einmal die möglichen Abweichung bzw. **Quadratsummen** im einfachen Regressionmodell an. Die **Gesamtvarianz** beschreibt die quadrierten Abweichungen der $Y$-Werte vom Mittelwert $\mu_Y$ und wird als $SSTO$ (engl: total sum of squares) bezeichnet. Mit den beobachteten Daten $y_i$ wird die geschätzte Gesamtvarianz anhand der Summe der quadrierten Abweichungen der $y_i$-Werte vom Gesamtmittelwert $\bar{y}$ berechnet (siehe @eq-slm-pred-sstot).
 
-\begin{equation}
+$$
 SSTO := \sum_{i=1}^N (y_i - \bar{y})^2
-\label{eq-slm-pred-sstot}
-\end{equation}
+$$ {#eq-slm-pred-sstot}
 
-Eine weitere Abweichung die berechnet werden kann ist die sogenannte **Regressionsvarianz** $SSR$. Diese wird berechnet nach Formel \eqref{eq-slm-pred-ssreg}:
+Eine weitere Quadratsumme die anhand der Daten berechnet werden kann ist die sogenannte **Regressionsvarianz** $SSR$. Diese berechnet sich nach @eq-slm-pred-ssreg:
 
-\begin{equation}
+$$
 SSR :=\sum_{i=1}^N(\hat{y}_i - \bar{y})^2
-\label{eq-slm-pred-ssreg}
-\end{equation}
+$$ {#eq-slm-pred-ssreg}
 
-D.h. die Regressionsvarianz $SSR$ ist die Summe der quadrierte Abweichungen der anhand des Modells vorhergesagten Werte $\hat{y}_i$-Werte wiederum vom Gesamtmittelwert $\bar{y}$. Wir können diese Abweichungen dahingehend interpretieren, dass sie anzeigen, um wie viel die Abweichungen der Gesamtstreuung durch das Modell reduziert wird. Die letzte Komponente die noch fehlt ist bereits bekannte **Residualvarianz** $SSE$ (siehe Formel \eqref{eq-slm-pred-ssres}).
+D.h. die Regressionsvarianz $SSR$ ist die Summe der quadrierte Abweichungen der anhand des Modells vorhergesagten Werte $\hat{y}_i$-Werte wiederum vom Gesamtmittelwert $\bar{y}$. Diese Quadratsumme kann dahingehend interpretieren, dass sie anzeigt, um wie viel die Gesamtstreuung durch das Modell reduziert werden kann. Die dann verbleibende Quadratsumme ist die bereits bekannte **Residualvarianz** $SSE$ (siehe @eq-slm-pred-ssres).
 
-\begin{equation}
+$$
 SSE := \sum_{i=1}^N (y_i - \hat{y}_i)^2
-\label{eq-slm-pred-ssres}
-\end{equation}
+$$ {#eq-slm-pred-ssres}
 
-D.h. die Summer der quadrierten Abweichungen der beobachteten $Y$-Werte $y_i$ von den anhand des Modells vorhergesagten Werte $\hat{y}_i$. In @fig-slm-pred-simpledev sind die drei verschiedenen Abweichung graphisch dargestellt.
+D.h. die Quadratsumme der Abweichungen der beobachteten $Y$-Werte $y_i$ von denen anhand des Modells vorhergesagten Werte $\hat{y}_i$. In @fig-slm-pred-simpledev sind die drei verschiedenen Quadratsummen bzw. die zugrundeliegende Abweichungen graphisch dargestellt.
 
 ```{r}
-#| fig.cap: "Minimalmodell der Abweichungen"
+#| fig-cap: "Minimalmodell der Abweichungen"
 #| label: fig-slm-pred-simpledev
 
 y_av <- mean(simple$y)
@@ -325,19 +326,21 @@ ggplot(simple, aes(x,y,label = epsilon)) +
             size = text_size) 
 ```
 
-Anhand der Grafik bzw. der Pfeile in @fig-slm-pred-simpledev lässt sich heuristisch erkennen, dass ein additiver Zusammenhang zwischen den Abweichungen besteht. Die blauen Pfeilen von $SSTO$ setzen sich aus den Additionen aus den grünen und den grauen Pfeilen zusammen. Nochmal bezogen auf $SSR$ wird jetzt hoffentlich deutlich warum $SSR$ dahingehend interpretiert werden kann um wie viel Abweichung das Modell $SSTO$ vermindert. Schauen wir uns den ersten Datenpunkt an. Wenn wir ohne das Modell starten, ist unsere beste Schätzung für den Wert Datenpunkts, der Mittelwert $\bar{y}$. Dies resultiert in dem blauen Pfeil als Fehler. Wenn wir nun aber unser Modell dazunehmen, vermindert sich unser Fehler deutlich, da der anhand des Modell vorhergesagte Wert $\hat{y}_1$ nun deutlich näher an den beobachteten Wert $y_1$ herangerückt ist. Nämlich um den Betrag des grauen Pfeils $SSR$. Unser verbleibender Fehler ist jetzt deutlich kleiner, nämlich der grüne Pfeil $SSE$. Formalisieren wir diese Idee etwas erhalten wir:
+Anhand der Grafik bzw. der Pfeile in @fig-slm-pred-simpledev lässt sich erkennen, dass ein additiver Zusammenhang zwischen den Abweichungen besteht. Die blauen Pfeile von $SSTO$ setzen sich aus der Addition aus den grünen und den grauen Pfeilen zusammen. Bezogen auf $SSR$ sollte dies verdeutlichen, warum $SSR$ dahingehend interpretiert werden kann um wie viel Abweichung die Gesamtvarianz $SSTO$ mittels des Modells vermindert werden kann. Sei dazu zunächst nur der erste Datenpunkt betrachtet. Es soll eine Aussage über den möglichen Wert diese Punktes gegeben werden. Wenn nun kein Modell vorhanden ist, dann ist die beste verfügbare Schätzung für den Wert, der Mittelwert $\bar{y}$. Der daraus resultierende Fehler wenn der Mittelwert $\bar{y}$ verwendet wird ist der blaue Pfeil, die Abweichung von $y_1$ zu $\bar{y}$. Wenn nun das Modell verwendet wird, dann ist die beste verfügbare Schätzung der zu $x_1$ gehörende Punkt auf der Geraden. Der anhand des Modell vorhergesagte Wert $\hat{y}_1$ auf der Gerade ist deutlich näher an den beobachteten Wert $y_1$ herangerückt ist. Nämlich um den Betrag des grauen Pfeils $SSR$. Der verbleibender Fehler ist jetzt deutlich kleiner, nämlich der grüne Pfeil $SSE$. Wenn diese Idee formalisiert wird:
 
-\begin{equation*}
+$$
 y_i - \bar{y} = y_i - \hat{y}_i + \hat{y}_i - \bar{y} = \underbrace{(y_i - \hat{y}_i)}_{SSE} + \underbrace{(\hat{y}_i - \bar{y})}_{SSR}
-\end{equation*}
+$$
 
-Hier fehlt allerdings, dass wenn wir diese Abweichungen quadrieren und über alle Punkte summieren, wir noch Zusatzterme, die Kreuzprodukte der beiden Komponenten, erhalten. Tatsächlich lässt sich aber zeigen, dass diese Kreuzprodukte sich gegenseitig algebraisch auslöschen und daher dieser Zusammenhang auch für die Summe der quadrierten Abweichung gilt. Daraus folgt der Zusammenhang:
+Um nun die Quadratsummen zu erhalten, wird diese Gleichung quadriert und über alle $i=1,2,\ldots,N$ aufsummiert. Es lässt sich zeigen, dass die Kreuzprodukte der beiden Komponenten sich gegenseitig auslöschen. Daraus folgt der Zusammenhang:
 
-\begin{equation}
+$$
 SSTO = SSR + SSE
-\end{equation}
+$$
 
-D.h. auch die Summe der quadrierten Abweichungen, die Gesamtvarianz $SSTO$ setzt sich aus zwei getrennten Komponenten zusammen. Einmal der Teil der Varianz der anhand des Modells erklärt werden kann ($SSR$) und derjenige Teil der nicht anhand des Modells erklärt werden kann ($SSE$). Aus diesem Zusammenhang lässt sich eine Metrik erstellen indem das Verhältnis von $SSR$ to $SSTO$ gebildet wird. Schauen wir uns dazu an, was passiert wenn wir einen perfekten Zusammenhang zwischen der $X$ und $Y$-Variablen haben. In @fig-slm-pred-r2-perfect ist ein solcher Zusammenhang abgebildet.
+D.h. auch die Summe der quadrierten Abweichungen, die Gesamtvarianz $SSTO$ setzt sich aus zwei getrennten Komponenten zusammen. Einmal der Teil der Varianz der anhand des Modells erklärt werden kann ($SSR$) und derjenige Teil der nicht anhand des Modells erklärt werden kann ($SSE$). Aus diesem Zusammenhang lässt sich eine Metrik erstellen indem das Verhältnis von $SSR$ to $SSTO$ gebildet wird.
+
+Dazu sei zunächst untersucht, was passiert wenn ein perfekter Zusammenhang zwischen $X$ und $Y$ vorliegt. In @fig-slm-pred-r2-perfect ist ein solcher Zusammenhang abgebildet.
 
 ```{r}
 #| fig-cap: "Beispiel für einen perfekter linearen Zusammenhang zwischen $x$ und $y$."
@@ -364,13 +367,13 @@ ggplot(simple, aes(x,y_hat,label = epsilon)) +
             size=text_size, color = 'green') + geom_point(aes(y = y_hat), size=7) 
 ```
 
-In diesem Fall, liegen die beobachteten Werte $y_i$ genau auf der Regressionsgeraden. D.h. die Abweichungen $y_i - \hat{y}_i = 0$ und damit $SSE = 0$. Berechnen wir nun des Verhältnis von $SSR$ zu $SSTO$ dann erhalten wir. 
+In diesem Fall, liegen die beobachteten Werte $y_i$ genau auf der Regressionsgeraden. D.h. die Abweichungen $y_i - \hat{y}_i = 0$ und damit $SSE = 0$. In diesem Fall folgt für das Verhältnis von $SSR$ zu $SSTO$: 
 
-\begin{equation}
+$$
 \frac{SSR}{SSTO} = 1
-\end{equation}
+$$
 
-In @fig-slm-pred-r2-null ist nun der gegenteilige Zusammenhang abgebildet. Es besteht keine Zusammenhang zwischen der $x$ und $y$-Variable. D.h. das Modell liefert keine Informationen zu $Y$, da die $Y$-Werte unabhängig von den $X$-Werte sind.
+In @fig-slm-pred-r2-null ist nun der gegenteilige Zusammenhang abgebildet. Es besteht kein Zusammenhang zwischen $X$ und $Y$e. D.h. das Modell liefert keine Informationen zu $Y$, da die $Y$-Werte unabhängig von den $X$-Werten sind.
 
 ```{r}
 #| fig-cap: "Beispiel für keinen linearen Zusammenhang zwischen $x$ und $y$."
@@ -398,22 +401,21 @@ ggplot(simple, aes(x, rnd)) +
   geom_point(aes(y = y_av), size = 7, color = 'red') 
 ```
 
-In diesem Fall sollte die Regressiongerade die Steigung $\beta_1 = 0$. Der $y$-Achsenabschnitt $\beta_0$ ist in diesem Fall gleich dem Mittelwert $\bar{y}$ der $y_i$-Werte. Für die Abweichungen resultiert daraus, dass nun keine Abweichung zwischen den vorhergesagten Werte $\hat{y}_i$ und dem Mittelwert $\bar{y}$ besteht. Es gilt somit $\hat{y}_i - \bar{y} = 0$. Daraus folgt wiederum, dass $SSR = 0$ gilt. Wir nun wieder das Verhältnis von $SSR$ zu $SSTO$ gebildet, dann folgt dementsprechend:
+In diesem Fall sollte die Regressionsgerade die Steigung $\beta_1 = 0$ haben. Der $y$-Achsenabschnitt $\beta_0$ ist in diesem Fall gleich dem Mittelwert $\bar{y}$ der $y_i$-Werte. Für die Abweichungen resultiert daraus, dass nun keine Abweichung zwischen den vorhergesagten Werten $\hat{y}_i$ und dem Mittelwert $\bar{y}$ besteht. Es gilt somit $\hat{y}_i - \bar{y} = 0$. Daraus folgt, dass $SSR = 0$ gilt. Wird nun wieder das Verhältnis von $SSR$ zu $SSTO$ gebildet, dann folgt dementsprechend:
 
-\begin{equation*}
+$$
 \frac{SSR}{SSTO} = 0
-\end{equation*}
+$$
 
-Zusammen zeigen diese beiden Beispiele, das mittels des Verhältnisses von $SSR$ zu $SSTO$ eine Metrik entsteht, wiedergibt wie gut die $X$ und $Y$-Variablen einen linearen Zusammenhang aufweisen. Das Verhältnis wird als Determinationskoeffizient $R^2$ bezeichnet. Die Metrik ist beschränkt auf Werte zwischen $0$ und $1$. Bei einem Wert von  $R^2 = 0$ besteht kein Zusammenhang, während bei $R^2 = 1$ ein perfekter Zusammenhang besteht. Insgesamt gilt:
+Zusammen zeigen diese beiden Beispiele, das mittels des Verhältnisses von $SSR$ zu $SSTO$ eine Metrik entsteht, die wiedergibt wie gut die $X$ und $Y$-Variablen in einenm linearen Zusammenhang stehen. Das Verhältnis wird als Determinationskoeffizient $R^2$ bezeichnet. Die Metrik ist beschränkt auf Werte zwischen $0$ und $1$. Bei einem Wert von  $R^2 = 0$ besteht kein Zusammenhang, während bei $R^2 = 1$ ein perfekter Zusammenhang besteht. Insgesamt gilt:
 
-\begin{equation}
+$$
 R^2 = \frac{SSR}{SSTO} = 1 - \frac{SSE}{SSTO} \in [0,1] 
-\label{eq-slm-pred-rsquared}
-\end{equation}
+$$ {#eq-slm-pred-rsquared}
 
 Es besteht auch ein enger Zusammenhang zwischen dem Determinationskoeffizienten $R^2$ und dem Korrelationskoeffizienten $r_{xy} = \pm\sqrt{R^2}$. Dieser Zusammenhang gilt allerdings nur für die einfache lineare Regression und gilt nicht mehr bei der multiplen Regression die wir später kennenlernen werden.
 
-Im Zusammenhang mit dem Determinationskoeffizienten $R^2$ gilt es auf ein Missverständnis hinzuweisen. Ein hoher $R^2$ zeigt nicht an, dass präzise Vorhersagen mittels des Modells getroffen werden. Der Determinationskoeffzient bestimmt nur die relative Reduktion der Varianz an nicht die Absolute. Ob ein Modell nützlich zur Prädiktion ist, hängt wie oben besprochen sehr eng mit dem absoluten Höhe der Residualvarianz zusammen.
+Im Zusammenhang mit dem Determinationskoeffizienten $R^2$ gilt es auf ein Missverständnis hinzuweisen. Ein hoher $R^2$ zeigt unglücklicherweise nicht an, dass präzise Vorhersagen mittels des Modells getroffen werden. Der Determinationskoeffzient bestimmt nur die **relative Reduktion** der Varianz an nicht die Absolute. Ob ein Modell nützlich zur Prädiktion ist, hängt wie oben besprochen sehr eng mit dem absoluten Höhe der Residualvarianz zusammen.
 
 ::: {.callout-warning}
 Trotzdem der Determinationskoeffizient $R^2$ oft verwendet wird sollte nicht verschwiegen werden, dass $R^2$ zur Beurteilung der Modellgüte nicht sonderlich gut geeignet ist. Die folgenden Ausführung beruhen weitestgehend auf @shalizi2015. Es lässt sich zeigen, dass $R^2$ der auch folgendermaßen hergeleitet werden kann:
@@ -425,18 +427,17 @@ R^2 = \frac{\beta_1^2Var(X)}{\beta_1^2Var(X)+\sigma^2}
 Daraus folgt, das wenn die Varianz von $X$ vergrößert wird $R^2$ beliebig nahe an $1$ gebracht werden kann. Genauso, indem die Varianz von $X$ verkleinert wird, kann $R^2$ beliebig nahe an $0$ gebracht werden. Weiterhin ist $R^2$ auch nicht wirklich hilfreich um die Vorhersagegüte des Modells zu beurteilen, da wenn die Residualvarianz $\sigma^2$ konstant gehalten wird, nur durch Veränderung der Varianz $X$ $R^2$ vergrößert wie auch verkleinert werden kann. Da wie schon erwähnt ein direkter Zusammenhang zwischen dem Korrelationskoeffizienten $\rho_{XY}$ und $R^2$ besteht, ist auch die oft verwendete Interpretation von $R^2$ als der Anteil der durch $X$ aufgeklärten Varianz von $Y$ irreführend, da die Korrelation symmetrisch in beiden Variablen ist. Durch die Abhängigkeit von der Varianz von $X$ kann $R^2$ auch nicht direkt über Datensätze hinweg verglichen werden, da sich üblicherweise $Var(X)$ zwischen Datensätzen unterscheiden wird [@shalizi2015]. Für eine umfangreiche Diskussion zu den Problem sei auch die Diskussion auf @gelman2024 empfohlen.
 :::
 
-Im Zusammenhang mit der multiplen Regression gibt es auch noch einen korrigierten Determinationskoeffizient $R_a^2$ bei dem ein penalty term auf Grund der Anzahl der Prädiktoren $X_i$ eingefügt wird. Wie wir später sehen werden, kann der Determinationskoeffizient verbessert werden, indem einfach zusätzlich Variablen in das Modell eingefügt werden auch wenn diese keinen Zusammenhang mit der abhängigen Variablen $Y$ haben. Um diese Eigenschaft mit einzubeziehen wird die Anzahl der Variablen penalisiert.
+Im Zusammenhang mit der multiplen Regression gibt es auch noch einen korrigierten Determinationskoeffizient $R_a^2$. Dieser Determinationskoeffizient hat einen zusätzlichen *penalty term* der Anahnd der Anzahl der Prädiktoren $X_i$ berechnet wird. Wie später im Zusammenhang mit der multiplen Regression gezeigt wird, kann der Determinationskoeffizient verbessert werden, indem einfach zusätzlich Variablen in das Modell eingefügt werden. Die Varialben müssen dazu noch nicht einmal einen Zusammenhang mit der abhängigen Variablen $Y$ haben. Um diese Eigenschaft mit einzubeziehen wird die Anzahl der Variablen penalisiert.
 
-\begin{equation}
+$$
 R_a^2 = 1 - \frac{\frac{SSE}{n-p}}{\frac{SSTO}{n-1}} = 1 - \frac{n-1}{n-p}\frac{SSE}{SSTO}
-\label{eq-slm-pres-rsquaredadj}
-\end{equation}
+$$ {#eq-slm-pres-rsquaredadj}
 
-Damit haben wir nun mittlerweile auch fast alle Ausgabeinformationen der `summary()`-Funktion kennengelernt. Es fehlt noch die letzte Zeile die wir im Zusammenhang mit der multiplen linearen Regression bearbeiten werden. Insgesamt sollte der Determinationskoeffizient $R^2$ eher seltener eingesetzt werden und insbesondere wenn es um Modellgüte eigentlich auf Grund der Limitationen eher nicht (siehe auch @schemper2003).
+Damit sind nun mittlerweile auch fast alle Ausgabeinformationen der `summary()`-Funktion erarbeitet worden. Es fehlt noch die letzte Zeile die im Zusammenhang mit der multiplen linearen Regression betrachtet wird. Insgesamt sollte der Determinationskoeffizient $R^2$ eher seltener eingesetzt werden und insbesondere wenn es um Modellgüte eigentlich auf Grund der Limitationen eher nicht (siehe auch @schemper2003).
 
 #### Determinationskoeffizient $R^2$ in `R`
 
-In `R` erhalten wir den Determinationskoeffizienten über die `summary()`-Funktion. In unserem Beispiel zum Weitsprung erhalten wir beispielsweise:
+In `R` wird der Determinationskoeffizienten im Bericht der `summary()`-Funktion mit angegeben. In Weitsprungbeispiel wird beispielsweise der folgende Wert erhalten:
 
 ```{r}
 #| echo: true
@@ -446,7 +447,7 @@ summary(mod)
 
 D.h. es wurde ein hoher Determinationskoeffizient bezüglich des linearen Zusammenhang zwischen der Anlaufgeschwindigkeit und der Sprungweite mit $R^2 = `r round(summary(mod)[['r.squared']], 2)`$ beobachtet. Das Beispiel zeigt aber auch direkt die Limitation des Determinationskoeffizienten $R^2$. Trotzdem ein hohes $R^2$ beobachtet wurde, ist dass Modell nur sehr eingeschränkt hilfreich, da der Residualfehler mit $\hat{\sigma} = `r round(sigma(mod),2)`[m]$ relativ hoch ist.
 
-Wir können $R^2$ natürlich auch relativ einfach von Hand ausrechnen.
+Der $R^2$ kann natürlich auch relativ einfach von Hand berechnet werden.
 
 ```{r}
 #| echo: true
@@ -457,3 +458,5 @@ ssr/sst
 
 
 ## Zum Weiterlesen
+
+In Kapitel 2 Abschnitt 2.5 in @kutner2005 lässt sich gut als ergänzendes Material lesen, inklusvie weiterführender Informationen zur Working-Hotelling-Methode (S.52ff).
