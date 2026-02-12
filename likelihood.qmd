@@ -15,14 +15,13 @@ Um den folgenden Inhalten einfacher folgen zu können, kann es sinnvoll sein, si
 
 ## Likelihood
 
-Im ersten Schritt muss zunächst der Begriff des Likelihood erarbeitet werden. Die Likelihood ist eng mit dem Konzept der Dicht- bzw. Wahrscheinlichkeitfunktion verbunden. Sei zum Beispiel nochmal das Beispiel des n-fachen MÜnzwurfes betrachtet, welches mit Hilfe der Binomialverteilung (siehe @eq-binom-distribution) beschrieben werden kann.
+Im ersten Schritt muss zunächst der Begriff des Likelihood entwickelt werden. Die Likelihood ist eng mit dem Konzept der Dichte- bzw. Wahrscheinlichkeitsfunktion verbunden. Sei zum Beispiel der n-fache MÜnzwurfes betrachtet. Diese *Experiment* kann mit Hilfe der Binomialverteilung (siehe @eq-binom-distribution) beschrieben werden.
 
 $$
 \text{Binom}(Y, N, p) = P(Y = y \mid N, p) = \binom{N}{y}p^y (1-p)^{N-y} = \binom{N}{y}p^y q^{N-y}
 $$
 
 Hier ist $Y$ die Anzahl der Köpfe, $N$ die Anzahl der Würfe und $p$ die Wahrscheinlichkeit bei einem Wurf Kopf zu beobachten. In @fig-likelihood-binom-1 ist die Binomialverteilung für den Fall $N = 10, p = 0.05$ dargestellt.
-
 
 ```{r}
 #| label: fig-likelihood-binom-1
@@ -32,9 +31,44 @@ Hier ist $Y$ die Anzahl der Köpfe, $N$ die Anzahl der Würfe und $p$ die Wahrsc
 binom_dist()
 ```
 
-Nun kann die Schreibweise $\text{Binom}(Y,N,p)$ etwas umgeändert werden, wenn für der Parameter $p$ durch $\theta$ ersetzt werden. Dies hat inhaltlich keine Folgen sondern ist lediglich eine Änderung der Schreibweise. Es folgt $\text{Binom}(Y,N,p)=\text{Binom}(Y,N,\theta)$. Seien nun die Daten $y$ beobachtet worden. D.h. es wurde ein *Münzexperiment*, z.B. $N = 10$-mal durchgeführt worden und es wurde sechsmal Kopf beobachtet worden, d.h. $y = 6$. Der unbekannte Parameter in $\text{Binom}$ ist nun lediglich $\theta$, da $\text{Binom}(6, 10, \theta)$ gilt. Wird zunächst die Reihenfolge der Parameter nach $\text{Binom}(\theta, 6, 10)$ geändert, kann dieser Ausdruck als Funktion von $\theta$ interpretiert werden. Wenn nun noch die Werte $y = 6$ und $N = 10$ als *gegeben* interpretiert werden, dann wird eine Funktion $\text{Binom}(\theta)$ erhalten. D.h. in Verbindung mit einem beobachteten Datensatz, durch den zwei der drei Parameter von $\text{Binom}$ definiert werden, wird eine *neue* Funktion erhalten, welche nur noch einen Parameter $\theta$ besitzt. Dieser Parameter war ursprüngliche das $p$, die Wahrscheinlichkeit Kopf bei einem Wurf zu beobachten, wird nun aber mit dem Symbol $\theta$ bezeichnet. Diese Umbenennung erscheint zunächst als überflüssige Arbeit, hilft im weiteren Verlauf, da beispielsweise in der Literatur die Konvention herrscht den *freien* Parameter der Likelihood-Funktion mit dem Symbol $\theta$ zu bezeichnen. Wird nun noch eine weitere Umbenennung vorgenommen, und $\text{Binom}$ durch das Symbol $\mathcal{L}$ ersetzt, wird aus $\text{Binom}(\theta) \equiv \mathcal{L}(\theta)$. Das stylisierte L in $\mathcal{L}$ steht dann, entsprechend für Likelihood.
+Nun kann die Schreibweise $\text{Binom}(Y,N,p)$ etwas umgeändert werden, wenn das Symbol für den Parameter $p$ durch das Symbol $\theta$ ersetzt wird. Dies hat inhaltlich keine Folgen, sondern ist lediglich eine Änderung der Schreibweise. Es folgt $\text{Binom}(Y,N,p)=\text{Binom}(Y,N,\theta)$.
 
-Die Likelihood-Funktion $\mathcal{L}(\theta)$ kann nun entsprechend für verschiedene Wert von $\theta$, im vorliegenden Fall $p$ Kopf, abgetragen werden, wenn die beobachteten Daten $X$ als gegeben angesehen werden. In @fig-likelihood-binom-2 ist die Likelihood-Funktion nun für Werte zwischen $0$ und $1$ für $\theta$ abgetragen.
+Seien nun die Daten $y$ beobachtet worden. D.h. es wurde ein *Münzexperiment*, z.B. $N = 10$-mal durchgeführt worden und es wurde sechsmal Kopf beobachtet, d.h. $y = 6$. Der unbekannte Parameter in $\text{Binom}$ ist nun lediglich $\theta$, da $\text{Binom}(6, 10, \theta)$ gilt. Wird zunächst die Reihenfolge der Parameter nach $\text{Binom}(\theta, 6, 10)$ geändert, kann dieser Ausdruck als Funktion von $\theta$ interpretiert werden. Wenn nun noch die Werte $y = 6$ und $N = 10$ als *gegeben* interpretiert werden, dann erhält man eine Funktion $\text{Binom}(\theta)$. D.h. in Verbindung mit einem beobachteten Datensatz, durch den zwei der drei Parameter von $\text{Binom}$ definiert werden, wird eine *neue* Funktion definiert, welche nur noch einen Parameter $\theta$ besitzt. Dieser Parameter war ursprüngliche das $p$, die Wahrscheinlichkeit Kopf bei einem Wurf zu beobachten, wird nun aber mit dem Symbol $\theta$ bezeichnet.
+
+Diese Umbenennung erscheint zunächst als überflüssige Arbeit, hilft im weiteren Verlauf, da beispielsweise in der Literatur die Konvention herrscht den *freien* Parameter einer Likelihood-Funktion mit dem Symbol $\theta$ zu bezeichnen. Wird nun noch eine weitere Umbenennung vorgenommen, und $\text{Binom}$ durch das Symbol $\mathcal{L}$ ersetzt, wird aus $\text{Binom}(\theta) \equiv \mathcal{L}(\theta)$. Das stylisierte L in $\mathcal{L}$ steht dann, entsprechend für Likelihood.
+
+Die Likelihood-Funktion $\mathcal{L}(\theta)$ kann nun entsprechend für verschiedene Wert von $\theta$, im vorliegenden Fall $p$ Kopf, abgetragen werden, wenn die beobachteten Daten $y$ als gegeben angesehen werden. Konkret bedeutet dies zum Beispiel in `R` wo die Wahrscheinlichkeitsfunktion der Binomialverteilung mit `dbinom()` bezeichnet wird. Sei also nun $N = 10$ und sechsmal Kopf beobachtet worden dann führt dies zum Beispiel für $p = 0.5$ zu.
+
+```{r}
+#| echo: true
+
+n_kopf <- 6
+N <- 10
+p_1 <- 0.5
+dbinom(n_kopf, N, p_1)
+```
+
+D.h. `dbinom()` liefert die Antwort auf die Frage: *"Was ist die Wahrscheinlichkeit sechsmal Kopf zu beobachten wenn die Wahrscheinlichkeit bei einem Wurf $p = 0.5$ ist?*
+
+Als nächste könnte der Wert $p = 0.4$ betrachtet werden. Dies führt analog zu dem folgenden Output führt:
+
+```{r}
+#| echo: true
+
+p_2 <- 0.4
+dbinom(n_kopf, N, p_2)
+```
+
+D.h. die Wahrscheinlichkeit sechsmal Kopf zu beobachten wenn die Wahrscheinlichkeit für Kopf bei einem Wurf $p = 0.4$ ist, ist geringer als die Wahrscheinlichkeit bei $p = 0.6$. Sei noch ein Wert, z.B. $p = 0.75$, ausprobiert.
+
+```{r}
+#| echo: true
+
+p_3 <- 0.75
+dbinom(n_kopf, N, p_3)
+```
+
+Hier ist die Wahrscheinlichkeit auch wieder geringer als bei $p = 0.6$. D.h. es möglich mit Hilfe der Likelihood-Funktion $\mathcal{L}(\theta)$ verschiedene Werte von $\theta$ miteinander zu vergleichen und denjenigen zu bestimmen, der am *plausibelsten* unter den **beobachteten Daten** erscheint. Die Regel dabei ist immer, derjenige Wert von $\theta$ der die höhere Likelihood generiert ist der plausiblere. Der nächste Schritt ist dementsprechend nicht nur einige wenige Wert für $\theta$ *auszuprobieren* sondern systematisch alle Wert $\theta$ zu testen. In @fig-likelihood-binom-2 ist die dementsprechend die Likelihood-Funktion $\mathcal{L}(\theta)$ für Werte zwischen $0$ und $1$ für $\theta$ abgetragen.
 
 ```{r}
 #| fig-cap: "Likelihood $\\mathcal{L}(\\theta)$ für $N=10, y=6$."
@@ -45,29 +79,30 @@ binom_lik <- function(theta, N = 10, y = 6) {
 }
 
 theta <- seq(0, 1, length.out=100)
-ggplot(tibble(theta, lik=binom_lik(theta)), aes(theta,lik)) +
+df_binom <- tibble(theta, lik=binom_lik(theta))
+ggplot(df_binom, aes(theta,lik)) +
   geom_line() +
   labs(x = expression(theta), y="likelihood")
 ```
 
-Zunächst fällt auf, dass im Unterschied zu @fig-likelihood-binom-1 der Graph in diesem Fall kontinuierlich ist. Die Wahrscheinlichkeitsfunktion der Binomialverteilung ist diskrete, da Wahrscheinlichkeiten für eine endliche Anzahl von Ausgängen (=Anzahl der Köpfe) berechnet werden. Im Gegensatz dazu, ist der Likelihood-Graph kontinuierlich, da er eine Funktion von $\theta$ ist und in diesem Fall $\theta$ alle Werte in $[0,1]$ annehmen kann.
+Zunächst fällt auf, dass im Unterschied zu @fig-likelihood-binom-1 der Graph in diesem Fall kontinuierlich ist. Die Wahrscheinlichkeitsfunktion der Binomialverteilung ist eine diskrete Funktion, da Wahrscheinlichkeiten für eine endliche Anzahl von Ausgängen (=Anzahl der Köpfe) berechnet werden. Im Gegensatz dazu, ist der Likelihood-Graph $\mathcal{L}(\theta)$ kontinuierlich, da er eine Funktion von $\theta$ ist, dass allerdings nur Werte im Bereich  $\theta \in [0,1]$ annehmen kann.
 
-Der Likelihood-Graph ändert sich nun entsprechend, wenn ein anderes Ergebnis beobachtet wird. Seien zum Beispiel bei $N = 10$ Würfen nur drei Köpfe ($y = 3$) beobachte worden ergibt sich der folgende Graph:
+Der Likelihood-Graph ändert sich nun entsprechend, wenn ein anderes Ergebnis beobachtet wird. Seien zum Beispiel bei $N = 10$ Würfen nur drei Köpfe ($y = 3$) beobachte worden ergibt sich der folgende Graph für $\mathcal{L}(\theta)$ im Gegensatz zu dem ursprünglichen Graphen aus @fig-likelihood-binom-2:
 
 ```{r}
 #| fig-cap: "Likelihood $\\mathcal{L}(\\theta)$ für $N=10, y=3$."
 #| label: fig-likelihood-binom-3
 
-binom_lik <- function(theta, N = 10, y = 3) {
-  dbinom(y, N, theta)
-}
-
-ggplot(tibble(theta, lik=binom_lik(theta)), aes(theta,lik)) +
-  geom_line() +
-  labs(x = expression(theta), y="likelihood")
+df_binom |> mutate(lik3 = binom_lik(theta, y = 3)) |> 
+  pivot_longer(-theta) |> 
+  ggplot(aes(theta, value, color=name)) +
+  geom_line(aes(group=name)) +
+  labs(x = expression(theta), y="likelihood") +
+  scale_color_discrete("Daten", 
+                       labels=c('lik'=expression(y==6), 'lik3'=expression(y==3)))
 ```
 
-In @fig-likelihood-binom-3 ist zu sehen, dass sich die Form der Likelihood-Funktion $\mathcal{L}(\theta)$ verändert hat. D.h. die Ausprägung des Likelihood-Graphen ist immer von den als gegeben angenommen Daten $Y$ abhängig. Die zentrale Einsicht ist aber immernoch, dass die ursprüngliche Dichte- bzw. Wahrscheinlichkeitsfunktion als eine Funktion eines Modellparameters interpretiert werden, während die beobachteten Daten als fixiert angesehen werden. Insgesamt kann nun eine Definition für die Likelihood gegeben werden.
+In @fig-likelihood-binom-3 ist zu sehen, dass sich die Form der Likelihood-Funktion $\mathcal{L}(\theta)$ mit den Daten verändert hat. D.h. die Ausprägung des Likelihood-Graphen ist immer von den beobachteten und als gegeben angenommen Daten $Y$ abhängig. Die zentrale Einsicht ist aber immer, noch, dass die ursprüngliche Dichte- bzw. Wahrscheinlichkeitsfunktion als eine Funktion eines Modellparameters interpretiert werden, während die beobachteten Daten als fixiert angesehen werden. Insgesamt kann nun eine Definition für die Likelihood gegeben werden:
 
 ::: {#def-likelihood}
 
@@ -399,6 +434,81 @@ $$
 Dies zeigt, das der MLE-Schätzer für den Populationsparameter $\mu$ von $N$ Beobachtungen aus einer Normalverteilung $\mathcal{N}(\mu,\sigma^2)$ der Mittelwert $\bar{X}$ ist, wie das schon vorher gezeigt wurde und auch intuitiv sinnvoll erscheint.
 
 :::
+
+::: {#exm-likelihood-mixture}
+
+### Mischverteilung
+
+Sei nun noch ein Beispiel betrachtet, bei dem die Lösung nicht schon ein bekannter Schätzer ist. Es seien die folgenden Daten betrachtet worden. Einmal drei Werte $x_i \in [10, 13, 15], i = 1,2,3 $ von denen ausgegangen wird, dass sie aus einer Normalverteilung $\mathcal{N}(\mu, \sigma_1)$ stammen und zwei Werte $x_i \in [20, 22], i = 4,5$, die aus einer Normalverteilung $\mathcal{N}(\mu, \sigma_2)$ stammen. D.h. die Daten stammen aus zwei verschiedenen Normalverteilungen mit unterschiedlichen Standardabweichungen $\sigma_1$ und $\sigma_2$. Beide Verteilungen haben aber den gleichen Mittelwert $\mu$. Ein mögliches Beispiel wären zwei Traningsgruppen die zwar im Mittel die gleiche Leistung erbringen aber die Leistung in Gruppe 2 streuen stärker als diejenigen von Gruppe 1. Seien $\sigma_1 = 1$ und $\sigma_2 = 2$ bekannt. Es soll nun graphisch der Maximum-Likelihood Schätzer für $\mu$ graphisch mittels eines kurzen `R`-Programms ermittelt werden. Zunächst alle Werte die gegeben sind.
+
+```{r}
+#| echo: true
+
+sigma_1 <- 1
+sigma_2 <- 2
+x_1 <- c(10, 13, 15)
+x_2 <- c(20, 22)
+```
+
+Nun muss eine Likelihood-Funktion $\mathcal{L}(\theta)$ definiert werden. $\theta$ ist in diesem Fall $\mu$. Die Daten sind wieder unabhängig voneinander, d.h. die Dichten können miteinander multipliziert werden. Für die ersten drei Werte ist die Likelihood die Dichtefunktion der Normalverteilung mit $\mathcal{N}(\theta, \sigma_1 = 1)$, während für die Werte $4$ und $5$ die Likelihood-Funktion die Normalverteilung mit $\mathcal{N}(\theta, \sigma_2=2)$ ist Entsprechend ergibt sich:
+
+```{r}
+#| echo: true
+
+lik <- function(mu) {
+  prod(dnorm(x_1, mu, sigma_1)) * prod(dnorm(x_2, mu, sigma_2))
+}
+```
+
+Nun kann der Maximum-Likelihood Schätzer für $\hat{\theta}$ bestimmt werden. Da die Werte zwischen $10$ und $22$ liegen, kann der Mittelwert auch nur dort liegen und entsprechend werden nur Werte in diesem Bereich zur Probe für $\theta$ verwendet.
+
+```{r}
+#| echo: true
+
+theta_s <- seq(10, 22, length=200)
+lik_theta <- purrr::map_dbl(theta_s, lik)
+```
+
+Für den Graphen der $\theta$s gegen den Likelihood ergibt sich entsprechend:
+
+```{r}
+#| fig-cap: "Likelihood der Mixture-Verteilung. Die Datenpunkte sind rot eingezeichnet."
+#| label: fig-likelihood-mixture
+
+df_theta <- tibble(theta_s, lik_theta)  
+ggplot(df_theta, aes(theta_s, lik_theta)) +
+  geom_line() +
+  geom_point(data = tibble(theta_s = c(x_1,x_2), lik_theta=0), color='red', size=3) +
+  labs(x = expression(theta), y = 'Likelihood')
+```
+
+Das Maximum befindet sich bei:
+
+```{r}
+#| echo: true
+
+theta_s[which.max(lik_theta)]
+```
+
+D.h. der Maximum-Likelhood Schätzer für die Mischverteilung liegt bei $\hat{\theta} = \hat{\mu} = 13.86$. Tatsächlich lässt sich zeigen, dass für dieses *einfache* Beispiel auch wieder eine geschlossene Lösung gefunden werden kann. Mittels Ableitung von $\mathcal{L}(\theta)$ und Nullsetzen folgt:
+
+$$
+\hat{\theta} = \frac{\frac{n_1}{\sigma_1^2}\cdot \bar{x}_1 + \frac{n_2}{\sigma_2^2}\cdot\bar{x}_2}{\frac{n_1}{\sigma_1^2} + \frac{n_2}{\sigma_2^2}}
+$$
+
+D.h. der Mittelwert $\mu$ der Mischverteilung ist ein Mittelwert aus den beiden unterliegenden Verteilung der Anhand der Stichprobengröße und der Varianz gewichtet wird. Dabei wird $\hat{\mu}$ mit größerwerdender Stichrpobe und kleiner werden Varianz zu dem jeweiligen Mittelwert *gezogen*. Dies wird auch in @fig-likelihood-mixture deutlich, wo der Hochpunkt deutlich näher an den kleineren Werten aus $x_1$ (links) liegt als an den Werte von $x_2$, da die Stichprobe für $x_1$ größer ist und auch die Varianz bzw. die Standardabweichung $\sigma_1 = 1$ kleiner ist. Im vorliegenden Fall führt die Berechnung tatsächlich dann auch zu: 
+
+```{r}
+hat_theta_g <- round((3/sigma_1**2*mean(x_1) + 2/sigma_2**2*mean(x_2))/(3/sigma_1**2 + 2/sigma_2**2), 2)
+```
+
+$$
+\hat{\theta}_{\text{geschlossen}} = \frac{\frac{3}{1}\cdot 12.\bar{6} + \frac{2}{2}\cdot21}{\frac{3}{1}+\frac{2}{2}} = `r hat_theta_g`
+$$
+
+D.h. es resultiert der gleiche Wert für $\hat{\theta}$ der mittels Maxmum-Likelihood ermittelt wird. Insgesamt sollte dieses Beispiel aber wieder zeigen, wie mittels der Maximum-Likelihood Schätzung ein Schätzer für einen Modellparameter in einem statistischen Modell ermittelt werden kann.
+:::
+
 ## Maximum-likelihood Methode bei der einfachen linearen Regression 
 
 Dieser Ansatz lässt sich auch auf das Modell der einfachen linearen Regression anwenden. Bei der einfachen linearen Regression wird angenommen, dass die $Y$-Werte für jeden $X$-Wert einer Normalverteilung mit einer Varianz $\sigma^2$ folgen. Formal:
@@ -416,19 +526,19 @@ $$ {#eq-likelihood-reg-01}
 In diesem Fall ist also $\theta$ nicht ein einzelnen Wert sondern ein Vektor $\theta = (\beta_0, \beta_1, \sigma^2)$. Mit einem einzelnen Wert lässt sich $\theta$ nicht bestimmen, da wird nach Ableitung drei Gleichung mit drei Unbekannten erhalten würden, die nicht gelöst werden können. Nun kommt die nächste Annahme zum tragen, nämlich das bei mehreren Werten diesen unabhängig voneinander sind. Dann können die *individuellen* Likelihoods miteinander multipliziert werden.Dies führt zu einer Gesamt-Likelihood-Funktion $\mathcal{L}$ in der folgenden Form:
 
 $$
-\begin{align*}
+\begin{aligned}
 L(\beta_0, \beta_1, \sigma^2\mid x_i, y_i) &= \prod_{i=1}^{N} f(\beta_0, \beta_1, \sigma^2\mid x_i, y_i) \\
 &= \prod_{i=1}^{N} \frac{1}{\sqrt{2\pi\sigma^2}} \exp\left(-\frac{(y_i - \beta_0 - \beta_1 x_i)^2}{2\sigma^2}\right)
-\end{align*}
+\end{aligned}
 $$
 
 Durch Anwendung der Rechenregel $e^a e^b = e^{a+b}$ kann die Formel vereinfacht werden:
 
 $$
-\begin{align*}
+\begin{aligned}
 \mathcal{L}(\beta_0, \beta_1, \sigma^2|y_i) &= \left(\frac{1}{\sqrt{2\pi \sigma^2}}\right)^N \exp\left(-\frac{\sum_{i=1}^N (y_i - \beta_0 - \beta_1 x_i)^2}{2 \sigma^2}\right) \\
 &= \left(\frac{1}{2\pi \sigma^2}\right)^{N/2} \exp\left(-\frac{\sum_{i=1}^N (y_i - \beta_0 - \beta_1 x_i)^2}{2 \sigma^2}\right)
-\end{align*}
+\end{aligned}
 $$
 
 Das Maximum von $\mathcal{L}$ wird wie immer gefunden, indem die Likelihoodfunktion abgeleitet und gleich Null gesetzt wird. Um die Berechnungen zu vereinfachen, wird wieder der Logarithmus der Likelihood-Funktion verwendet. Die Loglikelihood $\ell(\beta_0, \beta_1, \sigma^2$ ergibt die folgende Funktion:
@@ -453,6 +563,7 @@ Durch partielle Ableitung der Funktion $\ell(\beta_0, \beta_1, \sigma^2)$ nach $
 
 Wenn dieser Ausdruck gleich Null gesetzt wird, ergibt sich der gleiche Ausdruck wie formal bei den Normalengleichungen für $\beta_0$:
 
+$$
 \begin{alignat}{2}
  && \frac{2}{2\sigma^2}\sum_{i=1}^N (y_i - \beta_0 - \beta_1 x_i) = 0 \nonumber \\
 \Leftrightarrow\mkern40mu && \sum (y_i - \beta_0- \beta_1 x_i) = 0 \nonumber \\
@@ -462,12 +573,13 @@ Wenn dieser Ausdruck gleich Null gesetzt wird, ergibt sich der gleiche Ausdruck 
 \Leftrightarrow\mkern40mu && \bar{y} - \beta_1 \bar{x} = \beta_0\nonumber \\
 \Leftrightarrow\mkern40mu && \hat{\beta}_0= \bar{y} - \beta_1 \bar{x} 
 \end{alignat}
+$$
 
 Die Herleitung für $\beta_1$ entspricht ebenfalls derjenigen, die auf Basis der Normalengleichungen (siehe @eq-slm-basics-norm) hergeleitet wurden. Der Unterschied liegt darin, dass bei den Normalengleichungen keine Annahmen über die Verteilung der Werte gemacht wurden. Stattdessen wurde eine Methode gesucht, die die quadrierten Residuen minimiert. Im Gegensatz dazu basiert die Herleitung der Gleichungen durch die Maximum-Likelihood-Methode auf spezifischen Verteilungsannahmen und stellt damit ein allgemeineres Verfahren da. Im Fall der linearen Regression führen beide Methoden zum gleichen Ergebnis. Die Maximum-Likelihood-Methode kann jedoch auch in Fällen angewendet werden, bei denen die Methode der quadrierten Abweichungen nicht funktioniert. Für die Anwendung ist es entscheidend, das zugrunde liegende Prinzip und den Unterschied zwischen den beiden Ansätzen zu verstehen.
 
-### Maximum-likelihood bei der einfachen Regression in `R`
+### Maximum-likelihood bei der einfachen Regression in `R` mittels numerischer Optimierung
 
-Es folgt ein kleines Beispiel um zu zeigen, wie über die Maximumlikelihood-Methode numerisch die Modellparameter bestimmt werden können, wenn es nicht möglich die Parameter über eine geschlossene Gleichung zu lösen. Es seien $N = 20$ zufällige Punkte generiert und $\sigma$ sei bekannt mit $\sigma=1$ und zwischen $X$ und $Y$ besteht der Zusammenhang $Y = 2 + 3x$. Seien nun die Daten beobachtet worden und es sollen die Parameter $\hat{\beta_0}$ und $\hat{\beta_1}$ anhand der Daten bestimmt werden.
+Es folgt ein kleines Beispiel um zu zeigen, wie über die Maximumlikelihood-Methode numerisch die Modellparameter bestimmt werden können. Eine numerische Lösung bietet sich immer dann an, wenn es nicht möglich ist die Parameter über eine geschlossene Lösung zu ermitteln. Es seien $N = 20$ zufällige Punkte generiert und $\sigma$ sei bekannt mit $\sigma=1$. Zwischen $X$ und $Y$ sei der Zusammenhang $Y = 2 + 3x$ gegeben. D.h. der DGP ist vollständig bekannt, aber in einem tatsächlichen Experiment natürlich unbekannt. Ziel ist es jetzt die *wahren* Steigungskoeffizienten $\beta_0 = 2$ und $\beta_1 = 3$ mittels einer Zufallsstichprobe anhand des Maximum-Likelihoods zu bestimmen. Dazu wird in `R` eine Zufallsstichprobe generiert. Die $X$-Wert werden zunächst anhand einer Gleichverteilung bestimmt, anschließend werden die $Y$-Wert anhand der Formel berechnet und zufällige Residuen mittels `dnorm()` generiert.
 
 ```{r}
 #| echo: true
@@ -489,7 +601,7 @@ ggplot(tibble(x,y), aes(x,y)) +
   geom_point()
 ```
 
-Über die `lm()`-Funktion ist die Berechnung der Koeffizienten simpel.
+Normalerweise können die Modellparameter direkt mit `lm()` bestimmt werden.
 
 ```{r}
 #| echo: true
@@ -498,7 +610,7 @@ mod <- lm(y~x)
 coef(mod)
 ```
 
-Nun soll die Likelihood $\mathcal{L}(\theta)$ bzw. die Loglikelihood $\ell(\theta)$ und deren Maximum numerisch bestimmt werden. Um die Likelihood zu bestimmen wird die Funktion `dnorm()` verwendet, mit der die Dichtewerte für die Daten berechnet werden können (siehe @eq-likelihood-reg-01). Der Mittelwert der Normalverteilung für ein bestimmtes $X$ folgt der Geraden, also $\beta_0 + \beta_1 \cdot X$ (siehe @eq-likelihood-reg-00), während $\sigma^2 = 1$ gegeben ist. Es wird dazu eine neue Funktion in `R` erstellt, die der Einfachheit halber `log_likelihood` genannt wird. Der Parameter von `log_likelihood()` wird der Konvention folgend mit $\theta$ bezeichnet und ist ein Vektor mit zwei Einträgen $\theta = (\beta_0, \beta_1)$.
+Der Parameterschätzer sind entsprechend $\hat{\beta}_0 = `r r_1(coef(mod)[1])`$ bzw. $\hat{\beta}_1 = `r r_1(coef(mod)[2])`$. Nun soll die Likelihood $\mathcal{L}(\theta)$ bzw. die Loglikelihood $\ell(\theta)$ und deren Maximum numerisch bestimmt werden. Dazu muss wieder eine Likelihood-Funktion definiert werden. Dazu wird wieder `dnorm()` verwendet, da die $Y$-Werte für jeden gebenen $X$-Wert einer Normalverteilung folgen (siehe @eq-likelihood-reg-01). Der Mittelwert der Normalverteilung für ein bestimmtes $X$ folgt der Geraden, also $\beta_0 + \beta_1 \cdot X$ (siehe @eq-likelihood-reg-00), während $\sigma^2 = 1$ gegeben ist. Die Funktion bekommt den Bezeichner `log_likelihood`. Der Parameter von `log_likelihood()` wird der Konvention folgend mit $\theta$ bezeichnet und ist ein Vektor mit zwei Einträgen $\theta = (\beta_0, \beta_1)$.
 
 Für jedes Wertpaar wird nun die Dichte bestimmt indem der jeweilige $y_i$ Wert als erstes Argument an `dnorm()` übergeben wird und der dazugehörigen Mittelwert $\mu$ mittels der Regressionsgleichung $\beta_0 + \beta_1 * x_i$ berechnet wird. Die Funktion `dnorm()` hat ein zusätzliches Argument `log` mit dem angegeben wird, ob der Dichtewert oder der Logarithmus des Dichtewertes zurückgegeben werden soll. Dies ist dem Umstand geschuldet, dass diese Funktion tatsächlich oft dazu benutzt wird den Loglikelihood $\ell$ zu berechnen. Da `dnorm()` auch Vektoren verarbeiten kann, werden alle Werte direkt übergeben. `dnorm()` berechnet den Loglikelihood für jeden Wert und gibt diese in einem Vektor der gleichen Länge zurück. Dieser Vektor muss dann nur aufaddiert werden um den Loglikelihood zu bestimmen.
 
@@ -514,16 +626,23 @@ log_likelihood <- function(theta) {
 }
 ```
 
-Um nun, das Maximum dieser Funktion zu finden wird die Funktion `optim()` verwendet. Diese berechnet für eine übergebene Funktion das **Minimum**. Daher wird in `log_likelihood()` die negative Summe `-sum(ll)` zurück gegeben. Ein Maximum der Funktion $f(x)$ ist ein Minimum der Funktion $-f(x)$. Als ersten Parameter benötigt `optim()` Startwerte für $\theta$ für die Optimierung. Diese sind jetzt einfach auf $\theta_{\text{Start}} = c(1,2)$ gesetzt worden.
+Um nun, das Maximum dieser Funktion zu finden wird die Funktion `optim()` verwendet. Diese berechnet für eine übergebene Funktion das **Minimum**. Daher wird in `log_likelihood()` die negative Summe `-sum(ll)` zurück gegeben. Ein Maximum der Funktion $f(x)$ ist ein Minimum der Funktion $-f(x)$. Als ersten Parameter benötigt `optim()` Startwerte für $\theta$ für die Optimierung. Diese sind auf $\theta_{\text{Start}} = c(1,2)$ gesetzt worden.
 
 ```{r}
 #| echo: true
 
 theta_start <- c(1,2)
-optim(theta_start, log_likelihood)
+theta_num <- optim(theta_start, log_likelihood)
+```
+Der Rückgabewert von `optim()` hat einen Eintrag `par` der die gefunden Werte für das Maximum (respektive Minimum) enthält.
+
+```{r}
+#| echo: true
+
+theta_num$par
 ```
 
-Der Rückgabewert von `optim()` hat einen Eintrag `par` der die gefunden Werte für das Maximum (respektive Minimum) enthält. Diese stimmen auch tatächlich mit denjenigen von `coef(mod)` überein. Dies zeigt somit auch noch mal direkter, wie mittels der Likelihood-Funktion Modellparameter bestimmt werden können, sobald eine statistisches Modell des DGP vorhanden ist. D.h. dieser Ansatz funktioniert auch für deutlich kompliziertere Modell bei denen eine algebraische Herleitung nicht mehr möglich ist.
+Die Werte der Optimierung stimmen mit denjenigen von `coef(mod)` überein. Dies zeigt somit auch noch mal, wie mittels der Likelihood-Funktion Modellparameter bestimmt werden können, sobald eine statistisches Modell des DGP vorhanden ist. D.h. dieser Ansatz funktioniert auch für deutlich kompliziertere Modell bei denen eine algebraische Herleitung nicht mehr möglich ist.
 
 ## Take-away
 

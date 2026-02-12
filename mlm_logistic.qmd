@@ -7,7 +7,6 @@
 source('_common.R')
 ```
 
-
 ```{r defs}
 require(tidyverse)
 require(knitr)
@@ -16,14 +15,27 @@ library(pROC)
 library(CalibrationCurves)
 ```
 
-## Set-up
+In der bishergen Behandlung der Regression war die Kriteriumsvariable, also die abhängige Variable, immer eine metrische Variable deren Wertebereich im Prinzip von $-\infty$ bis $\infty$ ging. In der Realität ist dies natürlich nicht tatsächlich der Fall, da beispielsweise die Wurfgeschwindigkeit im Handball in der Realität durch die physiologische Kapazität der Spieler:Innen beschränkt ist. Allerdings gibt es auch den Fall, dass die Kriteriumsvariable überhaupt nur Werte innerhalb eines bestimmten Intervalls zulässt. Die Wahrscheinlichkeit ein Tor im Handball zu werfen beispielsweise kann nur Werte im Intervall $[0,1]$ einnehmen. Soll nun Beispielsweise ein Regressionsmodell erstellt werden um die Torwahrscheinlichkeit $p_{\text{Tor}}$ beispielsweise anhand des Abstands $d$ zum Tor und des Winkels $\alpha$ von der Torfläche vorherzusagen, dann kann dies im Prinzip mit einem multiplen Regressionmodell durchgeführt werden.
 
-```{r}
-#| fig-cap: "Klassifikation"
-#| fig-height: 2
+$$
+p_{\text{Tor},i} = \beta_0 + \beta_1 d_i + \beta_2 \alpha_i + \epsilon_i
+$$
 
-include_graphics('pics/duck_goal.jpg')
-```
+Allerdings verhindert nichts, dass $p_{\text{Tor},i}$ Werte außerhalb des Bereichs $[0,1]$ einnehmen kann. D.h. um die Idee eines linearen Regressionsmodells auf dieses Problem auszuweiten ist eine Beschränkung der möglichen Werte notwendig.
+
+Eine weitere Besonderheit im Zusammenhang mit dem Handballbeispiel, hängt mit Eigenschaft zusammen, dass die Werte der abhängigen Variable $Y$ in der Realität nur zwei Werte einehmen können. Mit der Zuweisung $\text{Tor} = 1$ und $\text{Fehlversuch} = 1$ nimmt $Y$ immer nur die Werte $0$ oder $1$ ein. Entsprechend würde ein Datensatz die folgende Form haben:
+
+| Tor | Abstand[m] | Winkel[°] |
+| --- | --- | --- |
+| 0   | 4  | 45 |
+| 1   | 5 | 90 |
+| 0   | 3.5 | 30 |
+
+: Beispiel für einen Datensatz zur Trefferwahrscheinlichkeit im Handball in Abhängigkeit von der Distanz zum Tor und Winkel zur Grundlinie.
+
+Unter diesem Aspekt, kann dieses Problem auch als Klassifikationsproblem interpretiert werden. Es sind zwei verschiedene *Klassen* vorhanden, **Tor** und **kein Tor** und es soll anhand bestimmter Prädiktorvariablen vorhergesagt werden, zu welcher Klasse ein Objekt zugeordnet werden kann. Ähnliche Problemstellung ergeben sich auch im medizinischen Kontext, wo beispielsweise anhand einer Reihe von Prädiktorvariablen bestimmt werden soll, ob ein:e Patient:In erkrankt oder gesund bleibt.
+
+Die Lösung für diese beiden Problem bietet die **Logistische Regression** die im Folgenden behandelt wird. Glücklicherweise können die meisten bereits gelernten Konzepte auch im Kontext der logistischen Regression angewendet werden und alles was es braucht ist ein zusätzlicher Kniff um die Beschränkung des Wertebereichs zu erreichen. Zusätzlich kommt noch ein komplett neuer Aspekt hinzu, da die logistische Regression eben auch als die Lösung für ein Klassifikationsproblem interpretiert werden kann. Dadurch ergibt sich eine enge Anbindung an den Bereich des Maschinellen Lernens in die Klassifikationsalgorithm eine zentrale Rolle spielen.
 
 ## Logistische Funktion
 

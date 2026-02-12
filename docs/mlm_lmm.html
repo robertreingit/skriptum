@@ -20,6 +20,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -84,6 +119,35 @@ ul.task-list li input[type="checkbox"] {
 
 </script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -404,8 +468,62 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Inhaltsverzeichnis</h2>
+   
+  <ul>
+  <li><a href="#setup" id="toc-setup" class="nav-link active" data-scroll-target="#setup"><span class="header-section-number">24.1</span> Setup</a></li>
+  <li><a href="#kovarianz-und-korrelation" id="toc-kovarianz-und-korrelation" class="nav-link" data-scroll-target="#kovarianz-und-korrelation"><span class="header-section-number">24.2</span> Kovarianz und Korrelation</a></li>
+  <li><a href="#residuenannahme---einfache-lineare-regression" id="toc-residuenannahme---einfache-lineare-regression" class="nav-link" data-scroll-target="#residuenannahme---einfache-lineare-regression"><span class="header-section-number">24.3</span> Residuenannahme - Einfache Lineare Regression</a>
+  <ul class="collapse">
+  <li><a href="#identisch-verteilt" id="toc-identisch-verteilt" class="nav-link" data-scroll-target="#identisch-verteilt"><span class="header-section-number">24.3.1</span> Identisch verteilt</a></li>
+  <li><a href="#unabhängig" id="toc-unabhängig" class="nav-link" data-scroll-target="#unabhängig"><span class="header-section-number">24.3.2</span> Unabhängig</a></li>
+  </ul></li>
+  <li><a href="#varianz-kovarianzmartrix-der-residuen" id="toc-varianz-kovarianzmartrix-der-residuen" class="nav-link" data-scroll-target="#varianz-kovarianzmartrix-der-residuen"><span class="header-section-number">24.4</span> Varianz-Kovarianzmartrix der Residuen</a></li>
+  <li><a href="#verteilungsannahme-der-residuen-in-matrizenschreibweise" id="toc-verteilungsannahme-der-residuen-in-matrizenschreibweise" class="nav-link" data-scroll-target="#verteilungsannahme-der-residuen-in-matrizenschreibweise"><span class="header-section-number">24.5</span> Verteilungsannahme der Residuen in Matrizenschreibweise</a></li>
+  <li><a href="#andere-schreibweise-der-varianz-kovarianzmatrix" id="toc-andere-schreibweise-der-varianz-kovarianzmatrix" class="nav-link" data-scroll-target="#andere-schreibweise-der-varianz-kovarianzmatrix"><span class="header-section-number">24.6</span> Andere Schreibweise der Varianz-Kovarianzmatrix</a>
+  <ul class="collapse">
+  <li><a href="#einheitsmatrix" id="toc-einheitsmatrix" class="nav-link" data-scroll-target="#einheitsmatrix"><span class="header-section-number">24.6.1</span> Einheitsmatrix</a></li>
+  <li><a href="#varianz-kovarianzmatrix" id="toc-varianz-kovarianzmatrix" class="nav-link" data-scroll-target="#varianz-kovarianzmatrix"><span class="header-section-number">24.6.2</span> Varianz-Kovarianzmatrix</a></li>
+  </ul></li>
+  <li><a href="#allgemeiner-fall-der-varianz-kovarianzmatrix" id="toc-allgemeiner-fall-der-varianz-kovarianzmatrix" class="nav-link" data-scroll-target="#allgemeiner-fall-der-varianz-kovarianzmatrix"><span class="header-section-number">24.7</span> Allgemeiner Fall der Varianz-Kovarianzmatrix</a>
+  <ul class="collapse">
+  <li><a href="#multivariate-normalverteilung" id="toc-multivariate-normalverteilung" class="nav-link" data-scroll-target="#multivariate-normalverteilung"><span class="header-section-number">24.7.1</span> Multivariate Normalverteilung</a></li>
+  </ul></li>
+  <li><a href="#alternative-schreibweise---einfache-regression" id="toc-alternative-schreibweise---einfache-regression" class="nav-link" data-scroll-target="#alternative-schreibweise---einfache-regression"><span class="header-section-number">24.8</span> Alternative Schreibweise - einfache Regression</a>
+  <ul class="collapse">
+  <li><a href="#indexschreibweise" id="toc-indexschreibweise" class="nav-link" data-scroll-target="#indexschreibweise"><span class="header-section-number">24.8.1</span> Indexschreibweise</a></li>
+  <li><a href="#matrizenschreibweise" id="toc-matrizenschreibweise" class="nav-link" data-scroll-target="#matrizenschreibweise"><span class="header-section-number">24.8.2</span> Matrizenschreibweise</a></li>
+  </ul></li>
+  <li><a href="#wofür" id="toc-wofür" class="nav-link" data-scroll-target="#wofür"><span class="header-section-number">24.9</span> Wofür?</a></li>
+  <li><a href="#patterned-covarianz-matrices" id="toc-patterned-covarianz-matrices" class="nav-link" data-scroll-target="#patterned-covarianz-matrices"><span class="header-section-number">24.10</span> Patterned covarianz matrices</a></li>
+  <li><a href="#explorative-analyse-univariate---individual-vs.-grouped" id="toc-explorative-analyse-univariate---individual-vs.-grouped" class="nav-link" data-scroll-target="#explorative-analyse-univariate---individual-vs.-grouped"><span class="header-section-number">24.11</span> Explorative Analyse Univariate - Individual vs.&nbsp;Grouped</a></li>
+  <li><a href="#explorative-analyse-bivariate---average-na" id="toc-explorative-analyse-bivariate---average-na" class="nav-link" data-scroll-target="#explorative-analyse-bivariate---average-na"><span class="header-section-number">24.12</span> Explorative Analyse Bivariate - Average <code>na</code></a></li>
+  <li><a href="#explorative-analyse-bivariate---individual-vs.-grouped" id="toc-explorative-analyse-bivariate---individual-vs.-grouped" class="nav-link" data-scroll-target="#explorative-analyse-bivariate---individual-vs.-grouped"><span class="header-section-number">24.13</span> Explorative Analyse Bivariate - Individual vs.&nbsp;Grouped</a></li>
+  <li><a href="#multilevel-modelling---terminologie" id="toc-multilevel-modelling---terminologie" class="nav-link" data-scroll-target="#multilevel-modelling---terminologie"><span class="header-section-number">24.14</span> Multilevel modelling - Terminologie</a></li>
+  <li><a href="#two-stage-modelling---level-one" id="toc-two-stage-modelling---level-one" class="nav-link" data-scroll-target="#two-stage-modelling---level-one"><span class="header-section-number">24.15</span> Two-stage modelling - Level One</a>
+  <ul class="collapse">
+  <li><a href="#musiker-no.-22" id="toc-musiker-no.-22" class="nav-link" data-scroll-target="#musiker-no.-22"><span class="header-section-number">24.15.1</span> Musiker No.&nbsp;22</a></li>
+  </ul></li>
+  <li><a href="#musiker-no.-22-1" id="toc-musiker-no.-22-1" class="nav-link" data-scroll-target="#musiker-no.-22-1"><span class="header-section-number">24.16</span> Musiker No.&nbsp;22</a></li>
+  <li><a href="#level-one-für-alle-musiker" id="toc-level-one-für-alle-musiker" class="nav-link" data-scroll-target="#level-one-für-alle-musiker"><span class="header-section-number">24.17</span> Level One für alle Musiker</a></li>
+  <li><a href="#two-stage-modelling---level-two" id="toc-two-stage-modelling---level-two" class="nav-link" data-scroll-target="#two-stage-modelling---level-two"><span class="header-section-number">24.18</span> Two-stage modelling - Level Two</a></li>
+  <li><a href="#two-stage-modelling---level-two-fit" id="toc-two-stage-modelling---level-two-fit" class="nav-link" data-scroll-target="#two-stage-modelling---level-two-fit"><span class="header-section-number">24.19</span> Two-stage modelling - Level Two fit</a></li>
+  <li><a href="#multilevel-approach" id="toc-multilevel-approach" class="nav-link" data-scroll-target="#multilevel-approach"><span class="header-section-number">24.20</span> Multilevel-Approach</a></li>
+  <li><a href="#model-building---random-intercepts" id="toc-model-building---random-intercepts" class="nav-link" data-scroll-target="#model-building---random-intercepts"><span class="header-section-number">24.21</span> Model Building - Random Intercepts</a></li>
+  <li><a href="#model-building---random-intercepts-1" id="toc-model-building---random-intercepts-1" class="nav-link" data-scroll-target="#model-building---random-intercepts-1"><span class="header-section-number">24.22</span> Model Building - Random Intercepts</a></li>
+  <li><a href="#intraclass-correlation-cofficient" id="toc-intraclass-correlation-cofficient" class="nav-link" data-scroll-target="#intraclass-correlation-cofficient"><span class="header-section-number">24.23</span> Intraclass correlation cofficient</a></li>
+  <li><a href="#model-building---random-slopes-and-intercepts" id="toc-model-building---random-slopes-and-intercepts" class="nav-link" data-scroll-target="#model-building---random-slopes-and-intercepts"><span class="header-section-number">24.24</span> Model Building - Random Slopes and Intercepts</a></li>
+  <li><a href="#model-building---random-slopes-and-intercepts-1" id="toc-model-building---random-slopes-and-intercepts-1" class="nav-link" data-scroll-target="#model-building---random-slopes-and-intercepts-1"><span class="header-section-number">24.25</span> Model Building - Random Slopes and Intercepts</a></li>
+  <li><a href="#pseudo-r2" id="toc-pseudo-r2" class="nav-link" data-scroll-target="#pseudo-r2"><span class="header-section-number">24.26</span> Pseudo <span class="math inline">\(R^2\)</span></a></li>
+  <li><a href="#eine-kovariate-auf-level-two-hinzufügen" id="toc-eine-kovariate-auf-level-two-hinzufügen" class="nav-link" data-scroll-target="#eine-kovariate-auf-level-two-hinzufügen"><span class="header-section-number">24.27</span> Eine Kovariate auf Level Two hinzufügen</a></li>
+  <li><a href="#eine-kovariate-auf-level-two-hinzufügen-1" id="toc-eine-kovariate-auf-level-two-hinzufügen-1" class="nav-link" data-scroll-target="#eine-kovariate-auf-level-two-hinzufügen-1"><span class="header-section-number">24.28</span> Eine Kovariate auf Level Two hinzufügen</a></li>
+  <li><a href="#finales-modell" id="toc-finales-modell" class="nav-link" data-scroll-target="#finales-modell"><span class="header-section-number">24.29</span> Finales Modell</a></li>
+  <li><a href="#modellvergleiche" id="toc-modellvergleiche" class="nav-link" data-scroll-target="#modellvergleiche"><span class="header-section-number">24.30</span> Modellvergleiche</a></li>
+  <li><a href="#pooling" id="toc-pooling" class="nav-link" data-scroll-target="#pooling"><span class="header-section-number">24.31</span> Pooling</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -429,8 +547,561 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<p>In allen bisherigen Modellen, war eine zentrale Annahme, dass die Objekte <strong>unabhängig</strong> voneinander sind. Ob bei der einfachen, der multiplen oder der logistischen Regression, die Annahme war in allen Fällen, dass die einzelnen Datenpunkte unabhängig voneinander sind. Allerdings kommt es natürlich in der Realität vor, dass mehrere Messwerte von den gleichen Punkten ermittelt werden, um beispielsweise die Präzision zu erhöhen. Oder es sollen zwei Gruppen vor und nach einem Treatment miteinander verglichen werden. In diesen Fällen ist die Annahme der unabhängig verletzt. In diesem Fall werden sogenannte gemischte lineare Modelle verwendet. Gemischte lineare Modelle werden auch als hierarchische Modelle oder Mehrebenenmodelle bezeichnet. Konzeptionell stellen die gemischten Modelle einer Erweiterung der Modelle die bisher behandelt wurden dar oder anders herum, die multiple lineare Regression ist ein Spezialfall der gemischten linearen Modelle. Vorteil ist auch wieder, dass die bereits gelernten Konzepte angewendet werden können.</p>
+<section id="setup" class="level2" data-number="24.1">
+<h2 data-number="24.1" class="anchored" data-anchor-id="setup"><span class="header-section-number">24.1</span> Setup</h2>
+<div class="cell quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">x</th>
+<th style="text-align: right;">y</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1.6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3.3</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4.1</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="mlm_lmm_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</div>
+</section>
+<section id="kovarianz-und-korrelation" class="level2" data-number="24.2">
+<h2 data-number="24.2" class="anchored" data-anchor-id="kovarianz-und-korrelation"><span class="header-section-number">24.2</span> Kovarianz und Korrelation</h2>
+<p><span class="math display">\[\begin{align*}
+\sigma_{XY} &amp;= E[(X-\mu_X)(Y-\mu_Y)] \\
+\text{cov}(x,y) &amp;= \frac{\sum_{i=1}^N (x_i - \bar{x})(y_i - \bar{y})}{N-1}
+\end{align*}\]</span></p>
+<p><span class="math display">\[\begin{align*}
+\rho_{XY} &amp;= \frac{\sigma_{XY}}{\sigma_X \sigma_Y} \\
+r_{xy} &amp;= \frac{\text{cov}(x,y)}{s_x s_y}
+\end{align*}\]</span></p>
+<p><span class="math display">\[
+\sigma_{XY} = \sigma_X \cdot \sigma_Y \cdot \rho_{XY}
+\]</span></p>
+</section>
+<section id="residuenannahme---einfache-lineare-regression" class="level2" data-number="24.3">
+<h2 data-number="24.3" class="anchored" data-anchor-id="residuenannahme---einfache-lineare-regression"><span class="header-section-number">24.3</span> Residuenannahme - Einfache Lineare Regression</h2>
+<p><span class="math display">\[
+\epsilon_i \sim \mathcal{N}(0,\sigma^2), i \in [1,2,3,4], \textrm{iid}
+\]</span></p>
+<section id="identisch-verteilt" class="level3" data-number="24.3.1">
+<h3 data-number="24.3.1" class="anchored" data-anchor-id="identisch-verteilt"><span class="header-section-number">24.3.1</span> Identisch verteilt</h3>
+<p><span class="math display">\[
+\begin{matrix}
+\epsilon_1 \sim \mathrm{N}(0,\sigma^2) \\
+\epsilon_2 \sim \mathrm{N}(0,\sigma^2) \\
+\epsilon_3 \sim \mathrm{N}(0,\sigma^2) \\
+\epsilon_4 \sim \mathrm{N}(0,\sigma^2) \\
+\end{matrix}
+\]</span></p>
+</section>
+<section id="unabhängig" class="level3" data-number="24.3.2">
+<h3 data-number="24.3.2" class="anchored" data-anchor-id="unabhängig"><span class="header-section-number">24.3.2</span> Unabhängig</h3>
+<p><span class="math display">\[
+\text{cov}(\epsilon_i,\epsilon_j) = 0, \quad i,j \in [1,2,3,4], i\neq j
+\]</span></p>
+</section>
+</section>
+<section id="varianz-kovarianzmartrix-der-residuen" class="level2" data-number="24.4">
+<h2 data-number="24.4" class="anchored" data-anchor-id="varianz-kovarianzmartrix-der-residuen"><span class="header-section-number">24.4</span> Varianz-Kovarianzmartrix der Residuen</h2>
+<p><span class="math display">\[
+\Sigma = \begin{pmatrix}
+\sigma^2 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; \sigma^2 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; \sigma^2 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; \sigma^2
+\end{pmatrix}
+\]</span></p>
+</section>
+<section id="verteilungsannahme-der-residuen-in-matrizenschreibweise" class="level2" data-number="24.5">
+<h2 data-number="24.5" class="anchored" data-anchor-id="verteilungsannahme-der-residuen-in-matrizenschreibweise"><span class="header-section-number">24.5</span> Verteilungsannahme der Residuen in Matrizenschreibweise</h2>
+<p>Mit <span class="math display">\[
+\mathbf{0} = \begin{pmatrix}
+0 &amp; 0 &amp; 0 &amp; 0
+\end{pmatrix}^\top
+\]</span></p>
+<p><span class="math display">\[
+\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0},\Sigma)
+\]</span></p>
+</section>
+<section id="andere-schreibweise-der-varianz-kovarianzmatrix" class="level2" data-number="24.6">
+<h2 data-number="24.6" class="anchored" data-anchor-id="andere-schreibweise-der-varianz-kovarianzmatrix"><span class="header-section-number">24.6</span> Andere Schreibweise der Varianz-Kovarianzmatrix</h2>
+<section id="einheitsmatrix" class="level3" data-number="24.6.1">
+<h3 data-number="24.6.1" class="anchored" data-anchor-id="einheitsmatrix"><span class="header-section-number">24.6.1</span> Einheitsmatrix</h3>
+<p><span class="math display">\[
+\begin{pmatrix}
+1 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 1 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 1 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 1 \\
+\end{pmatrix}
+\]</span></p>
+</section>
+<section id="varianz-kovarianzmatrix" class="level3" data-number="24.6.2">
+<h3 data-number="24.6.2" class="anchored" data-anchor-id="varianz-kovarianzmatrix"><span class="header-section-number">24.6.2</span> Varianz-Kovarianzmatrix</h3>
+<p><span class="math display">\[
+\Sigma = \sigma^2\begin{pmatrix}
+1 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 1 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 1 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 1 \\
+\end{pmatrix}
+\]</span></p>
+</section>
+</section>
+<section id="allgemeiner-fall-der-varianz-kovarianzmatrix" class="level2" data-number="24.7">
+<h2 data-number="24.7" class="anchored" data-anchor-id="allgemeiner-fall-der-varianz-kovarianzmatrix"><span class="header-section-number">24.7</span> Allgemeiner Fall der Varianz-Kovarianzmatrix</h2>
+<section id="multivariate-normalverteilung" class="level3" data-number="24.7.1">
+<h3 data-number="24.7.1" class="anchored" data-anchor-id="multivariate-normalverteilung"><span class="header-section-number">24.7.1</span> Multivariate Normalverteilung</h3>
+<p><span class="math display">\[
+\mu = \begin{pmatrix}
+\mu_1 \\ \mu_2 \\ \mu_3 \\ \mu_4
+\end{pmatrix} \quad
+\]</span></p>
+<p><span class="math display">\[
+\Sigma = \begin{pmatrix}
+\sigma_1^2 &amp; \sigma_{12} &amp; \sigma_{13} &amp; \sigma_{14} \\
+\sigma_{21} &amp; \sigma_2^2 &amp; \sigma_{23} &amp; \sigma_{24} \\
+\sigma_{31} &amp; \sigma_{32} &amp; \sigma_3^2 &amp; \sigma_{34} \\
+\sigma_{41} &amp; \sigma_{42} &amp; \sigma_{43} &amp; \sigma_4^2 \\
+\end{pmatrix} =
+\begin{pmatrix}
+\sigma_1^2 &amp; \rho_{12}\sigma_1\sigma_2 &amp; \rho_{13}\sigma_1\sigma_{3} &amp; \rho_{14}\sigma_1\sigma_{4} \\
+\rho_{21}\sigma_2\sigma_{1} &amp; \sigma_2^2 &amp; \rho_{23}\sigma_2\sigma_{3} &amp; \rho_{24}\sigma_2\sigma_{4} \\
+\rho_{31}\sigma_3\sigma_{1} &amp; \rho_{32}\sigma_3\sigma_{2} &amp; \sigma_3^2 &amp; \rho_{34}\sigma_3\sigma_{4} \\
+\rho_{41}\sigma_4\sigma_{1} &amp; \rho_{42}\sigma_4\sigma_{2} &amp; \rho_{43}\sigma_4\sigma_{3} &amp; \sigma_4^2 \\
+\end{pmatrix}
+\]</span></p>
+</section>
+</section>
+<section id="alternative-schreibweise---einfache-regression" class="level2" data-number="24.8">
+<h2 data-number="24.8" class="anchored" data-anchor-id="alternative-schreibweise---einfache-regression"><span class="header-section-number">24.8</span> Alternative Schreibweise - einfache Regression</h2>
+<section id="indexschreibweise" class="level3" data-number="24.8.1">
+<h3 data-number="24.8.1" class="anchored" data-anchor-id="indexschreibweise"><span class="header-section-number">24.8.1</span> Indexschreibweise</h3>
+<p><span class="math display">\[
+\begin{matrix}
+\epsilon_i = y_i - \hat{y}_i &amp; | + \hat{y}_i &amp; \sim \mathcal{N}(0,\sigma^2) \\
+\Leftrightarrow \epsilon + \hat{y}_i = y_i &amp;  &amp; \sim \mathcal{N}(0,\sigma^2) +\hat{y} \\
+&amp; &amp; = \mathcal{N}(\hat{y},\sigma^2) \\
+&amp; &amp; = \mathcal{N}(\beta_0 + \beta_1\cdot x_i,\sigma^2) \\
+\end{matrix}
+\]</span></p>
+<p><span class="math display">\[
+y_i \sim \mathcal{N}(\beta_0 + \beta_1\cdot x_i,\sigma^2)  
+\]</span></p>
+</section>
+<section id="matrizenschreibweise" class="level3" data-number="24.8.2">
+<h3 data-number="24.8.2" class="anchored" data-anchor-id="matrizenschreibweise"><span class="header-section-number">24.8.2</span> Matrizenschreibweise</h3>
+<p><span class="math display">\[
+\mathbf{Y} = \mathcal{N}(\mathbf{X}\boldsymbol{\beta},\Sigma)
+\]</span></p>
+</section>
+</section>
+<section id="wofür" class="level2 t" data-number="24.9">
+<h2 class="t anchored" data-number="24.9" data-anchor-id="wofür"><span class="header-section-number">24.9</span> Wofür?</h2>
+<p>z.B. Daten von Schülern aus Klassen aus Schulen</p>
+</section>
+<section id="patterned-covarianz-matrices" class="level2" data-number="24.10">
+<h2 data-number="24.10" class="anchored" data-anchor-id="patterned-covarianz-matrices"><span class="header-section-number">24.10</span> Patterned covarianz matrices</h2>
+<p><span class="math display">\[
+\Sigma = \begin{pmatrix}
+\Sigma_1 &amp; 0 \\ 0 &amp; \Sigma_2
+\end{pmatrix}
+\]</span></p>
+<p><span class="math display">\[
+\Sigma_i = \begin{pmatrix}
+\sigma_1^2 &amp; \rho_{12}\sigma_1\sigma_2 \\
+\rho_{21}\sigma_1\sigma_2 &amp; \sigma_2^2  \\
+\end{pmatrix}
+\]</span></p>
+<ul>
+<li><code>id</code> = unique musician identification number</li>
+<li><code>na</code> = negative affect score from PANAS</li>
+<li><code>perf_type</code> = type of performance (Solo, Large Ensemble, or Small Ensemble)</li>
+<li><code>instrument</code> = Voice, Orchestral, or Piano</li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">id</th>
+<th style="text-align: right;">na</th>
+<th style="text-align: right;">large</th>
+<th style="text-align: right;">instrument_f</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">37</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">41</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="explorative-analyse-univariate---individual-vs.-grouped" class="level2" data-number="24.11">
+<h2 data-number="24.11" class="anchored" data-anchor-id="explorative-analyse-univariate---individual-vs.-grouped"><span class="header-section-number">24.11</span> Explorative Analyse Univariate - Individual vs.&nbsp;Grouped</h2>
+<div class="cell quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="mlm_lmm_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="mlm_lmm_files/figure-html/unnamed-chunk-5-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</div>
+</section>
+<section id="explorative-analyse-bivariate---average-na" class="level2" data-number="24.12">
+<h2 data-number="24.12" class="anchored" data-anchor-id="explorative-analyse-bivariate---average-na"><span class="header-section-number">24.12</span> Explorative Analyse Bivariate - Average <code>na</code></h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mlm_lmm_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="explorative-analyse-bivariate---individual-vs.-grouped" class="level2" data-number="24.13">
+<h2 data-number="24.13" class="anchored" data-anchor-id="explorative-analyse-bivariate---individual-vs.-grouped"><span class="header-section-number">24.13</span> Explorative Analyse Bivariate - Individual vs.&nbsp;Grouped</h2>
+<div class="cell quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="mlm_lmm_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="mlm_lmm_files/figure-html/unnamed-chunk-7-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</div>
+</section>
+<section id="multilevel-modelling---terminologie" class="level2" data-number="24.14">
+<h2 data-number="24.14" class="anchored" data-anchor-id="multilevel-modelling---terminologie"><span class="header-section-number">24.14</span> Multilevel modelling - Terminologie</h2>
+<ul>
+<li><strong>Level one</strong> refers to the <strong>individual-level data</strong>, capturing variation <strong>within groups</strong> (e.g., students within classes).</li>
+<li><strong>Level two</strong> refers to the <strong>group-level data</strong>, capturing variation <strong>between groups</strong> (e.g., differences between classes or schools).</li>
+</ul>
+</section>
+<section id="two-stage-modelling---level-one" class="level2" data-number="24.15">
+<h2 data-number="24.15" class="anchored" data-anchor-id="two-stage-modelling---level-one"><span class="header-section-number">24.15</span> Two-stage modelling - Level One</h2>
+<section id="musiker-no.-22" class="level3" data-number="24.15.1">
+<h3 data-number="24.15.1" class="anchored" data-anchor-id="musiker-no.-22"><span class="header-section-number">24.15.1</span> Musiker No.&nbsp;22</h3>
+<p><span class="math display">\[\begin{align*}
+Y_{22j} &amp;= a_{22}+b_{22}\textrm{large}_{22j}+\epsilon_{22j} \quad \epsilon_{22j}\sim N(0,\sigma^2)\\
+\textrm{large}_{j} &amp;= \begin{cases}  
+1  &amp; \textrm{if perf-type = Large Ensemble} \\
+0  &amp; \textrm{if perf-type = Solo or Small Ensemble}
+\end{cases}
+\end{align*}\]</span></p>
+</section>
+</section>
+<section id="musiker-no.-22-1" class="level2" data-number="24.16">
+<h2 data-number="24.16" class="anchored" data-anchor-id="musiker-no.-22-1"><span class="header-section-number">24.16</span> Musiker No.&nbsp;22</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>df_22 <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span> <span class="fu">filter</span>(id <span class="sc">==</span> <span class="dv">22</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>mod_22 <span class="ot">&lt;-</span> <span class="fu">lm</span>(na <span class="sc">~</span> large, df_22)</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">term</th>
+<th style="text-align: right;">estimate</th>
+<th style="text-align: right;">std.error</th>
+<th style="text-align: right;">statistic</th>
+<th style="text-align: right;">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">24.50</td>
+<td style="text-align: right;">1.96</td>
+<td style="text-align: right;">12.5</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">large</td>
+<td style="text-align: right;">-7.83</td>
+<td style="text-align: right;">2.53</td>
+<td style="text-align: right;">-3.1</td>
+<td style="text-align: right;">0.01</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">sigma</td>
+<td style="text-align: right;">4.80</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="level-one-für-alle-musiker" class="level2" data-number="24.17">
+<h2 data-number="24.17" class="anchored" data-anchor-id="level-one-für-alle-musiker"><span class="header-section-number">24.17</span> Level One für alle Musiker</h2>
+<div class="cell quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="mlm_lmm_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="mlm_lmm_files/figure-html/unnamed-chunk-10-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</div>
+</section>
+<section id="two-stage-modelling---level-two" class="level2" data-number="24.18">
+<h2 data-number="24.18" class="anchored" data-anchor-id="two-stage-modelling---level-two"><span class="header-section-number">24.18</span> Two-stage modelling - Level Two</h2>
+<p><span class="math display">\[\begin{align*}
+a_{i} &amp; = \alpha_{0}+\alpha_{1}\textrm{Orch}_{i}+u_{i} \\
+b_{i} &amp; = \beta_{0}+\beta_{1}\textrm{Orch}_{i}+v_{i}
+\end{align*}\]</span></p>
+</section>
+<section id="two-stage-modelling---level-two-fit" class="level2" data-number="24.19">
+<h2 data-number="24.19" class="anchored" data-anchor-id="two-stage-modelling---level-two-fit"><span class="header-section-number">24.19</span> Two-stage modelling - Level Two fit</h2>
+<p><span class="math display">\[\begin{align*}
+\hat{a}_{i} &amp; = 16.3+1.4\textrm{Orch}_{i}+u_{i} \\
+\hat{b}_{i} &amp; = -0.8-1.4\textrm{Orch}_{i}+v_{i}
+\end{align*}\]</span></p>
+</section>
+<section id="multilevel-approach" class="level2" data-number="24.20">
+<h2 data-number="24.20" class="anchored" data-anchor-id="multilevel-approach"><span class="header-section-number">24.20</span> Multilevel-Approach</h2>
+<ul>
+<li>Level One: <span class="math display">\[\begin{equation*}
+Y_{ij} = a_{i}+b_{i}\textrm{LargeEns}_{ij}+\epsilon_{ij}
+\end{equation*}\]</span></li>
+<li>Level Two: <span class="math display">\[\begin{align*}
+a_{i} &amp; = \alpha_{0}+\alpha_{1}\textrm{Orch}_{i}+u_{i} \\
+b_{i} &amp; = \beta_{0}+\beta_{1}\textrm{Orch}_{i}+v_{i},
+\end{align*}\]</span></li>
+</ul>
+<p><span class="math display">\[\begin{align*}
+Y_{ij} &amp; = [\alpha_{0}+\alpha_{1}\textrm{Orch}_{i}+\beta_{0}\textrm{LargeEns}_{ij}+\beta_{1}\textrm{Orch}_{i}\textrm{LargeEns}_{ij}] \\
+&amp; \textrm{} + [u_{i}+v_{i}\textrm{LargeEns}_{ij}+\epsilon_{ij}]
+\end{align*}\]</span></p>
+</section>
+<section id="model-building---random-intercepts" class="level2" data-number="24.21">
+<h2 data-number="24.21" class="anchored" data-anchor-id="model-building---random-intercepts"><span class="header-section-number">24.21</span> Model Building - Random Intercepts</h2>
+<ul>
+<li>Level One: <span class="math display">\[
+Y_{ij} = a_{i}+\epsilon_{ij} \textrm{ where } \epsilon_{ij}\sim N(0,\sigma^2)
+\]</span></li>
+<li>Level Two: <span class="math display">\[
+a_{i} = \alpha_{0}+u_{i} \textrm{ where } u_{i}\sim N(0,\sigma_{u}^{2})
+\]</span></li>
+</ul>
+<p><span class="math display">\[
+Y_{ij}=\alpha_{0}+u_{i}+\epsilon_{ij}
+\]</span></p>
+</section>
+<section id="model-building---random-intercepts-1" class="level2" data-number="24.22">
+<h2 data-number="24.22" class="anchored" data-anchor-id="model-building---random-intercepts-1"><span class="header-section-number">24.22</span> Model Building - Random Intercepts</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>mod_0 <span class="ot">&lt;-</span> <span class="fu">lmer</span>(na <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>id), <span class="at">data =</span> df)</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="intraclass-correlation-cofficient" class="level2" data-number="24.23">
+<h2 data-number="24.23" class="anchored" data-anchor-id="intraclass-correlation-cofficient"><span class="header-section-number">24.23</span> Intraclass correlation cofficient</h2>
+<p><span class="math display">\[\begin{align*}
+\rho &amp;=\frac{\textrm{Between-person variability}}{\textrm{Total variability}} \\
+&amp;= \frac{\hat{\sigma}_{u}^{2}}{\hat{\sigma}_{u}^{2}+\hat{\sigma}^2}
+\end{align*}\]</span></p>
+<p><span class="math display">\[
+\hat{\rho} =\frac{5.0}{5.0+22.5} = .182.
+\]</span></p>
+</section>
+<section id="model-building---random-slopes-and-intercepts" class="level2" data-number="24.24">
+<h2 data-number="24.24" class="anchored" data-anchor-id="model-building---random-slopes-and-intercepts"><span class="header-section-number">24.24</span> Model Building - Random Slopes and Intercepts</h2>
+<ul>
+<li>Level One: <span class="math display">\[\begin{equation*}
+Y_{ij} = a_{i}+b_{i}\textrm{LargeEns}_{ij}+\epsilon_{ij}
+\end{equation*}\]</span></li>
+<li>Level Two: <span class="math display">\[\begin{align*}
+a_{i} &amp; = \alpha_{0}+u_{i} \\
+b_{i} &amp; = \beta_{0}+v_{i}
+\end{align*}\]</span></li>
+</ul>
+<p><span class="math display">\[\begin{equation*}
+Y_{ij}=[\alpha_{0}+\beta_{0}\textrm{LargeEns}_{ij}]+[u_{i}+v_{i}\textrm{LargeEns}_{ij}+\epsilon_{ij}]
+\end{equation*}\]</span></p>
+<p><span class="math display">\[
+\epsilon_{ij}\sim N(0,\sigma^2)\quad\left[ \begin{array}{c}
+            u_{i} \\ v_{i}
+          \end{array}  \right] \sim N \left( \left[
+          \begin{array}{c}
+            0 \\ 0
+          \end{array} \right], \left[
+          \begin{array}{cc}
+            \sigma_{u}^{2} &amp; \\
+            \rho\sigma_{u}\sigma_{v} &amp; \sigma_{v}^{2}
+          \end{array} \right] \right).
+\]</span></p>
+</section>
+<section id="model-building---random-slopes-and-intercepts-1" class="level2" data-number="24.25">
+<h2 data-number="24.25" class="anchored" data-anchor-id="model-building---random-slopes-and-intercepts-1"><span class="header-section-number">24.25</span> Model Building - Random Slopes and Intercepts</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>mod_1 <span class="ot">&lt;-</span> <span class="fu">lmer</span>(na <span class="sc">~</span> large <span class="sc">+</span> (large<span class="sc">|</span>id), <span class="at">data =</span> df)</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="pseudo-r2" class="level2" data-number="24.26">
+<h2 data-number="24.26" class="anchored" data-anchor-id="pseudo-r2"><span class="header-section-number">24.26</span> Pseudo <span class="math inline">\(R^2\)</span></h2>
+<p><span class="math display">\[\begin{align*}
+\textrm{Pseudo }R^2_{L1} &amp;= \frac{\hat{\sigma}^{2}(\textrm{Model A})-\hat{\sigma}^{2}(\textrm{Model B})}{\hat{\sigma}^{2}(\textrm{Model A})} \\
+&amp;= \frac{22.5-21.8}{22.5} = 0.031
+\end{align*}\]</span></p>
+</section>
+<section id="eine-kovariate-auf-level-two-hinzufügen" class="level2" data-number="24.27">
+<h2 data-number="24.27" class="anchored" data-anchor-id="eine-kovariate-auf-level-two-hinzufügen"><span class="header-section-number">24.27</span> Eine Kovariate auf Level Two hinzufügen</h2>
+<ul>
+<li><p>Level One: <span class="math display">\[\begin{equation*}
+Y_{ij} = a_{i}+b_{i}\textrm{LargeEns}_{ij}+\epsilon_{ij}
+\end{equation*}\]</span></p></li>
+<li><p>Level Two: <span class="math display">\[\begin{align*}
+a_{i} &amp; = \alpha_{0}+\alpha_{1}\textrm{Orch}_{i}+u_{i} \\
+b_{i} &amp; = \beta_{0}+\beta_{1}\textrm{Orch}_{i}+v_{i},
+\end{align*}\]</span> <span class="math inline">\(\epsilon_{ij}\sim N(0,\sigma^2)\)</span> and</p></li>
+</ul>
+<p><span class="math display">\[
+\left[ \begin{array}{c}
+            u_{i} \\ v_{i}
+          \end{array}  \right] \sim N \left( \left[
+          \begin{array}{c}
+            0 \\ 0
+          \end{array} \right], \left[
+          \begin{array}{cc}
+            \sigma_{u}^{2} &amp; \\
+            \rho\sigma_{u}\sigma_{v} &amp; \sigma_{v}^{2}
+          \end{array} \right] \right).
+\]</span></p>
+</section>
+<section id="eine-kovariate-auf-level-two-hinzufügen-1" class="level2" data-number="24.28">
+<h2 data-number="24.28" class="anchored" data-anchor-id="eine-kovariate-auf-level-two-hinzufügen-1"><span class="header-section-number">24.28</span> Eine Kovariate auf Level Two hinzufügen</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>mod_2 <span class="ot">&lt;-</span> <span class="fu">lmer</span>(na <span class="sc">~</span> large <span class="sc">+</span> instrument_f <span class="sc">+</span> large<span class="sc">:</span>instrument_f <span class="sc">+</span> </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">1</span><span class="sc">|</span>id), <span class="at">data =</span> df)</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="finales-modell" class="level2" data-number="24.29">
+<h2 data-number="24.29" class="anchored" data-anchor-id="finales-modell"><span class="header-section-number">24.29</span> Finales Modell</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>mod_3 <span class="ot">&lt;-</span> <span class="fu">lmer</span>(na <span class="sc">~</span> large <span class="sc">+</span> instrument_f <span class="sc">+</span> large<span class="sc">:</span>instrument_f <span class="sc">+</span> </span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                (large<span class="sc">|</span>id), <span class="at">data =</span> df)</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="modellvergleiche" class="level2" data-number="24.30">
+<h2 data-number="24.30" class="anchored" data-anchor-id="modellvergleiche"><span class="header-section-number">24.30</span> Modellvergleiche</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(mod_2, mod_3)</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Data: df
+Models:
+mod_2: na ~ large + instrument_f + large:instrument_f + (1 | id)
+mod_3: na ~ large + instrument_f + large:instrument_f + (large | id)
+      npar    AIC    BIC  logLik deviance  Chisq Df Pr(&gt;Chisq)
+mod_2    6 3003.6 3028.9 -1495.8   2991.6                     
+mod_3    8 3007.2 3040.8 -1495.6   2991.2 0.4302  2     0.8065</code></pre>
+</div>
+</div>
+</section>
+<section id="pooling" class="level2" data-number="24.31">
+<h2 data-number="24.31" class="anchored" data-anchor-id="pooling"><span class="header-section-number">24.31</span> Pooling</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="mlm_lmm_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Two-stage versus MLM</figcaption>
+</figure>
+</div>
+</div>
+</div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
