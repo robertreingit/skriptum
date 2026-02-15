@@ -583,13 +583,13 @@ Tabelle&nbsp;18.1: Datenausschnitt: Wurfgeschwindigkeit, Körpermasse und Armspa
 </div>
 </div>
 <p>Im Prinzip ändert sich an der Art der Daten nichts gegenüber der einfachen Regression. Die Daten beinhalten lediglich nun eine weitere Spalten mit einer weiteren Prädiktorvariablen. Im Prinzip könnte der isolierte Einfluss der beiden Prädiktorvariablen Körpermasse und Armspannweite auf die abhängige Variable Wurfgeschwindigkeit einzeln untersucht werden. Allerdings ist oft von größerem Interesse zu untersuchen, wie sich der gemeinsame Einfluss der beiden Variablen zusammen verhält und ob durch die Kombination der beiden Variablen ein <em>besseres</em> Modell erstellt werden kann. Aus dieser Problemstellung heraus ergibt sich die Notwendigkeit von der einfachen linearen Regression zur <strong>multiple lineare Regression</strong> überzugehen. Formal geschieht dies einfach dadurch, dass die Formel der einfachen Regression mit dem Prädiktor <span class="math inline">\(X\)</span> um eine weitere oder eben mehrere Variablen erweitert wird. Dementsprechend wird aus:</p>
-<p><span class="math display">\[\begin{equation}
+<p><span class="math display">\[
 y_i = \beta_0 + \beta_1 x_i + \epsilon_i
-\end{equation}\]</span></p>
+\]</span></p>
 <p>die Formel für die multiple Regression mit:</p>
-<p><span class="math display">\[\begin{equation}
+<p><span class="math display">\[
 y_i = \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \dots + \beta_K x_{Ki} + \epsilon_i
-\end{equation}\]</span></p>
+\]</span></p>
 <p>Da bei der einfachen Regression nur eine einzige <span class="math inline">\(X\)</span>-Variable in der Formel vorhanden war, ist kein Index <span class="math inline">\(j\)</span> notwendig gewesen um die <span class="math inline">\(X\)</span>-Variablen voneinander zu unterscheiden. Bei der multiplen Regression mit mehreren Prädiktorvariablen <span class="math inline">\(X\)</span> wird jeder <span class="math inline">\(X\)</span> Variable ein zusätzlicher Index <span class="math inline">\(j\)</span> angehängt um die Variablen eindeutig identifizieren zu können. Per Konvention, wobei diese leider nicht global eingehalten wird, wird die <strong>Anzahl der Prädiktorvaiablen</strong> mit <span class="math inline">\(K\)</span> bezeichnet (oft auch <span class="math inline">\(p\)</span>). Der <span class="math inline">\(y\)</span>-Achsenabschnitt erhält wieder den Index <span class="math inline">\(j=0\)</span> und die weiteren Steigungskoeffzienten <span class="math inline">\(\beta_1\)</span> bis <span class="math inline">\(\beta_K\)</span> erhalten den Prädiktorvariablen <span class="math inline">\(X_j\)</span> folgend den entsprechenden Index.</p>
 <p>In welcher Reihenfolge die Prädiktorvariablen mit <span class="math inline">\(j=1, j=2, \ldots, j=K\)</span> verteilt werden hat zunächst keine Auswirkung auf das Modell und regelt lediglich die Bezeichnung. In unserem konkreten Fall der Handballwurfdaten wäre zum Beispiel eine mögliche Zuordnung, das <span class="math inline">\(X_1\)</span> die Körpermasse und <span class="math inline">\(X_2\)</span> die Armspannweite kodiert.</p>
 <div class="cell">
@@ -709,11 +709,13 @@ Abbildung&nbsp;18.2: Punktwolken bei der multiple Regression
 <li>Modelldiagnosetools bleiben ebenfalls alle erhalten</li>
 </ul>
 <p>Als nächster Schritt soll nun die Interpretation der Modellkoeffizienten im multiplen Regressionsmodell näher betrachtet werden. Dazu wird zunächst ein einfaches synthetisches Beispiel betrachtet, dass dem folgenden DGP zugrunde hat.</p>
-<p><span class="math display">\[\begin{align*}
-y_i &amp;= \beta_0 + \beta_1 \cdot x_{1i} + \beta_2 \cdot x_{2i} + \epsilon_i \\
-\beta_0 &amp;= 1 ,\beta_1 = 3, \beta_2 = 0.7 \\
-\epsilon_i &amp;\sim N(0,\sigma = 0.5)
-\end{align*}\]</span></p>
+<p><span class="math display">\[
+\begin{gather}
+y_i = \beta_0 + \beta_1 \cdot x_{1i} + \beta_2 \cdot x_{2i} + \epsilon_i \\
+\beta_0 = 1 ,\beta_1 = 3, \beta_2 = 0.7 \\
+\epsilon_i \sim N(0,\sigma = 0.5)
+\end{gather}
+\]</span></p>
 <p>Übersetzt in <code>R</code> code bedeutet dies, unter der Annahme, dass <span class="math inline">\(x_1\)</span> und <span class="math inline">\(x_2\)</span> jeweils einer Gleichverteilung mit <span class="math inline">\(U(-2,2)\)</span> folgen. Die Annahme welcher Verteilung die beiden <span class="math inline">\(X\)</span>-Variablen folgen, ist nicht wirklich Missionskritisch, dient die Wahl doch lediglich der einfachen Generierung von Werten.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">50</span> <span class="co"># Anzahl Datenpunkte</span></span>
@@ -822,23 +824,22 @@ Tabelle&nbsp;18.2: Modellkoeffizienten für das Beispiel.
 <p>Die Interpretation von <span class="math inline">\(\beta_0\)</span> ist vollkommen identisch mit derjenigen bei der einfachen linearen Regression. Bei der einfachen linearen Regression bedeutete der Koeffizient <span class="math inline">\(\beta_0\)</span> derjenige Wert, den das Modell annimmt, der vorhergesagte Wert <span class="math inline">\(\hat{Y}\)</span>, wenn die Prädiktorvariable <span class="math inline">\(X\)</span> den Wert <span class="math inline">\(0\)</span> annimmt. Graphisch ist dies der <span class="math inline">\(y\)</span>-Achsenabschnitt. Bei der multiplen Regression bleibt diese Interpretation erhalten und <span class="math inline">\(\beta_0\)</span> ist nun der Wert <span class="math inline">\(\hat{Y}\)</span> wenn <strong>alle</strong> Prädiktorvariablen den Wert <span class="math inline">\(0\)</span> annehmen. Graphisch ist dies der Schnittpunkt der Modellebene mit der <span class="math inline">\(y\)</span>-Achse, also ebenfalls der <span class="math inline">\(y\)</span>-Achsenabschnitt (siehe <a href="#fig-mlm-basics-scatter-2" class="quarto-xref">Abbildung&nbsp;<span>18.2 (b)</span></a>).</p>
 <p>Die Interpretation der Modellkoeffizienten <span class="math inline">\(\beta_1, \beta_2, \ldots, \beta_K\)</span> bleibt zunächst auch gleich derjenigen aus der einfachen Regression. Der Koeffizient <span class="math inline">\(\beta_j, (j\neq0)\)</span> gibt den Unterschied zwischen zwei Objekten an die sich um eine Einheit bezüglich der Variablen <span class="math inline">\(X_j\)</span> unterscheiden. Was dabei aber etwas unklar bleibt, ist wie sich die Werte der anderen Prädiktorvariablen verhalten und welchen Einfluss diese auf diese Aussage haben?</p>
 <p>Um diesen Zusammenhang besser zu verstehen ist zunächst eine kleine Detour notwendig. Zunächst wird eine einfache lineare Regression der beiden Prädiktorvariablen berechnet. Die Variable <span class="math inline">\(X_1\)</span> wird durch <span class="math inline">\(X_2\)</span> modelliert. D.h. es wird der Teil der Varianz von <span class="math inline">\(X_1\)</span> der durch einen linearen Zusammenhang mit <span class="math inline">\(X_2\)</span> erklärt werden. Dies führt zu folgendem Modell:</p>
-<p><span class="math display">\[\begin{equation*}
+<p><span class="math display">\[
 x_{1i} = \beta_0 + \beta_1 x_{2i} + \epsilon_i
-\end{equation*}\]</span></p>
+\]</span></p>
 <p>Anhand dieses Modells kann nun die Frage gestellt werden: Wenn <span class="math inline">\(X_2\)</span> bekannt ist, wie viel Information wird dadurch über <span class="math inline">\(X_1\)</span> erhalten werden? In dem Fall, dass ein perfekter linearer Zusammenhang zwischen <span class="math inline">\(X_1\)</span> und <span class="math inline">\(X_2\)</span> besteht dann wäre die Information von <span class="math inline">\(X_2\)</span> über <span class="math inline">\(X_1\)</span> ebenfalls perfekt. Für einen gegeben Wert von <span class="math inline">\(X_2\)</span> hat, könnte der entsprechende Wert für <span class="math inline">\(X_1\)</span> berechnet werden. Entsprechend umso schwächer der lineare Zusammenhang zwischen <span class="math inline">\(X_1\)</span> und <span class="math inline">\(X_2\)</span> ist, umso weniger Information besitzt <span class="math inline">\(X_2\)</span> über <span class="math inline">\(X_1\)</span>.</p>
 <p>Nun können aber mit Hilfe des Regressionsmodell von <span class="math inline">\(X_1\)</span> gegen <span class="math inline">\(X_2\)</span> die Residuen <span class="math inline">\(e_i\)</span> berechnet werden. Aus Sicht der Information von <span class="math inline">\(X_2\)</span> über <span class="math inline">\(X_1\)</span>, können diese interpretieren werden. Die Residuen <span class="math inline">\(e_i\)</span> beziffern genau denjenigen Teil der Varianz von <span class="math inline">\(X_1\)</span> der nicht mit Hilfe des Regressionsmodells von <span class="math inline">\(X_1\)</span> gegen <span class="math inline">\(X_2\)</span> erklärt werden kann. D.h. die Residuen <span class="math inline">\(e_i\)</span> repräsentieren aus dieser Sichtweise die Varianz von <span class="math inline">\(X_1\)</span> die um denjenigen Anteil von <span class="math inline">\(X_2\)</span> bereinigt wurde. Die Residuen <span class="math inline">\(e_i\)</span> bleiben sozusagen übrig wenn die Information von <span class="math inline">\(X_2\)</span> aus <span class="math inline">\(X_1\)</span> herausgenommen wird.</p>
-<p><span class="math display">\[\begin{equation}
+<p><span id="eq-mlm-basics-coef-01"><span class="math display">\[
 e_i = x_{1i} - \beta_0 - \beta_1 x_{2i}
-\label{eq-mlm-basics-coef-01}
-\end{equation}\]</span></p>
-<p>Nochmal, die Residuen <span class="math inline">\(e_i\)</span> stellen denjenigen Teil der Varianz von <span class="math inline">\(X_1\)</span> dar, der sich nicht durch <span class="math inline">\(X_2\)</span> vorhersagen lässt. Eben derjenige Teil der Varianz von <span class="math inline">\(X_1\)</span> der um den Teil von <span class="math inline">\(X_2\)</span> <em>bereinigt</em> wurde. Die Residuen <span class="math inline">\(e_i\)</span> aus Formel <span class="math inline">\(\eqref{eq-mlm-basics-coef-01}\)</span> werden nun als eine neue Prädiktorvariablen <span class="math inline">\(x_{1i}^*\)</span> verwendet. Formal:</p>
-<p><span class="math display">\[\begin{equation*}
+\tag{18.1}\]</span></span></p>
+<p>Nochmal, die Residuen <span class="math inline">\(e_i\)</span> stellen denjenigen Teil der Varianz von <span class="math inline">\(X_1\)</span> dar, der sich nicht durch <span class="math inline">\(X_2\)</span> vorhersagen lässt. Eben derjenige Teil der Varianz von <span class="math inline">\(X_1\)</span> der um den Teil von <span class="math inline">\(X_2\)</span> <em>bereinigt</em> wurde. Die Residuen <span class="math inline">\(e_i\)</span> aus <a href="#eq-mlm-basics-coef-01" class="quarto-xref">Gleichung&nbsp;<span>18.1</span></a> werden nun als eine neue Prädiktorvariablen <span class="math inline">\(x_{1i}^*\)</span> verwendet. Formal:</p>
+<p><span class="math display">\[
 x_{1i^*} = e_i
-\end{equation*}\]</span></p>
+\]</span></p>
 <p>Im nächsten Schritt wird nun diese <em>neue</em> Prädiktorvariable <span class="math inline">\(x_1^*\)</span> verwendet um eine einfache lineare Regression von <span class="math inline">\(Y\)</span> gegen <span class="math inline">\(x_1^*\)</span> durchzuführen.</p>
-<p><span class="math display">\[\begin{equation*}
+<p><span class="math display">\[
 y_i = \beta_0 + \beta_1 x_{1i}^*
-\end{equation*}\]</span></p>
+\]</span></p>
 <p>In <code>R</code> können diese Schritte entsprechend mit <code>lm()</code> durchgeführt werden. Zunächst die Regression von <span class="math inline">\(X_1\)</span> gegen <span class="math inline">\(X_2\)</span>:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>mod_x1_star<span class="ot">&lt;-</span> <span class="fu">lm</span>(x1 <span class="sc">~</span> x2, df)</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1084,9 +1085,9 @@ Tabelle&nbsp;18.5: Ausschnitt der Körperfettdaten [%]
 </div>
 </div>
 <p>Als Modell sollen der Gesamtkörperfettanteil mit Hilfe der drei verschiedenen Messungen bestimmt werden.</p>
-<p><span class="math display">\[\begin{equation}
+<p><span class="math display">\[
 Y_{\text{Körperfettanteil}} = \beta_0 + \beta_1 \cdot X_{\text{Oberarm}} + \beta_2 \cdot X_{\text{Unterarm}} + \beta_3 \cdot X_{\text{Oberschenkel}} + \epsilon
-\end{equation}\]</span></p>
+\]</span></p>
 <p>Um die Daten besser zu verstehen wird zunächst betrachtet, wie stark die Werte miteinander korrelieren. Dazu wird die Funktion <code>ggpairs()</code> aus dem <code>GGally</code> Paket. Diese ermöglicht mit wenig Aufwand eine übersichtliche Darstellung der Korrelation eines tibbles (siehe <a href="#fig-mlm-basics-bodyfat-01" class="quarto-xref">Abbildung&nbsp;<span>18.5</span></a>).</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>GGally<span class="sc">::</span><span class="fu">ggpairs</span>(bodyfat) </span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1176,14 +1177,17 @@ Tabelle&nbsp;18.6: Koeffizienten der vier verschiedenen Modellen zu den Körperf
 <li>Hohe (einfache) Korrelationen zwischen Prädiktoren</li>
 <li>Breite Konfidenzintervalle für “wichtige” Prädiktoren <span class="math inline">\(b_j\)</span></li>
 </ul>
-<p>Es lässt sich zeigen, dass die Varianz der geschätzten Modellkoefizienten <span class="math inline">\(b_j\)</span> die folgende Form hat (siehe Formel <span class="math inline">\(\eqref{eq-mlm-basics-varb_j}\)</span>:</p>
-<p><span class="math display">\[\begin{equation}
+<p>Es lässt sich zeigen, dass die Varianz der geschätzten Modellkoefizienten <span class="math inline">\(b_j\)</span> die folgende Form hat (siehe <a href="#eq-mlm-basics-varb_j" class="quarto-xref">Gleichung&nbsp;<span>18.2</span></a>):</p>
+<p><span id="eq-mlm-basics-varb_j"><span class="math display">\[
 \widehat{\text{Var}}(b_j) = \frac{\hat{\sigma}^2}{(n-1)s_j^2}\frac{1}{1-R_j^2}
-\label{eq-mlm-basics-varb_j}
-\end{equation}\]</span></p>
-<p>Der Term <span class="math inline">\(R_j^2\)</span> wird als multipler Korrelationskoeffizient bezeichnet und beruht auf dem Determinationskoeffizienten der Prädiktorvariablen <span class="math inline">\(X_i, i\neq j\)</span> auf die Prädiktorvariable <span class="math inline">\(X_j\)</span>. D.h. es wird ein Regressionsmodell gerechnet, bei dem die Prädiktorvariable <span class="math inline">\(X_j\)</span> als abhängige Variable verwendet wird und mittels der anderen <span class="math inline">\(p-1\)</span> Prädiktorvariablen modelliert wird.</p>
-<p>Der zweiter Term in Formel <span class="math inline">\(\eqref{eq-mlm-basics-varb_j}\)</span> <span class="math inline">\(\frac{1}{1-R_j^2}\)</span> wird als Variance Inflation Factor (VIF) bezeichnet. Wie der Name bereits andeutet, kommt es durch die Korrelation der Prädiktorvariablen untereinander es zu einer <em>Inflation der Varianzen</em>. D.h. die Standardfehler, die Wurzeln der jeweiligen Varianzen, der Modellparameter werden vergrößert was dazu führen kann, dass die Modellkoeffizienten keine statistische Signifikanz aufweisen obwohl ein klarer Zusammenhang zwischen der Prädiktorvariablen und der abhängigen Variablen besteht. Anhand <span class="math inline">\(\eqref{eq-mlm-basics-varb_j}\)</span> ist zu erkennen, dass wenn der Determinantionskoeffizient, also die Korrelation der Prädiktorvariablen größer Wert, der zweite Term ebenfalls an Größe zunimmt und dementsprechend die Varianz sich vergrößert.</p>
-<p>Der VIF bietet daher eine einfache Möglichkeit, zumindest heuristisch, das gefittete Regressionsmodell auf Multikollinearitäten zu überprüfen. Der VIF wird für jede Prädiktorvariable bestimmt. Bei der Interpretatation der VIF gibt es keinen <em>magischen</em> Wert der für Probleme spricht. Im Allgemeinen werden die VIFs niemals komplett null sein. Bei der Beurteilung von Problemen auf Grund von Multikollinearität wird üblicherweise der größte VIF Wert im Modell betrachtet.</p>
+\tag{18.2}\]</span></span></p>
+<p>Der Term <span class="math inline">\(R_j^2\)</span> wird als multipler Korrelationskoeffizient bezeichnet und beruht auf dem Determinationskoeffizienten der Prädiktorvariablen <span class="math inline">\(X_i, i\neq j\)</span> auf die Prädiktorvariable <span class="math inline">\(X_j\)</span>. D.h. es wird ein Regressionsmodell gerechnet, bei dem die Prädiktorvariable <span class="math inline">\(X_j\)</span> als abhängige Variable verwendet wird und mittels der anderen <span class="math inline">\(p-1\)</span> Prädiktorvariablen modelliert wird. Der zweiter Term in <a href="#eq-mlm-basics-varb_j" class="quarto-xref">Gleichung&nbsp;<span>18.2</span></a> <span class="math inline">\(\frac{1}{1-R_j^2}\)</span> wird als <strong>Variance Inflation Factor (VIF)</strong> bezeichnet (siehe <a href="#eq-mlm_basics_VIF" class="quarto-xref">Gleichung&nbsp;<span>18.3</span></a>).</p>
+<p><span id="eq-mlm_basics_VIF"><span class="math display">\[
+\text{VIF}_j = \frac{1}{1-R_j^2}
+\tag{18.3}\]</span></span></p>
+<p>Wie der Name bereits andeutet, kommt es durch die Korrelation der Prädiktorvariablen untereinander es zu einer <em>Inflation der Varianzen</em>. D.h. die Standardfehler, die Wurzeln der jeweiligen Varianzen, der Modellparameter werden größer. Dies kann dann dazu führen, dass die Modellkoeffizienten keine statistische Signifikanz erreichen obwohl ein klarer Zusammenhang zwischen der Prädiktorvariablen und der abhängigen Variablen besteht.</p>
+<p>Anhand <a href="#eq-mlm-basics-varb_j" class="quarto-xref">Gleichung&nbsp;<span>18.2</span></a> ist weiter zu erkennen, dass wenn der Determinantionskoeffizient <span class="math inline">\(R^2_j\)</span>, also die Korrelation der Prädiktorvariablen <span class="math inline">\(j\)</span> mit den anderen Prädiktorvariablen größer wird, der zweite Term ebenfalls größer wird und dementsprechend die Varianz größer wird.</p>
+<p>Der <span class="math inline">\(VIF_j\)</span> bietet daher eine einfache Möglichkeit, zumindest heuristisch, das gefittete Regressionsmodell auf Multikollinearitäten zu überprüfen. Bei der Interpretation der VIF gibt es allerdings keinen <em>magischen</em> Wert der eineindeutig Probleme identifiziert. Im Allgemeinen werden die VIFs niemals komplett null sein. Bei der Beurteilung von Problemen auf Grund von Multikollinearität wird üblicherweise der größte VIF Wert im Modell betrachtet.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1198,10 +1202,23 @@ Tipp
 </div>
 </div>
 <p>Manchmal wird in der Literatur auch die sogenannte Tolerance = <span class="math inline">\(\frac{1}{VIF}\)</span>, der Inverse Wert des VIF betrachtet.</p>
-<p><span class="math display">\[\begin{equation*}
-\text{VIF}_j = \frac{1}{1-R_j^2}
-\end{equation*}\]</span></p>
-<p>Hinsichtlich des Einflusses bzw. des Umgangs bei Multikollinearität muss unterschieden werden, welches Ziel die Modellierung verfolgt. Das Problem das durch die Multikollinearität entsteht ist, basiert darauf das das Modell nicht eindeutig zuordnen kann, welche der miteinander korrelierten Variable für die beobachteten Veränderungen in der abhängigen Variablen <span class="math inline">\(Y\)</span> zuständig ist. Multikollinearität vermindert dabei <strong>nicht</strong> die Fähigkeit des Modells Mittelwerte <span class="math inline">\(E[y|x]\)</span> vorherzusagen oder einen guten Modellfit zu erhalten. Allerdings verkompliziert sich die Interpretation der Modellkoeffizienten <span class="math inline">\(\hat{beta}_j\)</span>. Dadurch das die Prädiktorvariablen miteinander korrelieren, kann es beispielsweise gar nicht praktisch möglich sein die Variablen einzeln zu variieren, wodurch die Interpretation des Koeffizienten <span class="math inline">\(b_j\)</span> als die Veränderung von <span class="math inline">\(y\)</span> bei Veränderung von <span class="math inline">\(x_j\)</span> um eine Einheit problematisch wird. Weiterhin, dadurch das durch die Multikollinearität die Varianzen der Modelkoeffizienten vergrößert werden, kann es zu dem Fall kommen, dass ein Modellkoeffizienten <span class="math inline">\(b_j\)</span> statistisch nicht signifikant ist, obwohl eindeutig ein Zusammenhang zwischen <span class="math inline">\(x_j\)</span> und <span class="math inline">\(y\)</span> besteht. Zusätzlich, dadurch das die Modellkoeffizienten sich stark verändern können bei Veränderung des Modells ist deren Interpretation grundsätzlich problematisch.</p>
+<p><span id="eq-mlm_basics_tolerance"><span class="math display">\[
+\text{Tolerance}_j = \frac{1}{\text{VIF}_j} = 1 - R^2_j
+\tag{18.4}\]</span></span></p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tipp
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Wenn der <span class="math inline">\(\text{Tolerance}_j\)</span> nahe bei <span class="math inline">\(1\)</span> ist, spricht dies für keine relevante Multikollinearität, während Werte <span class="math inline">\(&lt;0.1\)</span> auf Problem hindeuten.</p>
+</div>
+</div>
+<p>Hinsichtlich des Einflusses bzw. des Umgangs bei Multikollinearität muss unterschieden werden, welches Ziel die Modellierung verfolgt. Das Problem das durch die Multikollinearität entsteht ist, basiert darauf das das Modell nicht eindeutig zuordnen kann, welche der miteinander korrelierten Variable für die beobachteten Veränderungen in der abhängigen Variablen <span class="math inline">\(Y\)</span> zuständig ist. Multikollinearität vermindert dabei <strong>nicht</strong> die Fähigkeit des Modells Mittelwerte <span class="math inline">\(E[y|x]\)</span> vorherzusagen oder einen guten Modellfit zu erhalten. Allerdings verkompliziert sich die Interpretation der Modellkoeffizienten <span class="math inline">\(\hat{\beta}_j\)</span>. Dadurch das die Prädiktorvariablen miteinander korrelieren, kann es beispielsweise gar nicht praktisch möglich sein die Variablen einzeln zu variieren, wodurch die Interpretation des Koeffizienten <span class="math inline">\(b_j\)</span> als die Veränderung von <span class="math inline">\(y\)</span> bei Veränderung von <span class="math inline">\(x_j\)</span> um eine Einheit problematisch wird. Da die Multikollinearität die Varianzen der Modelkoeffizienten vergrößert, kann es zu dem Fall kommen, dass ein Modellkoeffizienten <span class="math inline">\(b_j\)</span> statistisch nicht signifikant ist, obwohl eindeutig ein Zusammenhang zwischen <span class="math inline">\(x_j\)</span> und <span class="math inline">\(y\)</span> besteht. Zusätzlich, da die Modellkoeffizienten bei starken Multikollinearität eher instabil sind und sich stark bei Veränderung des Modells verändern können ist deren Interpretation grundsätzlich problematisch.</p>
 <section id="variance-inflation-factor-vif-in-r-berechnen" class="level3" data-number="18.3.1">
 <h3 data-number="18.3.1" class="anchored" data-anchor-id="variance-inflation-factor-vif-in-r-berechnen"><span class="header-section-number">18.3.1</span> Variance Inflation Factor (VIF) in <code>R</code> berechnen</h3>
 <p>In <code>R</code> kann der VIF am einfachsten über zwei Funktionen berechnet werden. Einmal über die <code>vif()</code>-Funktion aus dem Paket <code>car</code>.</p>
@@ -1285,7 +1302,7 @@ Tabelle&nbsp;18.7: Ausgabe von <code>check_collinearity()</code>
 </figure>
 </div>
 </div>
-<p>In <a href="#tbl-mlm-basics-collin" class="quarto-xref">Tabelle&nbsp;<span>18.7</span></a> ist zu sehen, dass <code>check_collinearity()</code> auch noch Konfidenzintervalle und besagten Tolerance Parameter ausgibt. In jedem Fall, ist zu sehen, dass bei Anwendung der Daumenregel <span class="math inline">\(VIF &gt; 10\)</span>, hohe Multikollinearität in unserem Körperfettmodell zu beobachten sind. Dies erklärt somit auch die großen Veränderung in den Koeffizienten bei Hinzu- bzw. Entnahme der Prädiktorvariablen.</p>
+<p>In <a href="#tbl-mlm-basics-collin" class="quarto-xref">Tabelle&nbsp;<span>18.7</span></a> ist zu sehen, dass <code>check_collinearity()</code> auch noch Konfidenzintervalle und besagten Tolerance Parameter (siehe <a href="#eq-mlm_basics_tolerance" class="quarto-xref">Gleichung&nbsp;<span>18.4</span></a>) ausgibt. In jedem Fall, ist zu sehen, dass bei Anwendung der Daumenregel <span class="math inline">\(VIF &gt; 10\)</span>, hohe Multikollinearität in unserem Körperfettmodell zu beobachten sind. Dies erklärt somit auch die großen Veränderung in den Koeffizienten bei Hinzu- bzw. Entnahme der Prädiktorvariablen.</p>
 <div id="exm-mlm-basics-jiourumaru" class="theorem example">
 <p><span class="theorem-title"><strong>Beispiel 18.2 (Gehparameter bei Älteren)</strong></span> Die Beziehung zwischen gebrechlichen älteren Menschen und der Gehgeschwindigkeit ist entscheidend, um den Bedarf an Langzeitpflege oder erhöhter Unterstützung zu minimieren. Insbesondere ist der Zusammenhang zwischen Gehleistung, respiratorischer Funktion und dynamischem Gleichgewicht bei älteren Menschen, die auf Langzeitpflege angewiesen sind, noch nicht gut verstanden. Zu diesem Zweck wurde in <span class="citation" data-cites="jiroumaru2023">Jiroumaru u.&nbsp;a. (<a href="references.html#ref-jiroumaru2023" role="doc-biblioref">2023</a>)</span> der Zusammenhänge zwischen Gehgeschwindigkeit, Atemmuskelkraft und dynamischem Gleichgewicht mittels multipler Regressionsanalyse untersucht.</p>
 <p>Die Atemmuskelkraft wurde mittels des maximalen inspiratorische (PImax) und des maximalen exspiratorische Drucks (PEmax) bestimmt. Der maximale Doppelschrittlängentest (MDST) wurde als Index für das dynamische Gleichgewicht verwendet. Eine multiple Regressionsanalyse wurde durchgeführt, wobei die Gehgeschwindigkeit (normale und maximale Gehgeschwindigkeit) als abhängige Variable und PImax, PEmax sowie MDST als unabhängige Variablen verwendet wurden. Zusätzlich wurde das Geschlecht als Anpassungsvariable berücksichtigt und in den Daten als entweder <span class="math inline">\(0\)</span> oder <span class="math inline">\(1\)</span> kodiert. Die Daten sind im repository zum Skriptum zu finden. Eine Analyse der Daten für die abhängige Variable maximale Gehgeschwindigkeit (<code>mws</code>) führte zu folgendem Ergebnis:</p>
@@ -1470,9 +1487,9 @@ attr(,"assign")
 </div>
 </div>
 <p>Die Modellkoeffizienten werden bei der Berechnung der Werte <span class="math inline">\(\hat{y}_i\)</span> immer multiplikativ mit der jeweiligen Spalte verbunden. Etwas explizierter.</p>
-<p><span class="math display">\[\begin{equation*}
+<p><span class="math display">\[
 \hat{y} = \begin{pmatrix} \hat{y}_1 \\ \hat{y}_2 \\ \hat{y}_3 \\ \hat{y}_4 \end{pmatrix} = \begin{pmatrix} 1 \\ 1 \\ 1 \\ 1 \end{pmatrix} \times \hat{\beta_0} + \begin{pmatrix} 1 \\ 2 \\ 3 \\ 4 \end{pmatrix} \times \hat{\beta_1} + \begin{pmatrix} 11 \\ 11 \\ 14 \\ 13 \end{pmatrix} \times \hat{\beta_2} = X \hat{\beta}
-\end{equation*}\]</span></p>
+\]</span></p>
 <p>Dies sind dementsprechend die gleichen Werte <span class="math inline">\(\hat{y}_i\)</span> wie mittels der Funktion <code>predict()</code> berechnet werden.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(mod)</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>

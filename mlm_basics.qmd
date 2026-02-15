@@ -32,15 +32,15 @@ handball_short |>
 
 Im Prinzip ändert sich an der Art der Daten nichts gegenüber der einfachen Regression. Die Daten beinhalten lediglich nun eine weitere Spalten mit einer weiteren Prädiktorvariablen. Im Prinzip könnte der isolierte Einfluss der beiden Prädiktorvariablen Körpermasse und Armspannweite auf die abhängige Variable Wurfgeschwindigkeit einzeln untersucht werden. Allerdings ist oft von größerem Interesse zu untersuchen, wie sich der gemeinsame Einfluss der beiden Variablen zusammen verhält und ob durch die Kombination der beiden Variablen ein *besseres* Modell erstellt werden kann. Aus dieser Problemstellung heraus ergibt sich die Notwendigkeit von der einfachen linearen Regression zur **multiple lineare Regression** überzugehen. Formal geschieht dies einfach dadurch, dass die Formel der einfachen Regression mit dem Prädiktor $X$ um eine weitere oder eben mehrere Variablen erweitert wird. Dementsprechend wird aus:
 
-\begin{equation}
+$$
 y_i = \beta_0 + \beta_1 x_i + \epsilon_i
-\end{equation}
+$$
 
 die Formel für die multiple Regression mit:
 
-\begin{equation}
+$$
 y_i = \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \dots + \beta_K x_{Ki} + \epsilon_i
-\end{equation}
+$$
 
 Da bei der einfachen Regression nur eine einzige $X$-Variable in der Formel vorhanden war, ist kein Index $j$ notwendig gewesen um die $X$-Variablen voneinander zu unterscheiden. Bei der multiplen Regression mit mehreren Prädiktorvariablen $X$ wird jeder $X$ Variable ein zusätzlicher Index $j$ angehängt um die Variablen eindeutig identifizieren zu können. Per Konvention, wobei diese leider nicht global eingehalten wird, wird die **Anzahl der Prädiktorvaiablen** mit $K$ bezeichnet (oft auch $p$). Der $y$-Achsenabschnitt erhält wieder den Index $j=0$ und die weiteren Steigungskoeffzienten $\beta_1$ bis $\beta_K$ erhalten den Prädiktorvariablen $X_j$ folgend den entsprechenden Index.
 
@@ -85,7 +85,7 @@ simple$ys <- paste0('list(x[',1:4,'],y[',1:4,'])')
 simple$yshat <- paste('hat(y)[',1:4,']')
 p_res <- ggplot(simple, aes(x,y,label = epsilon)) + 
   geom_point(size=3) +
-  geom_line(aes(y = y_hat), size=2, color = 'red') +
+  geom_line(aes(y = y_hat), linewidth=2, color = 'red') +
   #geom_segment(aes(x = x, y = y_hat, xend = x, yend = y),
   #             color = 'black') +  
   lims(x = c(-.3,3.3), y = c(1,3.8)) 
@@ -151,11 +151,13 @@ Zusammenfassend:
 
 Als nächster Schritt soll nun die Interpretation der Modellkoeffizienten  im multiplen Regressionsmodell näher betrachtet werden. Dazu wird zunächst ein einfaches synthetisches Beispiel betrachtet, dass dem folgenden DGP zugrunde hat.
 
-\begin{align*}
-y_i &= \beta_0 + \beta_1 \cdot x_{1i} + \beta_2 \cdot x_{2i} + \epsilon_i \\
-\beta_0 &= 1 ,\beta_1 = 3, \beta_2 = 0.7 \\
-\epsilon_i &\sim N(0,\sigma = 0.5)
-\end{align*}
+$$
+\begin{gather}
+y_i = \beta_0 + \beta_1 \cdot x_{1i} + \beta_2 \cdot x_{2i} + \epsilon_i \\
+\beta_0 = 1 ,\beta_1 = 3, \beta_2 = 0.7 \\
+\epsilon_i \sim N(0,\sigma = 0.5)
+\end{gather}
+$$
 
 Übersetzt in `R` code bedeutet dies, unter der Annahme, dass $x_1$ und $x_2$ jeweils einer Gleichverteilung mit $U(-2,2)$ folgen. Die Annahme welcher Verteilung die beiden $X$-Variablen folgen, ist nicht wirklich Missionskritisch, dient die Wahl doch lediglich der einfachen Generierung von Werten. 
 
@@ -220,30 +222,29 @@ Die Interpretation der Modellkoeffizienten $\beta_1, \beta_2, \ldots, \beta_K$ b
 
 Um diesen Zusammenhang besser zu verstehen ist zunächst eine kleine Detour notwendig. Zunächst wird eine einfache lineare Regression der beiden Prädiktorvariablen berechnet. Die Variable $X_1$ wird durch $X_2$ modelliert. D.h. es wird der Teil der Varianz von $X_1$ der durch einen linearen Zusammenhang mit $X_2$ erklärt werden. Dies führt zu folgendem Modell:
 
-\begin{equation*}
+$$
 x_{1i} = \beta_0 + \beta_1 x_{2i} + \epsilon_i
-\end{equation*}
+$$
 
 Anhand dieses Modells kann nun die Frage gestellt werden: Wenn $X_2$ bekannt ist, wie viel Information wird dadurch über $X_1$ erhalten werden? In dem Fall, dass ein perfekter linearer Zusammenhang zwischen $X_1$ und $X_2$ besteht dann wäre die Information von $X_2$ über $X_1$ ebenfalls perfekt. Für einen gegeben Wert von $X_2$ hat, könnte der entsprechende Wert für $X_1$ berechnet werden. Entsprechend umso schwächer der lineare Zusammenhang zwischen $X_1$ und $X_2$ ist, umso weniger Information besitzt $X_2$ über $X_1$.
 
 Nun können aber mit Hilfe des Regressionsmodell von $X_1$ gegen $X_2$ die Residuen $e_i$ berechnet werden. Aus Sicht der Information von $X_2$ über $X_1$, können diese interpretieren werden. Die Residuen $e_i$ beziffern genau denjenigen Teil der Varianz von $X_1$ der nicht mit Hilfe des Regressionsmodells von $X_1$ gegen $X_2$ erklärt werden kann. D.h. die Residuen $e_i$ repräsentieren aus dieser Sichtweise die Varianz von $X_1$ die um denjenigen Anteil von $X_2$ bereinigt wurde. Die Residuen $e_i$ bleiben sozusagen übrig wenn die Information von $X_2$ aus $X_1$ herausgenommen wird.
 
-\begin{equation}
+$$
 e_i = x_{1i} - \beta_0 - \beta_1 x_{2i}
-\label{eq-mlm-basics-coef-01}
-\end{equation}
+$$ {#eq-mlm-basics-coef-01}
 
-Nochmal, die Residuen $e_i$ stellen denjenigen Teil der Varianz von $X_1$ dar, der sich nicht durch $X_2$ vorhersagen lässt. Eben derjenige Teil der Varianz von $X_1$ der um den Teil von $X_2$ *bereinigt* wurde. Die Residuen $e_i$ aus Formel \eqref{eq-mlm-basics-coef-01} werden nun als eine neue Prädiktorvariablen $x_{1i}^*$ verwendet. Formal:
+Nochmal, die Residuen $e_i$ stellen denjenigen Teil der Varianz von $X_1$ dar, der sich nicht durch $X_2$ vorhersagen lässt. Eben derjenige Teil der Varianz von $X_1$ der um den Teil von $X_2$ *bereinigt* wurde. Die Residuen $e_i$ aus @eq-mlm-basics-coef-01 werden nun als eine neue Prädiktorvariablen $x_{1i}^*$ verwendet. Formal:
 
-\begin{equation*}
+$$
 x_{1i^*} = e_i
-\end{equation*}
+$$
 
 Im nächsten Schritt wird nun diese *neue* Prädiktorvariable $x_1^*$ verwendet um eine einfache lineare Regression von $Y$ gegen $x_1^*$ durchzuführen. 
 
-\begin{equation*}
+$$
 y_i = \beta_0 + \beta_1 x_{1i}^* 
-\end{equation*}
+$$
 
 In `R` können diese Schritte entsprechend mit `lm()` durchgeführt werden. Zunächst die Regression von $X_1$ gegen $X_2$:
 
@@ -395,9 +396,9 @@ knitr::kable(head(bodyfat),
 
 Als Modell sollen der Gesamtkörperfettanteil mit Hilfe der drei verschiedenen Messungen bestimmt werden.
 
-\begin{equation}
+$$
 Y_{\text{Körperfettanteil}} = \beta_0 + \beta_1 \cdot X_{\text{Oberarm}} + \beta_2 \cdot X_{\text{Unterarm}} + \beta_3 \cdot X_{\text{Oberschenkel}} + \epsilon
-\end{equation}
+$$
 
 Um die Daten besser zu verstehen wird zunächst betrachtet, wie stark die Werte miteinander korrelieren. Dazu wird die Funktion `ggpairs()` aus dem `GGally` Paket. Diese ermöglicht mit wenig Aufwand eine übersichtliche Darstellung der Korrelation eines tibbles (siehe @fig-mlm-basics-bodyfat-01).
 
@@ -463,18 +464,23 @@ Multikollinearität hat unter anderem die folgenden Effekte:
 - Hohe (einfache) Korrelationen zwischen Prädiktoren
 - Breite Konfidenzintervalle für "wichtige" Prädiktoren $b_j$ 
 
-Es lässt sich zeigen, dass die Varianz der geschätzten Modellkoefizienten $b_j$ die folgende Form hat (siehe Formel \eqref{eq-mlm-basics-varb_j}:
+Es lässt sich zeigen, dass die Varianz der geschätzten Modellkoefizienten $b_j$ die folgende Form hat (siehe @eq-mlm-basics-varb_j):
 
-\begin{equation}
+$$
 \widehat{\text{Var}}(b_j) = \frac{\hat{\sigma}^2}{(n-1)s_j^2}\frac{1}{1-R_j^2} 
-\label{eq-mlm-basics-varb_j}
-\end{equation}
+$$ {#eq-mlm-basics-varb_j}
 
-Der Term $R_j^2$ wird als multipler Korrelationskoeffizient bezeichnet und beruht auf dem Determinationskoeffizienten der Prädiktorvariablen $X_i, i\neq j$ auf die Prädiktorvariable $X_j$. D.h. es wird ein Regressionsmodell gerechnet, bei dem die Prädiktorvariable $X_j$ als abhängige Variable verwendet wird und mittels der anderen $p-1$ Prädiktorvariablen modelliert wird.
+Der Term $R_j^2$ wird als multipler Korrelationskoeffizient bezeichnet und beruht auf dem Determinationskoeffizienten der Prädiktorvariablen $X_i, i\neq j$ auf die Prädiktorvariable $X_j$. D.h. es wird ein Regressionsmodell gerechnet, bei dem die Prädiktorvariable $X_j$ als abhängige Variable verwendet wird und mittels der anderen $p-1$ Prädiktorvariablen modelliert wird. Der zweiter Term in @eq-mlm-basics-varb_j $\frac{1}{1-R_j^2}$ wird als **Variance Inflation Factor (VIF)** \index{Variance Inflation Factor} bezeichnet (siehe @eq-mlm_basics_VIF).
 
-Der zweiter Term in Formel \eqref{eq-mlm-basics-varb_j} $\frac{1}{1-R_j^2}$ wird als Variance Inflation Factor (VIF) \index{Variance Inflation Factor} bezeichnet. Wie der Name bereits andeutet, kommt es durch die Korrelation der Prädiktorvariablen untereinander es zu einer *Inflation der Varianzen*. D.h. die Standardfehler, die Wurzeln der jeweiligen Varianzen, der Modellparameter werden vergrößert was dazu führen kann, dass die Modellkoeffizienten keine statistische Signifikanz aufweisen obwohl ein klarer Zusammenhang zwischen der Prädiktorvariablen und der abhängigen Variablen besteht. Anhand \eqref{eq-mlm-basics-varb_j} ist zu erkennen, dass wenn der Determinantionskoeffizient, also die Korrelation der Prädiktorvariablen größer Wert, der zweite Term ebenfalls an Größe zunimmt und dementsprechend die Varianz sich vergrößert.
+$$
+\text{VIF}_j = \frac{1}{1-R_j^2}
+$$ {#eq-mlm_basics_VIF}
 
-Der VIF bietet daher eine einfache Möglichkeit, zumindest heuristisch, das gefittete Regressionsmodell auf Multikollinearitäten zu überprüfen. Der VIF wird für jede Prädiktorvariable bestimmt. Bei der Interpretatation der VIF gibt es keinen *magischen* Wert der für Probleme spricht. Im Allgemeinen werden die VIFs niemals komplett null sein. Bei der Beurteilung von Problemen auf Grund von Multikollinearität wird üblicherweise der größte VIF Wert im Modell betrachtet.
+Wie der Name bereits andeutet, kommt es durch die Korrelation der Prädiktorvariablen untereinander es zu einer *Inflation der Varianzen*. D.h. die Standardfehler, die Wurzeln der jeweiligen Varianzen, der Modellparameter werden größer. Dies kann dann dazu führen, dass die Modellkoeffizienten keine statistische Signifikanz erreichen obwohl ein klarer Zusammenhang zwischen der Prädiktorvariablen und der abhängigen Variablen besteht.
+
+Anhand @eq-mlm-basics-varb_j ist weiter zu erkennen, dass wenn der Determinantionskoeffizient $R^2_j$, also die Korrelation der Prädiktorvariablen $j$ mit den anderen Prädiktorvariablen größer wird, der zweite Term ebenfalls größer wird und dementsprechend die Varianz größer wird.
+
+Der $VIF_j$ bietet daher eine einfache Möglichkeit, zumindest heuristisch, das gefittete Regressionsmodell auf Multikollinearitäten zu überprüfen. Bei der Interpretation der VIF gibt es allerdings keinen *magischen* Wert der eineindeutig Probleme identifiziert. Im Allgemeinen werden die VIFs niemals komplett null sein. Bei der Beurteilung von Problemen auf Grund von Multikollinearität wird üblicherweise der größte VIF Wert im Modell betrachtet.
 
 :::{.callout-tip}
 Wenn VIF > 10 ist, dann deutet dies auf hohe Multikollinearität hin.
@@ -482,11 +488,15 @@ Wenn VIF > 10 ist, dann deutet dies auf hohe Multikollinearität hin.
 
 Manchmal wird in der Literatur auch die sogenannte Tolerance = $\frac{1}{VIF}$, der Inverse Wert des VIF betrachtet.
 
-\begin{equation*}
-\text{VIF}_j = \frac{1}{1-R_j^2}
-\end{equation*}
+$$
+\text{Tolerance}_j = \frac{1}{\text{VIF}_j} = 1 - R^2_j
+$$ {#eq-mlm_basics_tolerance}
 
-Hinsichtlich des Einflusses bzw. des Umgangs bei Multikollinearität muss unterschieden werden, welches Ziel die Modellierung verfolgt. Das Problem das durch die Multikollinearität entsteht ist, basiert darauf das das Modell nicht eindeutig zuordnen kann, welche der miteinander korrelierten Variable für die beobachteten Veränderungen in der abhängigen Variablen $Y$ zuständig ist. Multikollinearität vermindert dabei **nicht** die Fähigkeit des Modells Mittelwerte $E[y|x]$ vorherzusagen oder einen guten Modellfit zu erhalten. Allerdings verkompliziert sich die Interpretation der Modellkoeffizienten $\hat{beta}_j$. Dadurch das die Prädiktorvariablen miteinander korrelieren, kann es beispielsweise gar nicht praktisch möglich sein die Variablen einzeln zu variieren, wodurch die Interpretation des Koeffizienten $b_j$ als die Veränderung von $y$ bei Veränderung von $x_j$ um eine Einheit problematisch wird. Weiterhin, dadurch das durch die Multikollinearität die Varianzen der Modelkoeffizienten vergrößert werden, kann es zu dem Fall kommen, dass ein Modellkoeffizienten $b_j$ statistisch nicht signifikant ist, obwohl eindeutig ein Zusammenhang zwischen $x_j$ und $y$ besteht. Zusätzlich, dadurch das die Modellkoeffizienten sich stark verändern können bei Veränderung des Modells ist deren Interpretation grundsätzlich problematisch. 
+::: {.callout-tip}
+Wenn der $\text{Tolerance}_j$ nahe bei $1$ ist, spricht dies für keine relevante Multikollinearität, während Werte $<0.1$ auf Problem hindeuten.
+:::
+
+Hinsichtlich des Einflusses bzw. des Umgangs bei Multikollinearität muss unterschieden werden, welches Ziel die Modellierung verfolgt. Das Problem das durch die Multikollinearität entsteht ist, basiert darauf das das Modell nicht eindeutig zuordnen kann, welche der miteinander korrelierten Variable für die beobachteten Veränderungen in der abhängigen Variablen $Y$ zuständig ist. Multikollinearität vermindert dabei **nicht** die Fähigkeit des Modells Mittelwerte $E[y|x]$ vorherzusagen oder einen guten Modellfit zu erhalten. Allerdings verkompliziert sich die Interpretation der Modellkoeffizienten $\hat{\beta}_j$. Dadurch das die Prädiktorvariablen miteinander korrelieren, kann es beispielsweise gar nicht praktisch möglich sein die Variablen einzeln zu variieren, wodurch die Interpretation des Koeffizienten $b_j$ als die Veränderung von $y$ bei Veränderung von $x_j$ um eine Einheit problematisch wird. Da die Multikollinearität die Varianzen der Modelkoeffizienten vergrößert, kann es zu dem Fall kommen, dass ein Modellkoeffizienten $b_j$ statistisch nicht signifikant ist, obwohl eindeutig ein Zusammenhang zwischen $x_j$ und $y$ besteht. Zusätzlich, da die Modellkoeffizienten bei starken Multikollinearität eher instabil sind und sich stark bei Veränderung des Modells verändern können ist deren Interpretation grundsätzlich problematisch. 
 
 ### Variance Inflation Factor (VIF) in `R` berechnen
 
@@ -517,7 +527,7 @@ performance::check_collinearity(mod_full) |>
   )
 ```
 
-In @tbl-mlm-basics-collin ist zu sehen, dass  `check_collinearity()` auch noch Konfidenzintervalle und besagten Tolerance Parameter ausgibt. In jedem Fall, ist zu sehen, dass bei Anwendung der Daumenregel $VIF > 10$, hohe Multikollinearität in unserem Körperfettmodell zu beobachten sind. Dies erklärt somit auch die großen Veränderung in den Koeffizienten bei Hinzu- bzw. Entnahme der Prädiktorvariablen.
+In @tbl-mlm-basics-collin ist zu sehen, dass  `check_collinearity()` auch noch Konfidenzintervalle und besagten Tolerance Parameter (siehe @eq-mlm_basics_tolerance) ausgibt. In jedem Fall, ist zu sehen, dass bei Anwendung der Daumenregel $VIF > 10$, hohe Multikollinearität in unserem Körperfettmodell zu beobachten sind. Dies erklärt somit auch die großen Veränderung in den Koeffizienten bei Hinzu- bzw. Entnahme der Prädiktorvariablen.
 
 ::: {#exm-mlm-basics-jiourumaru}
 ## Gehparameter bei Älteren
@@ -656,9 +666,9 @@ X %*% beta_s
 
 Die Modellkoeffizienten werden bei der Berechnung der Werte $\hat{y}_i$ immer multiplikativ mit der jeweiligen Spalte verbunden. Etwas explizierter.
 
-\begin{equation*}
+$$
 \hat{y} = \begin{pmatrix} \hat{y}_1 \\ \hat{y}_2 \\ \hat{y}_3 \\ \hat{y}_4 \end{pmatrix} = \begin{pmatrix} 1 \\ 1 \\ 1 \\ 1 \end{pmatrix} \times \hat{\beta_0} + \begin{pmatrix} 1 \\ 2 \\ 3 \\ 4 \end{pmatrix} \times \hat{\beta_1} + \begin{pmatrix} 11 \\ 11 \\ 14 \\ 13 \end{pmatrix} \times \hat{\beta_2} = X \hat{\beta}
-\end{equation*}
+$$
 
 Dies sind dementsprechend die gleichen Werte $\hat{y}_i$ wie mittels der Funktion `predict()` berechnet werden.
 
