@@ -1,0 +1,91 @@
+# Einfache lineare Regression mit Matrizen 
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+source('_common.R')
+```
+
+Bisher wurden die der einfachen linearen Regression zugrundeliegenden Konzepte mittels eines direkten Ansatzes hergeleitet. Ausgehend von der aus der Schule bekannten Punkt-Steigungsform wurden über die Methode der kleinsten Quadrate direkt die notwendigen Formeln zur Berechnung der Modellkoeffizienten $\beta_0$ und $\beta_1$ hergeleitet. In diesen letzten abschließenden Kapitel zum einfachen linearen Regression soll nun wieder eine Abstraktion eingeführt werden, indem die einfache lineare Regression mittels Matrizen aufgebaut werden soll. Dies schafft ein flexibles Instrumentarium das bei der Behandlung der folgenden multiplen Regression und deren Verallgemeinerungen immer wieder von Vorteil sein wird. Um den Inhalten in diesem Kapitel gut folgen zu können, ist wahrscheinlich hilfreich sich nochmal die Inhalte im Anhang zu Vektoren und Matrizen (siehe @sec-app-math) sowie den `R` Teil zu den entsprechenden Datentypen (siehe @sec-r-types) durchzulesen. Im ersten Schritt wird das Konzept einer Zufallsvariablen $X$ auf einen Zufallsvektor $\mathbf{Y}$ ausgeweitet.
+
+## Zufallsvektoren
+
+In @sec-stats-dist wurde das Konzept einer Zufallsvariable $X$ eingeführt. Dieses wird nun verallgemeinert auf einen Zufallsvektor $\mathbf{Y}$, bzw. eine Matrix mit nur einer Spalte. 
+
+::: {#def-random-vector}
+
+### Zufallsmatrix
+
+Eine Zufallsmatrix $\mathbf{Y}$ ist eine Matrix deren Einträge alle Zufallszahlen sind.
+
+:::
+
+Seien zum Beispiel drei Zufallszahlen $Y_1, Y_2$ und $Y_3$ gegeben, dann können diese in eine Matrix $\mathbf{Y}$ eingetragen werden.
+
+$$
+\mathbf{Y} = \begin{pmatrix} Y_1 \\ Y_2 \\ Y_3 \end{pmatrix}
+$$
+
+Nochmal, eine Zufallsmatrix ist eine Matrix deren einzelnen Einträge Zufallszahlen sind. Allgemein folgt daraus für $n$ Zufallszahlen $Y_i$:
+
+$$
+\mathbf{Y} = \begin{pmatrix} Y_1 \\ Y_2 \\ \vdots \\ Y_n\end{pmatrix}
+$$
+
+
+Da jede Zufallszahl $Y_i$ einen Erwartungswert $E[Y_i] = \mu_i$, kann ein Erwartungswert auch auf eine Zufallsmatrix $\mathbf{Y}$ angwendet werden. Die Erwartungswerte werden dann Komponentenweise berechnet. Im Beispiel.
+
+$$
+E[\mathbf{Y}] = \begin{pmatrix} E[Y_1] \\ E[Y_2] \\ E[Y_3] \end{pmatrix} = \begin{pmatrix} \mu_1 \\ \mu_2 \\ \mu_3 \end{pmatrix}
+$$
+
+Entsprechend allgemein:
+
+$$
+E[\mathbf{Y}] = \begin{pmatrix} E[Y_1] \\ E[Y_2] \\ \vdots \\ E[Y_n] \end{pmatrix} = \begin{pmatrix} \mu_1 \\ \mu_2 \\ \vdots \\ \mu_n \end{pmatrix}
+$$
+
+Soweit ist dementsprechend noch nichts wirklich neues dazugekommen. Die Einführung der Zufallsmatrix kann eher dahingehend gesehen werden, dass man sich Schreibarbeit spart und anstatt für $n$ Zufallsvariablen $Y_i, i = 1, 2, \ldots, n$ nun einfach eine Matrix bzw. einen Vektor $\mathbf{Y}$ verwenden kann. Sind zum Beispiel Weitsprungdaten erhoben worden, dann können diese in einen Vektor geschrieben werden und die Notation mit einem Vektor entspricht dann auch der Repräsentation auf dem Rechner mittels eines Vektors in `R`.
+
+Da jede Zufallsvariable neben ihrem einen Erwartungswert $\mu$ auch eine Varianz $\sigma^2$ besitzt, kann dieses Konzept auch auf die Zufallsmatrix übertragen werden. Hier ergibt sich nun der folgenden Fall, dass aus dem Vektor eine *richtige* Matrix wird, die Varianz-Kovarianz-Matrix (VCV) von $\mathbf{Y}$. Für das Beispiel bedeutet dies:
+
+$$
+\text{Var}(\mathbf{Y}) = VCV(\mathbf{Y}) = \begin{pmatrix}
+\sigma_{Y_1}^2 & \sigma_{Y_1Y_2} & \sigma_{Y_1Y_3} \\
+\sigma_{Y_1Y_2} & \sigma_{Y_2}^2 & \sigma_{Y_2Y_3} \\
+\sigma_{Y_1Y_3} & \sigma_{Y_3Y_2} & \sigma_{Y_3}^2 \\
+\end{pmatrix}
+$$
+
+Seien die einzelnen Einträge näher betrachtet. Auf der Hauptdiagonalen befinden sich die Varianzen der entsprechenden Zufallsvariablen $Y_1, Y_2$ und $Y_3$. Während die anderen Einträge jeweils die Kovarianzen zwischen zwei der drei Variablen repräsentieren. Zum Beispiel ist der 2. Eintrag in der 1. Zeile $\sigma_{Y_1Y_2}$ die Kovarianz zwischen $Y_1$ und $Y_2$. Allgemein ergibt sich das folgende Schema für eine Varianz-Kovarianz-Matrix von $\mathbf{Y}$ mit $n$ Zufallsvariablen $Y_i$.
+
+$$
+\begin{matrix}
+& \begin{matrix} \text{Y}_1 \mspace{1em}& \text{Y}_2 & \ldots &\text{Y}_n \end{matrix} \\
+\begin{matrix}\text{Y}_1 \\ \text{Y}_2 \\ \vdots \\ \text{Y}_n\end{matrix} & \begin{pmatrix}
+\sigma_{Y_1}^2  & \sigma_{Y_1Y_2} & \ldots & \sigma_{Y_1Y_n}\\ 
+\sigma_{Y_2Y_1} & \sigma_{Y_2}^2 & & \vdots \\
+ \vdots  &  & \ddots & \\
+ \sigma_{Y_nY_1}  &  &   & \sigma_{Y_n}^2\\
+\end{pmatrix}
+\end{matrix} = VCV(\mathbf{Y}) 
+$$
+
+Da $\sigma_{XY} = \sigma_{YX}$ gilt, ist die Varianz-Kovarianz-Matrix eine symmetrische Matrix, $VCV(\mathbf{Y}) = VCV(\mathbf{Y})^T$.
+
+Mittels der Matrixalgebra lassen sich jetzt auch zwei Verallgemeinerungen der Rechenregeln zu den Erwartungswerten und den Varianzen ableiten. Es gilt für eine konstante Matrix $\mathbf{A}$, d.h. eine Matrix mit nur konstanten Einträgen:
+
+$$
+\begin{gather*}
+E[\mathbf{AY}] = \mathbf{A}E[\mathbf{Y}] = \mathbf{A}\begin{pmatrix}\mu_1 \\ \mu_2 \\ \vdots \\ \mu_n\end{pmatrix}
+\end{gather*}
+$$
+
+
+Auf das Beispiel übertragen mit $\mathbf{A} = \begin{pmatrix} 1 & 2 & 3\end{pmatrix}$ folgt:
+
+$$
+E[\mathbf{AY}] = \mathbf{A}E[\mathbf{Y}] = \begin{pmatrix} 1 & 2 & 3\end{pmatrix}\begin{pmatrix}\mu_1 \\ \mu_2 \\ \mu_3\end{pmatrix} = \mu_1 + 2 \mu_2 + 3 \mu_3
+$$
+
