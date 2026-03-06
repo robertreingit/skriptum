@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.24">
+<meta name="generator" content="quarto-1.8.25">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -19,6 +19,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -39,7 +74,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dc55a5b9e770e841cd82e46aadbfb9b0.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="site_libs/bootstrap/bootstrap-70a47bd5681a7291082a5b9f83d58762.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
@@ -445,6 +480,7 @@ window.Quarto = {
    
   <ul>
   <li><a href="#zufallsvektoren" id="toc-zufallsvektoren" class="nav-link active" data-scroll-target="#zufallsvektoren"><span class="header-section-number">18.1</span> Zufallsvektoren</a></li>
+  <li><a href="#das-einfache-regressionsmodell-in-matrixform" id="toc-das-einfache-regressionsmodell-in-matrixform" class="nav-link" data-scroll-target="#das-einfache-regressionsmodell-in-matrixform"><span class="header-section-number">18.2</span> Das einfache Regressionsmodell in Matrixform</a></li>
   </ul>
 </nav>
     </div>
@@ -470,7 +506,7 @@ window.Quarto = {
 </header>
 
 
-<p>Bisher wurden die der einfachen linearen Regression zugrundeliegenden Konzepte mittels eines direkten Ansatzes hergeleitet. Ausgehend von der aus der Schule bekannten Punkt-Steigungsform wurden über die Methode der kleinsten Quadrate direkt die notwendigen Formeln zur Berechnung der Modellkoeffizienten <span class="math inline">\(\beta_0\)</span> und <span class="math inline">\(\beta_1\)</span> hergeleitet. In diesen letzten abschließenden Kapitel zum einfachen linearen Regression soll nun wieder eine Abstraktion eingeführt werden, indem die einfache lineare Regression mittels Matrizen aufgebaut werden soll. Dies schafft ein flexibles Instrumentarium das bei der Behandlung der folgenden multiplen Regression und deren Verallgemeinerungen immer wieder von Vorteil sein wird. Um den Inhalten in diesem Kapitel gut folgen zu können, ist wahrscheinlich hilfreich sich nochmal die Inhalte im Anhang zu Vektoren und Matrizen (siehe <a href="appendix_math.html" class="quarto-xref"><span>Anhang A</span></a>) sowie den <code>R</code> Teil zu den entsprechenden Datentypen (siehe <a href="r_vars_types.html" class="quarto-xref"><span>Kapitel 2</span></a>) durchzulesen. Im ersten Schritt wird das Konzept einer Zufallsvariablen <span class="math inline">\(X\)</span> auf einen Zufallsvektor <span class="math inline">\(\mathbf{Y}\)</span> ausgeweitet.</p>
+<p>Bisher wurden die der einfachen linearen Regression zugrundeliegenden Konzepte mittels eines direkten Ansatzes hergeleitet. Ausgehend von der aus der Schule bekannten Punkt-Steigungsform wurden über die Methode der kleinsten Quadrate direkt die notwendigen Formeln zur Berechnung der Modellkoeffizienten <span class="math inline">\(\beta_0\)</span> und <span class="math inline">\(\beta_1\)</span> hergeleitet. In diesen letzten abschließenden Kapitel zum einfachen linearen Regression soll nun wieder eine Abstraktion eingeführt werden, indem die einfache lineare Regression mittels Matrizen aufgebaut werden soll. Dies schafft ein flexibles Instrumentarium das bei der Behandlung der folgenden multiplen Regression und deren Verallgemeinerungen immer wieder von Vorteil sein wird. Um den Inhalten in diesem Kapitel gut folgen zu können, ist wahrscheinlich hilfreich sich nochmal die Inhalte im Anhang zu Vektoren und Matrizen (siehe <a href="appendix_math.html" class="quarto-xref"><span>Anhang A</span></a>) sowie den <code>R</code> Teil zu den entsprechenden Datentypen (siehe <span class="quarto-unresolved-ref">?sec-r-types</span>) durchzulesen. Im ersten Schritt wird das Konzept einer Zufallsvariablen <span class="math inline">\(X\)</span> auf einen Zufallsvektor <span class="math inline">\(\mathbf{Y}\)</span> ausgeweitet.</p>
 <section id="zufallsvektoren" class="level2" data-number="18.1">
 <h2 data-number="18.1" class="anchored" data-anchor-id="zufallsvektoren"><span class="header-section-number">18.1</span> Zufallsvektoren</h2>
 <p>In <span class="quarto-unresolved-ref">?sec-stats-dist</span> wurde das Konzept einer Zufallsvariable <span class="math inline">\(X\)</span> eingeführt. Dieses wird nun verallgemeinert auf einen Zufallsvektor <span class="math inline">\(\mathbf{Y}\)</span>, bzw. eine Matrix mit nur einer Spalte.</p>
@@ -494,7 +530,7 @@ E[\mathbf{Y}] = \begin{pmatrix} E[Y_1] \\ E[Y_2] \\ E[Y_3] \end{pmatrix} = \begi
 E[\mathbf{Y}] = \begin{pmatrix} E[Y_1] \\ E[Y_2] \\ \vdots \\ E[Y_n] \end{pmatrix} = \begin{pmatrix} \mu_1 \\ \mu_2 \\ \vdots \\ \mu_n \end{pmatrix}
 \]</span></p>
 <p>Soweit ist dementsprechend noch nichts wirklich neues dazugekommen. Die Einführung der Zufallsmatrix kann eher dahingehend gesehen werden, dass man sich Schreibarbeit spart und anstatt für <span class="math inline">\(n\)</span> Zufallsvariablen <span class="math inline">\(Y_i, i = 1, 2, \ldots, n\)</span> nun einfach eine Matrix bzw. einen Vektor <span class="math inline">\(\mathbf{Y}\)</span> verwenden kann. Sind zum Beispiel Weitsprungdaten erhoben worden, dann können diese in einen Vektor geschrieben werden und die Notation mit einem Vektor entspricht dann auch der Repräsentation auf dem Rechner mittels eines Vektors in <code>R</code>.</p>
-<p>Da jede Zufallsvariable neben ihrem einen Erwartungswert <span class="math inline">\(\mu\)</span> auch eine Varianz <span class="math inline">\(\sigma^2\)</span> besitzt, kann dieses Konzept auch auf die Zufallsmatrix übertragen werden. Hier ergibt sich nun der folgenden Fall, dass aus dem Vektor eine <em>richtige</em> Matrix wird, die Varianz-Kovarianz-Matrix (VCV) von <span class="math inline">\(\mathbf{Y}\)</span>. Für das Beispiel bedeutet dies:</p>
+<p>Da jede Zufallsvariable neben ihrem einen Erwartungswert <span class="math inline">\(\mu\)</span> auch eine Varianz <span class="math inline">\(\sigma^2\)</span> besitzt, kann dieses Konzept auch auf die Zufallsmatrix übertragen werden. Allerdings ergibt sich nun der Umstand, dass aus dem Vektor eine <em>richtige</em> Matrix wird, die sogenannte <strong>Varianz-Kovarianz-Matrix</strong> (VCV) von <span class="math inline">\(\mathbf{Y}\)</span>. Für das Beispiel bedeutet dies:</p>
 <p><span class="math display">\[
 \text{Var}(\mathbf{Y}) = VCV(\mathbf{Y}) = \begin{pmatrix}
 \sigma_{Y_1}^2 &amp; \sigma_{Y_1Y_2} &amp; \sigma_{Y_1Y_3} \\
@@ -502,7 +538,8 @@ E[\mathbf{Y}] = \begin{pmatrix} E[Y_1] \\ E[Y_2] \\ \vdots \\ E[Y_n] \end{pmatri
 \sigma_{Y_1Y_3} &amp; \sigma_{Y_3Y_2} &amp; \sigma_{Y_3}^2 \\
 \end{pmatrix}
 \]</span></p>
-<p>Seien die einzelnen Einträge näher betrachtet. Auf der Hauptdiagonalen befinden sich die Varianzen der entsprechenden Zufallsvariablen <span class="math inline">\(Y_1, Y_2\)</span> und <span class="math inline">\(Y_3\)</span>. Während die anderen Einträge jeweils die Kovarianzen zwischen zwei der drei Variablen repräsentieren. Zum Beispiel ist der 2. Eintrag in der 1. Zeile <span class="math inline">\(\sigma_{Y_1Y_2}\)</span> die Kovarianz zwischen <span class="math inline">\(Y_1\)</span> und <span class="math inline">\(Y_2\)</span>. Allgemein ergibt sich das folgende Schema für eine Varianz-Kovarianz-Matrix von <span class="math inline">\(\mathbf{Y}\)</span> mit <span class="math inline">\(n\)</span> Zufallsvariablen <span class="math inline">\(Y_i\)</span>.</p>
+<p>Die einzelnen Einträge sollen nun näher betrachtet werden. Auf der Hauptdiagonalen befinden sich die Varianzen der jeweiligen Zufallsvariablen <span class="math inline">\(Y_1, Y_2\)</span> und <span class="math inline">\(Y_3\)</span>. Die anderen Einträge repräsentieren dagegen die Kovarianzen zwischen zwei der drei Variablen. Zum Beispiel ist der 2. Eintrag in der 1. Zeile <span class="math inline">\(\sigma_{Y_1Y_2}\)</span> die Kovarianz zwischen <span class="math inline">\(Y_1\)</span> und <span class="math inline">\(Y_2\)</span>.</p>
+<p>Allgemein ergibt sich das folgende Schema für eine Varianz-Kovarianz-Matrix eines Zufallsvektors <span class="math inline">\(\mathbf{Y}\)</span> mit <span class="math inline">\(n\)</span> Zufallsvariablen <span class="math inline">\(Y_i\)</span>.</p>
 <p><span class="math display">\[
 \begin{matrix}
 &amp; \begin{matrix} \text{Y}_1 \mspace{1em}&amp; \text{Y}_2 &amp; \ldots &amp;\text{Y}_n \end{matrix} \\
@@ -515,7 +552,10 @@ E[\mathbf{Y}] = \begin{pmatrix} E[Y_1] \\ E[Y_2] \\ \vdots \\ E[Y_n] \end{pmatri
 \end{matrix} = VCV(\mathbf{Y})
 \]</span></p>
 <p>Da <span class="math inline">\(\sigma_{XY} = \sigma_{YX}\)</span> gilt, ist die Varianz-Kovarianz-Matrix eine symmetrische Matrix, <span class="math inline">\(VCV(\mathbf{Y}) = VCV(\mathbf{Y})^T\)</span>.</p>
-<p>Mittels der Matrixalgebra lassen sich jetzt auch zwei Verallgemeinerungen der Rechenregeln zu den Erwartungswerten und den Varianzen ableiten. Es gilt für eine konstante Matrix <span class="math inline">\(\mathbf{A}\)</span>, d.h. eine Matrix mit nur konstanten Einträgen:</p>
+<div id="def-vcv" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 18.2 (Varianz-Kovarianz-Matrix)</strong></span> Die zu einem Zufallsvektor <span class="math inline">\(\mathbf{Y}\)</span> gehörige Varianz-Kovarianz-Matrix ist eine symmetrische Matrix deren Einträge auf der Hauptdiagonalen die Varianzen der Zufallsvariablen <span class="math inline">\(Y_i\)</span> von <span class="math inline">\(\mathbf{Y}\)</span> sind, während alle Einträge außerhalb der Hauptdiagonalen Kovarianzen zwischen <span class="math inline">\(Y_i\)</span> und <span class="math inline">\(Y_i\)</span> mit <span class="math inline">\(i \neq j\)</span> sind.</p>
+</div>
+<p>Mittels der Regeln der Matrixalgebra lassen sich auch zwei Verallgemeinerungen der Rechenregeln zu den Erwartungswerten und den Varianzen ableiten. Es gilt für eine konstante Matrix <span class="math inline">\(\mathbf{A}\)</span>, d.h. eine Matrix mit nur konstanten Einträgen, der folgenden Zusammenhang:</p>
 <p><span class="math display">\[
 \begin{gather*}
 E[\mathbf{AY}] = \mathbf{A}E[\mathbf{Y}] = \mathbf{A}\begin{pmatrix}\mu_1 \\ \mu_2 \\ \vdots \\ \mu_n\end{pmatrix}
@@ -525,6 +565,199 @@ E[\mathbf{AY}] = \mathbf{A}E[\mathbf{Y}] = \mathbf{A}\begin{pmatrix}\mu_1 \\ \mu
 <p><span class="math display">\[
 E[\mathbf{AY}] = \mathbf{A}E[\mathbf{Y}] = \begin{pmatrix} 1 &amp; 2 &amp; 3\end{pmatrix}\begin{pmatrix}\mu_1 \\ \mu_2 \\ \mu_3\end{pmatrix} = \mu_1 + 2 \mu_2 + 3 \mu_3
 \]</span></p>
+<p>In diesem Beispiel ist zu sehen, dass die Multiplikation von <span class="math inline">\(\mathbf{Y}\)</span> mit <span class="math inline">\(\mathbf{A}\)</span> von links in einem Skalar resultiert.</p>
+<p>Für die Varianz ergibt sich ebenfalls eine Regel wie bei einer <em>einfachen</em> Zufallszahl <span class="math inline">\(Y\)</span>. Hier galt die Regel:</p>
+<p><span class="math display">\[
+\text{Var}(aY) = a^2 \sigma^2_Y
+\]</span></p>
+<p>D.h. die Varianz <span class="math inline">\(sigma^2_Y\)</span> von <span class="math inline">\(Y\)</span> wird mit dem Quadrat von <span class="math inline">\(a\)</span> multipliziert. Im Fall eines Zufallsvektor <span class="math inline">\(\mathbf{Y}\)</span> mit einer konstanter Matrix <span class="math inline">\(\mathbf{A}\)</span> gilt entsprechend:</p>
+<p><span id="eq-vcv-asigma"><span class="math display">\[
+\text{Var}(\mathbf{AY}) = \mathbf{A}\text{Var}(\mathbf{Y})\mathbf{A}^T = \mathbf{A}\Sigma\mathbf{A}^T
+\tag{18.1}\]</span></span></p>
+<p>D.h. die Varianz <span class="math inline">\(\Sigma\)</span> von <span class="math inline">\(\mathbf{Y}\)</span> wird auch wieder mit dem Quadrat von <span class="math inline">\(\mathbf{A}\)</span> multipliziert, nur das <span class="math inline">\(\mathbf{A}\)</span> von links und transponiert von rechts multipliziert. Für das Beispiel mit <span class="math inline">\(\mathbf{A} = \begin{pmatrix} 1 &amp; 2 &amp; 3\end{pmatrix}\)</span>.</p>
+<p><span class="math display">\[
+\begin{split}
+\text{Var}(\mathbf{AY}) &amp;= \begin{pmatrix}1 &amp; 2 &amp; 3\end{pmatrix}
+\begin{pmatrix}
+\sigma_{Y_1}^2 &amp; \sigma_{Y_1Y_2} &amp; \sigma_{Y_1Y_3} \\
+\sigma_{Y_1Y_2} &amp; \sigma_{Y_2}^2 &amp; \sigma_{Y_2Y_3} \\
+\sigma_{Y_1Y_3} &amp; \sigma_{Y_3Y_2} &amp; \sigma_{Y_3}^2 \\
+\end{pmatrix}
+\begin{pmatrix}1 \\ 2\\3\end{pmatrix} \\
+&amp;=
+\begin{pmatrix}1 &amp; 2 &amp; 3\end{pmatrix}
+\begin{pmatrix}
+\sigma_{Y_1}^2 + 2\sigma_{Y_1Y_2} + 3\sigma_{Y_1Y_3} \\
+\sigma_{Y_1Y_2} + 2\sigma_{Y_2}^2 + 3\sigma_{Y_2Y_3} \\
+\sigma_{Y_1Y_3} + 2\sigma_{Y_3Y_2} + 3\sigma_{Y_3}^2
+\end{pmatrix} \\
+&amp;=
+\sigma_{Y_1}^2 + 2\sigma_{Y_1Y_2} + 3\sigma{Y_1Y_3} \\
+&amp;\ + 2\cdot(
+\sigma_{Y_1Y_2} + 2\sigma_{Y_2}^2 + 3\sigma_{Y_2Y_3}) \\
+&amp;\ + 3\cdot(\sigma_{Y_1Y_3} + 2\sigma_{Y_3Y_2} + 3\sigma_{Y_3}^2)
+\end{split}
+\]</span></p>
+<p>D.h. die berechnete Varianz passt zum dem Erwartungswert von <span class="math inline">\(\mathbf{AY}\)</span>, da es sich hier auch <em>nur</em> um einen Skalar handelt. Entsprechend muss die Varianz auch ein Skalar sein. Dies ist natürlich nur für dieses spezielle Beispiel der Fall.</p>
+<p>Nachdem nun das Konzept eines Zufallsvektors <span class="math inline">\(\mathbf{Y}\)</span> eingeführt wurde, kann nun das einfache Regressionsmodell mittels Matrizen behandelt werden.</p>
+</section>
+<section id="das-einfache-regressionsmodell-in-matrixform" class="level2" data-number="18.2">
+<h2 data-number="18.2" class="anchored" data-anchor-id="das-einfache-regressionsmodell-in-matrixform"><span class="header-section-number">18.2</span> Das einfache Regressionsmodell in Matrixform</h2>
+<p>Noch einmal zur Erinnerung, Ziel ist es nun das Modell für Daten bestehend aus Tupeln der Form <span class="math inline">\((X_i,Y_i), i=1,2,\ldots,N\)</span> zu finden.</p>
+<p><span class="math display">\[
+Y_i = \beta_0 + \beta_1\cdot X_i + \epsilon_i,  \quad i=1,2,\ldots,N
+\]</span></p>
+<p>in Matrizenform zu überführen. Ein direkte Möglichkeit wird offensichtlich, wenn die <span class="math inline">\(N\)</span> Formel untereinander geschrieben werden.</p>
+<p><span class="math display">\[
+\begin{aligned}
+Y_1 &amp;= \beta_0 + \beta_1\cdot X_1 + \epsilon_1\\
+Y_2 &amp;= \beta_0 + \beta_2\cdot X_2 + \epsilon_2 \\
+&amp;\vdots \\
+Y_n &amp;= \beta_0 + \beta_n\cdot X_n + \epsilon_n \\
+\end{aligned}
+\]</span></p>
+<p>Ein Überführung in Matrizenform ist jetzt schon relativ offensichtlich. Die Zufallsvariablen <span class="math inline">\(y_i\)</span> werden in einen Zufallsvektor <span class="math inline">\(\mathbf{y}\)</span> überführt.</p>
+<p><span class="math display">\[
+\mathbf{Y} = \begin{pmatrix} Y_1 \\ Y_2 \\ \vdots \\Y_n\end{pmatrix}
+\]</span></p>
+<p>Die Modellparameter <span class="math inline">\(\beta_0\)</span> und <span class="math inline">\(\beta_1\)</span> werden ebenfalls in einen Vektor <span class="math inline">\(\mathbf{b}\)</span> eingetragen:</p>
+<p><span class="math display">\[
+\mathbf{b} = \begin{pmatrix} \beta_0 \\ \beta_1 \end{pmatrix}
+\]</span></p>
+<p>Um nun die auf die Gesamtformel der einfachen linearen Regression zu kommen, wird nun noch eine Matrix <span class="math inline">\(\mathbf{Y}\)</span> eingeführt, welche die folgende Form hat:</p>
+<p><span class="math display">\[
+\mathbf{X} = \begin{pmatrix}
+1 &amp; X_1 \\ 1 &amp; X_2 \\ \vdots &amp; \vdots \\ 1 &amp; X_n
+\end{pmatrix}
+\]</span></p>
+<p>D.h. die Matrix <span class="math inline">\(\mathbf{X}\)</span> hat zwei Spalten, bei der die Einträge in der ersten Spalten alle gleich <span class="math inline">\(1\)</span> sind, während in der zweiten Spalte die zu den jeweiligen <span class="math inline">\(Y_i\)</span>-Werten gehörigen <span class="math inline">\(X_i\)</span> Werte eingetragen sind. Da die zweite Spalte praktisch immer unterschiedliche Werte enthalten wird, gilt <span class="math inline">\(\text{Rang}(\mathbf{X}) = 2\)</span>. Als letztes werden nun noch die Werte für die Residuen ebenfalls ein einen Zufallsvektor übertragen.</p>
+<p><span class="math display">\[
+\mathbf{e} = \begin{pmatrix}\epsilon_1 \\ \epsilon_2 \\ \vdots \\ \epsilon_n\end{pmatrix}
+\]</span></p>
+<p>Insgesamt erlaubt dieses Schema nun das Modell für die einfache lineare Regression in folgender Matrizenform zu notieren:</p>
+<p><span class="math display">\[
+\begin{split}
+\mathbf{Y} &amp;= \mathbf{Xb} + \mathbf{e} \\
+&amp;= \begin{pmatrix}
+1 &amp; X_1 \\ 1 &amp; X_2 \\ \vdots &amp; \vdots \\ 1 &amp; X_n
+\end{pmatrix}
+\begin{pmatrix} \beta_0 \\ \beta_1 \end{pmatrix} +
+\begin{pmatrix}\epsilon_1 \\ \epsilon_2 \\ \vdots \\ \epsilon_n\end{pmatrix}
+\end{split}
+\]</span></p>
+<p>Um diese Matrizengleichung für <span class="math inline">\(\mathbf{b}\)</span> zu lösen wird zunächst <span class="math inline">\(\mathbf{e}\)</span> vernachlässigt. Es folgt:</p>
+<p><span class="math display">\[
+\mathbf{Xb} = \mathbf{Y}
+\]</span></p>
+<p>Nun wird diese Gleichung von links mit <span class="math inline">\(\mathbf{X}^T\)</span>, d.h. mit der Transponierten von <span class="math inline">\(\mathbf{X}\)</span> multipliziert.</p>
+<p><span class="math display">\[
+\mathbf{X}^T\mathbf{Xb} = \mathbf{X}^T\mathbf{Y}
+\]</span></p>
+<p>Die Matrix <span class="math inline">\(\mathbf{X}^T\mathbf{X}\)</span> resultiert in einer <span class="math inline">\(2\times 2\)</span> Matrix deren Rang <span class="math inline">\(2\)</span> ist. D.h. Diese Matrix kann invertiert werden, d.h. es existiert die Matrix <span class="math inline">\((\mathbf{X}^T\mathbf{X})^{-1}\)</span>. Wiederum Muliplikation von links mit dieser Inversen resultiert dann in:</p>
+<p><span class="math display">\[
+\begin{matrix}
+&amp; (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Xb} &amp;= (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y} \\
+\Leftrightarrow &amp; \mathbf{b} &amp;= (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y}
+\end{matrix}
+\]</span></p>
+<p>D.h. es wurde eine Lösung für <span class="math inline">\(\mathbf{b}\)</span> gefunden. Tatsächlich führt diese Matrizenlösung zu der gleichen Lösung wie mittels der Normalengleichungen. Die Herleitung ohne das <em>Weglassen</em> von <span class="math inline">\(\mathbf{e}\)</span> geht eigentlich wieder über die Minimierung, ist aber hier der Einfachheit halber weggelassen worden.</p>
+<p>Um jedoch zu sehen, das tatsächlich die Werte der Normalengleichung herauskommen sei ein einfaches Beispiel betrachtet. Es liegt der folgende Datensatz vor (siehe <a href="#tbl-slm-matrix-simple" class="quarto-xref">Tabelle&nbsp;<span>18.1</span></a>)</p>
+<div class="cell">
+<div id="tbl-slm-matrix-simple" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-slm-matrix-simple-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabelle&nbsp;18.1: Ein einfacher Datensatz
+</figcaption>
+<div aria-describedby="tbl-slm-matrix-simple-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="do-not-create-environment cell caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">x</th>
+<th style="text-align: right;">y</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">-1</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>Beziehungsweise graphisch (siehe <a href="#fig-slm-matrix-simple" class="quarto-xref">Abbildung&nbsp;<span>18.1</span></a>)</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-slm-matrix-simple" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-slm-matrix-simple-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="slm_matrix_files/figure-html/fig-slm-matrix-simple-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-slm-matrix-simple-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Abbildung&nbsp;18.1: Streudiagramm des einfachen Datensatzes.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>In Matrizenschreibweise ergibt sich:</p>
+<p><span class="math display">\[
+\mathbf{Y} = \begin{pmatrix}2\\4\\3 \end{pmatrix} =
+\begin{pmatrix}
+1 &amp; -1 \\ 1 &amp; 0 \\ 1 &amp; 1
+\end{pmatrix} \begin{pmatrix}\beta_0 \\ \beta_1\end{pmatrix} = \mathbf{Xb}
+\]</span></p>
+<p>Nun wird zunächst die Matrix <span class="math inline">\(\mathbf{X}^T\mathbf{X}\)</span> gebildet:</p>
+<p><span class="math display">\[
+\mathbf{X}^T\mathbf{X} =
+\begin{pmatrix}
+1 &amp; 1 &amp; 1 \\
+-1 &amp; 0 &amp; 1
+\end{pmatrix}
+\begin{pmatrix}
+1 &amp; -1 \\ 1 &amp; 0 \\1 &amp; 1
+\end{pmatrix} =
+\begin{pmatrix}
+3 &amp; 0 \\ 0 &amp; 2
+\end{pmatrix}
+\]</span></p>
+<p>D.h. in diesem Fall ist die Matrix <span class="math inline">\(\mathbf{X}^T\mathbf{X}\)</span> eine Diagonalmatrix für die eine inverse Matrix einfach gebildet werden kann.</p>
+<p><span class="math display">\[
+(\mathbf{X}^T\mathbf{X})^{-1} = \begin{pmatrix}
+\frac{1}{3} &amp; 0 \\ 0 &amp; \frac{1}{2}
+\end{pmatrix}
+\]</span></p>
+<p>Dementsprechend resultiert für <span class="math inline">\((\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y}\)</span> der folgende Ausdruck:</p>
+<p><span class="math display">\[
+\mathbf{b} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y} = \begin{pmatrix}
+\frac{1}{3} &amp; 0 \\ 0 &amp; \frac{1}{2}
+\end{pmatrix}\begin{pmatrix}
+1 &amp; 1 &amp; 1 \\
+-1 &amp; 0 &amp; 1
+\end{pmatrix} \begin{pmatrix}2\\4\\3 \end{pmatrix} = \begin{pmatrix}
+3 \\ \frac{1}{2}
+\end{pmatrix}
+\]</span></p>
+<p>Die Berechnung mit <code>R</code> führt zu dem gleichen Ergebnis:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">lm</span>(y <span class="sc">~</span> x, df) <span class="sc">|&gt;</span> <span class="fu">coef</span>()</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(Intercept)           x 
+        3.0         0.5 </code></pre>
+</div>
+</div>
 
 
 </section>

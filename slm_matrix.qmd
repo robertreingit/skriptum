@@ -48,7 +48,7 @@ $$
 
 Soweit ist dementsprechend noch nichts wirklich neues dazugekommen. Die Einführung der Zufallsmatrix kann eher dahingehend gesehen werden, dass man sich Schreibarbeit spart und anstatt für $n$ Zufallsvariablen $Y_i, i = 1, 2, \ldots, n$ nun einfach eine Matrix bzw. einen Vektor $\mathbf{Y}$ verwenden kann. Sind zum Beispiel Weitsprungdaten erhoben worden, dann können diese in einen Vektor geschrieben werden und die Notation mit einem Vektor entspricht dann auch der Repräsentation auf dem Rechner mittels eines Vektors in `R`.
 
-Da jede Zufallsvariable neben ihrem einen Erwartungswert $\mu$ auch eine Varianz $\sigma^2$ besitzt, kann dieses Konzept auch auf die Zufallsmatrix übertragen werden. Hier ergibt sich nun der folgenden Fall, dass aus dem Vektor eine *richtige* Matrix wird, die Varianz-Kovarianz-Matrix (VCV) von $\mathbf{Y}$. Für das Beispiel bedeutet dies:
+Da jede Zufallsvariable neben ihrem einen Erwartungswert $\mu$ auch eine Varianz $\sigma^2$ besitzt, kann dieses Konzept auch auf die Zufallsmatrix übertragen werden. Allerdings ergibt sich nun der Umstand, dass aus dem Vektor eine *richtige* Matrix wird, die sogenannte **Varianz-Kovarianz-Matrix** (VCV) von $\mathbf{Y}$. Für das Beispiel bedeutet dies:
 
 $$
 \text{Var}(\mathbf{Y}) = VCV(\mathbf{Y}) = \begin{pmatrix}
@@ -58,7 +58,9 @@ $$
 \end{pmatrix}
 $$
 
-Seien die einzelnen Einträge näher betrachtet. Auf der Hauptdiagonalen befinden sich die Varianzen der entsprechenden Zufallsvariablen $Y_1, Y_2$ und $Y_3$. Während die anderen Einträge jeweils die Kovarianzen zwischen zwei der drei Variablen repräsentieren. Zum Beispiel ist der 2. Eintrag in der 1. Zeile $\sigma_{Y_1Y_2}$ die Kovarianz zwischen $Y_1$ und $Y_2$. Allgemein ergibt sich das folgende Schema für eine Varianz-Kovarianz-Matrix von $\mathbf{Y}$ mit $n$ Zufallsvariablen $Y_i$.
+Die einzelnen Einträge sollen nun näher betrachtet werden. Auf der Hauptdiagonalen befinden sich die Varianzen der jeweiligen Zufallsvariablen $Y_1, Y_2$ und $Y_3$. Die anderen Einträge repräsentieren dagegen die Kovarianzen zwischen zwei der drei Variablen. Zum Beispiel ist der 2. Eintrag in der 1. Zeile $\sigma_{Y_1Y_2}$ die Kovarianz zwischen $Y_1$ und $Y_2$. 
+
+Allgemein ergibt sich das folgende Schema für eine Varianz-Kovarianz-Matrix eines Zufallsvektors $\mathbf{Y}$ mit $n$ Zufallsvariablen $Y_i$.
 
 $$
 \begin{matrix}
@@ -72,9 +74,18 @@ $$
 \end{matrix} = VCV(\mathbf{Y}) 
 $$
 
+
 Da $\sigma_{XY} = \sigma_{YX}$ gilt, ist die Varianz-Kovarianz-Matrix eine symmetrische Matrix, $VCV(\mathbf{Y}) = VCV(\mathbf{Y})^T$.
 
-Mittels der Matrixalgebra lassen sich jetzt auch zwei Verallgemeinerungen der Rechenregeln zu den Erwartungswerten und den Varianzen ableiten. Es gilt für eine konstante Matrix $\mathbf{A}$, d.h. eine Matrix mit nur konstanten Einträgen:
+::: {#def-vcv}
+### Varianz-Kovarianz-Matrix
+
+Die zu einem Zufallsvektor $\mathbf{Y}$ gehörige Varianz-Kovarianz-Matrix ist eine symmetrische Matrix deren Einträge auf der Hauptdiagonalen die Varianzen der Zufallsvariablen $Y_i$ von $\mathbf{Y}$ sind, während alle Einträge außerhalb der Hauptdiagonalen Kovarianzen zwischen $Y_i$ und $Y_i$ mit $i \neq j$ sind.
+
+:::
+
+
+Mittels der Regeln der Matrixalgebra lassen sich auch zwei Verallgemeinerungen der Rechenregeln zu den Erwartungswerten und den Varianzen ableiten. Es gilt für eine konstante Matrix $\mathbf{A}$, d.h. eine Matrix mit nur konstanten Einträgen, der folgenden Zusammenhang:
 
 $$
 \begin{gather*}
@@ -88,4 +99,203 @@ Auf das Beispiel übertragen mit $\mathbf{A} = \begin{pmatrix} 1 & 2 & 3\end{pma
 $$
 E[\mathbf{AY}] = \mathbf{A}E[\mathbf{Y}] = \begin{pmatrix} 1 & 2 & 3\end{pmatrix}\begin{pmatrix}\mu_1 \\ \mu_2 \\ \mu_3\end{pmatrix} = \mu_1 + 2 \mu_2 + 3 \mu_3
 $$
+
+In diesem Beispiel ist zu sehen, dass die Multiplikation von $\mathbf{Y}$ mit $\mathbf{A}$ von links in einem Skalar resultiert.
+
+Für die Varianz ergibt sich ebenfalls eine Regel wie bei einer *einfachen* Zufallszahl $Y$. Hier galt die Regel:
+
+$$
+\text{Var}(aY) = a^2 \sigma^2_Y
+$$
+
+D.h. die Varianz $sigma^2_Y$ von $Y$ wird mit dem Quadrat von $a$ multipliziert. Im Fall eines Zufallsvektor $\mathbf{Y}$ mit einer konstanter Matrix $\mathbf{A}$ gilt entsprechend:
+
+$$
+\text{Var}(\mathbf{AY}) = \mathbf{A}\text{Var}(\mathbf{Y})\mathbf{A}^T = \mathbf{A}\Sigma\mathbf{A}^T
+$$ {#eq-vcv-asigma}
+
+D.h. die Varianz $\Sigma$ von $\mathbf{Y}$ wird auch wieder mit dem Quadrat von $\mathbf{A}$ multipliziert, nur das $\mathbf{A}$ von links und transponiert von rechts multipliziert. Für das Beispiel mit $\mathbf{A} = \begin{pmatrix} 1 & 2 & 3\end{pmatrix}$.
+
+$$
+\begin{split}
+\text{Var}(\mathbf{AY}) &= \begin{pmatrix}1 & 2 & 3\end{pmatrix}
+\begin{pmatrix}
+\sigma_{Y_1}^2 & \sigma_{Y_1Y_2} & \sigma_{Y_1Y_3} \\
+\sigma_{Y_1Y_2} & \sigma_{Y_2}^2 & \sigma_{Y_2Y_3} \\
+\sigma_{Y_1Y_3} & \sigma_{Y_3Y_2} & \sigma_{Y_3}^2 \\
+\end{pmatrix} 
+\begin{pmatrix}1 \\ 2\\3\end{pmatrix} \\
+&=
+\begin{pmatrix}1 & 2 & 3\end{pmatrix}
+\begin{pmatrix}
+\sigma_{Y_1}^2 + 2\sigma_{Y_1Y_2} + 3\sigma_{Y_1Y_3} \\
+\sigma_{Y_1Y_2} + 2\sigma_{Y_2}^2 + 3\sigma_{Y_2Y_3} \\
+\sigma_{Y_1Y_3} + 2\sigma_{Y_3Y_2} + 3\sigma_{Y_3}^2
+\end{pmatrix} \\
+&= 
+\sigma_{Y_1}^2 + 2\sigma_{Y_1Y_2} + 3\sigma{Y_1Y_3} \\ 
+&\ + 2\cdot( 
+\sigma_{Y_1Y_2} + 2\sigma_{Y_2}^2 + 3\sigma_{Y_2Y_3}) \\
+&\ + 3\cdot(\sigma_{Y_1Y_3} + 2\sigma_{Y_3Y_2} + 3\sigma_{Y_3}^2)
+\end{split}
+$$
+
+D.h. die berechnete Varianz passt zum dem Erwartungswert von $\mathbf{AY}$, da es sich hier auch *nur* um einen Skalar handelt. Entsprechend muss die Varianz auch ein Skalar sein. Dies ist natürlich nur für dieses spezielle Beispiel der Fall.
+
+Nachdem nun das Konzept eines Zufallsvektors $\mathbf{Y}$ eingeführt wurde, kann nun das einfache Regressionsmodell mittels Matrizen behandelt werden.
+
+## Das einfache Regressionsmodell in Matrixform
+
+Noch einmal zur Erinnerung, Ziel ist es nun das Modell für Daten bestehend aus Tupeln der Form $(X_i,Y_i), i=1,2,\ldots,N$ zu finden.
+
+$$
+Y_i = \beta_0 + \beta_1\cdot X_i + \epsilon_i,  \quad i=1,2,\ldots,N
+$$
+
+in Matrizenform zu überführen. Ein direkte Möglichkeit wird offensichtlich, wenn die $N$ Formel untereinander geschrieben werden.
+
+$$
+\begin{aligned}
+Y_1 &= \beta_0 + \beta_1\cdot X_1 + \epsilon_1\\
+Y_2 &= \beta_0 + \beta_2\cdot X_2 + \epsilon_2 \\
+&\vdots \\
+Y_n &= \beta_0 + \beta_n\cdot X_n + \epsilon_n \\
+\end{aligned}
+$$
+
+Ein Überführung in Matrizenform ist jetzt schon relativ offensichtlich. Die Zufallsvariablen $y_i$ werden in einen Zufallsvektor $\mathbf{y}$ überführt.
+
+$$
+\mathbf{Y} = \begin{pmatrix} Y_1 \\ Y_2 \\ \vdots \\Y_n\end{pmatrix}
+$$
+
+Die Modellparameter $\beta_0$ und $\beta_1$ werden ebenfalls in einen Vektor $\mathbf{b}$ eingetragen:
+
+$$
+\mathbf{b} = \begin{pmatrix} \beta_0 \\ \beta_1 \end{pmatrix}
+$$
+
+Um nun die auf die Gesamtformel der einfachen linearen Regression zu kommen, wird nun noch eine Matrix $\mathbf{Y}$ eingeführt, welche die folgende Form hat:
+
+$$
+\mathbf{X} = \begin{pmatrix}
+1 & X_1 \\ 1 & X_2 \\ \vdots & \vdots \\ 1 & X_n 
+\end{pmatrix}
+$$
+
+D.h. die Matrix $\mathbf{X}$ hat zwei Spalten, bei der die Einträge in der ersten Spalten alle gleich $1$ sind, während in der zweiten Spalte die zu den jeweiligen $Y_i$-Werten gehörigen $X_i$ Werte eingetragen sind. Da die zweite Spalte praktisch immer unterschiedliche Werte enthalten wird, gilt $\text{Rang}(\mathbf{X}) = 2$. Als letztes werden nun noch die Werte für die Residuen ebenfalls ein einen Zufallsvektor übertragen.
+
+$$
+\mathbf{e} = \begin{pmatrix}\epsilon_1 \\ \epsilon_2 \\ \vdots \\ \epsilon_n\end{pmatrix}
+$$
+
+Insgesamt erlaubt dieses Schema nun das Modell für die einfache lineare Regression in folgender Matrizenform zu notieren:
+
+$$
+\begin{split}
+\mathbf{Y} &= \mathbf{Xb} + \mathbf{e} \\
+&= \begin{pmatrix}
+1 & X_1 \\ 1 & X_2 \\ \vdots & \vdots \\ 1 & X_n 
+\end{pmatrix}
+\begin{pmatrix} \beta_0 \\ \beta_1 \end{pmatrix} +
+\begin{pmatrix}\epsilon_1 \\ \epsilon_2 \\ \vdots \\ \epsilon_n\end{pmatrix}
+\end{split}
+$$
+
+Um diese Matrizengleichung für $\mathbf{b}$ zu lösen wird zunächst $\mathbf{e}$ vernachlässigt. Es folgt:
+
+$$
+\mathbf{Xb} = \mathbf{Y}
+$$
+
+Nun wird diese Gleichung von links mit $\mathbf{X}^T$, d.h. mit der Transponierten von $\mathbf{X}$ multipliziert.
+
+$$
+\mathbf{X}^T\mathbf{Xb} = \mathbf{X}^T\mathbf{Y}
+$$
+
+Die Matrix $\mathbf{X}^T\mathbf{X}$ resultiert in einer $2\times 2$ Matrix deren Rang $2$ ist. D.h. Diese Matrix kann invertiert werden, d.h. es existiert die Matrix $(\mathbf{X}^T\mathbf{X})^{-1}$. Wiederum Muliplikation von links mit dieser Inversen resultiert dann in:
+
+$$
+\begin{matrix}
+& (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Xb} &= (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y} \\
+\Leftrightarrow & \mathbf{b} &= (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y} 
+\end{matrix}
+$$
+
+D.h. es wurde eine Lösung für $\mathbf{b}$ gefunden. Tatsächlich führt diese Matrizenlösung zu der gleichen Lösung wie mittels der Normalengleichungen. Die Herleitung ohne das *Weglassen* von $\mathbf{e}$ geht eigentlich wieder über die Minimierung, ist aber hier der Einfachheit halber weggelassen worden. 
+
+Um jedoch zu sehen, das tatsächlich die Werte der Normalengleichung herauskommen sei ein einfaches Beispiel betrachtet. Es liegt der folgende Datensatz vor (siehe @tbl-slm-matrix-simple)
+
+```{r}
+#| label: tbl-slm-matrix-simple
+#| tbl-cap: "Ein einfacher Datensatz"
+
+df <- tibble(x = -1:1, y = c(2,4,3))
+df |> knitr::kable()
+```
+
+Beziehungsweise graphisch (siehe @fig-slm-matrix-simple)
+
+```{r}
+#| label: fig-slm-matrix-simple
+#| fig-cap: "Streudiagramm des einfachen Datensatzes."
+
+ggplot(df, aes(x,y)) +
+  geom_point()
+```
+
+In Matrizenschreibweise ergibt sich:
+
+$$
+\mathbf{Y} = \begin{pmatrix}2\\4\\3 \end{pmatrix} = 
+\begin{pmatrix}
+1 & -1 \\ 1 & 0 \\ 1 & 1
+\end{pmatrix} \begin{pmatrix}\beta_0 \\ \beta_1\end{pmatrix} = \mathbf{Xb}
+$$
+
+Nun wird zunächst die Matrix $\mathbf{X}^T\mathbf{X}$ gebildet:
+
+$$
+\mathbf{X}^T\mathbf{X} = 
+\begin{pmatrix}
+1 & 1 & 1 \\
+-1 & 0 & 1
+\end{pmatrix} 
+\begin{pmatrix}
+1 & -1 \\ 1 & 0 \\1 & 1
+\end{pmatrix} = 
+\begin{pmatrix}
+3 & 0 \\ 0 & 2
+\end{pmatrix}
+$$
+
+D.h. in diesem Fall ist die Matrix $\mathbf{X}^T\mathbf{X}$ eine Diagonalmatrix für die eine inverse Matrix einfach gebildet werden kann.
+
+$$
+(\mathbf{X}^T\mathbf{X})^{-1} = \begin{pmatrix}
+\frac{1}{3} & 0 \\ 0 & \frac{1}{2}
+\end{pmatrix}
+$$
+
+Dementsprechend resultiert für $(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y}$ der folgende Ausdruck:
+
+$$
+\mathbf{b} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y} = \begin{pmatrix}
+\frac{1}{3} & 0 \\ 0 & \frac{1}{2}
+\end{pmatrix}\begin{pmatrix}
+1 & 1 & 1 \\
+-1 & 0 & 1
+\end{pmatrix} \begin{pmatrix}2\\4\\3 \end{pmatrix} = \begin{pmatrix}
+3 \\ \frac{1}{2}
+\end{pmatrix}
+$$
+
+Die Berechnung mit `R` führt zu dem gleichen Ergebnis:
+
+```{r}
+#| echo: true
+
+lm(y ~ x, df) |> coef()
+```
 
