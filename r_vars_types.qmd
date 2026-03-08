@@ -555,9 +555,9 @@ Da Vektoren ein zentraler Datentyp in `R` sind, ist es wichtig sich möglichst e
 
 ### Matrizen
 
-Matrizen sind rechteckige und damit zweidimensionale Datenstrukturen, die aus Zeilen und Spalten bestehen und als Verallgemeinerung von Vektoren zu verstehen sind. Matrizen liegen zahllosen Berechnungen in der Statistik zugrunde, auch wenn diese vorwiegend im Hintergrund stattfinden. In `R` können Matrizen genauso wie Vektoren auch Werte wie Zeichenketten oder logischen Werten haben. Wir werden uns allerdings auf numerische Matrizen beschränken, da diese am ehesten benötigt werden.
+Matrizen sind rechteckige, zweidimensionale Datenstrukturen, die in Zeilen und Spalten unterteilt werden und als Verallgemeinerung von Vektoren zu verstehen sind. Matrizen liegen zahllosen Berechnungen in der Statistik zugrunde, auch wenn diese vorwiegend im Hintergrund stattfinden. In `R` können Matrizen genauso wie Vektoren auch Werte wie Zeichenketten oder logischen Werten haben. Wir werden uns allerdings auf numerische Matrizen beschränken, da diese am ehesten benötigt werden.
 
-Nochmal zur Wiederholung, eine Matrix der Dimension $m \times n$ wird in der Mathematik wie folgt definiert.
+Nochmal zur Wiederholung, eine Matrix der Dimension $m \times n$ ist wie folgt definiert.
 
 $$
 \mathbf{A} = (a_{ij}) = \begin{pmatrix}a_{11} & \ldots & a_{1n} \\
@@ -572,6 +572,12 @@ In `R` werden Matrizen mit der `matrix()`-Funktion erzeugt. In den meisten Fäll
 matrix(1:6, nrow = 3, ncol = 2)
 matrix(1:6, nrow = 3)
 matrix(1:6, ncol = 2)
+```
+
+Es kann auch ein beliebige Matrix beliebiger Größe mit allen Elemente gleich $s$ erstellt werden, indem an `matrix()` der Wert $s$ zusammen mit der Anzahl der Zeilen und Spalten übergeben wird. Soll zum Beispiel die **Einsmatrix** $\mathbf{J}_3$ erstellt werden, kann dies wie folgt erreicht werden:
+
+```{r}
+matrix(1, nr=3, nc=3)
 ```
 
 Wie immer, wenn die Matrix weiter benötigt wird, dann muss der Rückgabewert von `matrix()` einer Variable zugewiesen werden.
@@ -591,7 +597,7 @@ mat_1[2,]  # Elemente a_2j
 mat_1[-2,1] # alle Elemente der ersten Spalte ohne Zeile 2
 ```
 
-Über das subsetting können den indizierten Werte in der Matrize neue Werte zugewiesen werden.
+Über das subsetting können den indizierten Werten in der Matrix neue Werte zugewiesen werden.
 
 ```{r}
 mat_0 <- matrix(0, nr=6, nc = 3)
@@ -601,7 +607,7 @@ mat_0[5,2:3] <- -13
 mat_0
 ```
 
-Matrizen können wie Vektoren auf zwei Arten multipliziert werden. Entweder die Elementweise mittels `*` oder Matrizenmultiplikation über `%*%` nach dem Muster.
+Matrizen können wie Vektoren auf zwei Arten multipliziert werden. Entweder elementweise mittels `*` oder mittels Matrizenmultiplikation über `%*%` nach dem Muster.
 
 ```{r}
 A <- matrix(1:6, nr=2)
@@ -624,7 +630,7 @@ nrow(A)
 ncol(A)
 ```
 
-Ansonsten funktionieren die mathematischen Operator wie in der Matrizenalgebra zu erwarten ist. Wenn z.B. zwei Matrizen addiert werden sollen, dann müssen die Dimensionen übereinstimmen.
+Ansonsten funktionieren die mathematischen Operator wie in der Matrizenalgebra zu erwarten ist. Wenn z.B. zwei Matrizen addiert werden sollen, dann kann, vorrausgesetzt Dimensionen stimmen überein, der `+`-Operator verwendet werden.
 
 ```{r}
 #| error: true
@@ -638,7 +644,19 @@ dim(D)
 A + D
 ```
 
-Mit der Funktion `diag()` kann eine quadratische Diagonalmatrix \index{Diagonalmatrize} erzeugt werden. Eine Diagonalmatrix hat nur auf der sogenannten Hauptdiagonalen Einträge, während alle anderen Werte $=0$ sind (siehe Formel \eqref{eq-r-kickoff-diag}).
+Ebenso funktioniert natürlich auch der `-`-Operator.
+
+```{r}
+A - D
+```
+
+In `R` kann auch der Geteiltoperator `/` verwendet werden, der in der Matrizenalgebra nicht vorhanden ist. Die Matrizen müssen wieder die gleichen Dimension haben und die Elemente werden dann entsprechend elementweise geteilt.
+
+```{r}
+(3*A) / A
+```
+
+Mit der Funktion `diag()` kann eine quadratische Diagonalmatrix \index{Diagonalmatrize} erzeugt werden. Eine Diagonalmatrix hat nur auf der sogenannten Hauptdiagonalen Einträge, während alle anderen Werte $=0$ sind (siehe Formel @eq-r-kickoff-diag).
 
 $$
 \begin{pmatrix}
@@ -661,9 +679,7 @@ $$
 \end{pmatrix}
 $$ {#eq-unity-matrix}
 
-Der Parameter $n$ gibt die Dimension an. Da es sich um eine quadratische Matrix handelt ist die Anzahl der Zeilen gleich der Anzahl der Spalten. Die Einheitsmatrix $\mathbf{I}_n$ hat in der linearen Algebra die Funktion des Einselement. Wenn eine Matrize $\mathbf{M}$ mit der Einheitsmatrix $\mathbf{I}$ multipliziert, dann ist das Ergebnis wieder die Matrix $M$, wie auch $m \cdot 1 = m$.
-
-Mit `diag(n)` kann eine Einheitsmatrix in `R` generiert werden.
+Der Parameter $n$ gibt die Dimension an. Da es sich um eine quadratische Matrix handelt ist die Anzahl der Zeilen gleich der Anzahl der Spalten. Die Einheitsmatrix $\mathbf{I}_n$ hat in der linearen Algebra die Funktion des Einselements. Wenn eine Matrix $\mathbf{M}$ mit der Einheitsmatrix $\mathbf{I}$ multipliziert wird, dann ist das Ergebnis wieder die Matrix $M$, ähnlich wie das auch bei Skalaren der Fall ist $m \cdot 1 = m$ bzw. $3 \dot 1 = 3$. Mit `diag(n)` kann eine Einheitsmatrix in `R` generiert werden.
 
 ```{r}
 I_3 <- diag(3)
@@ -673,13 +689,13 @@ I_3 %*% M
 M %*% I_3
 ```
 
-Soll eine Diagonalmatrix erstellen die bestimmte Wert auf der Hauptdiagonalen hat, dann kann mittels `diag()` auch einen Vektor mit den gewünschten Werten übergeben.
+Soll eine Diagonalmatrix erstellt werden die bestimmte Werte auf der Hauptdiagonalen hat, dann kann an `diag()` auch einen Vektor mit den gewünschten Werten übergeben werden.
 
 ```{r}
 diag(1:4) 
 ```
 
-Wenn `diag()` dagegen eine Matrix übergeben wird, dann werden die Elemente auf der Hauptdiagonalen extrahiert.
+Wenn dagegen eine Matrix als Argument an `diag()` übergeben wird, dann werden die Elemente auf der Hauptdiagonalen extrahiert.
 
 ```{r}
 E <- diag(1:4)
@@ -692,7 +708,7 @@ So lässt sich beispielsweise die Spur eine Matrix einfach berechnen.
 sum(diag(E))
 ```
 
-Eine Matrix kann mit Hilfe der `t()` Funktion transponiert werden.
+Wenn eine Matrix transponiert werden soll, dann kann die Funktion `t()` verwendet werden.
 
 $$
 \mathbf{A}^T = (a_{ji}) = \begin{pmatrix}a_{11} & \ldots & a_{m1} \\
@@ -721,14 +737,14 @@ cbind(1:2, E)
 rbind(E,1:2)
 ```
 
-Wie im Anhang besprochen, ist die Berechnung der Inversen $\mathbf{A}^{-1}$ einer quadratischen Matrix $\mathbf{A}$, wenn sie existiert, ein zentrales Problem in der Linearen Algebra. In `R` kann die Inverse $\mathbf{A}^{-1}$ einer Matrix numerisch mittels der Funktion `solve()` berechnet werden.
+Wie im Anhang besprochen, ist die Berechnung der Inversen $\mathbf{A}^{-1}$ einer quadratischen Matrix $\mathbf{A}$, sofern sie die denn existiert, ein zentrales Problem in der Linearen Algebra. In `R` kann die Inverse $\mathbf{A}^{-1}$ einer Matrix mittels der Funktion `solve()` numerisch berechnet werden.
 
 ```{r}
 E_inv <- solve(E)
 E_inv %*% E
 ```
 
-Um beispielsweise das Gleichungssystem:
+Um beispielsweise das folgende Gleichungssystem zu lösen:
 
 $$
 \begin{aligned}
@@ -737,18 +753,19 @@ $$
 \end{aligned}
 $$
 
-Mittels Matrixalgebra mit
+Kann diese System zunächst in Matrizen übersetzt werden.
 
 $$
 \mathbf{A} = \begin{pmatrix} 2 & 3 \\ -4 & 1\end{pmatrix}, \mathbf{x}=\begin{pmatrix}x\\y\end{pmatrix},\mathbf{y}=\begin{pmatrix}7\\2\end{pmatrix}
 $$
 
-bzw. die resultierende Matrizengleichung:
+Mit Hilfe dieser Matrizen kann dann die folgende resultierende Matrizengleichung aufgestellt werden:
 
 $$
 \mathbf{Ax} = \begin{pmatrix} 2 & 3 \\ -4 & 1\end{pmatrix}\begin{pmatrix}x\\y\end{pmatrix}=\begin{pmatrix}7\\2\end{pmatrix}=\mathbf{y}
 $$
-zu lösen, kann der folgende Code in `R` verwendet werden.
+
+Diese Matrixgleichung kann dann mittels Matrixalgebra gelöst werden, bzw. es resultiert der folgende Code in `R`:
 
 ```{r}
 A <- matrix(c(2,-4,3,1), nr=2)
@@ -758,7 +775,28 @@ x
 A %*% x
 ```
 
-D.h. die zu invertierende Matrix $\mathbf{A}$ und der Vektor $\mathbf{y}$ werden, direkt zusammen an `solve()` übergeben. In diesem Fall wird die Inverse tatsächlich gar nicht berechnet sondern `solve()` mit sich interne Optimierungen zunutze, die diesen Schritt überflüssig machen. Diese ist in den meisten Fällen schneller und numerisch stabiler, insbesondere bei sehr großen Gleichungssystemen. Weitere Funktionen zur Lösung von Gleichungssystemen die numerisch vorteilhaft sind, wie beispielweise die QR-Zerlegung sind in der Dokumentation zu finden.
+D.h. die zu invertierende Matrix $\mathbf{A}$ und der Vektor $\mathbf{y}$ werden beide als Argumente an `solve()` übergeben. In diesem Fall wird die Inverse $\mathbf{A}^{-1}$ tatsächlich gar nicht explizit mehr berechnet, sondern `solve()` macht sich interne Optimierungen zunutze, die diesen Schritt überflüssig machen. Diese ist in den meisten Fällen schneller und numerisch stabiler, insbesondere bei sehr großen Gleichungssystemen. Weitere Funktionen zur Lösung von Gleichungssystemen die numerisch vorteilhaft sind, wie beispielsweise die QR-Zerlegung sind in der Dokumentation zu finden.
+
+::: {#exm-buns-problem}
+
+Im Appendix ist ein Brötchenproblem behandelt worden.
+
+$$
+\begin{gather*}
+\mathbf{Xb} = \begin{pmatrix}3 & 2 \\5 & 4\end{pmatrix}
+\begin{pmatrix}\text{Kaiser}\\\text{Weltmeister}\end{pmatrix} = \begin{pmatrix}3,2\\6\end{pmatrix} = \mathbf{y} \\
+\end{gather*}
+$$
+
+In `R` übertragen folgt für das Ergebnis:
+
+```{r}
+X <- matrix(c(3,5,2,4), nr=2)
+y <- matrix(c(3.2, 6), nr=2)
+solve(X,y)
+```
+
+:::
 
 Eine weitere hilfreiche Funktion im Zusammenhang mit der Programmierung mit Matrizen ist die `apply()` Funktion. Mit `apply()` kann eine Funktion auf die einzelnen Spalten oder Zeilen einer Matrix angewendet werden.
 
@@ -922,4 +960,4 @@ flowchart TD
     D --> G(Logisch)
 ```
 
-Dies war natürlich nur eine Übersicht, aber sollte euch schon relativ weit bei der Arbeit mit `R` bringen.
+Dies war natürlich nur eine kurze Übersicht, aber sollte euch schon relativ weit bei der Arbeit mit `R` bringen.
