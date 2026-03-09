@@ -11,7 +11,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-Wie in der Beispielanwendung bereits gezeigt, besteht der Umgang mit `R` vor allem in der Benutzung von verschiedenen Befehlen. Die Befehle bzw. Anweisungen, werden `R` auf der Kommandozeile übergeben, `R` liest die Anweisungen ein und führt entsprechende Operationen durch. Im einfachsten Fall, kann `R` beispielsweise als ein überproportionierter Taschenrechner verwendet werden. In RStudio ist die Kommandozeile üblicherweise unten links zu sehen und signalisiert durch das Prompt `>` die Bereitschaft, Befehle annehmen zu können. Beispielsweise führt der folgende Befehl `2 + 2` auf der Kommandozeile gefolgt von einem {{< kbd ENTER >}}, zu folgender Ausgabe:
+Wie in der Beispielanwendung bereits gezeigt, besteht der Umgang mit `R` vor allem in der Benutzung von verschiedenen Befehlen. Die Befehle bzw. Anweisungen, werden an `R` auf der Kommandozeile übergeben. `R` liest die Anweisungen ein und führt entsprechende Operationen durch. Im einfachsten Fall, kann `R` beispielsweise als ein überproportionierter Taschenrechner verwendet werden. In RStudio und in Posit ist die Kommandozeile üblicherweise unten links zu sehen und signalisiert durch das Prompt `>` die Bereitschaft, Befehle annehmen zu können. Beispielsweise führt der folgende Befehl `2 + 2` auf der Kommandozeile gefolgt von einem {{< kbd ENTER >}}, zu folgender Ausgabe:
 
 ```{r}
 #| echo: true
@@ -19,9 +19,9 @@ Wie in der Beispielanwendung bereits gezeigt, besteht der Umgang mit `R` vor all
 2 + 2
 ```
 
-Das `[1]` kennzeichnet die erste Zeile der von `R` generierten Ausgabe.
+Die Ausgabe wird in einzelne Zeilen umgebrochen, wenn die Ausgabe zu lang ist und die Zeilen werden durchnummeriert.Die `[1]` kennzeichnet daher die erste Zeile der von `R` generierten Ausgabe.
 
-Die Kommandozeile in `R` funktioniert nach dem Prinzip einer sogenannten *REPL*. *REPL* ist eine Abkürzung für die englischen Begriffe read-eval-print loop. Die Eingabe wird durch `R` eingelesen (R), im Rahmen der Programmiersprache evaluiert (E), das Ergebnis wird ausgegeben (P) und anschließend geht die Kommandozeile zurück zum Ausgangszustand (L). D.h. im Beispiel eben liest `R` die Eingabe `2 + 2`, und evaluiert diese Anweisung. Die Evaluation führt zu dem Ergebnis `4`, und das Ergebnis wird wieder auf der Kommandozeile ausgegeben. Anschließend geht die Kommandozeile zurück in den Ausgangszustand und wartet auf die nächste Eingabe `>`. Wenig überraschend, führt die Eingabe `3 * 3` zu folgender Ausgabe.
+Die Kommandozeile in `R` funktioniert nach dem Prinzip einer sogenannten **REPL**. REPL ist eine Abkürzung für die englischen Begriffe read-eval-print-loop. Die Eingabe wird durch `R` eingelesen (R), im Rahmen der Programmiersprache evaluiert (E), das Ergebnis wird ausgegeben (P) und anschließend geht die Kommandozeile zurück zum Ausgangszustand (L). D.h. im Beispiel eben liest `R` die Eingabe `2 + 2`, und evaluiert diese Anweisung. Die Evaluation führt zu dem Ergebnis `4` und das Ergebnis wird wieder auf der Kommandozeile ausgegeben. Anschließend geht die Kommandozeile zurück in den Ausgangszustand und wartet auf die nächste Eingabe `>`. Wenig überraschend, führt die Eingabe `3 * 3` entsprechend zu folgender Ausgabe.
 
 ```{r}
 #| echo: true
@@ -29,21 +29,43 @@ Die Kommandozeile in `R` funktioniert nach dem Prinzip einer sogenannten *REPL*.
 3 * 3
 ```
 
-Da längere Analysen selten nur auf der Kommandozeile durchgeführt werden, sondern auch Skripte im Editor benutzt werden, gibt es in RStudio gibt es ein Tastenkürzel, um den Fokus auf die Kommandozeile zu setzen {{< kbd STRG+2 >}}.
+Da längere Analysen selten nur auf der Kommandozeile durchgeführt werden, sondern auch Skripte im Editor benutzt werden, gibt es in RStudio es ein Tastenkürzel, um den Fokus auf die Kommandozeile zu setzen {{< kbd STRG+2 >}}.
 
 In der Kommandozeile in `R` ist es nach der Ausführung einer Anweisung nicht möglich mit dem Cursor wieder nach oben zu gehen und eine fehlerhaften Eingabe zu berichtigen. Sondern die komplette Anweisung muss noch einmal eingegeben werden. Allerdings merkt sich RStudio die Befehle und mit den Pfeiltasten {{< kbd UP >}} und {{< kbd DOWN >}} können diese wieder aufgerufen werden und entsprechend angepasst werden.
 
-Die Anweisungen `2 + 2` oder `3 * 3` werden allgemein als **Ausdrücke** bezeichnet. Wir könnten die Beispiele jetzt mit den üblichen Grundrechenarten `+-/*` weiterführen, aber es würde nichts Neues dazukommen. Daher schauen wir uns jetzt an, wie wir komplexere, mehrstufige Berechnungen durchführen können. Dazu benötigen wir ein zentrales Konzept von Programmiersprachen: Variablen.
+Die Anweisungen `2 + 2` oder `3 * 3` werden allgemein als **Ausdrücke** bezeichnet.
+
+::: {#def-r-expression}
+### Ausdruck (engl. expression)
+
+Ein Ausdruck ist ein Teil eines Programms, der durch die Programmiersprache ausgewertet wird und genau einen Wert erzeugt.
+:::
+
+
+::: {#exm-r-expression-1}
+### Subtraktion und Division
+
+```{r}
+#| echo: true
+
+10 - 3
+12 / 4
+```
+
+:::
+
+Als nächstes seien nun komplexe komplexere, mehrstufige Anweisungen betrachtet, mit denen zum Beispiel komplexere Berechnungen durchgeführt werden können. Dazu wird allerdings ein zentrales Konzept von Programmiersprachen benötigt, das der **Variablen**.
 
 ## Variablen in `R`
 
-Nehmen wir an, wir wollen das Ergebnis der letzten komplexen Berechnung in irgendeiner Form weiter verwenden. Die im Beispiel berechnete `9` steht nach der Ausgabe allerdings für die weitere Bearbeitung nicht mehr zur Verfügung. `R` hat die REPL ausgeführt, die Berechnung der `9`, und da mit der Ausgabe nichts Weiteres durchgeführt wurde, ist die Ausgabe auch nirgends gespeichert worden. Die Ausgabe bzw. das Ergebnis eines Befehls wird als Rückgabewert\index{Rückgabewert} bezeichnet. Um den Rückgabewert eines Ausdrucks weiter zu bearbeiten, muss dieser Wert in irgendeiner Form in `R` gespeichert werden. Um Werte weiter verwenden zu können, wird den Werten daher ein **Bezeichner** \index{Bezeichner}, ein Name, zugewiesen. Es wird eine Variable eingeführt. Erfahrungsgemäß stellt dieses Konzept eine erste größere Hürde im Umgang mit `R` dar. Im Rahmen von Tabellenkalkulationsprogrammen spielen Variablen selten eine Rolle. Letztendlich ist eine Variable aber nichts anderes als ein Wert in `R` dem ein Bezeichner zugewiesen wurde.
+Nehmen wir an, wir wollen das Ergebnis einer komplexen Berechnung in irgendeiner Form weiter verwenden. Die im Beispiel berechnete `9` steht nach der Ausgabe allerdings für die weitere Bearbeitung nicht mehr zur Verfügung. `R` hat die REPL ausgeführt, das Ergebnis war die Berechnung von `9`, und da mit der Ausgabe nichts Weiteres durchgeführt wurde, ist die Ausgabe auch nirgends gespeichert worden. Die Ausgabe bzw. das Ergebnis eines Ausdrucks wird als **Rückgabewert** \index{Rückgabewert} bezeichnet. Um den Rückgabewert eines Ausdrucks weiter zu bearbeiten, muss dieser Wert in irgendeiner Form in `R` gespeichert werden. Um Werte weiter verwenden zu können, wird den Werten daher ein **Bezeichner** \index{Bezeichner}, ein Name, zugewiesen. Es wird eine Variable definiert. Erfahrungsgemäß stellt dieses Konzept eine erste größere Hürde im Umgang mit `R` dar. Da zum Beispiel im Rahmen von Tabellenkalkulationsprogrammen Variablen selten eine Rolle ist oft diese Konzept nicht geläufig. Letztendlich ist eine Variable aber nichts anderes als ein Wert in `R` dem ein Bezeichner zugewiesen wurde.
 
 ::: {#def-variable}
 ## Variable \index{Variable}
 
 Eine Variable ist ein Symbol oder ein Bezeichner, der verwendet wird, um einen Wert oder eine Datenstruktur zu speichern. Eine Variable dient als Referenz auf diesen Wert. Über den Bezeichner kann der Wert jederzeit abgerufen oder auch verändert werden.
 :::
+
 
 Um in `R` einem Ausdruck bzw. dessen Rückgabewert einen Namen zuzuweisen, wird ein spezieller, in `R` definierter Befehl verwendet, der **Zuweisungsoperator** \index{Zuweisungsoperator} `<-`. Soll beispielsweise das Ergebnis der „komplexen“ Berechnung `3 * 3` später weiter verwendet werden, dann kann mit Hilfe des Zuweisungsoperators `<-` dem Rückgabewert ein Bezeichner gegeben werden. 
 
@@ -53,15 +75,16 @@ Um in `R` einem Ausdruck bzw. dessen Rückgabewert einen Namen zuzuweisen, wird 
 wert_1 <- 3 * 3
 ```
 
-`R` gibt jetzt keinen Ausdruck mehr zurück, da das Ergebnis des Zuweisungsoperators die Zuweisung eines Namens ist. Diese Operation gibt keinen Wert zurück. Intern hat `R` die Berechnung durchgeführt und dem Rückgabewert den Namen `wert_1` zugewiesen. Der Name ist dabei, im Rahmen bestimmter Konventionen, vollkommen willkürlich und `R` hätte mich nicht daran gehindert `wert_2`, `wert_123`, `thomas`, `steffie` oder einen anderen Namen zu verwenden. 
+
+Bei einer Zuweisung gibt `R` keinen Ausdruck mehr zurück, da das Ergebnis des Zuweisungsoperators die Zuweisung eines Namens ist. Diese Operation gibt keinen Wert zurück. Intern hat `R` die Berechnung durchgeführt und dem Rückgabewert den Namen `wert_1` zugewiesen. Der Name ist dabei, im Rahmen bestimmter Konventionen, vollkommen willkürlich und `R` hätte mich nicht daran gehindert `wert_2`, `wert_123`, `thomas`, `steffie` oder einen anderen Namen zu verwenden. 
 
 ::: {.callout-tip}
-Die aktuell definierten Bezeichner sind in RStudio oben rechts unter dem Reiter **Environment** zu sehen.
+Die aktuell definierten Bezeichner sind in RStudio und Posit oben rechts unter dem Reiter **Environment** zu sehen.
 
 ![Die Arbeitsumgebung in RStudio](pics/rstudio_ws_environment.png)
 :::
 
-Der Wert kann nun über den Bezeichner wiederverwendet werden. D.h. die Eingabe des Namens `wert_1` auf der Kommandozeile führt dazu, dass `R` den Wert zurückgibt. Der Wert und der Bezeichner sind nun gleichwertig miteinander. Überall wo ich einen Wert, z.B. $9$, verwenden kann, kann ich auch den Bezeichner einsetzen.
+Der Wert kann nun über den Bezeichner wiederverwendet werden. D.h. die Eingabe des Namens `wert_1` auf der Kommandozeile führt dazu, dass `R` den Wert zurückgibt. Der Wert und der Bezeichner sind nun gleichwertig miteinander. Überall wo ich den Wert $9$ verwenden kann, kann nun auch der Bezeichner `wert_1` verwendet werden.
 
 ```{r}
 #| echo: true
@@ -84,7 +107,38 @@ Der Aufruf des Bezeichners `x` von auf der Kommandozeile führt dann entsprechen
 x
 ```
 
-Konzeptionell stellt sich der Vorgang der Zuweisung in etwa so dar. Im internen Speicher von `R` wird der Wert $10$ an einer passenden Stelle abgespeichert und in einer Tabelle wird ein Eintrag mit dem Bezeichner `x` zusammen mit der Adresse des Wertes $10$ abgelegt. Wenn `R` dann auf den Bezeichner `x` trifft, dann schaut es in der Tabelle nach, an welcher Stelle sich der Wert befindet und gibt diesen aus. Dies hat zur Folge, dass Bezeichner genauso wieder in Ausdrücken verwendet werden können wie Werte. `R` ersetzt den jeweiligen Bezeichner durch den hinterlegten Wert und führt den Ausdruck aus.
+Konzeptionell stellt sich der Vorgang der Zuweisung in etwa so dar. Im internen Speicher von `R` wird der Wert $10$ an einer passenden Stelle abgespeichert und in einer Tabelle wird ein Eintrag mit dem Bezeichner `x` zusammen mit der Adresse des Wertes $10$ abgelegt (siehe @fig-r-vars-variable). 
+
+```{r}
+#| echo: false
+#| fig-cap: "Konzept einer Variable"
+#| label: fig-r-vars-variable
+
+df <- data.frame(
+  x = c(1, 2),
+  y = c(1, 1),
+  label = c("Variable:\nname", "Wert im\nArbeitsspeicher:\n42")
+)
+
+ggplot(df) +
+  geom_rect(data = tibble(xmin=0, xmax=1, ymin=0, ymax=1),
+            aes(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax), fill='lightgray') +
+  geom_rect(data = tibble(xmin=1.1, xmax=2.1, ymin=0, ymax=1),
+            aes(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax), fill='lightgray') +
+  annotate("text", x=0.5, y=0.95, label='Bezeichnerliste', size=7, hjust=0.5) +
+  annotate("text", x=0.1, y=0.7, label='x') +
+  annotate("text", x=1.5, y=0.95, label='Arbeitsspeicher', size=7, hjust=0.3) +
+  annotate("text", x=1.2, y=0.8, label='10') +
+  annotate("curve", x=.2, xend=1.15, y=0.7, yend=0.8,
+           arrow=arrow(type='closed', length=unit(3.5,"mm")), curvature=-0.2) +
+  annotate("text", x=0.1, y=0.6, label='wert_1') +
+  annotate("text", x=1.5, y=0.6, label='9') +
+  annotate("curve", x=.2, xend=1.45, y=0.6, yend=0.6,
+           arrow=arrow(type='closed', length=unit(3.5,"mm")), curvature=-0.2) +
+  theme_void() 
+```
+
+Wenn `R` dann in einem Ausdruck auf den Bezeichner `x` trifft, dann kontrolliert `R` in der Tabelle ob es einen Bezeichner mit diesem Namen gibt. Wenn dies nicht der Fall ist wird ein Fehler geworfen. Wenn der Bezeichner in der List ist, dann schaut `R` weiter nach, an welcher Stelle sich der Wert befindet und gibt diesen Wert aus. Dies hat zur Folge, dass Bezeichner genauso wieder in Ausdrücken verwendet werden können wie die jeweiligen Werte. `R` ersetzt den jeweiligen Bezeichner durch den hinterlegten Wert und führt den Ausdruck aus.
 
 ```{r}
 #| echo: true
@@ -92,9 +146,7 @@ Konzeptionell stellt sich der Vorgang der Zuweisung in etwa so dar. Im internen 
 x + wert_1
 ```
 
-`R` ersetzt den Bezeichner `x` mit dem Wert $10$ und den Bezeichner `wert_1` mit dem Wert $9$ und addiert die beiden Werte zusammen.
-
-In dieser Vorgehensweise besteht ein grundlegender Unterschied zur der Arbeitsweise mit Tabellenprogrammen, bei denen immer direkt auf den jeweiligen Zellen gearbeitet wird. In `R` werden Berechnungen, die Rückgabewerte von Ausdrücken, Bezeichner zugewiesen, und können dann in späteren Ausdrücken (Befehlen) wieder aufgerufen werden. Andersherum, wenn Zwischenergebnisse keinen Bezeichner haben, können sie auch nicht wiederverwendet werden.
+In diesem Fall, `R` stößt auf den Bezeichner `x`, schaut in der Tabelle nacho ob es einen Eintrag `x` gibt, ersetzt dann `x` mit dem Wert $10$. Der gleiche Vorgang wird dann für den nächsten Bezeichner `wert_1` ausgeführt der in dem Wert $9$ resultiert. Es resultiert der Ausdruck `10 + 9`, welcher nun vollständig ausgeführt werden kann und die beiden Werte werden miteinander addiert. In dieser Vorgehensweise besteht ein grundlegender Unterschied zur der Arbeitsweise mit Tabellenprogrammen, bei denen immer direkt auf den jeweiligen Zellen gearbeitet wird. In `R` werden Berechnungen (Ausdrücken bzw. Anweisungen) ausgeführt und den Rückgabewerten werden Bezeichner zugewiesen. Diese Bezeichner können dann in späteren Ausdrücken (Befehlen) wieder aufgerufen werden. Andersherum, wenn Zwischenergebnisse keinen Bezeichner haben, können sie auch nicht wiederverwendet werden.
 
 Zwei weitere Erläuterungen zu den bisherigen Beispielen sind notwendig. In den bisherigen Ausdrücken sind Leerzeichen zwischen die einzelnen Teile der Ausdrücke gesetzt worden. Diese Leerzeichen dienen lediglich der Leserlichkeit und haben keinen Einfluss auf die Evaluierung des Ausdrucks durch `R`. Daher sind die Ausdrücke `2 + 2 * 4` und `2+2*4` äquivalent und führen zum gleichen Ergebnis. Bei der Ausgabe des Wertes ist wahrscheinlich auch aufgefallen, dass `R` nicht den Wert $16$ berechnet hat, der korrekt wäre, wenn die Evaluierung des Ausdrucks streng von links nach rechts durchgeführt würde: `2 + 2 * 4 = 4 * 4 = 16`. `R` hat jedoch mathematische korrekt "Punkt vor Strich" angewendet und ist daher zum richtigen Ergebnis `10` gekommen.
 
@@ -116,7 +168,7 @@ Die Fehlermeldung von `R` gibt auch direkt an, was das Problem ist, das nämlich
 Das Auftreten von Fehler führt bei R Neueinsteigerinnen oft zu großer Verwirrung ist aber im Programmieralltag ein vollkommen normales Ereignis und sollte daher niemanden aus der Ruhe bringen. Im vorliegenden Fall bemängelt R lediglich das es den Bezeichner X nicht finden kann und dementsprechend nicht weiß wie es weiter verfahren soll.
 :::
 
-Es fehlt noch das letzte Konzept zu Variablen. Variablen heißen Variablen weil sie, zumindest in `R` variabel sein können. Es gibt keine Regel dagegen einen Bezeichner einen neuen Wert zuzuweisen. Oder anderes herum, einem anderen Wert einen zuvor verwendeten Bezeichner zu zuweisen.
+Es fehlt noch das letzte Konzept zu Variablen. Variablen heißen Variablen weil sie, zumindest in `R` variabel sein können. Es gibt keine Regel dagegen einen Bezeichner einen neuen Wert zuzuweisen. Oder anderes herum, einen anderen Wert einem zuvor verwendeten Bezeichner zu zuweisen.
 
 ```{r}
 #| echo: true
@@ -617,7 +669,34 @@ B
 A %*% B
 ```
 
-Um die Dimension einer Matrize, d.h. die Anzahl der Zeilen und Spalten, zu bestimmen gibt es in `R` die Funktion `dim()`.
+::: {#exm-r-types-matmult-01}
+
+### Multiplikation von $\mathbf{A}$ mit $\mathbf{A}^T$
+
+Sei eine Matrix $\mathbf{X}$ mit folgenden Einträgen gegeben:
+
+```{r}
+X <- matrix(1:12, nr=4)
+X
+```
+
+Dann kann $\mathbf{X}$ mit $\mathbf{X}^T$ entweder vormultipliziert
+
+```{r}
+t(X) %*% X
+```
+
+oder nachmultipliziert werden:
+
+```{r}
+X %*% t(X)
+```
+
+In beiden Fällen entsteht eine symmetrische Matrix.
+
+:::
+
+Um die Dimension einer Matrix, d.h. die Anzahl der Zeilen und Spalten, zu bestimmen gibt es in `R` die Funktion `dim()`.
 
 ```{r}
 dim(A)
@@ -630,7 +709,7 @@ nrow(A)
 ncol(A)
 ```
 
-Ansonsten funktionieren die mathematischen Operator wie in der Matrizenalgebra zu erwarten ist. Wenn z.B. zwei Matrizen addiert werden sollen, dann kann, vorrausgesetzt Dimensionen stimmen überein, der `+`-Operator verwendet werden.
+Ansonsten funktionieren die mathematischen Operator wie in der Matrizenalgebra zu erwarten ist. Wenn z.B. zwei Matrizen addiert werden sollen, dann kann, vorausgesetzt die Dimensionen stimmen überein, der `+`-Operator verwendet werden.
 
 ```{r}
 #| error: true

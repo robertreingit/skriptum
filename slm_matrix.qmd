@@ -242,7 +242,7 @@ Beziehungsweise graphisch (siehe @fig-slm-matrix-simple)
 #| fig-cap: "Streudiagramm des einfachen Datensatzes."
 
 ggplot(df, aes(x,y)) +
-  geom_point()
+  geom_point(size=3)
 ```
 
 In Matrizenschreibweise ergibt sich:
@@ -296,6 +296,205 @@ Die Berechnung mit `R` führt zu dem gleichen Ergebnis:
 ```{r}
 #| echo: true
 
-lm(y ~ x, df) |> coef()
+mod <- lm(y ~ x, df) 
+coef(mod)
 ```
 
+Über diese beiden Gleichungen erhalten wir die gewünschten Koeffizienten $\hat{\beta_0}$ und $\hat{\beta_1}$. Die Methode wird als die als die Methode der kleinsten Quadrate\index{Methode der kleinsten Quadrate} bezeichnet oder im Englischen Root-Mean-Square (RMS)\index{RMS}.
+
+
+Da die Matrix $\mathbf{X}$ ein zentrale Funktion bei der Berechnung der Koeffizienten hat, hat $\mathbf{X}$ eine eigene Bezeichnung und wird als **Modellmatrix** bezeichnet.
+
+::: {#def-model-matrix}
+## Modellmatrix 
+
+Die Modellmatrix \index{Modellmatrix}, auch als Designmatrix \index{Designmatrix} oder Regressionsmatrix \index{Regressionsmatrix} bezeichnet, ist eine Matrix welche die zur Modellierung verwendeten Daten in Form einer Matrix enthält. Jede Zeile der Modellmatrix repräsentiert einer Beobachtung, während jede Spalte einer Prädiktorvariable entspricht. Per Konvention wird die Modellmatrix wird oft mit dem Buchstaben $X$ bezeichnet.
+
+:::
+
+In `R` kann die Modellmatrix mit Hilfe der Funktion `model.matrix()` erzeugt werden. Im Beispiel führt dies zu:
+
+```{r}
+#| echo: true
+
+model.matrix(~x, df)
+```
+
+Beziehungsweise die Modellmatrix kann auch aus dem gefitteten `lm`-Modell extrahiert werden.
+
+```{r}
+#| echo: true
+
+model.matrix(mod)
+```
+
+Mittels der Modellmatrix und den Koeffizienten können die vorhergesagten Werte $\hat{y}_i$ nun mit einer einfachen Matrixmultiplikation berechnet werden.
+
+$$
+\widehat{\mathbf{Y}} = \mathbf{Xb}
+$$ {#eq-slm-matrix-pred}
+
+In `R` übertragen.
+
+```{r}
+#| echo: true
+
+X <- model.matrix(mod)
+b <- coef(mod)
+X %*% b
+```
+
+Dies sind die gleichen Werte die auch durch `predict()` berechnet werden.
+
+```{r}
+#| echo: true
+
+predict(mod)
+```
+
+Letztendlich führt `predict()` nämlich die gleiche Berechnung im Hintergrund durch.
+
+Sei nochmal die Gleichung betrachtet um die Koeffizienten zu bestimmen:
+
+$$
+\mathbf{b} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y} 
+$$
+
+Wenn diese Gleichung in @eq-slm-matrix-pred eingesetzt wird, wird der folgende Zusammenhang erhalten:
+
+$$
+\widehat{\mathbf{Y}} = \mathbf{Xb} = \mathbf{X}(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y} 
+$$
+
+Der Ausdruck auf der rechten Seite $\mathbf{X}(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T$ ist für sich genommen auch wieder eine Matrix der ein Symbol zugeordnet werden kann:
+
+$$
+\mathbf{H} = \mathbf{X}(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T
+$$ {#eq-slm-matrix-hatmatrix}
+
+Mit dieser Definition ergibt sich der folgende Zusammenhang:
+
+$$
+\widehat{\mathbf{Y}} = \mathbf{HY}
+$$
+
+D.h. die Matrix $\mathbf{H}$ überführt den Vektor $\mathbf{Y}$ in den Vektor $\widehat{\mathbf{Y}}$. D.h. aus den ursprünglichen $y_i$ Werten werden die vorhergesagten $\hat{y}_i$-Werte. Daher wird die Matrix $\mathbf{H}$ als **Hat**-Matrix bezeichnet \index{Hat-Matrix}. Die Hat-Matrix hat dabei die Eigenschaft, dass sie symmetrisch ist.
+
+Mit dieser Matrix lässt sich Varianz-Kovarianz-Matrix von $\mathbf{b} = \hat{\beta}$ berechnen. Zunächst die Varianz-Kovarianz-Matrix von $\mathbf{Y}$. Unter den Annahmen der einfachen linearen Regression sind die einzelnen Werte unabhängig voneinander. D.h. die Kovarianzen zwischen den $Y$-Werten sind gleich Null, formal $\text{Cov}(Y_i,Y_j) = 0, \forall i \neq j$. Weiterhin sind die Varianzen der $Y$-Werte alle gleich. D.h. es gilt $\text{Var}(Y_i) = \sigma^2$. Übertragen auf die Varianz-Kovarianz-Matrix von $\mathbf{Y}$ bedeutet dies, das auf der Hauptdiagonalen überall $\sigma^2$ steht und alle anderen Eintrage gleich Null sind.
+
+$$
+\text{Var}(\mathbf{Y}) = 
+\begin{pmatrix}
+\sigma^2 & 0 & \ldots & 0 \\
+0 & \sigma^2 & \ddots &  0 \\
+\vdots & \ddots & \ddots & 0 \\
+0 & \ldots & & \sigma^2  
+\end{pmatrix} =
+\sigma^2\begin{pmatrix}
+1 & 0 & \ldots & 0 \\
+0 & 1 & \ddots &  0 \\
+\vdots & \ddots & \ddots & 0 \\
+0 & \ldots & & 1 
+\end{pmatrix} = \sigma^2\mathbf{I}_n
+$$
+
+Dadurch ergibt sich für die Berechnung der Varianz-Kovarianz-Matrix von $\beta$ der folgende Zusammenhang:
+
+$$
+\text{Var}(\beta) = \text{Var}(\mathbf{X}(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y})
+$$
+
+Auf der rechten Seite ist nur $\mathbf{Y}$ eine Zufallsvariable und alle anderen Terme sind Konstanten. Daher gilt unter Anwendung @eq-vcv-asigma:
+
+$$
+\begin{split}
+\text{Var}(\beta) &= \text{Var}((\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y}) \\
+&= ((\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T)\text{Var}(\mathbf{Y})((\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T)^T \\
+&= ((\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T)\text{Var}(\mathbf{Y})\mathbf{X}\left((\mathbf{X}^T\mathbf{X})^{-1}\right)^T\\
+&= (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\sigma^2\mathbf{I}\mathbf{X}\left((\mathbf{X}^T\mathbf{X})^{-1}\right)^T\\
+&= (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\sigma^2\mathbf{I}\mathbf{X}\left((\mathbf{X}^T\mathbf{X})^{T}\right)^{-1}\\
+&= (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\sigma^2\mathbf{I}\mathbf{X}(\mathbf{X}^T\mathbf{X})^{-1}\\
+&= \sigma^2(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{X}(\mathbf{X}^T\mathbf{X})^{-1} \\
+&= \sigma^2(\mathbf{X}^T\mathbf{X})^{-1} \\
+\end{split}
+$$
+
+D.h. die Varianz-Kovarianzmatrix von $\beta$ berechnet sich nach der folgenden Formel ist also direkt durch die Modellmatrix beeinflusst:
+
+$$
+\text{Var}(\beta) = \sigma^2 (\mathbf{X}^T\mathbf{X})^{-1}
+$$ {#eq-slm-matrix-betavcv}
+
+::: {#exm-slm-matrix-vcv-centered}
+
+### VCV von $\beta$ bei zentrierten $X$-Werten
+
+Seien die $X$-Werte $x_i$ zentriert worden, so dass $\tilde{x}_i = x_i - \bar{x}$ gilt. Für die zentrierten Werte $\tilde{x}_i$ gilt der Zusammenhang:
+
+$$
+\sum_{i=1}^n\tilde{x}_i = 0
+$$
+
+Da ja der Mittelwert der zentrierten Werte $\tilde{x}_i$ durch die Zentrierung gleich Null ist. Für die Modellmatrix ergibt dies:
+
+$$
+\mathbf{X} = \begin{pmatrix}
+1 & \tilde{x}_1 \\
+1 & \tilde{x}_2 \\
+\vdots & \vdots \\
+1 & \tilde{x}_n
+\end{pmatrix}
+=
+\begin{pmatrix}
+1 & x_1-\bar{x} \\
+1 & x_2-\bar{x} \\
+\vdots & \vdots \\
+1 & x_n-\bar{x}
+\end{pmatrix}
+$$
+
+In diesem Fall wird $\mathbf{X}^T\mathbf{X}$ zu:
+
+$$
+\begin{split}
+\mathbf{X}^T\mathbf{X} &=
+\begin{pmatrix}
+1 & 1 & \cdots & 1 \\
+\tilde{x}_1 & \tilde{x}_2 & \cdots & \tilde{x}_n
+\end{pmatrix}
+\begin{pmatrix}
+1 & \tilde{x}_1 \\
+1 & \tilde{x}_2 \\
+\vdots & \vdots \\
+1 & \tilde{x}_n
+\end{pmatrix}  \\
+&= \begin{pmatrix}
+n & \sum_{i=1}^n\tilde{x}_i \\
+\sum_{i=1}^n\tilde{x}_i & \sum_{i=1}^n\tilde{x}_i^2
+\end{pmatrix}  \\
+&= \begin{pmatrix}
+n & 0 \\
+0 & \sum_{i=1}^n\tilde{x}_i^2
+\end{pmatrix}
+\end{split}
+$$
+
+D.h. die Matrix $\mathbf{X}^T\mathbf{X}$ ist eine diagonale Matrix, wodurch die Inverse $(\mathbf{X}^T\mathbf{X})^{-1}$ ebenfalls eine Diagonalmatrix ist. Daraus folgt, dass die Kovarianzen von $\beta_0$ und $\beta_1$ gleich Null sind und die Steigung $\beta_1$ und der $Y$-Achsenabschnitt voneinander unabhängig sind.
+
+:::
+
+Zum Abschluss sollen nun noch die Residuen $\epsilon_i$ mittels Matrizen berechnet werden. Der Definition der Residuen folgend:
+
+$$
+\epsilon_i = y_i - \hat{y}_i
+$$
+
+Übertragen in Matrixschreibweise ergibt sich.
+
+$$
+\begin{pmatrix} \epsilon_1 \\ \epsilon_2 \\ \vdots \\ \epsilon_n\end{pmatrix} = \mathbf{e} = \mathbf{Y} - \widehat{\mathbf{Y}} = \mathbf{Y} - \mathbf{HY} = (\mathbf{I} - \mathbf{H})\mathbf{Y}
+$$
+
+Da die Matrizen $\mathbf{H}$ und $\mathbf{I}$ beide symmetrisch sind, ist auch $\mathbf{I} - \mathbf{H}$ symmetrisch.
+
+Die Information in diesem Kapitel sind bieten einen kurzen Einblick in die theoretische Entwicklung der Regression. Wie bereits mehrfach erwähnt, ist es nicht notwendig diese Berechnung tatsächlich von Hand durchführen zu können. Allerdings ist es tatsächlich immer wieder von großem Vorteil zumindest ein paar der Zusammenhänge zu kennen bzw. nachvollziehen zu können, da diese dann doch immer wieder bei der Arbeit mit linearen Modellen und späteren Erweiterungen zum tragen kommen.

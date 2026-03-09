@@ -614,18 +614,9 @@ Es ist zu erkennen, dass die Größe der Modellkoeffizienten sehr stark davon ab
 
 Zusammenfassend ist es entsprechend wichtig dass bei der Modellierung mittels einer multiplen linearen Regression theoretische Vorüberlegungen über die relevanten Variablen in die Studie mit eingehen. Ein einfaches probieren mittels In- und Exklusion von Prädiktorvariablen wird selten zum gewünschten Erfolg führen bzw. zu einem robustem Modell führen. Zumindest wenn es darum geht den Werten der Modellkoeffizienten auch inhaltliche Bedeutung zuweisen zu können.
 
-## Unter der Motorhaube von `lm()` die Modellmatrix
+## Unter der Motorhaube von `lm()` 
 
-Für die weitere Arbeit mit der multiplen linearen Regression ist es von Vorteil ein etwas tiefergehendes Verständnis der Berechnungen in `R` bei der Verwendung von `lm()` zu haben. Insbesondere die Kenntnis der sogenannten Modellmatrix ist dabei von Vorteil. 
-
-::: {#def-model-matrix}
-## Modellmatrix 
-
-Die Modellmatrix \index{Modellmatrix}, auch als Designmatrix \index{Designmatrix} oder Regressionsmatrix \index{Regressionsmatrix}, ist eine Matrix welche die zur Modellierung verwendeten Daten in Form einer Matrix enthält. Jede Zeile der Modellmatrix repräsentiert eine Beobachtung, während jede Spalte einer Prädiktorvariable entspricht. Die Modellmatrix wird oft mit dem Buchstaben $X$ bezeichnet.
-
-:::
-
-In `R` kann eine Modellmatrix mit Hilfe der Funktion `model.matrix()` erzeugt werden. Am einfachsten ist die Funktion anhand eines Beispiels nach zu vollziehen. Sei der folgende einfache Beispieldatensatz gegeben:
+Bei der Behandlung der einfachen linearen Regression mittels Matrizen wurde gezeigt, dass die Berechnung der Koeffizienten $\beta_0$ und $\beta_1$ von `lm()` im Hintergrund über Matrizen erfolgt. Hier spielte die Modellmatrix $\mathbf{X}$ eine wichtige Rolle. Diese taucht genauso auch wieder bei der multiplen linearen Regression auf, nur, dass nun nicht mit mehr zwei Spalten sondern entsprechend der Anzahl der Prädiktorvariablen mehr Variablen in den Spalten abgebildet werden. Sei zum Beispiel ein einfacher Datensatz mit zwei Prädiktorvariablen $X_1$ und $X_2$ gegeben.
 
 ```{r}
 #| echo: true
@@ -637,7 +628,7 @@ df <- tibble(
 )
 ```
 
-Wenn nun eine lineares Modell an die *Daten* gefittet wird, dann würde die folgende Syntax verwendet werden `lm(y ~ x_1 + x_2)` entsprechend zu dem Modell $y_i = \beta_0 + \beta_1 x_{1i}+ \beta_2 x_{2i} + \epsilon_i$. Was nun intern in `lm()` passiert ist, das die Berechnung auf ein mathematisches Problem abgebildet wird, das mit Hilfe von Matrizenalgebra gelöst wird. Die genaueren Schritte sind zunächst nicht weiter wichtig, sondern nur der erste Schritt die Erstellung der Modellmatrix $X$. Die erzeugte Modellmatrix kann angezeigt werden, indem die Funktion `model.matrix()` auf das Modellobjekt angewendet wird.
+Wenn nun ein lineares Modell an die *Daten* gefittet wird, dann wird die folgende Syntax verwendet `lm(y ~ x_1 + x_2)` entsprechend zu dem Modell $y_i = \beta_0 + \beta_1 x_{1i}+ \beta_2 x_{2i} + \epsilon_i$. Intern in `lm()` wird diese nun auf Matrizen abgebildet und mit Hilfe von Matrizenalgebra gelöst. Die erzeugte Modellmatrix $\mathbf{X}$ kann wie bereits besprochen mittels `model.matrix()` angezeigt werden.
 
 ```{r}
 #| echo: true
@@ -646,15 +637,7 @@ mod <- lm(y ~ x_1 + x_2, df)
 model.matrix(mod)
 ```
 
-Alternativ kann die Modellmatrix anhand der *Formel* und dem Datensatz erstellt werden:
-
-```{r}
-#| echo: true
-
-model.matrix(~ x_1 + x_2, data = df)
-```
-
-Laut der Definition, ist die Modellmatrix $X$ die numerische Darstellung der Prädiktorvariablen mittels einer Matrix. In der zweiten Spalte sind die Werte der Variablen `x_1`, während in der dritten Spalte die Werte der Variablen `x_2` eingetragen sind. Die Spalten entsprechen also den jeweiligen Einträgen der Prädiktorvariablen $x_{ji}$. Die erste Spalte sticht hier etwas raus, da hier nur $1$ eingetragen sind. Diese Spalte ist dem ersten Modellkoeffizienten $\beta_0$ zugeordnet, also dem *konstanten* $y$-Achsenabschnitt. Dies hat den Vorteil, dass die vorhergesagten Werte durch eine einfache Matrixmultiplikation berechnet werden können (im Anhang ist dazu eine kurze Erläuterung, ist aber nicht notwendig für das weitere Verständnis).
+In der ersten Spalte stehen wieder nur Einsen entsprechend dem Koeffizienten $\beta_0$. In der zweiten Spalte sind die Werte der Variablen `x_1`, während in der dritten Spalte die Werte der Variablen `x_2` eingetragen sind. Die Spalten entsprechen also wieder den jeweiligen Einträgen der Prädiktorvariablen $x_{ji}$. Da im üblichen die Prädiktorvariablen, zumindest bei numerischen Werten, unabhängig voneinander sind hat die Modellmatrix $\mathbf{X}$ vollen Rang. Damit hat auch $\mathbf{X}^T\mathbf{X}$ vollen Rang und kann invertiert werden um mittels $(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y}$ die Werte für die Koeffizienten $\beta_i, i=1,\ldots,p$ zu berechnen. Die Multiplikation von $\mathbf{X}$ mit $\hat{\beta}$ für zu den $\hat{y}_i$ Werten.
 
 ```{r}
 #| echo: true
