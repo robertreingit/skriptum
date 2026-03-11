@@ -108,7 +108,7 @@ $$
 \text{Var}(aY) = a^2 \sigma^2_Y
 $$
 
-D.h. die Varianz $sigma^2_Y$ von $Y$ wird mit dem Quadrat von $a$ multipliziert. Im Fall eines Zufallsvektor $\mathbf{Y}$ mit einer konstanter Matrix $\mathbf{A}$ gilt entsprechend:
+D.h. die Varianz $\sigma^2_Y$ von $Y$ wird mit dem Quadrat von $a$ multipliziert. Im Fall eines Zufallsvektor $\mathbf{Y}$ mit einer konstanten Matrix $\mathbf{A}$ gilt entsprechend:
 
 $$
 \text{Var}(\mathbf{AY}) = \mathbf{A}\text{Var}(\mathbf{Y})\mathbf{A}^T = \mathbf{A}\Sigma\mathbf{A}^T
@@ -218,12 +218,12 @@ Die Matrix $\mathbf{X}^T\mathbf{X}$ resultiert in einer $2\times 2$ Matrix deren
 
 $$
 \begin{matrix}
-& (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Xb} &= (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y} \\
+& \underbrace{(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{X}}_{=\mathbf{I}}\mathbf{b} &= (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y} \\
 \Leftrightarrow & \mathbf{b} &= (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y} 
 \end{matrix}
-$$
+$$ {#eq-slm-matrix-bsol}
 
-D.h. es wurde eine Lösung für $\mathbf{b}$ gefunden. Tatsächlich führt diese Matrizenlösung zu der gleichen Lösung wie mittels der Normalengleichungen. Die Herleitung ohne das *Weglassen* von $\mathbf{e}$ geht eigentlich wieder über die Minimierung, ist aber hier der Einfachheit halber weggelassen worden. 
+D.h. es wurde eine Lösung für $\mathbf{b}$ gefunden. Tatsächlich führt diese Matrizenlösung zu der gleichen Lösung wie diejenige die mittels der Normalengleichungen erhalten wird. Die Herleitung ohne das *Weglassen* von $\mathbf{e}$ geht eigentlich wieder über die Minimierung, ist aber hier der Einfachheit halber weggelassen worden. 
 
 Um jedoch zu sehen, das tatsächlich die Werte der Normalengleichung herauskommen sei ein einfaches Beispiel betrachtet. Es liegt der folgende Datensatz vor (siehe @tbl-slm-matrix-simple)
 
@@ -291,7 +291,7 @@ $$
 \end{pmatrix}
 $$
 
-Die Berechnung mit `R` führt zu dem gleichen Ergebnis:
+Die Berechnung mit `R` über `lm()` führt zu dem gleichen Ergebnis:
 
 ```{r}
 #| echo: true
@@ -299,9 +299,6 @@ Die Berechnung mit `R` führt zu dem gleichen Ergebnis:
 mod <- lm(y ~ x, df) 
 coef(mod)
 ```
-
-Über diese beiden Gleichungen erhalten wir die gewünschten Koeffizienten $\hat{\beta_0}$ und $\hat{\beta_1}$. Die Methode wird als die als die Methode der kleinsten Quadrate\index{Methode der kleinsten Quadrate} bezeichnet oder im Englischen Root-Mean-Square (RMS)\index{RMS}.
-
 
 Da die Matrix $\mathbf{X}$ ein zentrale Funktion bei der Berechnung der Koeffizienten hat, hat $\mathbf{X}$ eine eigene Bezeichnung und wird als **Modellmatrix** bezeichnet.
 
@@ -344,7 +341,7 @@ b <- coef(mod)
 X %*% b
 ```
 
-Dies sind die gleichen Werte die auch durch `predict()` berechnet werden.
+Dies sind natürlich die gleichen Werte $\hat{y}_i$ die auch über `predict()` berechnet werden.
 
 ```{r}
 #| echo: true
@@ -352,9 +349,9 @@ Dies sind die gleichen Werte die auch durch `predict()` berechnet werden.
 predict(mod)
 ```
 
-Letztendlich führt `predict()` nämlich die gleiche Berechnung im Hintergrund durch.
+Letztendlich führt `predict()` die gleiche Berechnung im Hintergrund durch.
 
-Sei nochmal die Gleichung betrachtet um die Koeffizienten zu bestimmen:
+Sei nochmal @eq-slm-matrix-bsol betrachtet um die Koeffizienten zu bestimmen:
 
 $$
 \mathbf{b} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y} 
@@ -380,7 +377,25 @@ $$
 
 D.h. die Matrix $\mathbf{H}$ überführt den Vektor $\mathbf{Y}$ in den Vektor $\widehat{\mathbf{Y}}$. D.h. aus den ursprünglichen $y_i$ Werten werden die vorhergesagten $\hat{y}_i$-Werte. Daher wird die Matrix $\mathbf{H}$ als **Hat**-Matrix bezeichnet \index{Hat-Matrix}. Die Hat-Matrix hat dabei die Eigenschaft, dass sie symmetrisch ist.
 
-Mit dieser Matrix lässt sich Varianz-Kovarianz-Matrix von $\mathbf{b} = \hat{\beta}$ berechnen. Zunächst die Varianz-Kovarianz-Matrix von $\mathbf{Y}$. Unter den Annahmen der einfachen linearen Regression sind die einzelnen Werte unabhängig voneinander. D.h. die Kovarianzen zwischen den $Y$-Werten sind gleich Null, formal $\text{Cov}(Y_i,Y_j) = 0, \forall i \neq j$. Weiterhin sind die Varianzen der $Y$-Werte alle gleich. D.h. es gilt $\text{Var}(Y_i) = \sigma^2$. Übertragen auf die Varianz-Kovarianz-Matrix von $\mathbf{Y}$ bedeutet dies, das auf der Hauptdiagonalen überall $\sigma^2$ steht und alle anderen Eintrage gleich Null sind.
+::: {#exm-slm-matrix-hmatrixR}
+### Berechnung von $\mathbf{H}$ in `R`
+
+Die Berechnung von $\mathbf{H}$ für die Beispieldaten geht relativ einfach. Die Modelmatrix $\mathbf{X}$ wurde ja schon extrahiert. Dementsprechend folgt:
+
+```{r}
+#| echo: true
+#| eval: false
+X %*% solve(t(X)%*% X) %*% t(X) 
+```
+```{r}
+X %*% solve(t(X)%*% X) %*% t(X) |> MASS::fractions()
+```
+
+Hier ist auch nochmal zu erkennen, dass die $\mathbf{H}$ eine symmetrische Matrix ist.
+
+:::
+
+Mit $\mathbf{H}$ lässt sich die Varianz-Kovarianz-Matrix von $\mathbf{b} = \hat{\beta}$ berechnen. Zunächst sei dazu jedoch die Varianz-Kovarianz-Matrix von $\mathbf{Y}$ betrachtet. Unter den Annahmen der einfachen linearen Regression sind die einzelnen Werte unabhängig voneinander. D.h. die Kovarianzen zwischen den $Y$-Werten sind gleich Null, formal $\text{Cov}(Y_i,Y_j) = 0, \forall i \neq j$. Weiterhin sind die Varianzen der $Y$-Werte alle gleich. D.h. es gilt $\text{Var}(Y_i) = \sigma^2$. Übertragen auf die Varianz-Kovarianz-Matrix von $\mathbf{Y}$ bedeutet dies, das auf der Hauptdiagonalen überall der Wert $\sigma^2$ steht und alle anderen Einträge gleich Null sind. Daher hat die VCV von $\mathbf{Y}$ die folgende Form:
 
 $$
 \text{Var}(\mathbf{Y}) = 
@@ -396,7 +411,7 @@ $$
 \vdots & \ddots & \ddots & 0 \\
 0 & \ldots & & 1 
 \end{pmatrix} = \sigma^2\mathbf{I}_n
-$$
+$$ {#eq-slm-matrix-varY}
 
 Dadurch ergibt sich für die Berechnung der Varianz-Kovarianz-Matrix von $\beta$ der folgende Zusammenhang:
 
@@ -404,7 +419,7 @@ $$
 \text{Var}(\beta) = \text{Var}(\mathbf{X}(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y})
 $$
 
-Auf der rechten Seite ist nur $\mathbf{Y}$ eine Zufallsvariable und alle anderen Terme sind Konstanten. Daher gilt unter Anwendung @eq-vcv-asigma:
+Auf der rechten Seite ist nur $\mathbf{Y}$ eine Zufallsvariable und alle anderen Terme sind Konstanten. Daher gilt unter Anwendung @eq-vcv-asigma mit der Festsetzung $\mathbf{A} = \mathbf{X}(\mathbf{X}^T\mathbf{X})^{-1}$:
 
 $$
 \begin{split}
@@ -419,7 +434,7 @@ $$
 \end{split}
 $$
 
-D.h. die Varianz-Kovarianzmatrix von $\beta$ berechnet sich nach der folgenden Formel ist also direkt durch die Modellmatrix beeinflusst:
+Für die zweite Zeile wurde @eq-vcv-asigma angewendet, in der dritten Zeile wurde der rechte Term entsprechend der Transponierung umsortiert. In der dritten Zeile wurde @eq-slm-matrix-varY angewendet, in der vierten Zeile die Vertauschung von Transponieren und Invertieren, da $\mathbf{X}^T\mathbf{X}$ symmetrisch ist. In der vorletzten Zeile wurde die Inverse angewendet. Letztendlich folgt, dass die Varianz-Kovarianzmatrix von $\beta$ direkt durch die Modellmatrix beeinflusst wird:
 
 $$
 \text{Var}(\beta) = \sigma^2 (\mathbf{X}^T\mathbf{X})^{-1}

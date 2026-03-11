@@ -570,7 +570,7 @@ E[\mathbf{AY}] = \mathbf{A}E[\mathbf{Y}] = \begin{pmatrix} 1 &amp; 2 &amp; 3\end
 <p><span class="math display">\[
 \text{Var}(aY) = a^2 \sigma^2_Y
 \]</span></p>
-<p>D.h. die Varianz <span class="math inline">\(sigma^2_Y\)</span> von <span class="math inline">\(Y\)</span> wird mit dem Quadrat von <span class="math inline">\(a\)</span> multipliziert. Im Fall eines Zufallsvektor <span class="math inline">\(\mathbf{Y}\)</span> mit einer konstanter Matrix <span class="math inline">\(\mathbf{A}\)</span> gilt entsprechend:</p>
+<p>D.h. die Varianz <span class="math inline">\(\sigma^2_Y\)</span> von <span class="math inline">\(Y\)</span> wird mit dem Quadrat von <span class="math inline">\(a\)</span> multipliziert. Im Fall eines Zufallsvektor <span class="math inline">\(\mathbf{Y}\)</span> mit einer konstanten Matrix <span class="math inline">\(\mathbf{A}\)</span> gilt entsprechend:</p>
 <p><span id="eq-vcv-asigma"><span class="math display">\[
 \text{Var}(\mathbf{AY}) = \mathbf{A}\text{Var}(\mathbf{Y})\mathbf{A}^T = \mathbf{A}\Sigma\mathbf{A}^T
 \tag{18.1}\]</span></span></p>
@@ -654,13 +654,13 @@ Y_n &amp;= \beta_0 + \beta_n\cdot X_n + \epsilon_n \\
 \mathbf{X}^T\mathbf{Xb} = \mathbf{X}^T\mathbf{Y}
 \]</span></p>
 <p>Die Matrix <span class="math inline">\(\mathbf{X}^T\mathbf{X}\)</span> resultiert in einer <span class="math inline">\(2\times 2\)</span> Matrix deren Rang <span class="math inline">\(2\)</span> ist. D.h. Diese Matrix kann invertiert werden, d.h. es existiert die Matrix <span class="math inline">\((\mathbf{X}^T\mathbf{X})^{-1}\)</span>. Wiederum Muliplikation von links mit dieser Inversen resultiert dann in:</p>
-<p><span class="math display">\[
+<p><span id="eq-slm-matrix-bsol"><span class="math display">\[
 \begin{matrix}
-&amp; (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Xb} &amp;= (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y} \\
+&amp; \underbrace{(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{X}}_{=\mathbf{I}}\mathbf{b} &amp;= (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y} \\
 \Leftrightarrow &amp; \mathbf{b} &amp;= (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y}
 \end{matrix}
-\]</span></p>
-<p>D.h. es wurde eine Lösung für <span class="math inline">\(\mathbf{b}\)</span> gefunden. Tatsächlich führt diese Matrizenlösung zu der gleichen Lösung wie mittels der Normalengleichungen. Die Herleitung ohne das <em>Weglassen</em> von <span class="math inline">\(\mathbf{e}\)</span> geht eigentlich wieder über die Minimierung, ist aber hier der Einfachheit halber weggelassen worden.</p>
+\tag{18.2}\]</span></span></p>
+<p>D.h. es wurde eine Lösung für <span class="math inline">\(\mathbf{b}\)</span> gefunden. Tatsächlich führt diese Matrizenlösung zu der gleichen Lösung wie diejenige die mittels der Normalengleichungen erhalten wird. Die Herleitung ohne das <em>Weglassen</em> von <span class="math inline">\(\mathbf{e}\)</span> geht eigentlich wieder über die Minimierung, ist aber hier der Einfachheit halber weggelassen worden.</p>
 <p>Um jedoch zu sehen, das tatsächlich die Werte der Normalengleichung herauskommen sei ein einfaches Beispiel betrachtet. Es liegt der folgende Datensatz vor (siehe <a href="#tbl-slm-matrix-simple" class="quarto-xref">Tabelle&nbsp;<span>18.1</span></a>)</p>
 <div class="cell">
 <div id="tbl-slm-matrix-simple" class="cell quarto-float quarto-figure quarto-figure-center anchored">
@@ -750,7 +750,7 @@ Abbildung&nbsp;18.1: Streudiagramm des einfachen Datensatzes.
 3 \\ \frac{1}{2}
 \end{pmatrix}
 \]</span></p>
-<p>Die Berechnung mit <code>R</code> führt zu dem gleichen Ergebnis:</p>
+<p>Die Berechnung mit <code>R</code> über <code>lm()</code> führt zu dem gleichen Ergebnis:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x, df) </span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(mod)</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
@@ -759,7 +759,6 @@ Abbildung&nbsp;18.1: Streudiagramm des einfachen Datensatzes.
         3.0         0.5 </code></pre>
 </div>
 </div>
-<p>Über diese beiden Gleichungen erhalten wir die gewünschten Koeffizienten <span class="math inline">\(\hat{\beta_0}\)</span> und <span class="math inline">\(\hat{\beta_1}\)</span>. Die Methode wird als die als die Methode der kleinsten Quadrate bezeichnet oder im Englischen Root-Mean-Square (RMS).</p>
 <p>Da die Matrix <span class="math inline">\(\mathbf{X}\)</span> ein zentrale Funktion bei der Berechnung der Koeffizienten hat, hat <span class="math inline">\(\mathbf{X}\)</span> eine eigene Bezeichnung und wird als <strong>Modellmatrix</strong> bezeichnet.</p>
 <div id="def-model-matrix" class="theorem definition">
 <p><span class="theorem-title"><strong>Definition 18.3 (Modellmatrix)</strong></span> Die Modellmatrix , auch als Designmatrix oder Regressionsmatrix bezeichnet, ist eine Matrix welche die zur Modellierung verwendeten Daten in Form einer Matrix enthält. Jede Zeile der Modellmatrix repräsentiert einer Beobachtung, während jede Spalte einer Prädiktorvariable entspricht. Per Konvention wird die Modellmatrix wird oft mit dem Buchstaben <span class="math inline">\(X\)</span> bezeichnet.</p>
@@ -791,7 +790,7 @@ attr(,"assign")
 <p>Mittels der Modellmatrix und den Koeffizienten können die vorhergesagten Werte <span class="math inline">\(\hat{y}_i\)</span> nun mit einer einfachen Matrixmultiplikation berechnet werden.</p>
 <p><span id="eq-slm-matrix-pred"><span class="math display">\[
 \widehat{\mathbf{Y}} = \mathbf{Xb}
-\tag{18.2}\]</span></span></p>
+\tag{18.3}\]</span></span></p>
 <p>In <code>R</code> übertragen.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(mod)</span>
@@ -804,7 +803,7 @@ attr(,"assign")
 3  3.5</code></pre>
 </div>
 </div>
-<p>Dies sind die gleichen Werte die auch durch <code>predict()</code> berechnet werden.</p>
+<p>Dies sind natürlich die gleichen Werte <span class="math inline">\(\hat{y}_i\)</span> die auch über <code>predict()</code> berechnet werden.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(mod)</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -812,26 +811,41 @@ attr(,"assign")
 2.5 3.0 3.5 </code></pre>
 </div>
 </div>
-<p>Letztendlich führt <code>predict()</code> nämlich die gleiche Berechnung im Hintergrund durch.</p>
-<p>Sei nochmal die Gleichung betrachtet um die Koeffizienten zu bestimmen:</p>
+<p>Letztendlich führt <code>predict()</code> die gleiche Berechnung im Hintergrund durch.</p>
+<p>Sei nochmal <a href="#eq-slm-matrix-bsol" class="quarto-xref">Gleichung&nbsp;<span>18.2</span></a> betrachtet um die Koeffizienten zu bestimmen:</p>
 <p><span class="math display">\[
 \mathbf{b} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y}
 \]</span></p>
-<p>Wenn diese Gleichung in <a href="#eq-slm-matrix-pred" class="quarto-xref">Gleichung&nbsp;<span>18.2</span></a> eingesetzt wird, wird der folgende Zusammenhang erhalten:</p>
+<p>Wenn diese Gleichung in <a href="#eq-slm-matrix-pred" class="quarto-xref">Gleichung&nbsp;<span>18.3</span></a> eingesetzt wird, wird der folgende Zusammenhang erhalten:</p>
 <p><span class="math display">\[
 \widehat{\mathbf{Y}} = \mathbf{Xb} = \mathbf{X}(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y}
 \]</span></p>
 <p>Der Ausdruck auf der rechten Seite <span class="math inline">\(\mathbf{X}(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\)</span> ist für sich genommen auch wieder eine Matrix der ein Symbol zugeordnet werden kann:</p>
 <p><span id="eq-slm-matrix-hatmatrix"><span class="math display">\[
 \mathbf{H} = \mathbf{X}(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T
-\tag{18.3}\]</span></span></p>
+\tag{18.4}\]</span></span></p>
 <p>Mit dieser Definition ergibt sich der folgende Zusammenhang:</p>
 <p><span class="math display">\[
 \widehat{\mathbf{Y}} = \mathbf{HY}
 \]</span></p>
 <p>D.h. die Matrix <span class="math inline">\(\mathbf{H}\)</span> überführt den Vektor <span class="math inline">\(\mathbf{Y}\)</span> in den Vektor <span class="math inline">\(\widehat{\mathbf{Y}}\)</span>. D.h. aus den ursprünglichen <span class="math inline">\(y_i\)</span> Werten werden die vorhergesagten <span class="math inline">\(\hat{y}_i\)</span>-Werte. Daher wird die Matrix <span class="math inline">\(\mathbf{H}\)</span> als <strong>Hat</strong>-Matrix bezeichnet . Die Hat-Matrix hat dabei die Eigenschaft, dass sie symmetrisch ist.</p>
-<p>Mit dieser Matrix lässt sich Varianz-Kovarianz-Matrix von <span class="math inline">\(\mathbf{b} = \hat{\beta}\)</span> berechnen. Zunächst die Varianz-Kovarianz-Matrix von <span class="math inline">\(\mathbf{Y}\)</span>. Unter den Annahmen der einfachen linearen Regression sind die einzelnen Werte unabhängig voneinander. D.h. die Kovarianzen zwischen den <span class="math inline">\(Y\)</span>-Werten sind gleich Null, formal <span class="math inline">\(\text{Cov}(Y_i,Y_j) = 0, \forall i \neq j\)</span>. Weiterhin sind die Varianzen der <span class="math inline">\(Y\)</span>-Werte alle gleich. D.h. es gilt <span class="math inline">\(\text{Var}(Y_i) = \sigma^2\)</span>. Übertragen auf die Varianz-Kovarianz-Matrix von <span class="math inline">\(\mathbf{Y}\)</span> bedeutet dies, das auf der Hauptdiagonalen überall <span class="math inline">\(\sigma^2\)</span> steht und alle anderen Eintrage gleich Null sind.</p>
-<p><span class="math display">\[
+<div id="exm-slm-matrix-hmatrixR" class="theorem example">
+<p><span class="theorem-title"><strong>Beispiel 18.1 (Berechnung von <span class="math inline">\(\mathbf{H}\)</span> in <code>R</code>)</strong></span> Die Berechnung von <span class="math inline">\(\mathbf{H}\)</span> für die Beispieldaten geht relativ einfach. Die Modelmatrix <span class="math inline">\(\mathbf{X}\)</span> wurde ja schon extrahiert. Dementsprechend folgt:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>X <span class="sc">%*%</span> <span class="fu">solve</span>(<span class="fu">t</span>(X)<span class="sc">%*%</span> X) <span class="sc">%*%</span> <span class="fu">t</span>(X) </span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>  1    2    3   
+1  5/6  1/3 -1/6
+2  1/3  1/3  1/3
+3 -1/6  1/3  5/6</code></pre>
+</div>
+</div>
+<p>Hier ist auch nochmal zu erkennen, dass die <span class="math inline">\(\mathbf{H}\)</span> eine symmetrische Matrix ist.</p>
+</div>
+<p>Mit <span class="math inline">\(\mathbf{H}\)</span> lässt sich die Varianz-Kovarianz-Matrix von <span class="math inline">\(\mathbf{b} = \hat{\beta}\)</span> berechnen. Zunächst sei dazu jedoch die Varianz-Kovarianz-Matrix von <span class="math inline">\(\mathbf{Y}\)</span> betrachtet. Unter den Annahmen der einfachen linearen Regression sind die einzelnen Werte unabhängig voneinander. D.h. die Kovarianzen zwischen den <span class="math inline">\(Y\)</span>-Werten sind gleich Null, formal <span class="math inline">\(\text{Cov}(Y_i,Y_j) = 0, \forall i \neq j\)</span>. Weiterhin sind die Varianzen der <span class="math inline">\(Y\)</span>-Werte alle gleich. D.h. es gilt <span class="math inline">\(\text{Var}(Y_i) = \sigma^2\)</span>. Übertragen auf die Varianz-Kovarianz-Matrix von <span class="math inline">\(\mathbf{Y}\)</span> bedeutet dies, das auf der Hauptdiagonalen überall der Wert <span class="math inline">\(\sigma^2\)</span> steht und alle anderen Einträge gleich Null sind. Daher hat die VCV von <span class="math inline">\(\mathbf{Y}\)</span> die folgende Form:</p>
+<p><span id="eq-slm-matrix-varY"><span class="math display">\[
 \text{Var}(\mathbf{Y}) =
 \begin{pmatrix}
 \sigma^2 &amp; 0 &amp; \ldots &amp; 0 \\
@@ -845,12 +859,12 @@ attr(,"assign")
 \vdots &amp; \ddots &amp; \ddots &amp; 0 \\
 0 &amp; \ldots &amp; &amp; 1
 \end{pmatrix} = \sigma^2\mathbf{I}_n
-\]</span></p>
+\tag{18.5}\]</span></span></p>
 <p>Dadurch ergibt sich für die Berechnung der Varianz-Kovarianz-Matrix von <span class="math inline">\(\beta\)</span> der folgende Zusammenhang:</p>
 <p><span class="math display">\[
 \text{Var}(\beta) = \text{Var}(\mathbf{X}(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y})
 \]</span></p>
-<p>Auf der rechten Seite ist nur <span class="math inline">\(\mathbf{Y}\)</span> eine Zufallsvariable und alle anderen Terme sind Konstanten. Daher gilt unter Anwendung <a href="#eq-vcv-asigma" class="quarto-xref">Gleichung&nbsp;<span>18.1</span></a>:</p>
+<p>Auf der rechten Seite ist nur <span class="math inline">\(\mathbf{Y}\)</span> eine Zufallsvariable und alle anderen Terme sind Konstanten. Daher gilt unter Anwendung <a href="#eq-vcv-asigma" class="quarto-xref">Gleichung&nbsp;<span>18.1</span></a> mit der Festsetzung <span class="math inline">\(\mathbf{A} = \mathbf{X}(\mathbf{X}^T\mathbf{X})^{-1}\)</span>:</p>
 <p><span class="math display">\[
 \begin{split}
 \text{Var}(\beta) &amp;= \text{Var}((\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y}) \\
@@ -863,12 +877,12 @@ attr(,"assign")
 &amp;= \sigma^2(\mathbf{X}^T\mathbf{X})^{-1} \\
 \end{split}
 \]</span></p>
-<p>D.h. die Varianz-Kovarianzmatrix von <span class="math inline">\(\beta\)</span> berechnet sich nach der folgenden Formel ist also direkt durch die Modellmatrix beeinflusst:</p>
+<p>Für die zweite Zeile wurde <a href="#eq-vcv-asigma" class="quarto-xref">Gleichung&nbsp;<span>18.1</span></a> angewendet, in der dritten Zeile wurde der rechte Term entsprechend der Transponierung umsortiert. In der dritten Zeile wurde <a href="#eq-slm-matrix-varY" class="quarto-xref">Gleichung&nbsp;<span>18.5</span></a> angewendet, in der vierten Zeile die Vertauschung von Transponieren und Invertieren, da <span class="math inline">\(\mathbf{X}^T\mathbf{X}\)</span> symmetrisch ist. In der vorletzten Zeile wurde die Inverse angewendet. Letztendlich folgt, dass die Varianz-Kovarianzmatrix von <span class="math inline">\(\beta\)</span> direkt durch die Modellmatrix beeinflusst wird:</p>
 <p><span id="eq-slm-matrix-betavcv"><span class="math display">\[
 \text{Var}(\beta) = \sigma^2 (\mathbf{X}^T\mathbf{X})^{-1}
-\tag{18.4}\]</span></span></p>
+\tag{18.6}\]</span></span></p>
 <div id="exm-slm-matrix-vcv-centered" class="theorem example">
-<p><span class="theorem-title"><strong>Beispiel 18.1 (VCV von <span class="math inline">\(\beta\)</span> bei zentrierten <span class="math inline">\(X\)</span>-Werten)</strong></span> Seien die <span class="math inline">\(X\)</span>-Werte <span class="math inline">\(x_i\)</span> zentriert worden, so dass <span class="math inline">\(\tilde{x}_i = x_i - \bar{x}\)</span> gilt. Für die zentrierten Werte <span class="math inline">\(\tilde{x}_i\)</span> gilt der Zusammenhang:</p>
+<p><span class="theorem-title"><strong>Beispiel 18.2 (VCV von <span class="math inline">\(\beta\)</span> bei zentrierten <span class="math inline">\(X\)</span>-Werten)</strong></span> Seien die <span class="math inline">\(X\)</span>-Werte <span class="math inline">\(x_i\)</span> zentriert worden, so dass <span class="math inline">\(\tilde{x}_i = x_i - \bar{x}\)</span> gilt. Für die zentrierten Werte <span class="math inline">\(\tilde{x}_i\)</span> gilt der Zusammenhang:</p>
 <p><span class="math display">\[
 \sum_{i=1}^n\tilde{x}_i = 0
 \]</span></p>

@@ -669,6 +669,21 @@ B
 A %*% B
 ```
 
+Die Matrizen müssen für die Matrixmultiplikation konform sein, was in diesem Fall für $\mathbf{A}$ und $\mathbf{B}$ für beide Richtung der Fall ist.
+
+```{r}
+B %*% A
+```
+
+Hier wird auch wieder deutlich, dass die Matrizenmultiplikation nicht kommutativ ist. Die elementweise Multiplikation funktioniert nur in dem Fall, wenn beide Matrizen die gleichen Dimensionen haben.
+
+```{r}
+G <- matrix(1:9, nr=3)
+H <- matrix(11:19, nr=3)
+G * H
+```
+
+
 ::: {#exm-r-types-matmult-01}
 
 ### Multiplikation von $\mathbf{A}$ mit $\mathbf{A}^T$
@@ -877,6 +892,37 @@ solve(X,y)
 
 :::
 
+::: {#exm-matrix-sym-inv}
+### Inverse Matrix eines symmetrischen Matrix $\mathbf{A}$
+
+Es sei die folgende symmetrische Matrix gegeben:
+
+$$
+\mathbf{A} = \begin{pmatrix}
+1 & 2 & 3 \\ 2 & 2 & 0 \\ 3 & 0 & 1
+\end{pmatrix}
+$$
+
+```{r}
+#| echo: true
+
+A <- matrix(c(1,2,3,2,2,0,3,0,1), nr=3)
+A
+```
+
+Die Inverse $\mathbf{A}^{-1}$ von $\mathbf{A}$ ist:
+
+```{r}
+#| echo: true
+
+Ainv <- solve(A)
+Ainv
+```
+
+Wie erwartet ist $\mathbf{A}^{-1}$ ebenfalls symmetrisch.
+
+:::
+
 Eine weitere hilfreiche Funktion im Zusammenhang mit der Programmierung mit Matrizen ist die `apply()` Funktion. Mit `apply()` kann eine Funktion auf die einzelnen Spalten oder Zeilen einer Matrix angewendet werden.
 
 ```{r}
@@ -991,7 +1037,7 @@ Datenframes sind wie Vektoren zentral in der Arbeit mit `R` und es ist deshalb w
 
 ### Listen
 
-Datenframes und Tibbles sind basieren tatsächlich auf einem weiteren Datentypen den **Listen**. Listen sind verallgemeinerte Vektoren die nicht nur einen einzigen Datentyp enthalten dürfen sondern beliebige ähnlich wie die Datentypen. Allerdings können die Elemente auch unterschiedlich lange Vektoren sein, während bei Datentypen alle *Spalten* die gleiche Anzahl an Elementen haben. Listen können mit der Funktion `list()` definiert werden.
+Datenframes und Tibbles basieren im Hintergrund tatsächlich auf einem weiteren Datentypen den **Listen**. Listen sind verallgemeinerte Vektoren die nicht nur einen einzigen Datentyp enthalten dürfen sondern beliebige. Allerdings können die Elemente auch unterschiedlich lange Vektoren sein, während bei `data.frame` und `tibbles` alle *Spalten* die gleiche Anzahl an Elementen haben. Um eine Liste in `R` zu definieren, wird die Funktion `list()` verwendet.
 
 ```{r}
 #| echo: true
@@ -1001,7 +1047,7 @@ ls
 typeof(ls)
 ```
 
-Auf die einzelnen Elemente einer Liste greifen wir wiederum mit dem `[[]]`-Operator entweder über die Position oder bei benannten Elementen über den Bezeichner als Zeichenkette.
+Auf einzelnen Elemente einer Liste wird ebenfalls mit einem subsetting-Operator zugegriffen, der allerdings nun die folgende Form hat: `[[]]`. Dabei kann entweder über die Position oder bei **benannten Elementen** über den Bezeichner als Zeichenkette auf ein Element zugegriffen werden.
 
 ```{r}
 #| echo: true
