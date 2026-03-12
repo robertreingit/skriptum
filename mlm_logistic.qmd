@@ -13,17 +13,61 @@ require(knitr)
 require(MASS)
 library(pROC)
 library(CalibrationCurves)
+library(ggplot2)
+library(ggforce)
 ```
 
-In der bishergen Behandlung der Regression war die Kriteriumsvariable, also die abhängige Variable, immer eine metrische Variable deren Wertebereich im Prinzip von $-\infty$ bis $\infty$ ging. In der Realität ist dies natürlich nicht tatsächlich der Fall, da beispielsweise die Wurfgeschwindigkeit im Handball in der Realität durch die physiologische Kapazität der Spieler:Innen beschränkt ist. Allerdings gibt es auch den Fall, dass die Kriteriumsvariable überhaupt nur Werte innerhalb eines bestimmten Intervalls zulässt. Die Wahrscheinlichkeit ein Tor im Handball zu werfen beispielsweise kann nur Werte im Intervall $[0,1]$ einnehmen. Soll nun Beispielsweise ein Regressionsmodell erstellt werden um die Torwahrscheinlichkeit $p_{\text{Tor}}$ beispielsweise anhand des Abstands $d$ zum Tor und des Winkels $\alpha$ von der Torfläche vorherzusagen, dann kann dies im Prinzip mit einem multiplen Regressionmodell durchgeführt werden.
+In der bisherigen Behandlung der Regression war die Kriteriumsvariable, also die abhängige Variable, immer eine metrische Variable deren Wertebereich im Prinzip $-\infty$ bis $\infty$ umfasste. In der Realität ist dies natürlich nicht tatsächlich der Fall, da beispielsweise die Wurfgeschwindigkeit im Handball in der Realität durch die physiologische Kapazität der Spieler:Innen beschränkt ist. Allerdings gibt es auch den Fall, dass die Kriteriumsvariable von vorneherein überhaupt nur Werte innerhalb eines bestimmten Intervalls zulässt. Beispielsweise kann die Wahrscheinlichkeit ein Tor im Handball zu werfen nur Werte im Intervall $[0,1]$ einnehmen. Soll nun zum Beispiel ein statistisches Modell erstellt werden um die Torwahrscheinlichkeit $p_{\text{Tor}}$ in Abhängigkeit vom Abstands $d$ zum Tor und des Winkels $\alpha$ gegenüber der Torauslinie vorherzusagen (siehe @fig-mlm-log-shot) dann ist nicht sofort klar wie dies durchgeführt werden soll. 
+
+```{r}
+#| fig-cap: "Wurf auf das Tor im Handball"
+#| label: fig-mlm-log-shot
+  
+handball_pitch <- function() {
+  df_goal <- tibble(
+    x = c(0, 0, 6*sin(seq(pi/2,0,length=100)), 6, 6, 6*cos(seq(0,-pi/2,length=100)), 0),
+    y = c(2.5, 17.5, 11.5+ 6*cos(seq(pi/2,0,length=100)), 11.5, 8.5, 8.5+6*sin(seq(0,-pi/2,length=100)), 2.5)
+  )
+  
+  ggplot() +
+    geom_rect(data = tibble(xmin=0, xmax=20, ymin=0, ymax=20), aes(xmin=xmin,ymin=ymin,xmax=xmax,ymax=ymax), fill='skyblue', color='black', size=1) +
+    geom_rect(aes(xmin=-1,xmax=0,ymin=8.5,ymax=11.5), color='white', fill='skyblue',size=1) +
+    geom_polygon(data=df_goal, aes(x,y), fill='khaki') +
+    geom_arc(aes(x0=0,y0=11.5,r=6,start=0, end=pi/2), color='white', linewidth=1) +
+    geom_arc(aes(x0=0,y0=8.5,r=6,start=pi/2, end=pi-0.01), color='white', linewidth=1) +
+    geom_segment(data=tibble(x=6,xend=6,y=8.5,yend=11.5), aes(x,y,xend=xend,yend=yend), colour='white', linewidth=1) +
+    geom_arc(aes(x0=0,y0=11.5,r=9,start=0.4, end=pi/2), color='white', linewidth=1, linetype='dashed') +
+    geom_arc(aes(x0=0,y0=8.5,r=9,start=pi/2, end=pi-0.4), color='white', linewidth=1, linetype='dashed') +
+    geom_segment(data=tibble(x=9,xend=9,y=8.5,yend=11.5), aes(x,y,xend=xend,yend=yend), colour='white', linewidth=1, linetype='dashed') +
+    geom_segment(data=tibble(x=7,xend=7,y=9,yend=11), aes(x,y,xend=xend,yend=yend), colour='white', linewidth=1) +
+    geom_rect(aes(xmin=0,xmax=20,ymin=0,ymax=20), color='white', size=1, fill=NA) +
+    coord_equal() +
+    theme_void()
+}
+
+handball_throw <- function(x,y, label=NULL) {
+ lst <- list(geom_point(aes(x=x,y=y), color='red', size=3),
+ annotate('segment', x=x, xend=0, y=y, yend=10, color='red', linetype='dashed', 
+             arrow=arrow(length=unit(3.5, "mm"), type='closed')))
+ if (!is.null(label)) {
+   lst[[3]] <- annotate('label', x=x, y=y, label=label, hjust='left')
+ } 
+ lst
+}
+
+handball_pitch() + handball_throw(7,9)
+
+```
+
+Im Prinzip könnte ein Ansatz mit einem multiplen Regressionmodell ausprobiert werden.
 
 $$
 p_{\text{Tor},i} = \beta_0 + \beta_1 d_i + \beta_2 \alpha_i + \epsilon_i
 $$
 
-Allerdings verhindert nichts, dass $p_{\text{Tor},i}$ Werte außerhalb des Bereichs $[0,1]$ einnehmen kann. D.h. um die Idee eines linearen Regressionsmodells auf dieses Problem auszuweiten ist eine Beschränkung der möglichen Werte notwendig.
+Allerdings verhindert in diesem Fall nichts, das das Modell Werte für $p_{\text{Tor},i}$ Werte außerhalb des Bereichs $[0,1]$ berechnet. D.h. um die Idee eines linearen Regressionsmodells auf dieses Problem auszuweiten ist eine Beschränkung der möglichen Werte notwendig.
 
-Eine weitere Besonderheit im Zusammenhang mit dem Handballbeispiel, hängt mit Eigenschaft zusammen, dass die Werte der abhängigen Variable $Y$ in der Realität nur zwei Werte einehmen können. Mit der Zuweisung $\text{Tor} = 1$ und $\text{Fehlversuch} = 1$ nimmt $Y$ immer nur die Werte $0$ oder $1$ ein. Entsprechend würde ein Datensatz die folgende Form haben:
+Eine weitere Besonderheit im Zusammenhang mit dem Handballbeispiel, hängt mit Eigenschaft zusammen, dass die Werte der abhängigen Variable $Y$ in der Realität tatsächlich ja nur zwei Werte annehmen können. Mit der Festsetzung das ein Torerfolg $\text{Tor} = 1$ und eine Fehlversuch mit $\text{Fehlversuch} = 1$ definiert wird, kann $Y$ immer nur die Werte $0$ oder $1$ annehmen. Entsprechend würde ein Datensatz die folgende Form haben:
 
 | Tor | Abstand[m] | Winkel[°] |
 | --- | --- | --- |
@@ -33,9 +77,60 @@ Eine weitere Besonderheit im Zusammenhang mit dem Handballbeispiel, hängt mit E
 
 : Beispiel für einen Datensatz zur Trefferwahrscheinlichkeit im Handball in Abhängigkeit von der Distanz zum Tor und Winkel zur Grundlinie.
 
-Unter diesem Aspekt, kann dieses Problem auch als Klassifikationsproblem interpretiert werden. Es sind zwei verschiedene *Klassen* vorhanden, **Tor** und **kein Tor** und es soll anhand bestimmter Prädiktorvariablen vorhergesagt werden, zu welcher Klasse ein Objekt zugeordnet werden kann. Ähnliche Problemstellung ergeben sich auch im medizinischen Kontext, wo beispielsweise anhand einer Reihe von Prädiktorvariablen bestimmt werden soll, ob ein:e Patient:In erkrankt oder gesund bleibt.
+Aus dieser Perspektive, kann dieses Problem auch als Klassifikationsproblem interpretiert werden. Es sind zwei verschiedene *Klassen* vorhanden, **Tor** und **kein Tor** und es soll anhand bestimmter Prädiktorvariablen vorhergesagt werden, zu welcher Klasse ein Objekt zugeordnet werden kann. Ähnliche Problemstellung ergeben sich auch im medizinischen Kontext, wo beispielsweise anhand einer Reihe von Prädiktorvariablen bestimmt werden soll, ob ein:e Patient:In erkrankt oder gesund bleibt.
 
-Die Lösung für diese beiden Problem bietet die **Logistische Regression** die im Folgenden behandelt wird. Glücklicherweise können die meisten bereits gelernten Konzepte auch im Kontext der logistischen Regression angewendet werden und alles was es braucht ist ein zusätzlicher Kniff um die Beschränkung des Wertebereichs zu erreichen. Zusätzlich kommt noch ein komplett neuer Aspekt hinzu, da die logistische Regression eben auch als die Lösung für ein Klassifikationsproblem interpretiert werden kann. Dadurch ergibt sich eine enge Anbindung an den Bereich des Maschinellen Lernens in die Klassifikationsalgorithm eine zentrale Rolle spielen.
+Die Lösung für diese beiden Problem bietet die **Logistische Regression** die im Folgenden behandelt wird. Glücklicherweise können praktisch alle bereits gelernten Konzepte aus der multiplen linearen Regression auch im Kontext der logistischen Regression angewendet werden. Alles was benötigt wird, ist ein zusätzlicher Kniff um die Beschränkung des Wertebereichs zu erreichen. Zusätzlich kommt noch ein komplett neuer Aspekt hinzu, da die logistische Regression eben auch als die Lösung für ein Klassifikationsproblem interpretiert werden kann. Dadurch ergibt sich eine enge Anbindung an den Bereich des Maschinellen Lernens in dem Klassifikationsalgorithm eine zentrale Rolle spielen. Zunächst ist allerdings ein kurzer Ausflug in den Bereich der Wetten notwendig.
+
+## Wahrscheinlichkeit, Chance und Odds ratios
+
+Bei dem Handballproblem bleibend, sein zunächst heuristisch das Problem modelliert werden. Wenn ein Wurf aus größerer Distanz $d$ durchgeführt wird, dann nimmt die Wahrscheinlichkeit für einen Treffer ab. Gleiches gilt auch, wenn der Winkel mit der Torauslinie steiler wird. Werden nun zwei verschiedene Würfe P1 und P2 miteinander verglichen (siehe @fig-mlm-log-handball-chance), dann ist der Wurf P2 deutlich schwierigerer als Wurf P1.
+
+```{r}
+#| fig-cap: "Handballwürfe aus zwei verschiedenen Positionen"
+#| label: fig-mlm-log-handball-chance
+
+handball_pitch() + 
+  handball_throw(7, 9, 'P1') +
+  handball_throw(8, 2, 'P2')
+```
+
+Daher ist davon auszugehen, dass die Wahrscheinlichkeit für einen Treffer wir folgt aussehen.
+
+$$
+\Pr(\text{Tor}_{P1}) < \Pr(\text{Tor}_{P2})
+$$
+
+Wenn diese beiden Wahrscheinlichkeiten ins Verhältnis gesetzt werden, dann wird vom Risikoverhältnis RR gesprochen.
+
+$$
+\text{RR} = \frac{\Pr(\text{Tor}_{P1})}{\Pr(\text{Tor}_{P2})}
+$$
+
+Die Bezeichnung mit **Risikoverhältnis**  ist in diesem Zusammenhang etwas irreführend stammt aber eher aus dem medizinischen Bereich, wo die Wahrscheinlichkeiten in zwei Gruppen eine Krankheit zu erleiden beschrieben werden. Hier ist die Terminologie als *Risiko* dementsprechend auch besser nachvollziehbar.
+
+::: {#def-risk-ratio}
+### Risikoverhältnis 
+
+Das Risikoverhältnis \index{Risikoverhältnis} ist der Quotient aus zwei Wahrscheinlichkeiten (Risiken):
+
+$$
+\text{Risikoverhältnis (RR)} = \frac{\text{Risiko in der exponierten / betroffenen Gruppe}}{\text{Risiko in der nicht-exponierten / Vergleichsgruppe}}
+$$
+
+Das Risiko beschreibt die  Wahrscheinlichkeit, dass ein bestimmtes Ereignis in einer Gruppe eintritt (z.B. Krankheit, Treffer, Unfall). Es können für RR die folgenden Fälle unterschieden werden:
+
+- RR = 1 $\rightarrow$ Das Risiko ist in beiden Gruppen **gleich** 
+- RR > 1 $\rightarrow$ Das Risiko ist in der ersten Gruppe **höher** 
+- RR < 1 $\rightarrow$ Das Risiko ist in der ersten Gruppe **niedriger**
+:::
+
+$$
+\begin{aligned}
+\text{odds}  &= \frac{P(\text{Event})}{P(\text{Not Event})} \\
+&= \frac{p}{1-p} \\
+\end{aligned}
+$$
+
 
 ## Logistische Funktion
 
@@ -118,21 +213,19 @@ $$
 include_graphics('pics/comic_horse_and_duck.jpg')
 ```
 
-\begin{align*}
-\text{odds}  &= \frac{P(\text{Event})}{P(\text{Not Event})} \\
-&= \frac{p}{1-p} \\
-\end{align*}
 
 ## odds and the logistic model
 
-\begin{align*}
+$$
+\begin{aligned}
 p(X) &= \frac{e^{\beta_0 + \beta_1X}}{1 + e^{\beta_0 + \beta_1 X}}  \\
 \Leftrightarrow p(X)(1 + e^{\beta_0 + \beta_1 X}) &= e^{\beta_0 + \beta_1X}  \\
 \Leftrightarrow p(X) + p(X)e^{\beta_0 + \beta_1 X} &= e^{\beta_0 + \beta_1X} \\
 \Leftrightarrow p(X) &= e^{\beta_0 + \beta_1X} - p(X)e^{\beta_0 + \beta_1 X} \\
 \Leftrightarrow p(X) &= e^{\beta_0 + \beta_1X}(1 - p(X)) \\
 \Leftrightarrow \frac{p(X)}{1 - p(X)} &= e^{\beta_0 + \beta_1X} \\
-\end{align*}
+\end{aligned}
+$$
 
 ## Logit function
 

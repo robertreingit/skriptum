@@ -618,6 +618,8 @@ a_{m1} & \ldots & a_{mn}
 \end{pmatrix}
 $$
 
+#### Matrizen in `R` erzeugen
+
 In `R` werden Matrizen mit der `matrix()`-Funktion erzeugt. In den meisten Fällen sind zwei von drei Parametern notwendig. Der erste Parameter gibt die einzelnen Werte an gefolgt von der Anzahl der Zeilen (`nrow`) und der Anzahl der Spalten (`ncol`). Meist sind nur zwei Parameter notwendig, da wenn z.B. $m\times n$ Werte an `matrix()` übergeben werden, dann kann nach Angabe der Anzahl der Zeilen, die Anzahl der Spalten hergeleitet werden bzw. genauso andersherum.
 
 ```{r}
@@ -626,7 +628,14 @@ matrix(1:6, nrow = 3)
 matrix(1:6, ncol = 2)
 ```
 
-Es kann auch ein beliebige Matrix beliebiger Größe mit allen Elemente gleich $s$ erstellt werden, indem an `matrix()` der Wert $s$ zusammen mit der Anzahl der Zeilen und Spalten übergeben wird. Soll zum Beispiel die **Einsmatrix** $\mathbf{J}_3$ erstellt werden, kann dies wie folgt erreicht werden:
+Der Vektor der `matrix()` übergeben wird, wird standardmäßig nach den Spalten von links nach rechts befüllt. Sollen dagegen die Elemente des Vektors nach Zeilen befüllt werden, dann kann der Parameter `byrow` verwendet werden.
+
+```{r}
+matrix(1:6, ncol=2)
+matrix(1:6, ncol=2, byrow=T)
+```
+
+Wird eine Matrix beliebiger Größe benötigt, per der alle Elemente den gleichen Wert $s$ haben sollen, dann kann `matrix()` anstelle eines Vektors einfach der Wert $s$ zusammen mit der Anzahl der Zeilen und Spalten übergeben werden. Soll zum Beispiel die **Einsmatrix** $\mathbf{J}_3$ erstellt werden, kann dies wie folgt erreicht werden:
 
 ```{r}
 matrix(1, nr=3, nc=3)
@@ -638,6 +647,8 @@ Wie immer, wenn die Matrix weiter benötigt wird, dann muss der Rückgabewert vo
 mat_1 <- matrix(1:4, nrow=2, ncol = 2)
 mat_1
 ```
+
+#### Matrizen subsetting
 
 Um Elemente in der Matrix zu manipulieren oder zu extrahieren wir wie beim Vektor der subsetting Operator `[]` verwendet. Im Unterschied zum Vektor, der nur eine Dimension hat, müssen bei einer Matrix zwei Indezies angegeben werden. Die Spezifikation erfolgt nach dem Muster `mat[zeile,spalte]`. Wie beim Vektor sind bei der Indizierung Vektoren, logische Werte und negative Werte erlaubt. Wenn eine Dimension weglassen wird, werden entsprechend alle Zeilen bzw. Spalten angesteuert.
 
@@ -659,7 +670,9 @@ mat_0[5,2:3] <- -13
 mat_0
 ```
 
-Matrizen können wie Vektoren auf zwei Arten multipliziert werden. Entweder elementweise mittels `*` oder mittels Matrizenmultiplikation über `%*%` nach dem Muster.
+#### Matrixalgebra in `R`
+
+Matrizen können wie Vektoren auf zwei Arten multipliziert werden. Entweder elementweise mittels `*` oder mittels **Matrix-Multiplikation** mit dem `%*%`-Operator.
 
 ```{r}
 A <- matrix(1:6, nr=2)
@@ -669,20 +682,19 @@ B
 A %*% B
 ```
 
-Die Matrizen müssen für die Matrixmultiplikation konform sein, was in diesem Fall für $\mathbf{A}$ und $\mathbf{B}$ für beide Richtung der Fall ist.
+Die Matrizen müssen für die Matrix-Multiplikation konform sein, was in diesem Fall für $\mathbf{A}$ und $\mathbf{B}$ für beide Richtung der Fall ist.
 
 ```{r}
 B %*% A
 ```
 
-Hier wird auch wieder deutlich, dass die Matrizenmultiplikation nicht kommutativ ist. Die elementweise Multiplikation funktioniert nur in dem Fall, wenn beide Matrizen die gleichen Dimensionen haben.
+Hier wird auch wieder deutlich, dass die Matrizenmultiplikation nicht kommutativ ist. Die elementweise Multiplikation funktioniert nur in dem Fall, wenn beide Matrizen die gleiche Dimension haben.
 
 ```{r}
 G <- matrix(1:9, nr=3)
 H <- matrix(11:19, nr=3)
 G * H
 ```
-
 
 ::: {#exm-r-types-matmult-01}
 
@@ -724,7 +736,7 @@ nrow(A)
 ncol(A)
 ```
 
-Ansonsten funktionieren die mathematischen Operator wie in der Matrizenalgebra zu erwarten ist. Wenn z.B. zwei Matrizen addiert werden sollen, dann kann, vorausgesetzt die Dimensionen stimmen überein, der `+`-Operator verwendet werden.
+Ansonsten funktionieren die mathematischen Operator wie in der Matrizenalgebra zu erwarten ist. Wenn z.B. zwei Matrizen addiert werden sollen, dann, vorausgesetzt die Dimensionen stimmen überein, wird der `+`-Operator verwendet.
 
 ```{r}
 #| error: true
@@ -744,7 +756,7 @@ Ebenso funktioniert natürlich auch der `-`-Operator.
 A - D
 ```
 
-In `R` kann auch der Geteiltoperator `/` verwendet werden, der in der Matrizenalgebra nicht vorhanden ist. Die Matrizen müssen wieder die gleichen Dimension haben und die Elemente werden dann entsprechend elementweise geteilt.
+In `R` kann auch der Divisionsoperator `/` verwendet werden, der in der Matrizenalgebra nicht vorhanden ist. Die Matrizen müssen wieder die gleichen Dimension haben und die Elemente werden dann entsprechend elementweise dividiert.
 
 ```{r}
 (3*A) / A
@@ -783,10 +795,11 @@ I_3 %*% M
 M %*% I_3
 ```
 
-Soll eine Diagonalmatrix erstellt werden die bestimmte Werte auf der Hauptdiagonalen hat, dann kann an `diag()` auch einen Vektor mit den gewünschten Werten übergeben werden.
+Soll eine Diagonalmatrix erstellt werden die bestimmte Werte $d_{ii}$ auf der Hauptdiagonalen hat, dann kann an `diag()` auch einen Vektor mit den gewünschten Werten übergeben werden.
 
 ```{r}
-diag(1:4) 
+d_i <- 1:4
+diag(d_i) 
 ```
 
 Wenn dagegen eine Matrix als Argument an `diag()` übergeben wird, dann werden die Elemente auf der Hauptdiagonalen extrahiert.
@@ -802,7 +815,7 @@ So lässt sich beispielsweise die Spur eine Matrix einfach berechnen.
 sum(diag(E))
 ```
 
-Wenn eine Matrix transponiert werden soll, dann kann die Funktion `t()` verwendet werden.
+Um eine Matrix zu transponieren, kann die Funktion `t()` verwendet werden.
 
 $$
 \mathbf{A}^T = (a_{ji}) = \begin{pmatrix}a_{11} & \ldots & a_{m1} \\
@@ -830,6 +843,8 @@ Mit den Funktionen `cbind()` und `rbind()` können zusätzliche Spalten bzw. Zei
 cbind(1:2, E)
 rbind(E,1:2)
 ```
+
+#### Inverse Matrizen in `R`
 
 Wie im Anhang besprochen, ist die Berechnung der Inversen $\mathbf{A}^{-1}$ einer quadratischen Matrix $\mathbf{A}$, sofern sie die denn existiert, ein zentrales Problem in der Linearen Algebra. In `R` kann die Inverse $\mathbf{A}^{-1}$ einer Matrix mittels der Funktion `solve()` numerisch berechnet werden.
 
@@ -893,7 +908,7 @@ solve(X,y)
 :::
 
 ::: {#exm-matrix-sym-inv}
-### Inverse Matrix eines symmetrischen Matrix $\mathbf{A}$
+### Inverse Matrix einer symmetrischen Matrix $\mathbf{A}$
 
 Es sei die folgende symmetrische Matrix gegeben:
 
@@ -923,17 +938,31 @@ Wie erwartet ist $\mathbf{A}^{-1}$ ebenfalls symmetrisch.
 
 :::
 
-Eine weitere hilfreiche Funktion im Zusammenhang mit der Programmierung mit Matrizen ist die `apply()` Funktion. Mit `apply()` kann eine Funktion auf die einzelnen Spalten oder Zeilen einer Matrix angewendet werden.
+#### Matrix und `apply()`
+
+Eine weitere hilfreiche Funktion im Zusammenhang mit der Programmierung mit Matrizen ist die `apply()` Funktion. Mit `apply()` kann eine Funktion sequentiell auf Spalten oder Zeilen einer Matrix angewendet werden. Dabei wird immer eine Spalte/Zeile an eine an `apply()` übergebene Funktion übergeben. Sei zum Beispiel eine Matrix $\mathbf{F}$ gegeben und es soll die Summe entlang jeder Zeile (1. Dimension der Matrix) berechnet werden. Dazu wird an `apply()` als erster Parameter die Matrix $\mathbf{F}$ übergeben, der 2. Parameter spezifiziert entlang welcher Dimension die Funktion, die als dritter Parameter übergeben wird, angewendet werden soll. 
 
 ```{r}
-F <- matrix(1, nr = 4, nc = 3) # <1>
+F <- matrix(1:12, nr = 4, nc = 3) # <1>
 F
 apply(F, 1, sum) # <2>
-apply(F, 2, sum) # <3>
 ```
-1. Eine Matrix $F$ mit vier Zeilen und drei Spalten die nur Einsen als Einträge hat wird erstellt.
+1. Eine Matrix $F$ mit vier Zeilen und drei Spalten erstellt.
 2. Die Summenfunktion wird entlang der ersten Dimension (Zeilen) auf $F$ angewendet.
-3. Die Summenfunktion wird entlang der zweiten Dimension (Spalten) auf $F$ angewendet. 
+
+Soll dagegen die Summe entlang der Spalten berechnet werden, dann wird entsprechend der zweite Parameter geändert. 
+
+```{r}
+apply(F, 2, sum) # <1>
+```
+1. Die Summenfunktion wird entlang der zweiten Dimension (Spalten) auf $F$ angewendet. 
+
+Dies funktioniert für beliebige Funktionen die einen Skalar als Rückgabewert haben.
+
+```{r}
+apply(F, 2, max)
+```
+
 
 ### `data.frame()` oder `tibble()`
 
