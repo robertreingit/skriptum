@@ -551,7 +551,7 @@ p_{\text{Tor},i} = \beta_0 + \beta_1 d_i + \beta_2 \alpha_i + \epsilon_i
 <p>Die Lösung für diese beiden Problem bietet die <strong>Logistische Regression</strong> die im Folgenden behandelt wird. Glücklicherweise können praktisch alle bereits gelernten Konzepte aus der multiplen linearen Regression auch im Kontext der logistischen Regression angewendet werden. Alles was benötigt wird, ist ein zusätzlicher Kniff um die Beschränkung des Wertebereichs zu erreichen. Zusätzlich kommt noch ein komplett neuer Aspekt hinzu, da die logistische Regression eben auch als die Lösung für ein Klassifikationsproblem interpretiert werden kann. Dadurch ergibt sich eine enge Anbindung an den Bereich des Maschinellen Lernens in dem Klassifikationsalgorithm eine zentrale Rolle spielen. Zunächst ist allerdings ein kurzer Ausflug in den Bereich der Wetten notwendig.</p>
 <section id="wahrscheinlichkeit-chance-und-odds-ratios" class="level2" data-number="24.1">
 <h2 data-number="24.1" class="anchored" data-anchor-id="wahrscheinlichkeit-chance-und-odds-ratios"><span class="header-section-number">24.1</span> Wahrscheinlichkeit, Chance und Odds ratios</h2>
-<p>Bei dem Handballproblem bleibend, sein zunächst heuristisch das Problem modelliert werden. Wenn ein Wurf aus größerer Distanz <span class="math inline">\(d\)</span> durchgeführt wird, dann nimmt die Wahrscheinlichkeit für einen Treffer ab. Gleiches gilt auch, wenn der Winkel mit der Torauslinie steiler wird. Werden nun zwei verschiedene Würfe P1 und P2 miteinander verglichen (siehe <a href="#fig-mlm-log-handball-chance" class="quarto-xref">Abbildung&nbsp;<span>24.2</span></a>), dann ist der Wurf P2 deutlich schwierigerer als Wurf P1.</p>
+<p>Bei dem Handballproblem bleibend, soll das Problem zunächst heuristisch modelliert werden ohne konkrete Zahlen zu berechnen. Wenn ein Wurf aus größerer Distanz <span class="math inline">\(d\)</span> durchgeführt wird, dann nimmt die Wahrscheinlichkeit für einen Treffer ab. Gleiches gilt auch, wenn der Winkel mit der Torauslinie steiler wird. Werden nun zwei verschiedene Würfe P1 und P2 miteinander verglichen (siehe <a href="#fig-mlm-log-handball-chance" class="quarto-xref">Abbildung&nbsp;<span>24.2</span></a>), dann ist der Wurf P2 deutlich schwierigerer als Wurf P1.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-mlm-log-handball-chance" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -566,32 +566,99 @@ Abbildung&nbsp;24.2: Handballwürfe aus zwei verschiedenen Positionen
 </div>
 </div>
 </div>
-<p>Daher ist davon auszugehen, dass die Wahrscheinlichkeit für einen Treffer wir folgt aussehen.</p>
+<p>Daher ist davon auszugehen, dass die Wahrscheinlichkeiten für einen Treffer die folgende Anordnung zulassen.</p>
 <p><span class="math display">\[
 \Pr(\text{Tor}_{P1}) &lt; \Pr(\text{Tor}_{P2})
 \]</span></p>
-<p>Wenn diese beiden Wahrscheinlichkeiten ins Verhältnis gesetzt werden, dann wird vom Risikoverhältnis RR gesprochen.</p>
+<p>Nun können diese beiden Wahrscheinlichkeiten zueinander ins Verhältnis gesetzt werden, es wird vom sogenannten <strong>Risikoverhältnis RR</strong> gesprochen.</p>
 <p><span class="math display">\[
 \text{RR} = \frac{\Pr(\text{Tor}_{P1})}{\Pr(\text{Tor}_{P2})}
 \]</span></p>
-<p>Die Bezeichnung mit <strong>Risikoverhältnis</strong> ist in diesem Zusammenhang etwas irreführend stammt aber eher aus dem medizinischen Bereich, wo die Wahrscheinlichkeiten in zwei Gruppen eine Krankheit zu erleiden beschrieben werden. Hier ist die Terminologie als <em>Risiko</em> dementsprechend auch besser nachvollziehbar.</p>
+<p>Die Bezeichnung mit Risikoverhältnis ist in diesem Zusammenhang etwas irreführend, da sie aus dem medizinischen Bereich stammt, wo beispielsweise die Wahrscheinlichkeiten in zwei unterschiedlichen Gruppen an einer Krankheit zu erkranken beschrieben werden kann. Hier ist die Terminologie als <em>Risiko</em> dementsprechend auch besser nachvollziehbar.</p>
 <div id="def-risk-ratio" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 24.1 (Risikoverhältnis)</strong></span> Das Risikoverhältnis ist der Quotient aus zwei Wahrscheinlichkeiten (Risiken):</p>
+<p><span class="theorem-title"><strong>Definition 24.1 (Risikoverhältnis (RR))</strong></span> Das Risikoverhältnis (RR) ist der Quotient aus zwei Wahrscheinlichkeiten (Risiken):</p>
 <p><span class="math display">\[
 \text{Risikoverhältnis (RR)} = \frac{\text{Risiko in der exponierten / betroffenen Gruppe}}{\text{Risiko in der nicht-exponierten / Vergleichsgruppe}}
 \]</span></p>
-<p>Das Risiko beschreibt die Wahrscheinlichkeit, dass ein bestimmtes Ereignis in einer Gruppe eintritt (z.B. Krankheit, Treffer, Unfall). Es können für RR die folgenden Fälle unterschieden werden:</p>
+<p>Das Risiko beschreibt die Wahrscheinlichkeit, dass ein bestimmtes Ereignis in einer Gruppe eintritt (z.B. Krankheit, Treffer, Unfall). Es können für das RR die folgenden Fälle unterschieden werden:</p>
 <ul>
 <li>RR = 1 <span class="math inline">\(\rightarrow\)</span> Das Risiko ist in beiden Gruppen <strong>gleich</strong></li>
 <li>RR &gt; 1 <span class="math inline">\(\rightarrow\)</span> Das Risiko ist in der ersten Gruppe <strong>höher</strong></li>
 <li>RR &lt; 1 <span class="math inline">\(\rightarrow\)</span> Das Risiko ist in der ersten Gruppe <strong>niedriger</strong></li>
 </ul>
 </div>
+<p>Eine weitere Betrachtung der Trefferwahrscheinlichkeit ist über die sogenannte <strong>Chance</strong> (engl. odds) möglich. Hier wird der Quotient zwischen der Anzahl der Treffer zu der Anzahl der verworfenen Würfe betrachtet. Also wird zum Beispiel aus Position P1 geworfen und von <span class="math inline">\(100\)</span> Würfen sind <span class="math inline">\(30\)</span> erfolgreich und <span class="math inline">\(70\)</span> nicht erfolgreich, dann ergibt das für die odds.</p>
 <p><span class="math display">\[
-\begin{aligned}
-\text{odds}  &amp;= \frac{P(\text{Event})}{P(\text{Not Event})} \\
-&amp;= \frac{p}{1-p} \\
-\end{aligned}
+\text{odds} = \frac{\#\text{Tore}}{\#\text{Fehlwürfe}} = \frac{30}{70} \approx 0.43
+\]</span></p>
+<p>Wenn nun oben und unten mit der Anzahl <span class="math inline">\(N\)</span> der Würfe erweitert wird und beachtet wird das <span class="math inline">\(\Pr(\text{Fehlwurf}) = 1 - \Pr(\text{Tor})\)</span> erhält man:</p>
+<p><span class="math display">\[
+\text{odds} = \frac{\#\text{Tore}/N}{\#\text{Fehlwürfe}/N} = \frac{\Pr(\text{Tor})}{\Pr(\text{Fehlwurf})} = \frac{\Pr(\text{Tor})}{1 - \Pr(\text{Tor})}
+\]</span></p>
+<p>Wenn nun noch verallgemeinert wird und aus Tor ein beliebiges Ereignis wird und mit der Festsetzung <span class="math inline">\(\Pr(\text{Ereignis}) = p\)</span> folgt:</p>
+<p><span class="math display">\[
+\text{odds}  = \frac{\Pr(\text{Ereignis})}{\Pr(\text{Nicht-Ereignis})} = \frac{p}{1-p} \\
+\]</span></p>
+<div id="def-odds" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 24.2</strong></span> Die <strong>Chance</strong> oder auch <strong>Odds</strong> ist definiert als das Verhältnis der Wahrscheinlichkeit, dass ein bestimmtes Ereignis <strong>eintritt</strong>, zu der Wahrscheinlichkeit das das Ereignis <strong>nicht</strong> eintritt.</p>
+<p><span id="eq-def-odds"><span class="math display">\[
+\text{odds (für ein Ereignis)} = \frac{p}{1 - p}
+\tag{24.1}\]</span></span></p>
+<p>Dabei beschreibt <span class="math inline">\(p\)</span> die Wahrscheinlichkeit, dass das Ereignis eintritt.</p>
+</div>
+<p>Odds werden historisch vor allem bei Sportwetten verwendet, weil sie den potenziellen Gewinn direkt mit dem Risiko in einer einzigen Zahl verbinden und für Wettende intuitiver sind als reine Wahrscheinlichkeiten. Sie zeigen sofort, wie viel man bei einem bestimmten Einsatz gewinnen kann (z.B. Quote 3.00: Einsatz verdreifacht).</p>
+<div id="exm-odds-01" class="theorem example">
+<p><span class="theorem-title"><strong>Beispiel 24.1 (Verschiedene Odds im Handball)</strong></span> &nbsp;</p>
+<div id="tbl-mlm-log-odds" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mlm-log-odds-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tabelle&nbsp;24.1: Verschiedene Beispiel für odds
+</figcaption>
+<div aria-describedby="tbl-mlm-log-odds-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Fall</th>
+<th>#Tore</th>
+<th>#Fehlwürfe</th>
+<th>odds</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td><span class="math inline">\(30\)</span></td>
+<td><span class="math inline">\(60\)</span></td>
+<td><span class="math inline">\(\frac{1}{2}\)</span></td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td><span class="math inline">\(60\)</span></td>
+<td><span class="math inline">\(30\)</span></td>
+<td><span class="math inline">\(2\)</span></td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td><span class="math inline">\(120\)</span></td>
+<td><span class="math inline">\(30\)</span></td>
+<td><span class="math inline">\(4\)</span></td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td><span class="math inline">\(60\)</span></td>
+<td><span class="math inline">\(60\)</span></td>
+<td><span class="math inline">\(1\)</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>In <a href="#tbl-mlm-log-odds" class="quarto-xref">Tabelle&nbsp;<span>24.1</span></a> sind verschiedene Beispiel für odds gezeigt und wie sich die Anzahl der <em>Ereignisse</em> für diese unterschiedlichen odds verhält. Zum Beispiel im 3. Fall ist die Chance ein Tor zu erzielen viermal so hoch wie daneben zu werfen.</p>
+</div>
+<p>Über einfaches Umstellen können kann aus Odds auch wieder der Wert für <span class="math inline">\(p\)</span> erhalten werden.</p>
+<p><span class="math display">\[
+p =  \frac{\text{odds}}{1 + \text{odds}}
 \]</span></p>
 </section>
 <section id="logistische-funktion" class="level2" data-number="24.2">

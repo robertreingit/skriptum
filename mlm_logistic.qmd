@@ -31,7 +31,7 @@ handball_pitch <- function() {
   
   ggplot() +
     geom_rect(data = tibble(xmin=0, xmax=20, ymin=0, ymax=20), aes(xmin=xmin,ymin=ymin,xmax=xmax,ymax=ymax), fill='skyblue', color='black', size=1) +
-    geom_rect(aes(xmin=-1,xmax=0,ymin=8.5,ymax=11.5), color='white', fill='skyblue',size=1) +
+    geom_rect(aes(xmin=-1,xmax=0,ymin=8.5,ymax=11.5), color='black', fill='lightgray',size=1) +
     geom_polygon(data=df_goal, aes(x,y), fill='khaki') +
     geom_arc(aes(x0=0,y0=11.5,r=6,start=0, end=pi/2), color='white', linewidth=1) +
     geom_arc(aes(x0=0,y0=8.5,r=6,start=pi/2, end=pi-0.01), color='white', linewidth=1) +
@@ -83,7 +83,7 @@ Die Lösung für diese beiden Problem bietet die **Logistische Regression** die 
 
 ## Wahrscheinlichkeit, Chance und Odds ratios
 
-Bei dem Handballproblem bleibend, sein zunächst heuristisch das Problem modelliert werden. Wenn ein Wurf aus größerer Distanz $d$ durchgeführt wird, dann nimmt die Wahrscheinlichkeit für einen Treffer ab. Gleiches gilt auch, wenn der Winkel mit der Torauslinie steiler wird. Werden nun zwei verschiedene Würfe P1 und P2 miteinander verglichen (siehe @fig-mlm-log-handball-chance), dann ist der Wurf P2 deutlich schwierigerer als Wurf P1.
+Bei dem Handballproblem bleibend, soll das Problem zunächst heuristisch modelliert werden ohne konkrete Zahlen zu berechnen. Wenn ein Wurf aus größerer Distanz $d$ durchgeführt wird, dann nimmt die Wahrscheinlichkeit für einen Treffer ab. Gleiches gilt auch, wenn der Winkel mit der Torauslinie steiler wird. Werden nun zwei verschiedene Würfe P1 und P2 miteinander verglichen (siehe @fig-mlm-log-handball-chance), dann ist der Wurf P2 deutlich schwierigerer als Wurf P1.
 
 ```{r}
 #| fig-cap: "Handballwürfe aus zwei verschiedenen Positionen"
@@ -94,42 +94,90 @@ handball_pitch() +
   handball_throw(8, 2, 'P2')
 ```
 
-Daher ist davon auszugehen, dass die Wahrscheinlichkeit für einen Treffer wir folgt aussehen.
+Daher ist davon auszugehen, dass die Wahrscheinlichkeiten für einen Treffer die folgende Anordnung zulassen.
 
 $$
 \Pr(\text{Tor}_{P1}) < \Pr(\text{Tor}_{P2})
 $$
 
-Wenn diese beiden Wahrscheinlichkeiten ins Verhältnis gesetzt werden, dann wird vom Risikoverhältnis RR gesprochen.
+Nun können diese beiden Wahrscheinlichkeiten zueinander ins Verhältnis gesetzt werden, es wird vom sogenannten **Risikoverhältnis RR** gesprochen.
 
 $$
 \text{RR} = \frac{\Pr(\text{Tor}_{P1})}{\Pr(\text{Tor}_{P2})}
 $$
 
-Die Bezeichnung mit **Risikoverhältnis**  ist in diesem Zusammenhang etwas irreführend stammt aber eher aus dem medizinischen Bereich, wo die Wahrscheinlichkeiten in zwei Gruppen eine Krankheit zu erleiden beschrieben werden. Hier ist die Terminologie als *Risiko* dementsprechend auch besser nachvollziehbar.
+Die Bezeichnung mit Risikoverhältnis ist in diesem Zusammenhang etwas irreführend, da sie aus dem medizinischen Bereich stammt, wo beispielsweise die Wahrscheinlichkeiten in zwei unterschiedlichen Gruppen an einer Krankheit zu erkranken beschrieben werden kann. Hier ist die Terminologie als *Risiko* dementsprechend auch besser nachvollziehbar.
 
 ::: {#def-risk-ratio}
-### Risikoverhältnis 
+### Risikoverhältnis (RR) 
 
-Das Risikoverhältnis \index{Risikoverhältnis} ist der Quotient aus zwei Wahrscheinlichkeiten (Risiken):
+Das Risikoverhältnis \index{Risikoverhältnis} (RR) ist der Quotient aus zwei Wahrscheinlichkeiten (Risiken):
 
 $$
 \text{Risikoverhältnis (RR)} = \frac{\text{Risiko in der exponierten / betroffenen Gruppe}}{\text{Risiko in der nicht-exponierten / Vergleichsgruppe}}
 $$
 
-Das Risiko beschreibt die  Wahrscheinlichkeit, dass ein bestimmtes Ereignis in einer Gruppe eintritt (z.B. Krankheit, Treffer, Unfall). Es können für RR die folgenden Fälle unterschieden werden:
+Das Risiko beschreibt die  Wahrscheinlichkeit, dass ein bestimmtes Ereignis in einer Gruppe eintritt (z.B. Krankheit, Treffer, Unfall). Es können für das RR die folgenden Fälle unterschieden werden:
 
 - RR = 1 $\rightarrow$ Das Risiko ist in beiden Gruppen **gleich** 
 - RR > 1 $\rightarrow$ Das Risiko ist in der ersten Gruppe **höher** 
 - RR < 1 $\rightarrow$ Das Risiko ist in der ersten Gruppe **niedriger**
 :::
 
+Eine weitere Betrachtung der Trefferwahrscheinlichkeit ist über die sogenannte **Chance** (engl. odds) möglich. Hier wird der Quotient zwischen der Anzahl der Treffer zu der Anzahl der verworfenen Würfe betrachtet. Also wird zum Beispiel aus Position P1 geworfen und von $100$ Würfen sind $30$ erfolgreich und $70$ nicht erfolgreich, dann ergibt das für die odds.
+
 $$
-\begin{aligned}
-\text{odds}  &= \frac{P(\text{Event})}{P(\text{Not Event})} \\
-&= \frac{p}{1-p} \\
-\end{aligned}
+\text{odds} = \frac{\#\text{Tore}}{\#\text{Fehlwürfe}} = \frac{30}{70} \approx 0.43
 $$
+
+Wenn nun oben und unten mit der Anzahl $N$ der Würfe erweitert wird und beachtet wird das $\Pr(\text{Fehlwurf}) = 1 - \Pr(\text{Tor})$ erhält man:
+
+$$
+\text{odds} = \frac{\#\text{Tore}/N}{\#\text{Fehlwürfe}/N} = \frac{\Pr(\text{Tor})}{\Pr(\text{Fehlwurf})} = \frac{\Pr(\text{Tor})}{1 - \Pr(\text{Tor})}
+$$
+
+Wenn nun noch verallgemeinert wird und aus Tor ein beliebiges Ereignis wird und mit der Festsetzung $\Pr(\text{Ereignis}) = p$ folgt:
+
+$$
+\text{odds}  = \frac{\Pr(\text{Ereignis})}{\Pr(\text{Nicht-Ereignis})} = \frac{p}{1-p} \\
+$$
+
+::: {#def-odds}
+
+Die **Chance** oder auch **Odds** ist definiert als das Verhältnis der Wahrscheinlichkeit, dass ein bestimmtes Ereignis **eintritt**, zu der Wahrscheinlichkeit das das Ereignis **nicht** eintritt.
+
+
+$$
+\text{odds (für ein Ereignis)} = \frac{p}{1 - p}
+$$ {#eq-def-odds}
+
+Dabei beschreibt $p$ die Wahrscheinlichkeit, dass das Ereignis eintritt.
+:::
+
+Odds werden historisch vor allem bei Sportwetten verwendet, weil sie den potenziellen Gewinn direkt mit dem Risiko in einer einzigen Zahl verbinden und für Wettende intuitiver sind als reine Wahrscheinlichkeiten. Sie zeigen sofort, wie viel man bei einem bestimmten Einsatz gewinnen kann (z.B. Quote 3.00: Einsatz verdreifacht).
+
+::: {#exm-odds-01}
+#### Verschiedene Odds im Handball 
+
+| Fall | #Tore | #Fehlwürfe | odds |
+| -- | --- | --- | --- |
+| 1  | $30$  | $60$ | $\frac{1}{2}$ |
+| 2  | $60$  | $30$ | $2$ |
+| 3  | $120$ | $30$ | $4$ |
+| 4  | $60$ | $60$ | $1$ |
+
+: Verschiedene Beispiel für odds {#tbl-mlm-log-odds}
+
+In @tbl-mlm-log-odds sind verschiedene Beispiel für odds gezeigt und wie sich die Anzahl der *Ereignisse* für diese unterschiedlichen odds verhält. Zum Beispiel im 3. Fall ist die Chance ein Tor zu erzielen viermal so hoch wie daneben zu werfen.
+
+:::
+
+Über einfaches Umstellen können kann aus Odds auch wieder der Wert für $p$ erhalten werden.
+
+$$
+p =  \frac{\text{odds}}{1 + \text{odds}}
+$$
+
 
 
 ## Logistische Funktion
