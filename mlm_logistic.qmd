@@ -168,19 +168,113 @@ Odds werden historisch vor allem bei Sportwetten verwendet, weil sie den potenzi
 
 : Verschiedene Beispiel für odds {#tbl-mlm-log-odds}
 
-In @tbl-mlm-log-odds sind verschiedene Beispiel für odds gezeigt und wie sich die Anzahl der *Ereignisse* für diese unterschiedlichen odds verhält. Zum Beispiel im 3. Fall ist die Chance ein Tor zu erzielen viermal so hoch wie daneben zu werfen.
+In @tbl-mlm-log-odds sind verschiedene Beispiel für odds gezeigt und wie sich die Anzahl der *Ereignisse* für diese unterschiedlichen odds verhält. Zum Beispiel im 3. Fall ist die Chance ein Tor zu erzielen viermal so hoch wie daneben zu werfen. 
 
 :::
+Insgesamt geben Odds eine Abschätzung darüber, wie viel wahrscheinlicher es ist ein bestimmtes Event zu beobachten, als es nicht zu beobachten. Odds geben aber nicht die die absolute Wahrscheinlichkeit an, also wie wahrscheinlich es ist zu treffen, sondern odds sagen etwas darüber aus, wie oft es klappt im Vergleich dazu, wie oft es nicht klappt.
 
-Über einfaches Umstellen können kann aus Odds auch wieder der Wert für $p$ erhalten werden.
+::: {.callout-note}
+
+Über einfaches Umstellen können kann aus den Odds auch wieder der Wert für $p$ berechnet werden.
 
 $$
 p =  \frac{\text{odds}}{1 + \text{odds}}
 $$
 
+:::
 
+Nach dem Riskioverhältnis RR und den odds gibt es noch eine wichtige Größe für die Behandlung der logistischen Regression, dass sind die **Odds Ratios**.
+
+::: {#def-odds-ratio}
+
+### Odds Ratio (OR) 
+
+Das **Odds Ratio** (Chancenverhältnis, Odds-Verhältnis, OR) ist ein Maß, das beschreibt, wie stark sich die Chancen (Odds) für ein bestimmtes Ereignis zwischen zwei Gruppen unterscheiden. D.h. OR ist der Quotient zweier Odds.
+
+$$
+\text{Odds Ratio} = \text{OR} = \frac{\text{Odds in Gruppe A}}{\text{Odds in Gruppe B}} = \frac{\frac{\text{Treffer}_A}{\text{Fehlwürfe}_A}}{\frac{\text{Treffer}_B}{\text{Fehlwürfe}_B}}
+$$
+:::
+
+Bezogen auf das Beispiel @fig-mlm-log-handball-chance kann für die beiden Wurfpositionen P1 und P2 die Odds berechnet werden. Unter der Annahme der folgenden Werte (siehe @tbl-mlm-log-shot-odds)
+
+
+| Wurfposition | Treffer | Fehlwürfe | Odds (Treffer : Fehl) | Odds als Zahl |
+|---|---|---|---|---|
+| P1 | $80$ | $20$ | $80 : 20$ | $4$ |
+| P2 | $20$ | $80$ | $20 : 80$ | $\frac{1}{4}$ |
+
+: Odds für Wurfpositionen P1 und P2 {#tbl-mlm-log-shot-odds}
+
+Aus den gegeben Odds berechnet sich das folgende Odds Ratio:
+
+$$
+\text{OR} = \frac{4}{\frac{1}{4}} = 16
+$$
+
+D.h. die Chance zu treffen ist an Position P1 $16$-mal so hoch wie in P2. Die **Odds** sind bei einem Wurf von P1 16-mal höher als bei einem Wurf von P2. Odds Ratio sagt nicht wieder nicht, wie wahrscheinlich ein Ereignis (z.B. Treffer) ist, sondern OR beschreibt, wie viele Male höher (oder niedriger) die Chancen in einer Situation (Gruppe) im Vergleich zu einer anderen sind. Bei der Interpretation gelten ähnlich Kategorien wie bei den Odds.
+
+- OR = 1 $\rightarrow$ Chancen sind gleich (kein Unterschied)
+- OR > 1 $\rightarrow$ höhere Chance in Gruppe A
+- OR < 1 $\rightarrow$ niedrigere Chance in Gruppe A (schützender Effekt)
+
+Die Odds Ratio treten auch im Zusammenhang mit Kreuztabellen auf. Zum Beispiel, wenn @tbl-mlm-log-shot-odds in der folgenden Form dargesetllt wird (siehe @tbl-mlm-log-shot-ctbl:
+
+| | P1 | P2 |
+| --- | --- | --- |
+| Treffer | $80_{a}$ | $20_{b}$ |
+| Fehlwurf | $20_{c}$ | $80_{d}$ |
+
+: Häufigkeiten der Treffer und Fehlwürfe unter P1 und P2 {#tbl-mlm-log-shot-ctbl}
+
+Das OR berechnet sich hier nach der Regel:
+
+$$
+\text{OR} = \frac{a\cdot d}{b\cdot c} = \frac{80\cdot 80}{20\cdot 20} = 16
+$$
+
+Wenn in @tbl-mlm-log-shot-ctbl Treffer mit Krankheit und Wurfposition mit exposure ausgetauscht wird, dann wird der Zusammenhang mit der Schätzung von Erkrankungen auch wieder direkter einsichtig. Im Rahmen von Untersuchungen im medizinischen Bereich ist daher die OR eine zentrale Kenngröße um z.B. abzuschätzen ob ein Medikament wirksam ist oder nicht. Ein wichtiger Punkt zum Odds Ratio. Die Kenntnis des Odds Ratios erlaubt keine Aussage darüber zu treffen, wie Wahrscheinlich das auftreten einer *Krankheit* ist.
+
+::: {#exm-odds-ratios-diff-pro}
+
+### Odds Ratios und Baselinewahrscheinlichkeit
+
+Es sei angenommen, es werden zwei verschiedene Torwärter eingesetzt. T1 ein weniger guter Torwart der nur in der Kreisliga spielt und T2 ein sehr guter Torwart der auf Nationalniveau spielt. Entsprechend verändern sich die Trefferwahrscheinlichkeiten in folgender Art und Weise:
+
+::: {#tbl-mlm-log-or-to-p layout-ncol=2}
+
+| P1 | T1 | T2 |
+| --- | --- | --- |
+| $p$ |  $0.8$ | $0.5$ |
+| Odds | $4$ | $1$ s
+
+: Odds für Position P1 {#tbl-mlm-log-or-to-p-1}
+
+| P2 | T1 | T2 |
+| --- | --- | --- |
+| $p$ |  $0.4$ | $\frac{1}{7}=\approx 0.14$ |
+| Odds | $\frac{2}{3}$ | $\frac{1}{6}$ |
+
+: Odds für Position P2 {#tbl-mlm-log-or-to-p-2}
+
+Veränderung der Trefferquoten in Abhängigkeit von der Wurfposition und dem Torwart
+:::
+
+Die Verteilung würde zu den folgenden Odds Ratios führen.
+
+$$
+\text{OR}_{T1} = \frac{4}{\frac{2}{3}} = 6, \quad \text{OR}_{T2} = \frac{1}{\frac{1}{6}} = 6
+$$
+
+D.h. in beiden Fällen ist das Odds Ratio gleich, allerdings sind die Grundwahrscheinlichkeiten für einen Treffer sehr unterschiedlich in Abhängigkeit welcher Torwart zum Einsatz kommt. D.h. ein Odds Ratio von $6$ bedeutet immer die Chancen werden versechsfacht, aber ob das mit einer Erhöhung der Trefferquote von $p(P2)_{T1} = 0.4$ auf $p(P1)_{T1} = 0.8$ oder einer Erhöhung von $p(P2)_{T2} = 0.14$ auf $p(P1)_{T2} = 0.5$ einhergeht, hängt von der Baseline Trefferquote ab.
+
+:::
+
+Diese drei Begrifflichkeiten Risikoverhältnis RR, Chance oder Odds und Odds ratio OR auseinander zu halten ist wichtig bei der Interpretation der Ergebnisse der logistischen Regression. Vor allem ein klares Verständnis der ORs ist wichtigt, da diese mittels der Logistischen Regression direkt geschätzt werden. Im nächsten Schritt wird die Logistische Funktion betrachtet
 
 ## Logistische Funktion
+
+
 
 $$
 f(z) = \frac{1}{1 + e^{-z}} 
@@ -188,6 +282,7 @@ $$
 
 ```{r}
 #| fig-cap: "Logistische Funktion" 
+#| label: fig-mlm-log-logfunc
 
 z <- seq(-20, 20, length.out = 200)
 y <- 1/(1 + exp(-z))
