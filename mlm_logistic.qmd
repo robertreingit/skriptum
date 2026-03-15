@@ -272,19 +272,27 @@ D.h. in beiden Fällen ist das Odds Ratio gleich, allerdings sind die Grundwahrs
 
 Diese drei Begrifflichkeiten Risikoverhältnis RR, Chance oder Odds und Odds ratio OR auseinander zu halten ist wichtig bei der Interpretation der Ergebnisse der logistischen Regression. Vor allem ein klares Verständnis der ORs ist wichtigt, da diese mittels der Logistischen Regression direkt geschätzt werden. Im nächsten Schritt wird die Logistische Funktion betrachtet
 
-## Logistische Funktion
+## Die Logistische und die Logit Funktion
 
-
+Die logistische Funktion ist über den Bereich $[-\infty,\infty]$ definiert und hat den Wertebereich $[0,1]$. D.h. durch die logistische Funktion kann das eingangs beschriebene Problem bei der *normalen* Regression behoben werden, dass Werte außerhalb von $[0,1]$ nicht auftreten. Die Funktion ist wie folgt definiert: 
 
 $$
 f(z) = \frac{1}{1 + e^{-z}} 
+$$ {#eq-logistic-function}
+
+Durch Umformung bzw. Erweiterung mit $e^z$ wird eine alternative Formulierung erhalten, die auch oft in der Literatur verwendet wird.
+
+$$
+f(z) = \frac{1}{1+e^{-z}} = \frac{e^z}{e^z + e^{-z}e^z} = \frac{e^z}{1+e^z}
 $$
 
+Der Graph der logistischen Funktion sieht folgendermaßen aus (siehe @fig-mlm-log-logfunc).
+
 ```{r}
-#| fig-cap: "Logistische Funktion" 
+#| fig-cap: "Graph der logistischen Funktion $f(z)=\\frac{1}{1+e^{-z}}$." 
 #| label: fig-mlm-log-logfunc
 
-z <- seq(-20, 20, length.out = 200)
+z <- seq(-10, 10, length.out = 200)
 y <- 1/(1 + exp(-z))
 df_1 <- tibble(z,y)
 ggplot(df_1, aes(z,y)) +
@@ -292,19 +300,17 @@ ggplot(df_1, aes(z,y)) +
   labs(x = 'z', y = expression(frac(1,1+e^(-z))))
 ```
 
-## Alternative Formulierung der logistischen Funktion
+D.h. die logistische Funktion geht nach links asymptotisch gegen Null und recht asymptotisch gegen $1$. Dazwischen folgt der Graph einer S-förmigen Kurve. Die maximale Steigung wird an dem Punkt $f(0)$ erreicht. Der Graph der logistischen Funktion kann angepasst werden, indem eine Parametrisierung eingeführt wird. Dies führt zu.
 
-\begin{align*}
-f(z) &= \frac{1}{1 + e^{-z}} \\
- &= \frac{e^z}{e^z + e^{-z}e^z} \\
- &= \frac{e^z}{e^z + e^{-z+z}} \\
- &= \frac{e^z}{e^z + 1}
-\end{align*}
+$$
+f(z,a) = \frac{1}{1+e^{-az}}
+$$
 
-## logistic function $f(z,a) = \frac{1}{1+e^{-az}}$
+Über den Parameter $a$ kann nun die *Steilheit* der S-Kurve manipuliert werden (siehe @fig-mlm-log-faz).
 
 ```{r}
-#| fig-cap: "Variations of the logistic function"
+#| fig-cap: "Variationen der logistischen Funktion mit unterschiedlichen Steigungsraten."
+#| label: fig-mlm-log-faz
 
 logistic <- function(z,a=1) 1/(1+exp(-a*z))
 tibble(z,
@@ -319,66 +325,45 @@ tibble(z,
   scale_color_discrete("a", labels=c(expression(a==1.0),expression(a==.2),expression(a==5.0)))
 ```
 
-
-
-## Logistic function to model probabilities
-
-\begin{align*}
-p(X) = f(\beta_0 + \beta_1 X) &= \frac{e^{\beta_0+\beta_1 X}}{1 + e^{\beta_0 + \beta_1 X}} \\
-&= \frac{1}{1+e^{-(\beta_0 + \beta_1 X)}}
-\end{align*}
-
-$p(X)$ as the probability of scoring a goal, or the risk of developing a disease, etc.
-
-$$
-P(Y = 1|X) = \frac{1}{1 + e^{-(\beta_0 + \beta_1 X)}}
-$$
-
-## Logistische Regression in `R` 
+Entspechend kann der Übergang von $0$ zu $1$ entweder sehr abrupt stattfinden oder ober einen längeren Bereich gestreckt werden. Der Graph kann natürlich auch auf der $x$-Achse nach links oder rechts verschoben, indem die Transformation $z = x \pm b$ eingeführt wird (siehe @fig-mlm-log-fazpm).
 
 ```{r}
-#| echo: true
+#| fig-cap: "Verschiebung des Graphen um $-2$ bzw. $2$"
+#| label: fig-mlm-log-fazpm
 
+logistic <- function(z,a=1,b=0) 1/(1+exp(-a*(z-b)))
+tibble(z,
+               f_1 = logistic(z),
+               f_2 = logistic(z,b=-2),
+               f_3 = logistic(z,b=2)) |> 
+  pivot_longer(cols = -z) |> 
+  ggplot(aes(z,value, color=name)) +
+  geom_line() +
+  scale_x_continuous("z") +
+  scale_y_continuous(expression(frac(1,1+e^(-(z-b))))) +
+  scale_color_discrete("a", labels=c(expression(b==0),expression(b==-2),expression(b==2)))
 ```
 
-## Vorhersage
-
-```{r}
-#| fig-cap: "Model predictions"
-
-
-```
-
-## Chance 
-
-```{r}
-
-include_graphics('pics/comic_horse_and_duck.jpg')
-```
-
-
-## odds and the logistic model
+Eine wichtige Eigenschaft der logistischen Funktion die auch später bei der Interpretation der logistischen Regression immer wieder auftauchen wird, ist die Nichtlinearität des Graphen. Dies führt dazu, dass die Veränderung $\Delta Y$ auf der $Y$-Achse für einen gegebenen Unterschied $\Delta X$ unterschiedlich ausfällt, je nachdem in welchem Bereich der Funktion sich $X$ befindet. Zum Beispiel gilt führt eine Veränderung um $\Delta X = 1$ von $-2$ zu $-1$ und von $0$ zu $1$ zu den folgenden Werten:
 
 $$
 \begin{aligned}
-p(X) &= \frac{e^{\beta_0 + \beta_1X}}{1 + e^{\beta_0 + \beta_1 X}}  \\
-\Leftrightarrow p(X)(1 + e^{\beta_0 + \beta_1 X}) &= e^{\beta_0 + \beta_1X}  \\
-\Leftrightarrow p(X) + p(X)e^{\beta_0 + \beta_1 X} &= e^{\beta_0 + \beta_1X} \\
-\Leftrightarrow p(X) &= e^{\beta_0 + \beta_1X} - p(X)e^{\beta_0 + \beta_1 X} \\
-\Leftrightarrow p(X) &= e^{\beta_0 + \beta_1X}(1 - p(X)) \\
-\Leftrightarrow \frac{p(X)}{1 - p(X)} &= e^{\beta_0 + \beta_1X} \\
+x: -2 \rightarrow -1: \Delta y &= `r r_1(logistic(-1) - logistic(-2))` \\
+x: 0 \rightarrow 1: \Delta y &= `r r_1(logistic(1) - logistic(0))` 
 \end{aligned}
 $$
 
-## Logit function
+Die Umkehrfunktion der logistischen Funktion ist die sogenannte Logit Funktion.
 
 $$
 \text{logit}(x) = \text{log}\left(\frac{x}{1-x}\right)
-$$
+$$ {#eq-log-function}
+
+Der Graph der Logit Funktion ist in @fig-mlm-log-logit abgetragen.
 
 ```{r}
-#| fig-cap: "Logit function"
-#| fig-width: 3
+#| fig-cap: "Graph der Logit funktion."
+#| label: fig-mlm-log-logit
 
 z <- seq(0, 1, length.out = 400)
 y <- log(z/(1-z))
@@ -387,6 +372,33 @@ ggplot(df_2, aes(z,y)) +
   geom_line() +
   labs(x = 'z', y = expression(frac(x,1-x))) 
 ```
+
+Wie zu erwarten ist der Definitionsbereich der Logit-Funktion $[0,1]$. Der Graph der Logit-Funktion hat Polstellen bei $0$ und $1$, so dass der Graph dort asymptotisch gegen $-\infty$ bzw. $\infty$ geht.
+
+::: {.callout-tip}
+
+Um so sehen, dass der Logit die Umkehrfunktion der logistischen Funktion ist. Zunächst eine kurze Äquivalenzgleichung mit der Festsetzung $x = f(z) = \frac{1}{1+e^{-z}}$.
+
+$$
+1 - x = 1 - \frac{1}{1 + e^{-z}} = \frac{1 + e^{-z}}{1 + e^{-z}} - \frac{1}{1 + e^{-z}} = \frac{e^{-z}}{1 + e^{-z}}
+$$
+
+Daraus folgt:
+
+$$
+\frac{x}{1 - x} = \frac{\frac{1}{1 + e^{-z}}}{\frac{e^{-z}}{1 + e^{-z}}} = \frac{1}{1 + e^{-z}} \cdot \frac{1 + e^{-z}}{e^{-z}} = \frac{1}{e^{-z}} = e^{z}
+$$
+
+Angewandt auf in die Logit Funktion folgt somit:
+
+$$
+\text{logit}(\text{logistic}(z))=\text{logit}(x) = \ln\left( \frac{x}{1 - x} \right) = \ln(e^{z}) = z
+$$
+
+:::
+
+
+
 
 ## log-odds or logit
 
@@ -423,7 +435,52 @@ ggplot(df, aes(x,p)) + geom_line() +
   scale_x_continuous(expression(X), breaks=seq(-20,20,2))
 ```
 
-## Konfusionsmatrize
+## Die logistische Funktion
+
+
+\begin{align*}
+p(X) = f(\beta_0 + \beta_1 X) &= \frac{e^{\beta_0+\beta_1 X}}{1 + e^{\beta_0 + \beta_1 X}} \\
+&= \frac{1}{1+e^{-(\beta_0 + \beta_1 X)}}
+\end{align*}
+
+$p(X)$ as the probability of scoring a goal, or the risk of developing a disease, etc.
+
+$$
+P(Y = 1|X) = \frac{1}{1 + e^{-(\beta_0 + \beta_1 X)}}
+$$
+
+## Logistische Regression in `R` 
+
+```{r}
+#| echo: true
+
+```
+
+## Vorhersage
+
+```{r}
+#| fig-cap: "Model predictions"
+
+
+```
+
+
+### Zusammenhang der logistischen Regression mit Odds
+
+$$
+\begin{aligned}
+p(X) &= \frac{e^{\beta_0 + \beta_1X}}{1 + e^{\beta_0 + \beta_1 X}}  \\
+\Leftrightarrow p(X)(1 + e^{\beta_0 + \beta_1 X}) &= e^{\beta_0 + \beta_1X}  \\
+\Leftrightarrow p(X) + p(X)e^{\beta_0 + \beta_1 X} &= e^{\beta_0 + \beta_1X} \\
+\Leftrightarrow p(X) &= e^{\beta_0 + \beta_1X} - p(X)e^{\beta_0 + \beta_1 X} \\
+\Leftrightarrow p(X) &= e^{\beta_0 + \beta_1X}(1 - p(X)) \\
+\Leftrightarrow \frac{p(X)}{1 - p(X)} &= e^{\beta_0 + \beta_1X} \\
+\end{aligned}
+$$
+
+## Die logistische Regression als Klassifikationsalgorithmus
+
+### Konfusionsmatrize
 
 |                        | Predicted: Positive | Predicted: Negative |
 |------------------------|---------------------|---------------------|
@@ -435,12 +492,12 @@ ggplot(df, aes(x,p)) + geom_line() +
 - **Recall (Sensitivity):** $TP / (TP + FN)$
 - **F1 Score:** $\frac{2}{\frac{1}{\text{Precision}} + \frac{1}{\text{Sensitivity}}} \in [0,1]$
 
-## Welche Eigenschaften sind wichtig für einen Klassifikationsalgorithmus?
+### Welche Eigenschaften sind wichtig für einen Klassifikationsalgorithmus?
 
 - Discrimination
 - Calibration
 
-## Discrimination 
+### Discrimination 
 
 ### Definition
 Discrimination refers to a model's ability to distinguish between positive and negative cases. Discrimination assesses how well a model separates different outcome classes.  
@@ -449,7 +506,7 @@ Discrimination refers to a model's ability to distinguish between positive and n
 Discrimination tells us *how well* the model differentiates between classes, regardless of the predicted probability values being perfectly aligned with real-world outcomes.  
 
 
-## Kalibrierung 
+### Kalibrierung 
 
 ### Definition:
 Calibration refers to the agreement between predicted probabilities and the observed proportions of outcomes. A well-calibrated model outputs probabilities that reflect the true likelihood of an event.  
@@ -458,7 +515,7 @@ Calibration refers to the agreement between predicted probabilities and the obse
 Calibration ensures that the model's predictions are not just *accurate* in classification but also *reliable* as probability estimates.  
 
 
-## Receiver Operator Characteristic (ROC) 
+### Receiver Operator Characteristic (ROC) 
 
 $$
 \text{True Positive Rate (TPR, Sensitivity)} = \frac{\text{True Positives}}{\text{True Positives + False Negatives}}
@@ -476,7 +533,7 @@ $$
 \text{FPR} = 1 - \text{Specificity}
 $$
 
-## ROC 
+### ROC 
 
 ```{r}
 set.seed(125)
@@ -495,7 +552,7 @@ ggplot(df, aes(x,p)) + geom_line() +
 ```
 
 
-## ROC curve
+### ROC curve
 ```{r}
 #| fig-cap: "Example of a ROC curve"
 
@@ -513,7 +570,7 @@ ggplot(roc_data, aes( FPR, TPR)) +
 # Print AUC value
 ```
 
-## Area under the curve (AUC) 
+### Area under the curve (AUC) 
 
 ```{r}
 #| fig-cap: "Example of AUC"
@@ -526,7 +583,7 @@ ggplot(roc_data, aes(FPR, TPR)) +
   coord_equal() 
 ```
 
-## Calibration curve
+### Calibration curve
 
 ```{r}
 #| fig-cap: "Example of a calibration curve (red) and perfect calibration (black)"
@@ -543,10 +600,10 @@ ggplot(tibble(x=0:1, y=0:1), aes(x,y)) +
   coord_equal()
 ```
 
-## Calculating a prediction curve
+### Calculating a prediction curve
 
 
-## `CalibrationCurves`
+### `CalibrationCurves`
 
 ```{r}
 #| fig-height: 3
@@ -563,10 +620,12 @@ print(cc$ggPlot)
 ```
 
 
-## Take-aways Diskriminierung vs. Kalibrierung 
+### Take-aways Diskriminierung vs. Kalibrierung 
 
 | **Aspect**        | **Discrimination**                      | **Calibration**                      |
 |-------------------|-----------------------------------------|--------------------------------------|
 | **Focus**         | Ability to distinguish classes          | Accuracy of predicted probabilities  |
 | **Measurement**   | AUC, ROC curves                         | Calibration curves                   |
 | **Key Question**  | "How well does the model rank cases?"   | "Are the probabilities realistic?"   |
+
+### Summary
