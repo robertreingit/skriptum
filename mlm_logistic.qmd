@@ -397,6 +397,99 @@ $$
 
 :::
 
+Mal1J0hnn1!
+
+## Die logistische Regression
+
+Nun kann die logistische Regression eingeführt werden. Es liegt nun das folgende vor. Es wurden insgesamt $20$ Würfen von der zentralen Linie auf das Tor gemacht. Zehn der Würfe noteEin Teil der Würfe direkt von der Torraumlinie (6m) und ein Teil der Würfe aus dem Rückraum (8m). Es ergibt sich die folgende Verteilung der Würfe (siehe @fig-mlm-log-handball-prob-01).
+
+```{r}
+#| label: "fig-mlm-log-handball-prob-01"
+#| fig-cap: "Beispiel für Würfe aus zwei verschiedenen Distanzen." 
+
+
+set.seed(123)
+shots <- tibble(
+  d = c(mean=c(runif(10,6,7), runif(10,8,9))),
+  y = 10 + runif(20, -.5,.5),
+  treffer = factor(rbinom(20, 1, rep(c(0.8, 0.4), each=10)), levels=0:1, labels=c('miss','hit')),
+  type = if_else(d <= 8, "kurz", "lang")
+)
+
+handball_pitch() +
+  geom_point(data=shots, aes(x=d,y=y, color=treffer), size=3) +
+  scale_color_manual('Treffer', values=c('lightgreen','red'))
+```
+
+Die Würfe werden nun in zwei Kategorien eingeordnet. Würfe mit einer Distanz von $\leq8$m werden als *kurz* bezeichnet und Würfe mit einer Distanz von $>8$m werden als *lang* bezeichnet. Es ergibt sich die folgende tabellarische Anordnung.
+
+```{r}
+with(shots, table(treffer, type)) |> 
+  knitr::kable()
+```
+
+Nun soll die Trefferwahrscheinlichkeit für die beiden Kategorien in einem logistischen Regressionsmodell geschätzt werden. D.h. es soll das folgende Modell geschätzt werden:
+
+$$
+p_{Tor,i} = \beta_0 + \beta_1 \cdot d_i \quad i=1,2,\ldots, N
+$$
+
+In diesem Fall ist $\beta_0$ als eine Basistrefferwahrscheinlichkeit zu interpretieren und $\beta_1$ beschreibt dann, wie sich die Wahrscheinlichkeit ändert wenn von *kurz* auf *lang* gegangen wird. Da die Distanz nun eine kategorische Variable ist, wird wieder mit eine Dummy-Kodierung gearbeitet und *kurz* ist die Referenzkategorie mit $d=0$ und *lang* ist die Alternativkategorie mit $d=1$. Dadurch wird $\beta_0$ zur Trefferwahrscheinlichkeit für *kurz*.
+
+Wie schon besprochen, muss aber sichergestellt werden, dass $p_{Tor,i}$ tatsächlich auch nur Werte zwischen $0$ und $1$ annehmen kann, dass es als eine Wahrscheinlichkeit interpretiert werden soll. Hier kommt nun die logistische Funktion ins Spiel. Dazu wird der lineare Teil auf der rechten Seite der Gleichung an die logistische Funktion übergeben.
+
+$$
+\begin{aligned}
+z &= \beta_0 + \beta_1d_i \\
+f(z) &= f(\beta_0 + \beta_1d_i) = \frac{1}{1 + e^{-(\beta_0 + \beta_1d_i})}
+\end{aligned}
+$$
+
+Insgesamt folgt daraus:
+
+$$
+p_{Tor,i} =  \frac{1}{1 + e^{-(\beta_0 + \beta_1d)}}
+$$ {#eq-mlm-log-handball-01}
+
+Dieses *Zwischenschieben* der logistischen Funktion stellt sicher, dass tatsächlich nur Werte zwischen $0$ und $1$ für $p_{Tor,i}$ berechnet werden. Wird dieses Modell nun in `R` gefittet (wie wird später gezeigt) dann ergibt sich das folgende Ergebnis (@tbl-mlm-log-handball-prob-01}.
+
+```{r}
+mod_01 <- glm(treffer ~ type, shots, family=binomial())
+beta_0 <- r_2(coef(mod_01)[1])
+beta_1 <- r_2(coef(mod_01)[2])
+```
+
+| Koeffizient | Schätzer |
+| --- | --- |
+| $\beta_0$ | $`r beta_0`$ |
+| $\beta_1$ | $`r beta_1`$ |
+
+: Berechnete Schätzer für die Koeffizienten {#tbl-mlm-log-handball-prob-01}
+
+Was bedeuten diese Parameter nun? Dazu müssen die Koeffizienten in die Formel für die logistische Regression eingesetzt werden. Sei zum Beispiel der Wert für eine Werferin aus der kurzen Distanz gesucht. Da *kurz* die Referenzkondition ist, gilt $d = 0$. Daher wird aus @eq-mlm-log-handball-01.
+
+$$
+\begin{split}
+p_{Tor,i} &=  \frac{1}{1 + e^{-(`r beta_0` + ` beta_1`\cdot 0)}} \\
+ &= \frac{1}{1 + e^{-`r beta_0` }} \\
+ &= `r r_2(1/(1+exp(-beta_0)))`
+\end{split}
+$$
+
+D.h. im Mittel liegt die Wahrscheinlichkeit aus der kurzen Distanz zu treffen bei $p_{\text{kurz}} = 0.9$. Wie seht es nun für einen Wurf aus der weiten Distanz aus. Hier gilt nun $d = 1$ und es folgt:
+
+$$
+\begin{split}
+p_{Tor,i} &=  \frac{1}{1 + e^{-(`r beta_0` + ` beta_1`\cdot 1)}} \\
+ &= \frac{1}{1 + e^{-`r beta_0 + beta_1` }} \\
+ &= `r r_2(1/(1+exp(-(beta_0+beta_1))))`
+\end{split}
+$$
+
+Wie erwartet ist die Wahrscheinlichkeit aus der *weiten* Distanz geringer mit $p_{\text{lang}} = 0.3$.
+
+Nochmal zusammengefasst: Es wurde der Ansatz der linearen Regression verwendet mit einer Punkt-Steigungsform. Allerdings wurde nun die Punkt-Steigungsform in eine zusätzlich Funktion, die logistische Regression, gesteckt, damit die berechneten Werte in dem gewünschten Bereich zwischen $0$ und $1$ liegen. Daran schließt sich nun die Frage: Können die Koeffizienten $\beta_0$ und $\beta_1$ auch direkt interpretiert werden?
+
 
 
 
