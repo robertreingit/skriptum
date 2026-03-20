@@ -15,6 +15,8 @@ library(pROC)
 library(CalibrationCurves)
 library(ggplot2)
 library(ggforce)
+
+logistic_2 <- function(z,b0,b1) 1/(1+exp(-(b0 + b1*z)))
 ```
 
 In der bisherigen Behandlung der Regression war die Kriteriumsvariable, also die abhängige Variable, immer eine metrische Variable deren Wertebereich im Prinzip $-\infty$ bis $\infty$ umfasste. In der Realität ist dies natürlich nicht tatsächlich der Fall, da beispielsweise die Wurfgeschwindigkeit im Handball in der Realität durch die physiologische Kapazität der Spieler:Innen beschränkt ist. Allerdings gibt es auch den Fall, dass die Kriteriumsvariable von vorneherein überhaupt nur Werte innerhalb eines bestimmten Intervalls zulässt. Beispielsweise kann die Wahrscheinlichkeit ein Tor im Handball zu werfen nur Werte im Intervall $[0,1]$ einnehmen. Soll nun zum Beispiel ein statistisches Modell erstellt werden um die Torwahrscheinlichkeit $p_{\text{Tor}}$ in Abhängigkeit vom Abstands $d$ zum Tor und des Winkels $\alpha$ gegenüber der Torauslinie vorherzusagen (siehe @fig-mlm-log-shot) dann ist nicht sofort klar wie dies durchgeführt werden soll. 
@@ -353,7 +355,7 @@ x: 0 \rightarrow 1: \Delta y &= `r r_1(logistic(1) - logistic(0))`
 \end{aligned}
 $$
 
-Die Umkehrfunktion der logistischen Funktion ist die sogenannte Logit Funktion.
+Die Umkehrfunktion der logistischen Funktion ist die sogenannte **Logit** Funktion \index{Logit Funktion}.
 
 $$
 \text{logit}(x) = \text{log}\left(\frac{x}{1-x}\right)
@@ -397,7 +399,23 @@ $$
 
 :::
 
-Mal1J0hnn1!
+Eine wichtige Verbindung zwischen der Logistischen Funktion, der Logit Funktion und Odds wird ersichtlich, wenn die folgende Änderung in der Nomenklatur angewandt wird. Da die logistische Funktion den Wertebereich $[0,1]$ hat, können die berechneten Werte im jeweiligen Zusammenhang als Wahrscheinlichkeiten $p$ in Abhängigkeit von $x$ interpretiert werden. Also:
+
+$$
+p(x) = \frac{1}{1+e^{-x}}
+$$
+
+Entsprechend kann an die Logit-Funktion anstatt ein *Wert* $x$ ebenfalls eine *Wahrscheinlichkeit* $p$ übergeben werden. Nochmal, dies sind nur Änderung der Interpretation, ein Wert wird nicht zur Wahrscheinlichkeit, weil aus einem $x$ ein $p$ gemacht wird.
+
+$$
+\text{logit}(p(x)) = \ln\left(\frac{p(x)}{1-p(x)}\right)
+$$
+
+Unter dieser Betrachtungsweise, ist der berechnete Wert der Logit-Funktion der natürliche Logarithmus eines Odds, da $\frac{p}{1-p}$ ja genau die Definition von Odds ist. Insgesamt folgt:
+
+$$
+\text{logit}(\text{logistic}(x))=\text{logit}(p(x)) = \ln\left( \frac{p(x)}{1 - p(x)} \right) = \ln(e^{x}) = x
+$$
 
 ## Die logistische Regression
 
@@ -490,57 +508,64 @@ Wie erwartet ist die Wahrscheinlichkeit aus der *weiten* Distanz geringer mit $p
 
 Nochmal zusammengefasst: Es wurde der Ansatz der linearen Regression verwendet mit einer Punkt-Steigungsform. Allerdings wurde nun die Punkt-Steigungsform in eine zusätzlich Funktion, die logistische Regression, gesteckt, damit die berechneten Werte in dem gewünschten Bereich zwischen $0$ und $1$ liegen. Daran schließt sich nun die Frage: Können die Koeffizienten $\beta_0$ und $\beta_1$ auch direkt interpretiert werden?
 
-
-
-
-## log-odds or logit
+Um die Bedeutung der Koeffizienten zu verstehen, wird nun wieder auf Logit-Funktion zurückgegriffen. Wie bereits erläutert, ist die Logit-Funktion die Umkehrfunktion der Logistischen-Funktion. D.h. es gilt der folgende Zusammenhang:
 
 $$
-\text{logit}\left(\frac{p(X)}{1-p(X)} \right) = \beta_0 + \beta_1 X
+\begin{split}
+\text{logit}(\text{logistic}(\beta_0+\beta_1d_i)) &=\text{logit}(p(\beta_0+\beta_1d_i)) \\
+&= \ln\left( \frac{p(\beta_0+\beta_1d_i)}{1 - p(\beta_0+\beta_1d_i)} \right) \\
+&= \ln(e^{\beta_0+\beta_1d_i}) \\
+&= \beta_0+\beta_1d_i
+\end{split}
 $$
 
-The logistic regression model is linear for $X$ in the **log-odds**.
-\begin{align*}
-\left(\frac{p(X)}{1-p(X)} \right) &= e^{\beta_0 + \beta_1 (X + \Delta)} = e^{\beta_0 + \beta_1X}e^{\beta_1 \Delta} \\
-log\left(\frac{p(X)}{1-p(X)} \right) &= log\left(e^{\beta_0 + \beta_1X}e^{\beta_1\Delta}\right)  = \beta_0 + \beta_1 X + \beta_1 \Delta
-\end{align*}
-
-## Changes in $Y$ according to $X$
-
-
-```{r}
-#| fig-cap: "$f(x) = \\frac{e^{0.5+0.2x}}{1+e^{0.5+0.2x}}$"
-#| layout-ncol: 2
-#| fig-height: 3 
-#| fig-subcap:
-#|   - Logit
-#|   - Logistic
-
-logistic_2 <- function(z,b0,b1) 1/(1+exp(-(b0 + b1*z)))
-df <- tibble(
-  x = seq(-20,20,length.out=50),
-  p = logistic_2(x, 0.5, 0.2),
-  odds = exp(0.5 + 0.2*x)
-)
-ggplot(df, aes(x,odds)) + geom_line() +
-  scale_x_continuous(expression(X), breaks=seq(-20,20,2))
-ggplot(df, aes(x,p)) + geom_line() +
-  scale_x_continuous(expression(X), breaks=seq(-20,20,2))
-```
-
-## Die logistische Funktion
-
-
-\begin{align*}
-p(X) = f(\beta_0 + \beta_1 X) &= \frac{e^{\beta_0+\beta_1 X}}{1 + e^{\beta_0 + \beta_1 X}} \\
-&= \frac{1}{1+e^{-(\beta_0 + \beta_1 X)}}
-\end{align*}
-
-$p(X)$ as the probability of scoring a goal, or the risk of developing a disease, etc.
+Insbesondere der dritte und der letzte Teil der Gleichung führt zu dem Zusammenhang:
 
 $$
-P(Y = 1|X) = \frac{1}{1 + e^{-(\beta_0 + \beta_1 X)}}
+\ln\left( \frac{p(\beta_0+\beta_1d_i)}{1 - p(\beta_0+\beta_1d_i)} \right) = \beta_0+\beta_1d_i
 $$
+
+Sei nun ein Wurf aus der kurzen Distanz betrachtet dann gilt $d_i = 0$ was zu der folgenden Vereinfachung führt:
+
+$$
+\ln\left( \frac{p(\beta_0)}{1 - p(\beta_0)} \right) = \beta_0
+$$
+
+D.h. der $y$-*Achsenabschnitt* $\beta_0$ beschreibt den **Logarithmus der Odds** (kurz: **log odds**) für einen erfolgreichen Wurf aus der kurzen Distanz. Wenn diese Gleichung nun exponentiert wird folgt ($e^(x)$ ist die Umkehrfunktion von $\log(x)$:
+
+$$
+e^{\left(\ln\left( \frac{p(\beta_0)}{1 - p(\beta_0)} \right) \right)}=\frac{p(\beta_0)}{1 - p(\beta_0)} = e^{\beta_0}
+$$
+
+Ausgeschrieben, der Koeffizienten $\beta_0$ exponentiert, $e$ hoch $\beta_0$, beschreibt die Odds aus der kurzen Distanz zu treffen. D.h. im Vergleich zur linearen Regression ist die Interpretation durch die Anwendung der Logistischen- bzw. Logit-Funktion nun etwas komplizierter. Wie sieht es für $\beta_1$ aus?
+
+Es gilt zunächst, dass nun eine Wurf aus der weiten Distanz betrachtet wird und $d_i = 1$ gilt. Um den Wert $\beta_1$ in $\beta_0 + \beta_1 d_i = \beta_0 + \beta_1$ zu *isolieren* muss zunächst $\beta_0$ subtrahiert werden indem die Gleichungen von eben verwendet werden. Formal:
+
+$$
+\beta_1 = \beta_0 + \beta_1d_i - \beta_0 =  \ln\left( \frac{p(\beta_0+\beta_1d_i)}{1 - p(\beta_0+\beta_1d_i)} \right) - \ln\left( \frac{p(\beta_0)}{1 - p(\beta_0)} \right) 
+$$
+
+Mit der Eigenschaft des Logarithmus $\log(\frac{a}{b}) = \log(a) - \log(b)$ unter Berücksichtigung von $d_i = 1$ folgt:
+
+$$
+\beta_1 = \ln\left( \frac{\frac{p(\beta_0+\beta_1)}{1 - p(\beta_0+\beta_1)}}{\frac{p(\beta_0)}{1 - p(\beta_0)}} \right) = \ln\left(\frac{\text{Odds}_{\beta_0+\beta_1}}{\text{Odds}_{\beta_0}}\right)
+$$
+
+D.h. der Koeffizient $\beta_1$ beschreibt das log Odds-Verhältnis (log odds ratio oder log OR) zwischen einen Wurf aus der kurzen Distanz und einem Wurf aus der weiten Distanz. Exponentieren mit $e$ ergibt entsprechend:
+
+$$
+e^{\beta_1} =  \frac{\text{Odds}_{\beta_0+\beta_1}}{\text{Odds}_{\beta_0}}
+$$
+
+Wiederum ist die Interpretation des *Steigungskoeffizienten* $\beta_1$ bei der Logistischen Regression, wie auch für $\beta_0$ abstrakter als dies bei der linearen Regression der Fall ist. Wie später gezeigt wird, führt dies dazu, dass wenn eine kontinuierliche Variable $x$, also im Beispiel die tatsächlichen Distanzen $d_i$ verwendet werden, $\beta_1$ die **Änderung im odds ratio** bei einer Veränderung von $\Delta d = 1$ um eine Einheit beschreibt. 
+
+Im folgenden sei aber nun wieder
+
+
+## Die Parameter einer logistischen Regression bestimmen
+
+
+## Multiple Logistische Regression
 
 ## Logistische Regression in `R` 
 
