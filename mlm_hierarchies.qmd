@@ -702,7 +702,39 @@ Y_i = \beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + \cdots + \beta_p X_{pi} + \eps
 
 :::
 
-## Zum Nacharbeiten 
+## Modellvergleiche und Maximum-Likelihood
+
+In @sec-maximum-likelihood wurde die Methode der Maximum-Likelihood behandelt um Schätzer für die Modellparameter zu erhalten. Es wurde gezeigt, dass für den Fall der linearen Regression die Schätzer $\hat{beta}_i$ gleich denjenigen sind, die über die Methoden der kleinsten Quadrate erhalten werden. Die Maximum-Likelihood kann ebenfalls zu Modellvergleichen verwendet werden.
+
+Die Idee für Modellvergleiche mittels Maximum-Likelihood ist eigentlich relativ geradlinig, es werden die Werte für das Maximum-Likelihood $\mathcal{L}(\text{volles Modell})$ für das volle Modell mit $\mathcal{L}(\text{reduziertes Modell})$ verglichen. Alles was dafür dann weiter notwendig ist, ist eine Verteilung die unter einer $H_0$-Hypothese die Stichprobenverteilung dieser Differenz beschreibt. Tatsächlich werden nicht die Maximum-Likelihood-Werte miteinander verglichen, sondern, wie auch bei der Bestimmung des Maximums, der Logarithmus des Maximum-Likelihoods, der log-likelihood $\ell$. Die Teststatistik hat dann die folgende Form:
+
+$$
+2[\text{max}~\ell(\text{volles Modell}) - \text{max}~\ell(\text{reduziertes Modell})]
+$$
+
+Wenn wieder die Eigenschaften des Logarithmus und der Subtraktion beachtet werden für dies zu folgendem Ausdruck, der als **Likelihood Ratio Test (LRT)** bezeichnet wird.
+
+$$
+\text{LRT} = 2\log\left(\frac{\text{max}~\mathcal{L}(\text{volles Modell})}{\text{max}~\mathcal{L}(\text{reduziertes Modell})]}\right)
+$$
+
+$$
+\text{LRT} \sim \chi^2(df_{\text{reduziertes Modell}} - df_{\text{volles Modell}}) = \chi^2(p_F - p_R)
+$$
+
+### LRT in `R`
+
+In `R` kann der Likelihood-Ratio-Test für `lm()`-Modelle mittels der `lrtest()`-Funktion aus dem Package `lmtest`verwendet werden.
+
+```{r}
+#| echo: true
+
+lmtest::lrtest(mod_res, mod_full)
+```
+
+Es es zu sehen, dass sich das Ergebnis in diesem Fall nicht vom Standard F-Test unterscheidet.
+
+## Zum Weiterlesen 
 
 Viele der Ideen die hier diskutiert werden sind aus @christensen2018[p.57-64]. Daher wer noch mal etwas mehr Hintergrund dazu haben möchte, sei diese Quelle wärmstens empfohlen.
 
