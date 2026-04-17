@@ -295,7 +295,7 @@ Die Odds Ratio treten auch im Zusammenhang mit Kreuztabellen auf. Zum Beispiel, 
 
 : Häufigkeiten der Treffer und Fehlwürfe unter P1 und P2 {#tbl-mlm-log-shot-ctbl}
 
-Das OR berechnet sich hier nach der Formel:
+Das OR berechnet sich nach Vereinfachung auch direkt mit der Formel:
 
 $$
 \text{OR} = \frac{a\cdot d}{b\cdot c} = \frac{80\cdot 80}{20\cdot 20} = 16
@@ -433,7 +433,7 @@ tibble(z,
   scale_color_discrete("a", labels=c(expression(b==0),expression(b==-2),expression(b==2)))
 ```
 
-Eine wichtige Eigenschaft der logistischen Funktion die auch später bei der Interpretation der logistischen Regression immer wieder auftauchen wird, ist die Nichtlinearität des Graphen. Dies führt dazu, dass die Veränderung $\Delta Y$ auf der $Y$-Achse für einen gegebenen Unterschied $\Delta X$ unterschiedlich ausfällt, je nachdem in welchem Bereich der Funktion sich $X$ befindet. Zum Beispiel gilt führt eine Veränderung um $\Delta X = 1$ von $-2$ zu $-1$ und von $0$ zu $1$ zu den folgenden Werten:
+Eine wichtige Eigenschaft der logistischen Funktion die auch später bei der Interpretation der logistischen Regression immer wieder auftauchen wird, ist die Nichtlinearität des Graphen. Dies führt dazu, dass die Veränderung $\Delta Y$ auf der $Y$-Achse für einen gegebenen Unterschied $\Delta X$ unterschiedlich ausfällt, je nachdem in welchem Bereich der Funktion sich $X$ befindet. Zum Beispiel führt eine Veränderung um $\Delta X = 1$ für den $-2$ auf $-1$ zu einer anderen Veränderung von $Y$ wenn der Wert $X$ von $0$ zu $1$ steigt, obwohl in beiden Fällen die Veränderung $\Delta X$ gleich ist.
 
 $$
 \begin{aligned}
@@ -442,7 +442,7 @@ x: 0 \rightarrow 1: \Delta y &= `r r_1(logistic(1) - logistic(0))`
 \end{aligned}
 $$
 
-Die Umkehrfunktion der logistischen Funktion ist die sogenannte **Logit** Funktion \index{Logit Funktion}.
+Ein Funktion die Zentral beim Umgang mit der logistischen Regression ist, ist die Umkehrfunktion der logistischen Funktion die sogenannte **Logit** Funktion \index{Logit Funktion}.
 
 $$
 \text{logit}(x) = \text{log}\left(\frac{x}{1-x}\right)
@@ -492,7 +492,7 @@ $$
 p(x) = \frac{1}{1+e^{-x}}
 $$
 
-Entsprechend kann an die Logit-Funktion anstatt ein *Wert* $x$ ebenfalls eine *Wahrscheinlichkeit* $p$ übergeben werden. Nochmal, dies sind nur Änderung der Interpretation, ein Wert wird nicht zur Wahrscheinlichkeit, weil aus einem $x$ ein $p$ gemacht wird.
+Entsprechend kann an die Logit-Funktion anstatt ein *Wert* $x$ ebenfalls eine *Wahrscheinlichkeit* $p$ übergeben werden. Nochmal, dies sind nur Änderung der Interpretation, ein Wert wird nicht zur Wahrscheinlichkeit, weil aus einem $x$ ein $p$ gemacht wird. Es folgt jedoch formal:
 
 $$
 \text{logit}(p(x)) = \ln\left(\frac{p(x)}{1-p(x)}\right)
@@ -506,10 +506,10 @@ $$
 
 ## Die logistische Regression
 
-Nun kann die logistische Regression eingeführt werden. Es liegt nun das folgende vor. Es wurden insgesamt $20$ Würfen von der zentralen Linie auf das Tor gemacht. Zehn der Würfe wurden direkt von der Torraumlinie (6m) und zehn Würfe aus dem Rückraum (8m). Es ergibt sich die folgende Verteilung der Würfe (siehe @fig-mlm-log-handball-prob-01).
+Nun kann die logistische Regression eingeführt werden. Sei der folgende Kontext vorgegeben. Es wurden insgesamt $20$ Würfen von der zentralen Linie auf das Tor gemacht. Zehn der Würfe wurden direkt von der Torraumlinie (6m) und zehn Würfe aus dem Rückraum (8m). Es ergibt sich die folgende Verteilung der Würfe (siehe @fig-mlm-log-handball-prob-01).
 
 ```{r}
-#| label: "fig-mlm-log-handball-prob-01"
+#| label: fig-mlm-log-handball-prob-01
 #| fig-cap: "Beispiel für Würfe aus zwei verschiedenen Distanzen." 
 
 
@@ -545,7 +545,7 @@ $$
 
 In diesem Fall ist $\beta_0$ als eine Basistrefferwahrscheinlichkeit zu interpretieren und $\beta_1$ beschreibt dann, wie sich die Wahrscheinlichkeit ändert wenn von *kurz* auf *lang* gegangen wird. Da die Distanz nun eine kategorische Variable ist, wird wieder mit eine Dummy-Kodierung gearbeitet und *kurz* ist die Referenzkategorie mit $d=0$ und *lang* ist die Alternativkategorie mit $d=1$. Dadurch wird $\beta_0$ zur Trefferwahrscheinlichkeit für *kurz*.
 
-Wie schon besprochen, muss aber sichergestellt werden, dass $p_{Tor,i}$ tatsächlich auch nur Werte zwischen $0$ und $1$ annehmen kann, dass es als eine Wahrscheinlichkeit interpretiert werden soll. Hier kommt nun die logistische Funktion ins Spiel. Dazu wird der lineare Teil auf der rechten Seite der Gleichung an die logistische Funktion übergeben.
+Wie schon besprochen, muss aber sichergestellt werden, dass $p_{Tor,i}$ tatsächlich auch nur Werte zwischen $0$ und $1$ annehmen kann, um den Wert als eine Wahrscheinlichkeit interpretiert zu können. Hier kommt nun die logistische Funktion ins Spiel. Dazu wird der lineare Teil mit der folgenden Festsetzung auf der rechten Seite der Gleichung an die logistische Funktion $f(z)$ übergeben.
 
 $$
 \begin{aligned}
@@ -579,7 +579,7 @@ Was bedeuten diese Parameter nun? Dazu müssen die Koeffizienten in die Formel f
 
 $$
 \begin{split}
-p_{Tor,i} &=  \frac{1}{1 + e^{-(`r beta_0` + ` beta_1`\cdot 0)}} \\
+p_{Tor,i} &=  \frac{1}{1 + e^{-(`r beta_0` + `r beta_1`\cdot 0)}} \\
  &= \frac{1}{1 + e^{-`r beta_0` }} \\
  &= `r r_2(1/(1+exp(-beta_0)))`
 \end{split}
@@ -597,7 +597,7 @@ $$
 
 Wie erwartet ist die Wahrscheinlichkeit aus der *weiten* Distanz geringer mit $p_{\text{lang}} = 0.3$.
 
-Nochmal zusammengefasst: Es wurde der Ansatz der linearen Regression verwendet mit einer Punkt-Steigungsform. Allerdings wurde nun die Punkt-Steigungsform in eine zusätzlich Funktion, die logistische Regression, gesteckt, damit die berechneten Werte in dem gewünschten Bereich zwischen $0$ und $1$ liegen. Daran schließt sich nun die Frage: Können die Koeffizienten $\beta_0$ und $\beta_1$ auch direkt interpretiert werden?
+Nochmal zusammengefasst: Es wurde der Ansatz der linearen Regression verwendet mit einer Punkt-Steigungsform. Allerdings wurde nun die Punkt-Steigungsform in eine zusätzlich Funktion, die logistische Regression, gesteckt, damit die berechneten Werte in dem gewünschten Bereich zwischen $0$ und $1$ liegen. Daran schließt sich nun die Frage: Wie können die Koeffizienten $\beta_0$ und $\beta_1$ interpretiert werden?
 
 Um die Bedeutung der Koeffizienten zu verstehen, wird nun wieder auf Logit-Funktion zurückgegriffen. Wie bereits erläutert, ist die Logit-Funktion die Umkehrfunktion der Logistischen-Funktion. D.h. es gilt der folgende Zusammenhang:
 
@@ -610,19 +610,19 @@ $$
 \end{split}
 $$
 
-Insbesondere der dritte und der letzte Teil der Gleichung führt zu dem Zusammenhang:
+Der dritte und der letzte Schritt führen zu dem foglendem Zusammenhang:
 
 $$
 \ln\left( \frac{p(\beta_0+\beta_1d_i)}{1 - p(\beta_0+\beta_1d_i)} \right) = \beta_0+\beta_1d_i
 $$
 
-Sei nun ein Wurf aus der kurzen Distanz betrachtet dann gilt $d_i = 0$ was zu der folgenden Vereinfachung führt:
+Auf der linken Seite steht eine Log-Odds, während auf der reichten Seite der lineare Teil mit den beiden Koeffizienten $\beta_0$ und $\beta_1$ steht. Sei nun ein Wurf aus der kurzen Distanz betrachtet. Bei einem kurzem Wurf gilt $d_i = 0$ was zu der folgenden Vereinfachung führt:
 
 $$
 \ln\left( \frac{p(\beta_0)}{1 - p(\beta_0)} \right) = \beta_0
 $$
 
-D.h. der $y$-*Achsenabschnitt* $\beta_0$ beschreibt den **Logarithmus der Odds** (kurz: **log odds**) für einen erfolgreichen Wurf aus der kurzen Distanz. Wenn diese Gleichung nun exponentiert wird folgt ($e^(x)$ ist die Umkehrfunktion von $\log(x)$:
+D.h. der $y$-*Achsenabschnitt* $\beta_0$ beschreibt den **Logarithmus der Odds** (kurz: **log odds**) für einen erfolgreichen Wurf aus der kurzen Distanz. Wenn diese Gleichung nun exponentiert wird folgt (Hinweis: $e^{x}$ ist die Umkehrfunktion von $\log(x)$):
 
 $$
 e^{\left(\ln\left( \frac{p(\beta_0)}{1 - p(\beta_0)} \right) \right)}=\frac{p(\beta_0)}{1 - p(\beta_0)} = e^{\beta_0}
@@ -662,7 +662,9 @@ $$
 e^{`r beta_1`} = `r r_3(exp(beta_1))`
 $$
 
-Im Folgenden wird noch eine alternative Betrachtung der Logistischen Regression angewandt um das Verständnis noch einmal zu erweitern. Dazu wird ein Spezialfall des vorhergehenden Beispiels betrachtet indem nur Würfe aus der kurzen Distanz analysiert werden (siehe @fig-mlm-log-handball-prob-02)
+D.h. die logistische Regression liefert das gleiche Ergebnis wie die Berechnung die Häufigkeitstabelle, allerdings stellt sie das deutlich flexiblere Verfahren dar, denn die logistische Regression ist nicht auf nur eine einzelne Prädiktorvariable beschränkt.
+
+Im Folgenden wird noch eine alternative Interpretation der Logistischen Regression betrachtet um das Verständnis noch einmal zu erweitern. Dazu wird ein Spezialfall des vorhergehenden Beispiels betrachtet indem nur Würfe aus der kurzen Distanz analysiert werden (siehe @fig-mlm-log-handball-prob-02)
 
 ```{r}
 #| fig-cap: "Ausschließlich kurze Würfe auf das Tor"
@@ -696,27 +698,27 @@ $$
 E[Y|X] = p
 $$
 
-Der senkrechte Strich $|$ bedeutet wiederum "gegeben", also ausgesprochen der "Erwartungswert von $Y$ für ein gegeben $X$ ist $p$. Die Variable $p$ folgt wieder einer Binomialverteilung. Dies ist vollkommmen parallel zu der Herleitung der *normalen* linearen Regression, wo der Wert *auf der Geraden* einer Normalverteilung folgte:
+Der senkrechte Strich $|$ bedeutet "*gegeben*", also ausgesprochen der "Erwartungswert von $Y$ für ein gegebenes $X$ ist $p$. Die Variable $p$ folgt wieder einer Binomialverteilung. Dies ist vollkommen parallel zu der Herleitung der *normalen* linearen Regression, wo der Wert *auf der Geraden* einer Normalverteilung folgte:
 
 $$
 E[Y|X] = \mathcal{N}(\beta_0 + \beta_1 X, \sigma^2)
 $$
 
-Im vorliegenden Fall ist die abhängige Variable allerdings nicht mehr Normalverteilt sondern Biomialverteilt.
+Im vorliegenden Fall ist die abhängige Variable allerdings nicht mehr Normalverteilt sondern Biomialverteilt, formal:
 
 $$
 E[Y|X] = \text{Binom}(n,p)
 $$
 
-Die logistische Regression ist dabei wieder **linear** in den Parametern in der Form von $\beta_0 + \beta_1 X_{1i}$, allerdings, im Gegensatz zu normalen linearen Regression, überträgt sich diese Linearität nicht mehr die abhängige Variable $Y$. Wie bereits gezeigt, ist der Graph der Wahrscheinlichkeiten $p$ S-förmig.
+Die logistische Regression ist dabei wieder **linear** in den Parametern in der Form von $\beta_0 + \beta_1 X_{1i}$, allerdings, im Gegensatz zu normalen linearen Regression, überträgt sich diese Linearität nicht mehr die abhängige Variable $Y$. Wie bereits gezeigt, ist der Graph der Wahrscheinlichkeiten $p$ S-förmig und die Änderung von $Y$ hängt davon ab, in welchem Bereich der Kurve man sich befindet.
 
-Um von der abhängigen Variable $p$ auf die linearen Parameter $\beta_i$ abzubilden wird die beieits eingeführt Logit-Funktion verwendet.
+Um von der abhängigen Variable $p$ auf die linearen Parameter $\beta_i$ abzubilden wird wieder die Logit-Funktion verwendet.
 
 $$
-\text{logit}(p) = \beta_0 + \beta_1 X
+\text{logit}(p) = \text{logit}(E[p|X])= \beta_0 + \beta_1 X
 $$
 
-Die Logit-Funktion wird in diesem Zusammenhang auch als **Link**-Funktion bezeichnet. D.h. die Link-Funktion verknüpft den mittleren Wert der abhängigen Variablen mit den linearen Parametern. In der Literatur wird oft eine Terminologie verwendet, bei der die Link-Funktion den Buchstaben $g$ bekommt. Die Link-Funktion bildet dann $E[Y|X] = \mu$, als den mittleren Wert (im Beispiel die Trefferwahrscheinlichkeit $p(d)$) auf den linearen Prädiktor (im Beispiel $\beta_0 + \beta_i \cdot D$) ab. Dabei wird noch eine Zwischenvariable $\eta$ eingeführt, die das Ergebnis des linearen Prädiktors ist (im Beispiel entsprechend $\eta = \beta_0 + \beta_1 \cdot D$)
+Unter dem Zusammenhang mit der Binomialverteilung, wird die Logit-Funktion als **Link**-Funktion bezeichnet. D.h. die Link-Funktion verknüpft den mittleren Wert der abhängigen Variablen $E[Y|X] = \mu$ mit den linearen Parametern $\beta_i$. In der Literatur wird zusätzlich oft eine Terminologie verwendet, bei der die Link-Funktion den Buchstaben $g$ bekommt. Die Link-Funktion bildet dann $E[Y|X] = \mu$, als den mittleren Wert (im Beispiel die Trefferwahrscheinlichkeit $p(d)$) auf den linearen Prädiktor (im Beispiel $\beta_0 + \beta_i \cdot D$) ab. Dabei wird noch eine Zwischenvariable $\eta$ eingeführt, die das Ergebnis des linearen Prädiktors ist (im Beispiel entsprechend $\eta = \beta_0 + \beta_1 \cdot D$).
 
 ::: {#def-link-function}
 ### Link-Funktion
@@ -728,16 +730,152 @@ g(\mu) = \eta = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \dots + \beta_k x_k
 $$ 
 :::
 
-Nochmal, bei der Logistischen Regression die Logit-Funktion die Link-Funktion.
+Bei der Logistischen Regression mit der Logit-Funktion als die Link-Funktion, folgt:
 
-TODO: D als kontinuierliche Variable
+$$
+\begin{aligned}
+\mu &= p = E[Y|X] \sim \text{Binom} \\
+\eta &= \beta_0 + \beta_1 \cdot d_i \\
+g(z) &= \ln \left(\frac{z}{1-z}\right) \\
+g(\mu) &= \eta = \beta_0 + \beta_1 \cdot d_i
+\end{aligned}
+$$
+
+Sei nun $d_i$ eine kontinuierliche Variable, d.h. die Distanzen $d_i$ gehen mit ihrem tatsächlichen Wert in die logistische Regression ein und es ergibt sich das folgende Ergebnis (siehe @fig-mlm-log-dcontinuous).
+
+```{r}
+#| fig-cap: "Verteilung der Würfe mit Treffern und Fehlwürfen"
+#| label: fig-mlm-log-dcontinuous
+
+set.seed(123)
+shots_con <- tibble(
+  d = c(mean=c(runif(30,6,11))),
+  y = 10 + runif(30, -.5,.5),
+  hit = rbinom(30, 1,  1/(1+exp(0.5*(d-8)))),
+  treffer = factor(hit, levels=0:1, labels=c('miss','hit'))
+)
+
+handball_pitch() +
+  geom_point(data=shots_con, aes(x=d,y=y, color=treffer), size=3) +
+  scale_color_manual('Treffer', values=c('red', 'lightgreen')) +
+  scale_shape_discrete('Wurfdistanz') 
+```
+
+
+Das Modell ist wieder das gleiche wie schon vorher:
+
+$$
+\begin{aligned}
+g(\eta) &= \beta_0 + \beta_1 \cdot d_i \\
+\mu(d) &\sim \text{Binom}(d)
+\end{aligned}
+$$
+
+Für den Datensatz in @fig-mlm-log-dcontinuous werden die folgenden Werte für $\beta_0$ und $\beta_1$ erhalten.
+
+```{r}
+mod_02 <- glm(treffer ~ d, shots_con, family=binomial())
+beta_0 <- r_2(coef(mod_02)[1])
+beta_1 <- r_2(coef(mod_02)[2])
+```
+
+| Koeffizient | Schätzer |
+| --- | --- |
+| $\beta_0$ | $`r beta_0`$ |
+| $\beta_1$ | $`r beta_1`$ |
+
+: Berechnete Schätzer für die Koeffizienten 
+
+Werden nun die Wahrscheinlichkeiten $p$ gegen die Wurfdistanz $d_i$ abgetragen, ergibt sich der folgende graphische Zusammenhang (siehe @fig-mlm-log-p-to-distance):
+
+```{r}
+#| fig-cap: "Zusammenhang zwischen der Trefferwahrscheinlichkeit und der Wurfdistanz"
+#| label: fig-mlm-log-p-to-distance
+
+shots_pred <- tibble(d = seq(0, 20, 0.05)) 
+shots_pred <- shots_pred |> add_column(y = predict(mod_02, newdata = shots_pred, type='response'))
+ggplot(shots_pred, aes(d, y)) +
+  geom_point(data = shots_con, aes(x=d, y=hit), size=2) +
+  geom_line() +
+  scale_x_continuous("Distanz[m]", breaks=seq(0,20,2)) +
+  scale_y_continuous("Trefferwahrscheinlichkeit p")
+
+```
+
+Die S-Kurve ist nun anders herum, da mit kleiner werden Distanz die Wahrscheinlichkeit größer wird zu treffen, sprich bei einer Distanz von $d_i = 0$ ist Trefferwahrscheinlichkeit praktisch gleich $1$. Mit größer werden Distanz wird entsprechend die Wahrscheinlichkeit für einen Treffer geringer. In @fig-mlm-log-p-to-distance sind auch auch die Daten eingetragen. Wobei ein Wert von $1$ einen Treffer signalisiert, während ein Wert von $0$ einen Fehlwurf kennzeichnet. Im Graphen ist auch zu erkennen, das für diesen *Datensatz* im Bereich zwischen $8$ und $9$ Metern die Trefferwahrscheinlichkeit am stärksten abnimmt.  
+
+Nun stellt sich wieder die Frage, wie die Koeffizienten $\beta_0$ und $\beta_1$ zu interpretieren sind. Im Fall des y-Achsenabschnitts $\beta_0$ der Auftritt für $d_i = 0$ wird die folgende Wahrscheinlichkeit erhalten:
+
+$$
+p = \frac{1}{1+e^{-`r beta_0`}} = `r r_3(1/(1+exp(-beta_0)))`
+$$
+
+Wie schon am Graphen ersichtlich ist die Wahrscheinlichkeit nahe $1$ für einen Treffer. Wenn der Koeffizient direkt interpretiert wird, dann beschreibt $\beta_0$ die log-odds für einen Treffer aus der Distanz $d_i = 0$, bzw. $\beta_0$ in den Exponenten $e^{\beta_0}$ gesetzt ergibt die Odds für einen Treffer aus der Distanz $d_i=0$.
+
+Für den *Steigungskoeffizienten* $\beta_1$ ergibt sich die parallel Interpretation mit dem Rückgriff aus der Interpretation aus der linearen Regression. Wenn zwei Objekte miteinander verglichen, die sich in der Wurfdistanz um eine Einheit, als einen Meter $\Delta d = 1$ unterscheiden, dann gibt beziffert $\beta_1$ die **Veränderung** in den **Log-Odds**. Wenn $\beta_1$  exponiert wird also $e^{\beta_1}$, dann beschreibt der Wert den mittleren Unterschied dieser zwei Objekte in Odds an. Achtung, es geht um die Veränderung in den Odds bzw. Log-Odds nicht um die Veränderung in den Wahrscheinlichkeiten.
+
+$$
+\begin{aligned}
+\Delta \text{log-odds} &= \beta_1 = `r beta_1` \\
+\Delta \text{odds} &= e^{\beta_1} = `r exp(beta_1)` \\
+\end{aligned}
+$$
+
+Um die Veränderung in den Wahrscheinlichkeiten zu erhalten, dann müssen die Wert entsprechend in die logistische Funktion eingesetzt werden. Die Veränderung in den Log-Odds ist dabei **linear**, während die Veränderung in den Wahrscheinlichkeiten $p$ **nicht-linear** ist, wie in @fig-mlm-log-p-to-distance zu erkennen ist.
 
 ## Die Parameter einer logistischen Regression bestimmen
 
+Im Gegensatz zu der multiplen linearen Regression gibt es für die Logistische Regression keine geschlossene Formel um die Modellparameter $\beta_i$ zu bestimmen. Daher werden die Parameter über eine numerische Nährung iterativ mittels der Maximum-Likelihood Methode bestimmt. Für eine einzelne Beobachtung $y_i$ gilt:
+
+$$
+p_i = \frac{1}{1 + e^{-(\beta_0 + \beta_1x_i})}
+$$
+
+Die Likelihood in Abhängigkeit von $\boldsymbol{\beta} = (\beta_0,\beta_1)$ für diesen einzelnen Wert kann dann folgendermaßen gebildet werden. Die Wahrscheinlichkeit einen *Treffer* zu beobachten ist dann genau entsprechend dieser Formel, während die Wahrscheinlichkeit keinen Treffer zu erzielen $(1 - p_i)$ ist. Daher kann die Likelihood folgendermaßen formuliert werden.
+
+$$
+\mathcal{L}_i = p_i^{y_i} \cdot (1 - p_i)^{1 - y_i}
+$$
+
+Wenn ein Treffer beobachtet wurde, dann gilt $y_i = 1$ und es folgt:
+
+$$
+\mathcal{L}_i = p_i^{1} \cdot (1 - p_i)^{1 - 1} = p_i
+$$
+
+bzw. wenn $y_i = 0$ vorliegt:
+
+
+$$
+\mathcal{L}_i = p_i^{0} \cdot (1 - p_i)^{1 - 0} = (1-p_i)
+$$
+
+Die Wahrscheinlichkeit $p_i$ wird anhand mittels der logistischen Funktion modelliert woraus sich der folgende Ausdruck für einen einzelnen Likelihood $\mathcal{L}_i$ ergibt:
+
+$$
+\mathcal{L}_i(\boldsymbol{\beta}) = p_i^{y_i} \cdot (1 - p_i)^{1 - y_i} = \left(\frac{1}{1+e^{-(\beta_0 + \beta_1x_i)}}\right)^{y_i}\left(1-\frac{1}{1+e^{-(\beta_0 + \beta_1x_i}}\right)^{1-y_i}
+$$
+
+Da davon ausgegangen wird, dass die Werte zwischen den Personen unabhängig voneinander sind, multiplizieren sich die Werte für die Likelihood über alle beobachteten Werte und es folgt:
+
+$$
+\mathcal{L}(\boldsymbol{\beta}) = \prod_{i=1}^n\left(\frac{1}{1+e^{-(\beta_0 + \beta_1x_i)}}\right)^{y_i}\left(1-\frac{1}{1+e^{-(\beta_0 + \beta_1x_i}}\right)^{1-y_i}
+$$
+
+Mittels des Übergangs von der Likelihood $\mathcal{L}\boldsymbol{\beta}$ zur log-Likelihood $\ell$ folgt dann wieder mit den Eigenschaften des Logarithmus.
+
+$$
+\ell(\boldsymbol{\beta}) = \sum_{i=1}^ny_i\log\left(\frac{1}{1+e^{-(\beta_0 + \beta_1x_i)}}\right)(1-y_i)\log\left(1-\frac{1}{1+e^{-(\beta_0 + \beta_1x_i)}}\right)
+$$
+
+Hier wird dann wieder der übliche Ansatz mit Ableitung nach $\beta_0$ und $\beta_1$ und Nullsetzung um die Lösungsgleichung zu erhalten. Diese können allerdings nicht einfach algebraisch gelöst werden, sondern müssen über ein numerisches Nährungsverfahren gelöst werden. Letztendlich werden dann Maximum-Likelihood Schätzer $\hat{\beta}_0$ und $\hat{\beta}_1$ für die beiden Modellparameter $\beta_0$ und $\beta_1$ erhalten. Mittels dieser können dann Schäzter für die Wahrscheinlichkeiten $\hat{p}_i$ berechnet werden.
 
 ## Multivariate Logistische Regression
 
+
+
 ## Den Modellfit bewerten
+
 
 ## Logistische Regression in `R` 
 
