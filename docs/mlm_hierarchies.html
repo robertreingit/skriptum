@@ -499,10 +499,7 @@ window.Quarto = {
     <h2 id="toc-title">Inhaltsverzeichnis</h2>
    
   <ul>
-  <li><a href="#genereller-linearer-modell-testansatz" id="toc-genereller-linearer-modell-testansatz" class="nav-link active" data-scroll-target="#genereller-linearer-modell-testansatz"><span class="header-section-number">22.1</span> Genereller Linearer Modell Testansatz</a>
-  <ul class="collapse">
-  <li><a href="#reduziertes-modell-und-stichprobenvarianz-deep-dive" id="toc-reduziertes-modell-und-stichprobenvarianz-deep-dive" class="nav-link" data-scroll-target="#reduziertes-modell-und-stichprobenvarianz-deep-dive"><span class="header-section-number">22.1.1</span> Reduziertes Modell und Stichprobenvarianz (deep dive)</a></li>
-  </ul></li>
+  <li><a href="#genereller-linearer-modell-testansatz" id="toc-genereller-linearer-modell-testansatz" class="nav-link active" data-scroll-target="#genereller-linearer-modell-testansatz"><span class="header-section-number">22.1</span> Genereller Linearer Modell Testansatz</a></li>
   <li><a href="#modellvergleich-in-r" id="toc-modellvergleich-in-r" class="nav-link" data-scroll-target="#modellvergleich-in-r"><span class="header-section-number">22.2</span> Modellvergleich in <code>R</code></a></li>
   <li><a href="#modellvergleiche-anhand-eines-beispiel" id="toc-modellvergleiche-anhand-eines-beispiel" class="nav-link" data-scroll-target="#modellvergleiche-anhand-eines-beispiel"><span class="header-section-number">22.3</span> Modellvergleiche anhand eines Beispiel</a>
   <ul class="collapse">
@@ -567,86 +564,113 @@ F-statistic: 1.491 on 1 and 2 DF,  p-value: 0.3465</code></pre>
 </div>
 </div>
 <p>Zunächst werden wieder die Residuen betrachtet, die Abweichungen der beobachteten Daten <span class="math inline">\(y_i\)</span> von der vorhergesagten Werten der Regressionsgeraden <span class="math inline">\(\hat{y}_i\)</span>. Im Rahmen der Behandlung des Determinationskoeffizienten <span class="math inline">\(R^2\)</span> sind bereits Quadratsummen und deren Unterteilung besprochen worden. Dort wurde die Aufteilung der Varianz von <span class="math inline">\(Y\)</span>, bezeichnet als <span class="math inline">\(SSTO\)</span>, die totale Varianz in die beiden Komponenten Regressionsvarianz <span class="math inline">\(SSR\)</span> und Fehlervarianz <span class="math inline">\(SSE\)</span> eingeführt.</p>
-<p><span class="math display">\[\begin{equation}
+<p><span class="math display">\[
 SSTO = SSR + SSE
-\end{equation}\]</span></p>
+\]</span></p>
 <p>Die Fehlerquadratsumme SSE, die Summe der quadrierten Abweichungen zwischen dem beobachteten Wert <span class="math inline">\(y_i\)</span> und dem vorhergesagten Wert <span class="math inline">\(\hat{y}_i\)</span> ist definiert mittels:</p>
-<p><span class="math display">\[\begin{equation}
+<p><span class="math display">\[
 SSE = \sum_{i=1}^n (y_i - \hat{y}_i)^2
-\end{equation}\]</span></p>
+\]</span></p>
 <p>Also letztendlich wieder nur die Summe der quadrierten Residuen. Um für gegebene Daten die vorhergesagten Werte <span class="math inline">\(\hat{y}_i\)</span> berechnen zu können, wird ein Modell und die dazugehörigen Modellkoeffizienten <span class="math inline">\(\beta_0\)</span> und <span class="math inline">\(\beta_1\)</span> benötigt. Das einfache lineare Modell hat in diesem Fall zwei Modellparameter. Streng genommen besitzt das Modell noch einen weiteren Parameter nämlich <span class="math inline">\(\sigma^2\)</span>, da <span class="math inline">\(\sigma^2\)</span> für die Berechnung der <span class="math inline">\(\hat{y}_i\)</span> nicht unbedingt notwendig ist, kann er erstmal ignoriert werden. Zuvor wurde bereits die Anzahl der Modellparameter formalisiert und als eigener Parameter bezeichnet. Per Konvention wird die Parameteranzahl mit <span class="math inline">\(p\)</span> bezeichnet. Im einfachen Fall mit den beiden Parametern <span class="math inline">\(\beta_0\)</span> und <span class="math inline">\(\beta_1\)</span> gilt daher <span class="math inline">\(p = 2\)</span>.</p>
 <p>Die Anzahl der Parameter <span class="math inline">\(p\)</span> spielt eine Rolle wenn die sogenannten <strong>Freiheitsgrade</strong> <span class="math inline">\(df\)</span> (degrees of freedom) bestimmt werden müssen. Umgangssprachlich bezeichnen die Freiheitsgerade die Anzahl der Daten die frei variiert werden können. Die tatsächliche Definition ist komplizierter und auch nicht immer eindeutig. Die Freiheitsgrade für die Fehlerquadratsumme <span class="math inline">\(SSE\)</span> berechnet sich mittels der Formel <span class="math inline">\(N-p\)</span>. <span class="math inline">\(N\)</span> bezeichnet die Anzahl der Beobachtungen, in unserem Fall die Anzahl der Datenpunkte.</p>
-<p><span class="math display">\[\begin{equation}
+<p><span class="math display">\[
 df_E := N - p
-\end{equation}\]</span></p>
+\]</span></p>
 <p>Die Freiheitsgerade <span class="math inline">\(df\)</span> bestimmen die <em>effektive</em> Anzahl der Beobachtungen die zur Verfügung stehen um die Varianz <span class="math inline">\(\sigma^2\)</span> des Modells abzuschätzen. Dadurch, dass zwei Parameter anhand der Daten für das Modell bestimmt werden, fallen zwei Datenpunkt als <em>unabhängige</em> Informationsquellen weg. Anders ausgedrückt, wenn die beiden Modellparameter <span class="math inline">\(\beta_0\)</span> und <span class="math inline">\(\beta_1\)</span> bekannt sind, dann sind nur noch <span class="math inline">\(N-2\)</span> Datenpunkt frei variierbar. Sobald die Werte von <span class="math inline">\(N-2\)</span> Datenpunkten und die beiden Parameter bekannt, können die verbleibenden beiden Werte berechnet werden. Daher der Begriff der Freiheitsgrade.</p>
-<p>Wenn <span class="math inline">\(SSE\)</span> durch die Anzahl der Freiheitsgerade geteilt wird, dann lässt sich zeigen, das dieser Wert ein erwartungstreuer Schätzer für die Residualvarianz <span class="math inline">\(\sigma^2\)</span> unter der Verteilungsannahme <span class="math inline">\(\epsilon_i \sim \mathcal{N}(0,\sigma^2)\)</span> der Daten ist. Das Verhältnis von <span class="math inline">\(SSE\)</span> zu <span class="math inline">\(df\)</span> wird als Mean squared error (<span class="math inline">\(MSE\)</span>) bezeichnet.</p>
-<p><span class="math display">\[\begin{equation}
+<p>Wenn <span class="math inline">\(SSE\)</span> durch die Anzahl der Freiheitsgerade geteilt wird, dann lässt sich zeigen, das dieser Wert ein erwartungstreuer Schätzer für die Residualvarianz <span class="math inline">\(\sigma^2\)</span> unter der Verteilungsannahme <span class="math inline">\(\epsilon_i \sim \mathcal{N}(0,\sigma^2)\)</span> der Daten ist. Das Verhältnis von <span class="math inline">\(SSE\)</span> zu <span class="math inline">\(df\)</span> wird als Mean Squared Error (<span class="math inline">\(MSE\)</span>) bezeichnet.</p>
+<p><span id="eq-mlm-hier-MSE"><span class="math display">\[
 MSE = \frac{SSE}{df_{E}} = \frac{\sum_{i=1}^n (y_i - \hat{y}_i)^2}{N-p} = \hat{\sigma}^2
-\label{eq-mlm-hier-MSE}
-\end{equation}\]</span></p>
-<p>Im Allgemeinen bedeutet groß <span class="math inline">\(SS\)</span> immer, das es sich um die Summe von quadrierten Werten handelt (<span class="math inline">\(S\)</span>um of <span class="math inline">\(S\)</span>squares) während ein <span class="math inline">\(M\)</span> bedeutet das die Quadratsumme durch ihre Freiheitsgrade geteilt wurde (<span class="math inline">\(M\)</span>ean). Tatsächlich ist der Ansatz in Formel <span class="math inline">\(\eqref{eq-mlm-hier-MSE}\)</span> schon bekannt und bei der Stichprobenvarianz <span class="math inline">\(s^2\)</span> angewendet worden. Wenn eine Stichprobe der Größe <span class="math inline">\(N\)</span> mit Werten <span class="math inline">\(y_i\)</span> vorliegt, dann wird die Stichprobenvarianz mittels der bekannten Formel berechnet:</p>
-<p><span class="math display">\[\begin{equation}
+\tag{22.1}\]</span></span></p>
+<p>Im Allgemeinen bedeutet groß <span class="math inline">\(SS\)</span> immer, das es sich um die Summe von quadrierten Werten handelt (<span class="math inline">\(S\)</span>um of <span class="math inline">\(S\)</span>squares) während ein <span class="math inline">\(M\)</span> bedeutet das die Quadratsumme durch ihre Freiheitsgrade geteilt wurde (<span class="math inline">\(M\)</span>ean).</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tipp
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Tatsächlich ist der Ansatz in <a href="#eq-mlm-hier-MSE" class="quarto-xref">Gleichung&nbsp;<span>22.1</span></a> schon bekannt und bei der Stichprobenvarianz <span class="math inline">\(s^2\)</span> angewendet worden. Wenn eine Stichprobe der Größe <span class="math inline">\(N\)</span> mit Werten <span class="math inline">\(y_i\)</span> vorliegt, dann wird die Stichprobenvarianz mittels der bekannten Formel berechnet:</p>
+<p><span class="math display">\[
 \hat{\sigma}^2 = s^2 = \frac{1}{N-1}\sum_{i=1}^N(y_i - \bar{y})^2
-\end{equation}\]</span></p>
-<p>Was bei dieser Formel vielleicht schon immer etwas undurchsichtig gewesen ist, ist der Nenner mit <span class="math inline">\(N-1\)</span> anstatt einfach <span class="math inline">\(N\)</span> wie es vom Mittelwert bekannt ist. Hier kommen die Freiheitsgerade zum Einsatz. Um die Varianz überhaupt berechnen zu können, wird ein <em>Parameter</em>, den Mittelwert <span class="math inline">\(\hat{y}\)</span> der <span class="math inline">\(y_i\)</span> benötigt. Der Mittelwert wird allerdings anhand der Daten berechnet. Dies führt dazu, dass nach Berechnung von <span class="math inline">\(\hat{y}\)</span> nur noch <span class="math inline">\(N-1\)</span> Werte frei variiert werden können. Sobald, neben dem Mittelwert <span class="math inline">\(\bar{y}\)</span>, <span class="math inline">\(N-1\)</span> Werte bekannt sind, kann der verbleibenden <span class="math inline">\(N\)</span>-ten Wert berechnet werden. Durch die Berechnung des Mittelwerts ist daher ein Freiheitsgerad <em>verloren</em> gegangen. Der Zähler bei der Varianz ist wieder eine Summe quadrierter Abweichungen also ein <span class="math inline">\(SS\)</span> und damit wird die Varianz <span class="math inline">\(s^2\)</span> insgesamt zu einer <span class="math inline">\(MS\)</span>.</p>
+\]</span></p>
+<p>Was bei dieser Formel vielleicht schon immer etwas undurchsichtig gewesen ist, ist der Nenner mit <span class="math inline">\(N-1\)</span> anstatt einfach <span class="math inline">\(N\)</span> wie es vom Mittelwert bekannt ist. Hier kommen die Freiheitsgerade zum Einsatz. Um die Varianz überhaupt berechnen zu können, wird ein <em>Parameter</em>, den Mittelwert <span class="math inline">\(\hat{y}\)</span> der <span class="math inline">\(y_i\)</span> benötigt. Der Mittelwert wird allerdings anhand der Daten berechnet. Dies führt dazu, dass nach Berechnung von <span class="math inline">\(\hat{y}\)</span> nur noch <span class="math inline">\(N-1\)</span> Werte frei variiert werden können. Sobald, neben dem Mittelwert <span class="math inline">\(\bar{y}\)</span>, <span class="math inline">\(N-1\)</span> Werte bekannt sind, kann der verbleibenden <span class="math inline">\(N\)</span>-ten Wert berechnet werden. Durch die Berechnung des Mittelwerts ist daher ein Freiheitsgrad <em>verloren</em> gegangen. Der Zähler bei der Varianz ist wieder eine Summe quadrierter Abweichungen also ein <span class="math inline">\(SS\)</span> und damit wird die Varianz <span class="math inline">\(s^2\)</span> insgesamt zu einer <span class="math inline">\(MS\)</span>.</p>
 <p>Seien die Datenpunkte <span class="math inline">\([1,2,3,4,5]\)</span> gegeben. Der Mittelwert <span class="math inline">\(\hat{y} = 3\)</span>. Wenn nun <span class="math inline">\(N-1=4\)</span> Werte, z.B. die ersten vier Wert <span class="math inline">\([1,2,3,4]\)</span> und der Mittelwert bekannt sind, dann ist der fünfte Wert festgelegt.</p>
-<p><span class="math display">\[\begin{equation*}
+<p><span class="math display">\[
 \bar{y} = 3 = \frac{1}{5} (1+2+3+4+y_5) = \frac{1}{5}(10+y_5) \Leftrightarrow (3\cdot 5)-10=y_5
-\end{equation*}\]</span></p>
+\]</span></p>
+</div>
+</div>
 <p>Das Ziel ist nun eine Metrik zu entwickeln die es erlaubt abschätzen, ob die Hinzunahme von zusätzlichen Modellparametern zu einer Verbesserung der Modellvorhersage führt. D.h. der Analyseprozess startet mit einem <em>einfachen</em> Modell und sukzessive werden weitere Variablen zum Modell hinzugefügt und es wird überprüft ob dadurch die Modellvorhersage verbessert wird. Eine <em>Verbesserung</em> wird in diesem Fall über die Veränderung in <span class="math inline">\(SSE\)</span> ermittelt. Wenn zusätzliche Modellparameter zu einer Verbesserung führen, dann sollte eine <em>relevante</em> Reduktion der Fehlervarianz <span class="math inline">\(SSE\)</span> beobachtet werden. Die Residuen werden kleiner und die Präzision der Vorhersagen wird verbessert. Als Randbedingung sollen die zu vergleichenden Modelle in einer Hierarchie zueinander stehen. Dies bedeutet, dass einfachere Modelle als Teilmodelle von komplexeren Modellen interpretiert werden.</p>
 <p>Dazu wird zunächst eine Unterscheidung zwischen einem vollem Modell (<span class="math inline">\(F\)</span>ull model) und einem reduzierten Modell (<span class="math inline">\(R\)</span>educed model) getroffen. Als das volle Modell wird immer das kompliziertere Modell, also dasjenige mit größerem <span class="math inline">\(p\)</span>, bezeichnet. Dementsprechend ist das reduzierte Modell das weniger komplizierte Modell, welches einem Spezialfall des vollen Modell entspricht. Dabei ist die Bezeichnung voll bzw. reduziertes Modell immer nur temporär. Ein volles Modell kann bei einem weiteren Vergleich zum reduzierten Modell werden. Im weiteren wird bei der Bezeichnung der Modell die englische Bezeichung (full vs.&nbsp;reduced) verwendet. Für das Beispiel der einfachen lineare Regression ist das full model das bekannte Modell:</p>
-<p><span class="math display">\[\begin{equation*}
+<p><span class="math display">\[
 Y_i = \beta_0 + \beta_1 X_i + \epsilon_i, \quad \epsilon_i \sim \mathcal{N}(0,\sigma^2)
-\end{equation*}\]</span></p>
+\]</span></p>
 <p>Um die Residualvarianzen <span class="math inline">\(SSE\)</span> für die beiden Modell voneinander unterscheiden zu können, werden diese mit <span class="math inline">\(SSE(F)\)</span> für das full model und <span class="math inline">\(SSE(R)\)</span> für das reduced model bezeichnet. Die Residualvarianz <span class="math inline">\(SSE(F)\)</span> berechnet sich wie oben angegeben mittels:</p>
-<p><span class="math display">\[\begin{equation}
+<p><span id="eq-mlm-hier-ssef"><span class="math display">\[
 \textrm{SSE(F)}  = \sum_{i=1}^N(y_i - \hat{y}_i)^2 = \sum_{i=1}^N [y_i - (\beta_0 + \beta_1 x_i)]^2
-\label{eq-mlm-hier-ssef}
-\end{equation}\]</span></p>
-<p>Dieses Modell hat <span class="math inline">\(p = 2\)</span> Modellparameter und somit <span class="math inline">\(df_{F} = N - p = N - 2\)</span> Freiheitsgrade. Nun kann die Frage gestellt werden, ob der Modellparameter <span class="math inline">\(\beta_1\)</span> wirklich benötigt wird? Vielleicht zeigt die <span class="math inline">\(X\)</span>-Variable gar keinen Zusammenhang mit der <span class="math inline">\(Y\)</span>-Variable und durch die Inklusion von <span class="math inline">\(X\)</span> wird letztendlich nur Datenrauschen im Modell angepasst. Aus dieser Überlegung heraus, ist es möglich ein reduziertes Modell zu formulieren bei dem der Parameter <span class="math inline">\(\beta_1\)</span> fehlt.</p>
-<p><span class="math display">\[\begin{equation*}
+\tag{22.2}\]</span></span></p>
+<p>Dieses Modell hat <span class="math inline">\(p = 2\)</span> Modellparameter und somit <span class="math inline">\(df_{F} = N - p = N - 2\)</span> Freiheitsgrade.</p>
+<p>Nun kann die Frage gestellt werden, ob der Modellparameter <span class="math inline">\(\beta_1\)</span> wirklich benötigt wird? Vielleicht zeigt die <span class="math inline">\(X\)</span>-Variable gar keinen Zusammenhang mit der <span class="math inline">\(Y\)</span>-Variable und durch die Inklusion von <span class="math inline">\(X\)</span> wird letztendlich nur Datenrauschen im Modell angepasst. Aus dieser Überlegung heraus, ist es möglich ein reduziertes Modell zu formulieren bei dem der Parameter <span class="math inline">\(\beta_1\)</span> fehlt.</p>
+<p><span class="math display">\[
 Y_i = \beta_0 + \epsilon_i, \quad \epsilon_i \sim \mathcal{N}(0,\sigma^2)
-\end{equation*}\]</span></p>
+\]</span></p>
 <p>Die Residualvarianz <span class="math inline">\(SSE(R)\)</span> für dieses reduzierte Modell berechnet sich nun mittels.</p>
-<p><span class="math display">\[\begin{equation*}
+<p><span class="math display">\[
 \textrm{SSE(R)} = \sum_{i=1}^N (y_i - \beta_0)^2
-\end{equation*}\]</span></p>
+\]</span></p>
 <p>Im reduzierten Modell ist nur noch ein Paramter <span class="math inline">\(\beta_0\)</span> vorhanden, somit gilt <span class="math inline">\(p = 1\)</span> und entsprechend <span class="math inline">\(df_{R} = N - 1\)</span>.</p>
-<p>Mit etwas Algebra lässt sich zeigen, dass im Allgemeinen <span class="math inline">\(SSE(F) \leq SSE(R)\)</span> gilt. Dieser Zusammenhang lässt sich auch heuristisch herleiten. Wenn es keinen Zusammenhang zwischen <span class="math inline">\(X\)</span> und <span class="math inline">\(Y\)</span> gibt, dann wird der <span class="math inline">\(\beta_1\)</span> im full model nahezu <span class="math inline">\(0\)</span> sein und Formel <span class="math inline">\(\eqref{eq-mlm-hier-ssef}\)</span> wird zu <span class="math inline">\(SSE(R)\)</span>. Im realistischen Fall wird aber, selbst wenn kein Zusammenhang besteht zwischen <span class="math inline">\(X\)</span> und <span class="math inline">\(Y\)</span>, ein Teil des immer vorhandenen Rauschens in den Daten mittels <span class="math inline">\(\beta_1\)</span> gefittet. Das führt dazu, das praktisch immer <span class="math inline">\(SSE(F)\)</span> etwas kleiner ist als <span class="math inline">\(SSE(R)\)</span>. Somit folgt der beschriebene Zusammenhang zwischen <span class="math inline">\(SSE(F)\)</span> und <span class="math inline">\(SSE(R)\)</span>.</p>
-<section id="reduziertes-modell-und-stichprobenvarianz-deep-dive" class="level3" data-number="22.1.1">
-<h3 data-number="22.1.1" class="anchored" data-anchor-id="reduziertes-modell-und-stichprobenvarianz-deep-dive"><span class="header-section-number">22.1.1</span> Reduziertes Modell und Stichprobenvarianz (deep dive)</h3>
+<p>Mit etwas Algebra lässt sich zeigen, dass im Allgemeinen <span class="math inline">\(SSE(F) \leq SSE(R)\)</span> gilt. Dieser Zusammenhang lässt sich auch heuristisch herleiten. Wenn es keinen Zusammenhang zwischen <span class="math inline">\(X\)</span> und <span class="math inline">\(Y\)</span> gibt, dann wird der <span class="math inline">\(\beta_1\)</span> im full model nahezu <span class="math inline">\(0\)</span> sein und Formel <span class="math inline">\(\eqref{eq-mlm-hier-ssef}\)</span> wird zu <span class="math inline">\(SSE(R)\)</span>. Im realistischen Fall wird aber, selbst wenn kein Zusammenhang zwischen <span class="math inline">\(X\)</span> und <span class="math inline">\(Y\)</span> besteht, ein Teil des immer vorhandenen Rauschens in den Daten mittels <span class="math inline">\(\beta_1\)</span> gefittet. Das führt dazu, das praktisch immer <span class="math inline">\(SSE(F)\)</span> etwas kleiner ist als <span class="math inline">\(SSE(R)\)</span>. Somit folgt der beschriebene Zusammenhang zwischen <span class="math inline">\(SSE(F)\)</span> und <span class="math inline">\(SSE(R)\)</span>.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Hinweis</span>Reduziertes Modell und Stichprobenvarianz
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <p>Zwischen der Residualvarianz im reduzierten Modell <span class="math inline">\(SSE(R)\)</span>, dem <em>optimalen</em> Modellparameter <span class="math inline">\(\beta_0\)</span> und der Stichprobenvarianz besteht ein enger Zusammenhang bzw. Identität wie sich anhand der folgenden Herleitung sehen lässt. Der Modellparameter <span class="math inline">\(\beta_0\)</span> im reduzierten Modell soll, wie üblich, unter der Minimierung der Summe der Quadrate der Abweichungen, sprich <span class="math inline">\(SSE(R)\)</span>, ermittelt werden.</p>
-<p><span class="math display">\[\begin{align*}
+<p><span class="math display">\[
+\begin{aligned}
 SSE(R) &amp;= \sum_{i=1}^n(y_i - \beta_0)^2 \\
 &amp;= \sum_{i=1}^n (y_i^2 - 2y_i\beta_0 + \beta_0^2)
-\end{align*}\]</span></p>
+\end{aligned}
+\]</span></p>
 <p>Das Minimum <span class="math inline">\(min[SSE]\)</span> wird bestimmt, indem, wie schon beim einfachen Regressionsmodell, nach dem Modellparameter <span class="math inline">\(\beta_0\)</span> abgeleitet und das Resultat <span class="math inline">\(=0\)</span> gesetzt wird. Ein bisschen Algebra führt zu:</p>
-<p><span class="math display">\[\begin{align*}
+<p><span class="math display">\[
+\begin{aligned}
 0 &amp;= \frac{\mathrm{d}}{\mathrm{d} \beta_0}\sum_{i=1}^n (y_i^2 - 2y_i\beta_0 + \beta_0^2) \\
   &amp;= \sum_{i=1}^n (-2y_i + 2 \beta_0) \\
   &amp;= -2\sum_{i=1}^n y_i + 2\sum_{i=1}^n \beta_0\\
 \Leftrightarrow n\beta_0 &amp;= \sum_{i=1}^n y_i \\
 \beta_0 &amp;= \frac{\sum_{i=1}^n y_i}{n}  = \bar{y}
-\end{align*}\]</span></p>
-<p>Somit ist derjenige Wert von <span class="math inline">\(\beta_0\)</span>, der im reduzierten Modell die Abweichungen minimiert, der Mittelwert <span class="math inline">\(\bar{y}\)</span>. Daraus folgt wiederum, dass im reduzierten Modell mit der Modellgleichung <span class="math inline">\(y_i = \beta_0 + \epsilon_i\)</span> für alle <span class="math inline">\(i\)</span>, also alle Datenpunkte, der gleiche Vorhersagewert <em>bestimmt</em> wird, nämlich der Mittelwert <span class="math inline">\(\bar{y}\)</span> der Stichprobe. Daraus folgt wiederum, das der Schätzer für <span class="math inline">\(\sigma^2\)</span>, nämlich <span class="math inline">\(MSE\)</span> also <span class="math inline">\(SSE(R)/df\)</span> ist. Die Freiheitsgrade berechnen sich, wie bereits besprochen, mittels <span class="math inline">\(N - p\)</span>, wobei für <span class="math inline">\(p\)</span> im reduced model <span class="math inline">\(p = 1\)</span> gilt, da nur ein einziger Modellparameter vorhanden ist, eben <span class="math inline">\(\beta_0\)</span>. Daraus folgt für <span class="math inline">\(\hat{\sigma}^2\)</span>:</p>
-<p><span class="math display">\[\begin{align*}
+\end{aligned}
+\]</span></p>
+<p>Somit ist derjenige Wert von <span class="math inline">\(\beta_0\)</span>, der im reduzierten Modell die Abweichungen minimiert, der Mittelwert <span class="math inline">\(\bar{y}\)</span>. Daraus folgt wiederum, dass im reduzierten Modell mit der Modellgleichung <span class="math inline">\(y_i = \beta_0 + \epsilon_i\)</span> für alle <span class="math inline">\(i\)</span>, also alle Datenpunkte, der gleiche Vorhersagewert <em>bestimmt</em> wird, nämlich der Mittelwert <span class="math inline">\(\bar{y}\)</span> der Stichprobe. Daraus folgt wiederum, das der Schätzer für <span class="math inline">\(\sigma^2\)</span>, nämlich <span class="math inline">\(MSE\)</span> also <span class="math inline">\(SSE(R)/df\)</span> ist. Die Freiheitsgrade berechnen sich, wie bereits erwähnt, mittels <span class="math inline">\(N - p\)</span>, wobei für <span class="math inline">\(p\)</span> im reduced model <span class="math inline">\(p = 1\)</span> gilt, da nur ein einziger Modellparameter vorhanden ist, eben <span class="math inline">\(\beta_0\)</span>. Daraus folgt für <span class="math inline">\(\hat{\sigma}^2\)</span>:</p>
+<p><span class="math display">\[
+\begin{aligned}
 \hat{\sigma}^2 &amp;= MSE(R) = \frac{SSE(R)}{df} = \frac{SSE(R)}{N-p} \\
 &amp;= \frac{SSE(R)}{N-1} = \frac{1}{N-1}\sum_{i=1}^N (y_i - \hat{\beta}_0)^2 \\
 &amp;= \frac{1}{N-1}\sum_{i=1}^N (y_i - \bar{y})^2 =  s^2
-\end{align*}\]</span></p>
+\end{aligned}
+\]</span></p>
 <p>Diese Gleichung ist aber nur der bereits bekannte Schätzer der Stichprobenvarianz <span class="math inline">\(s^2\)</span>. Somit gilt für das reduced model:</p>
-<p><span class="math display">\[\begin{equation*}
+<p><span class="math display">\[
 \textrm{SSE(R)} = \sum_{i=1}^N (y_i - \beta_0)^2 = \sum_{i=1}^N(y_i - \bar{y})^2 = \textrm{SSTO}
-\end{equation*}\]</span></p>
-<p>Zurückkommend auf die Entwicklung einer Metrik um das volle und das reduzierte Modell miteinander zu vergleichen. Sei nun das reduzierte Modell korrekt. D.h. die Hinzunahme von <span class="math inline">\(X\)</span> sollte keine Verbesserung des Modells, keine Verbesserung in der Modellvorhersage, nach sich ziehen. Konkret bedeutet dies, dass <span class="math inline">\(SSE(R)\)</span> und <span class="math inline">\(SSE(F)\)</span> in etwas gleich groß sein sollten, bzw. <span class="math inline">\(SSE(F)\)</span> nur wenig besser (also kleiner) als <span class="math inline">\(SSE(R)\)</span> ist. Wenn die Differenz der beiden Quadratsummen gebildet wird, dann sollte diese Differenz entsprechend eher klein sein.</p>
-<p><span class="math display">\[\begin{equation}
+\]</span></p>
+</div>
+</div>
+<p>Sei nun das reduzierte Modell korrekt. D.h. die Hinzunahme von <span class="math inline">\(X\)</span> sollte keine Verbesserung des Modells, keine Verbesserung in der Modellvorhersage, nach sich ziehen. Konkret bedeutet dies, dass <span class="math inline">\(SSE(R)\)</span> und <span class="math inline">\(SSE(F)\)</span> in etwas gleich groß sein sollten, bzw. <span class="math inline">\(SSE(F)\)</span> nur wenig besser (also kleiner) als <span class="math inline">\(SSE(R)\)</span> ist. Wenn die Differenz der beiden Quadratsummen gebildet wird, dann sollte diese Differenz entsprechend eher klein sein.</p>
+<p><span id="eq-mlm-hier-div"><span class="math display">\[
 \textrm{SSE(R)} - \textrm{SSE(F)}
-\label{eq-mlm-hier-div}
-\end{equation}\]</span></p>
+\tag{22.3}\]</span></span></p>
 <p>Beide Modelle sind in etwas gleich gut, fitten die Daten also in etwa gleich gut. Das volle Modell etwas besser, das es durch den zusätzlichen Parameter etwas flexibler als das reduzierte Modell ist.</p>
-<p>Sei nun von von der entgegen gesetzten Annahme ausgegangen. Das reduzierte Modell ist falsch und die Variable <span class="math inline">\(X\)</span> wird benötigt um die Varianz in <span class="math inline">\(Y\)</span> aufzuklären. In diesem Fall sollte die Differenz <span class="math inline">\(\eqref{eq-mlm-hier-div}\)</span> einen deutlich größeren Wert annehmen. Das reduzierte Modell kann denjenigen Teil der Varianz von <span class="math inline">\(Y\)</span> nicht aufklären der durch <span class="math inline">\(X\)</span> entsteht. Dadurch wandert die durch <span class="math inline">\(X\)</span> verursachte Varianz in die Residuen, was dazu führt das <span class="math inline">\(SSE(R)\)</span> größer wird. Im vollem Modell dagegen, kann die durch <span class="math inline">\(X\)</span> entstehende Varianz durch den zusätzlichen Modellparameter <span class="math inline">\(\beta_1\)</span> erklärt werden und entsprechend sind die Residuen geringer. Wenn die Residuen geringer werden führt das wiederum dazu, dass der Wert von <span class="math inline">\(SSE(F)\)</span> kleiner wird.</p>
-<p>Zusammengefasst, aus der Differenz in den <span class="math inline">\(SSE\)</span> zwischen den beiden Modellen, konnte heuristisch eine Metrik hergeleitet werden. Diese Metrik erlaubt verschiedene Modell miteinander zu vergleichen. Wenn das reduzierte, <em>einfachere</em>, Modell ausreicht um die Daten zu erklären, dann wird die Differenz <span class="math inline">\(\eqref{eq-mlm-hier-div}\)</span> eher klein ausfallen. Wenn dagegen die zusätzlichen Parameter im vollem Modell benötigt werden und die Varianz in <span class="math inline">\(Y\)</span> zu erklären, dann wird der Unterschied <span class="math inline">\(\eqref{eq-mlm-hier-div}\)</span> eher groß werden.</p>
+<p>Sei nun von von der entgegen gesetzten Annahme ausgegangen. Das reduzierte Modell ist falsch und die Variable <span class="math inline">\(X\)</span> wird benötigt um die Varianz in <span class="math inline">\(Y\)</span> aufzuklären. In diesem Fall sollte die Differenz <a href="#eq-mlm-hier-div" class="quarto-xref">Gleichung&nbsp;<span>22.3</span></a> einen deutlich größeren Wert annehmen. Das reduzierte Modell kann denjenigen Teil der Varianz von <span class="math inline">\(Y\)</span> nicht aufklären der durch <span class="math inline">\(X\)</span> entsteht. Dadurch wandert die durch <span class="math inline">\(X\)</span> verursachte Varianz in die Residuen, was dazu führt das <span class="math inline">\(SSE(R)\)</span> größer wird. Im vollem Modell dagegen, kann die durch <span class="math inline">\(X\)</span> entstehende Varianz durch den zusätzlichen Modellparameter <span class="math inline">\(\beta_1\)</span> erklärt werden und entsprechend sind die Residuen geringer. Wenn die Residuen geringer werden führt das wiederum dazu, dass der Wert von <span class="math inline">\(SSE(F)\)</span> kleiner wird.</p>
+<p>Zusammengefasst, aus der Differenz in den <span class="math inline">\(SSE\)</span> zwischen den beiden Modellen, kann heuristisch eine Metrik hergeleitet werden. Diese Metrik erlaubt verschiedene Modelle miteinander zu vergleichen. Wenn das reduzierte, <em>einfachere</em>, Modell ausreicht um die Daten zu erklären, dann wird die Differenz <a href="#eq-mlm-hier-div" class="quarto-xref">Gleichung&nbsp;<span>22.3</span></a> eher klein ausfallen. Wenn dagegen die zusätzlichen Parameter im vollem Modell benötigt werden und die Varianz in <span class="math inline">\(Y\)</span> zu erklären, dann wird der Unterschied <a href="#eq-mlm-hier-div" class="quarto-xref">Gleichung&nbsp;<span>22.3</span></a> eher groß werden.</p>
 <div id="exm-hierarchy-1" class="theorem example">
 <p><span class="theorem-title"><strong>Beispiel 22.1</strong></span> Es sei einfacher Datensätze gegeben. Der Datensatz folgt dem Modell <span class="math inline">\(Y = 3 + 2X_1+ \epsilon\)</span>. Im Datensatz ist noch eine weitere Variable <span class="math inline">\(X_2\)</span> die keinen Zusammenhang mit <span class="math inline">\(Y\)</span> aufweist. In <code>R</code></p>
 <div class="cell">
@@ -691,36 +715,48 @@ SSE(R) &amp;= \sum_{i=1}^n(y_i - \beta_0)^2 \\
 </div>
 <p>Der Unterschied zwischen <code>mod_r</code> und <code>mod_f</code> ist noch sehr groß, während der Unterschied zwischen <code>mod_f</code> und <code>mod_u</code> deutlich kleiner ausfällt. Allerdings ist <span class="math inline">\(SSE\)</span> für das überparametrisierte Modell <code>mod_u</code> trotzdem durch Zufall kleiner.</p>
 </div>
-<p>In den Beispiel wurden drei Modell an die Daten angepasst. Es hätte auch ein Vergleich zwischen dem Modell <code>mod_r</code> und <code>mod_u</code> gemacht werden können. Allerdings unterscheiden sich die beiden Modell nicht mehr nur um einen Modellparameter sondern um zwei Modellparameter. Dies sollte auch bei Veränderungen im <span class="math inline">\(SSE\)</span> berücksichtigt werden, da die Bewertung der Bedeutsamkeit eines Unterschieds zwischen zwei Modellen noch davon abhängig ist, um wie vielen Parameter sich die beiden Modelle sich voneinander unterscheiden. Wenn im vollen Modell <span class="math inline">\(p = 10\)</span> Parameter sind und im reduzierten Modell eben nur <span class="math inline">\(p = 1\)</span> Parameter ist, dann ist ein gegebener Unterschied in den <span class="math inline">\(SSE\)</span>s zwischen den Modellen anders zu bewerten, als wenn im vollem Modell <span class="math inline">\(p = 2\)</span> Parameter geschätzt werden. Bei gleichem Unterschied zwischen den Modellen ist der Unterschied im ersteren Fall weniger bedeutsam im Vergleich zum letzteren Fall. Daher erscheint es sinnvoll den Unterschied zwischen den Modellen noch anhand des Unterschieds in der Anzahl der Parameter zu kalibrieren. Anders formuliert, es wird die Veränderung in der Varianzverkleinerung <em>pro Freiheitsgrad</em> betrachtet. So können nun auch Modelle mit größeren Unterschieden in der Parameteranzahl <span class="math inline">\(p\)</span> miteinander verglichen werden.</p>
+<p>In dem Beispiel wurden drei Modell an die Daten angepasst. Es hätte auch ein Vergleich zwischen dem Modell <code>mod_r</code> und <code>mod_u</code> gemacht werden können. Allerdings unterscheiden sich die beiden Modell nicht mehr nur um einen Modellparameter sondern um zwei Modellparameter. Dies sollte auch bei Veränderungen im <span class="math inline">\(SSE\)</span> berücksichtigt werden, da die Bewertung der Bedeutsamkeit eines Unterschieds zwischen zwei Modellen noch davon abhängig ist, um wie viele Parameter sich die beiden Modelle voneinander unterscheiden. Wenn im vollen Modell <span class="math inline">\(p = 10\)</span> Parameter sind und im reduzierten Modell nur <span class="math inline">\(p = 1\)</span> Parameter ist, dann ist ein gegebener Unterschied in den <span class="math inline">\(SSE\)</span>s zwischen den Modellen anders zu bewerten, als wenn im vollem Modell <span class="math inline">\(p = 2\)</span> Parameter geschätzt werden. Bei gleichem Unterschied zwischen den Modellen ist der Unterschied im ersteren Fall weniger bedeutsam im Vergleich zum letzteren Fall. Daher erscheint es sinnvoll den Unterschied zwischen den Modellen noch anhand des Unterschieds in der Anzahl der Parameter zu kalibrieren. Anders formuliert, es wird die Veränderung in der Varianzverkleinerung <em>pro Freiheitsgrad</em> betrachtet. So können nun auch Modelle mit größeren Unterschieden in der Parameteranzahl <span class="math inline">\(p\)</span> miteinander verglichen werden.</p>
 <p>Mit <span class="math inline">\(p_F\)</span> = Anzahl der Parameter im vollen Modell und <span class="math inline">\(p_R\)</span> = Anzahl der Parameter im reduzierten Modell gilt:</p>
-<p><span class="math display">\[\begin{equation*}
+<p><span class="math display">\[
 p_{F} - p_{R} = p_{F} - p_{R} + N - N = (N - p_{R}) - (N - p_{F}) = df_{R} - df_{F}
-\end{equation*}\]</span></p>
-<p>Nach dem ersten Gleichheitszeichen wurde ein bekannte mathematischer <em>Trick</em> angewendet, indem eine <span class="math inline">\(0\)</span> in Form von <span class="math inline">\(+N-N\)</span> addiert wurde. Dies ermöglicht von der Beschreibung der Parameteranzahl <span class="math inline">\(p_{F}\)</span> bzw. <span class="math inline">\(p_{R}\)</span> auf die Schreibweise mit Freiheitsgraden zu wechseln. Achtung, die Reihenfolge der Modellparameter ändert sich beim Übergang von <span class="math inline">\(p\)</span> zu <span class="math inline">\(df\)</span>. Als Merkhilfe, der Unterschied muss positiv sein, d.h. es wird immer der größere Wert vom kleineren Wert abgezogen. Somit wird der Unterschied zwischen den beiden Modellen folgendermaßen aufgeschrieben und der Term erhält auch noch eine eigene Bezeichnung <span class="math inline">\(MS_{\textrm{test}}\)</span> für mean squared test.</p>
-<p><span class="math display">\[\begin{equation}
+\]</span></p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Hinweis
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Nach dem ersten Gleichheitszeichen wurde ein mathematischer <em>Trick</em> angewendet, indem eine <span class="math inline">\(0\)</span> in Form von <span class="math inline">\(+N-N\)</span> addiert wurde. Dies ermöglicht von der Beschreibung der Parameteranzahl <span class="math inline">\(p_{F}\)</span> bzw. <span class="math inline">\(p_{R}\)</span> auf die Schreibweise mit Freiheitsgraden zu wechseln. Achtung, die Reihenfolge der Modellparameter ändert sich beim Übergang von <span class="math inline">\(p\)</span> zu <span class="math inline">\(df\)</span>. Als Merkhilfe, der Unterschied muss positiv sein, d.h. es wird immer der größere Wert vom kleineren Wert abgezogen.</p>
+</div>
+</div>
+<p>Somit wird der Unterschied zwischen den beiden Modellen folgendermaßen aufgeschrieben und der Term erhält auch noch eine eigene Bezeichnung <span class="math inline">\(MS_{\textrm{test}}\)</span> für mean squared test.</p>
+<p><span id="eq-mlm-hier-mstest"><span class="math display">\[
 MS_{\textrm{test}} = \frac{\textrm{SSE(R)} - \textrm{SSE(F)}}{df_{R} - df_{F}}
-\label{eq-mlm-hier-mstest}
-\end{equation}\]</span></p>
+\tag{22.4}\]</span></span></p>
 <p>Unter der Annahme, das das reduzierte Modell korrekt und den üblichen Modellannahmen im Regressionsmodell zur Normalverteilung der Residuen <span class="math inline">\(\epsilon_i \sim \mathcal{N}(0,\sigma^2)\)</span>, lässt sich zeigen, dass <span class="math inline">\(MS_{\textrm{test}}\)</span> ein Schätzer für die Varianz <span class="math inline">\(\sigma^2\)</span> ist. D.h. es gilt:</p>
-<p><span class="math display">\[\begin{equation*}
+<p><span class="math display">\[
 MS_{\textrm{test}} = \hat{\sigma}^2
-\end{equation*}\]</span></p>
+\]</span></p>
 <p>D.h. neben dem schon bekannten Schätzer <span class="math inline">\(MSE\)</span> für <span class="math inline">\(\sigma^2\)</span> wird durch <span class="math inline">\(MS_{\textrm{test}}\)</span> eine weiterer Schätzer für <span class="math inline">\(\sigma^2\)</span> erhalten. Aus der Annahme, das das reduzierte Modell korrekt ist, folgt, dass auch das volle Modell korrekt ist. Das volle Modell <em>enthält</em> das reduzierte Modell als einen Spezialfall. Der zusätzlich Parameter im vollen Modell sollte in diesem Fall, in der Nähe von <span class="math inline">\(0\)</span> sein, da kein Zusammenhang zwischen <span class="math inline">\(X\)</span> und <span class="math inline">\(Y\)</span> besteht wenn das reduzierte Modell korrekt ist. Daraus folgt, dass <span class="math inline">\(MSE(F)\)</span> ebenfalls ein Schätzer für die Varianz <span class="math inline">\(\sigma^2\)</span> unter den Modellannahmen <span class="math inline">\(\epsilon_i \sim \mathcal{N}(0,\sigma^2)\)</span> ist. Diese Eigenschaft wurde schon die ganze Zeit bei der Berechnung der Regressionen verwendet.</p>
-<p><span class="math display">\[\begin{equation}
+<p><span class="math display">\[
 MSE_{F} = \frac{\textrm{SSE(F)}}{df_{F}} = \hat{\sigma}^2
-\end{equation}\]</span></p>
-<p>Insgesamt, sind durch durch diese Überlegungen zwei Ansätze vorhanden um <span class="math inline">\(\sigma^2\)</span> anhand der Daten zu schätzen. Einmal über das bekannte <span class="math inline">\(MSE\)</span> und nun neu dazu gekommen über <span class="math inline">\(MS_{\text{test}}\)</span>. Die Beziehung zwischen dem vollen und dem reduzierten Modell kann nun auch dahingehend interpretiert werden, das das reduzierte Modell gleich dem vollen Modell ist, allerdings mit einer zusätzlichen Randbedingung. Die Randbedingung ist, dass der zusätzliche Parameter im vollen Modell den <em>fixen</em> Wert <span class="math inline">\(0\)</span> hat. Wenn das volle Modell die folgende Form hat:</p>
-<p><span class="math display">\[\begin{equation*}
+\]</span></p>
+<p>Insgesamt, werden durch durch diese Überlegungen zwei unterschiedliche Berechnungen erhalten, um <span class="math inline">\(\sigma^2\)</span> anhand der Daten zu schätzen. Einmal über das bekannte <span class="math inline">\(MSE\)</span> und nun neu dazu gekommen über <span class="math inline">\(MS_{\text{test}}\)</span>. Die Beziehung zwischen dem vollen und dem reduzierten Modell kann nun auch dahingehend interpretiert werden, das das reduzierte Modell gleich dem vollen Modell ist, allerdings mit einer zusätzlichen Randbedingung. Die Randbedingung ist, dass der zusätzliche Parameter im vollen Modell den <em>fixen</em> Wert <span class="math inline">\(0\)</span> hat. Wenn das volle Modell die folgende Form hat:</p>
+<p><span class="math display">\[
 Y = \beta_0 + \beta_1 \cdot X_1 + \epsilon
-\end{equation*}\]</span></p>
+\]</span></p>
 <p>Und das reduzierte Modell die Form:</p>
-<p><span class="math display">\[\begin{equation*}
+<p><span class="math display">\[
 Y = \beta_0 + \epsilon
-\end{equation*}\]</span></p>
+\]</span></p>
 <p>Wie eben beschrieben, kann das reduzierte Modell als das volle Modell mit der Randbedingung <span class="math inline">\(\beta_1 = 0\)</span> interpretiert werden.</p>
-<p><span class="math display">\[\begin{equation*}
+<p><span class="math display">\[
 Y = \beta_0 + \beta_1 \cdot X_1 + \epsilon, \quad \beta_1 = 0
-\end{equation*}\]</span></p>
+\]</span></p>
 <p>Daher läuft ein Vergleich der beiden Modell darauf hinaus zu testen ob der Parameter <span class="math inline">\(\beta_1 = 0\)</span> ist. Dies erklärt auch noch mal die Interpretation, dass das volle Modell korrekt ist, wenn das reduzierte Modell korrekt ist. Das reduzierte Modell ist nur ein Spezialfall des vollen Modells (siehe <a href="#fig-mlm-hierarchies-01" class="quarto-xref">Abbildung&nbsp;<span>22.1</span></a>) .</p>
 <div class="cell">
 <div class="cell-output-display">
@@ -736,15 +772,14 @@ Abbildung&nbsp;22.1: Zusammenhang zwischen dem vollen und dem reduzierten Modell
 </div>
 </div>
 </div>
-<p>Nun fehlt noch ein letzter Schritt um die Metrik abzuschließen. Da es sich bei der Größe <span class="math inline">\(MS_{\textrm{test}}\)</span> letztendlich um eine Varianz handelt, kann die Größe der Quadratsummen verändern werden, indem die Einheiten der abhängigen Variablen <span class="math inline">\(Y\)</span> verändert werden. Wenn die abhängige Variable <span class="math inline">\(Y\)</span> beispielsweise eine Länge darstellen, dann würde beim Übergang von <span class="math inline">\([m]\)</span> auf <span class="math inline">\([cm]\)</span>, der Unterschied in Formel <span class="math inline">\(\eqref{eq-mlm-hier-mstest}\)</span> um den Faktor <span class="math inline">\(10\times 10=100\)</span> vergrößert werden ohne das wirklich eine Veränderung in den Modellen stattgefunden hat. Daher wird <span class="math inline">\(MS_{\textrm{test}}\)</span> noch einmal normiert, indem der Term durch <span class="math inline">\(MS_{E(F)}\)</span> geteilt wird. Damit fallen alle Probleme mit der Interpretation der Größe der Modellunterschiede durch Änderungen in den Einheiten weg <span class="citation" data-cites="maxwell2004">(siehe auch <a href="references.html#ref-maxwell2004" role="doc-biblioref">Maxwell, Delaney, und Kelley 2004, p.75</a>)</span>.</p>
-<p><span class="math display">\[\begin{equation}
+<p>Nun fehlt noch ein letzter Schritt um die Metrik abzuschließen. Da es sich bei der Größe <span class="math inline">\(MS_{\textrm{test}}\)</span> letztendlich um eine Varianz handelt, kann die Größe der Quadratsummen verändern werden, indem die Einheiten der abhängigen Variablen <span class="math inline">\(Y\)</span> verändert werden. Wenn die abhängige Variable <span class="math inline">\(Y\)</span> beispielsweise eine Länge darstellen, dann würde beim Übergang von <span class="math inline">\([m]\)</span> auf <span class="math inline">\([cm]\)</span>, der Unterschied in Formel <a href="#eq-mlm-hier-mstest" class="quarto-xref">Gleichung&nbsp;<span>22.4</span></a> um den Faktor <span class="math inline">\(10\times 10=100\)</span> vergrößert werden ohne das wirklich eine Veränderung in den Modellen stattgefunden hat. Daher wird <span class="math inline">\(MS_{\textrm{test}}\)</span> noch einmal normiert, indem der Term durch <span class="math inline">\(MS_{E(F)}\)</span> geteilt wird. Damit fallen alle Probleme mit der Interpretation der Größe der Modellunterschiede durch Änderungen in den Einheiten weg <span class="citation" data-cites="maxwell2004">(siehe auch <a href="references.html#ref-maxwell2004" role="doc-biblioref">Maxwell, Delaney, und Kelley 2004, p.75</a>)</span>.</p>
+<p><span id="eq-mlm-hier-Ftest"><span class="math display">\[
 \frac{MS_{\textrm{test}}}{MS_{E(F)}} = \frac{\frac{\textrm{SSE(R)} - \textrm{SSE(F)}}{df_{E(R)} - df_{E(F)}}}{ \frac{\textrm{SSE(F)}}{df_{E(F)}}}
-\label{eq-mlm-hier-Ftest}
-\end{equation}\]</span></p>
+\tag{22.5}\]</span></span></p>
 <p>Dies stellt nun die finale Metrik dar. Es lässt sich nun wieder zeigen, diese Metrik unter der Annahme, das das reduzierte Modell korrekt ist, einer theoretische Verteilung folgt. Dies ist die <span class="math inline">\(F\)</span>-Verteilung mit <span class="math inline">\(df_{E(R)} - df_{E(F)}\)</span> und <span class="math inline">\(df_{E(F)}\)</span> Freiheitsgeraden (Die Herleitung würde leider wieder den Umfang des Skript sprengen). Die Annahme das das reduzierte Modell korrekt ist, stellt somit wieder die <span class="math inline">\(H_0\)</span> dar.</p>
-<p><span class="math display">\[\begin{equation*}
+<p><span class="math display">\[
 F = \frac{MS_{\textrm{test}}}{MS_{E(F)}}  \sim F(df_{E(R)}-df_{E(F)},df_{E(F)})
-\end{equation*}\]</span></p>
+\]</span></p>
 <p>Zur Erinnerung sind in <a href="#fig-mlm-hier-fdist" class="quarto-xref">Abbildung&nbsp;<span>22.2</span></a> nochmal ein paar Beispiele für <span class="math inline">\(F\)</span>-Verteilung mit verschiedenen Freiheitsgeraden abgebildet.</p>
 <div class="cell">
 <div class="cell-output-display">
@@ -760,8 +795,8 @@ Abbildung&nbsp;22.2: Beispiele für die F-Verteilung mit verschiedenen Freiheits
 </div>
 </div>
 </div>
-<p>Da beide Terme in Formel <span class="math inline">\(\eqref{eq-mlm-hier-Ftest}\)</span> die Varianz abschätzen deutet ein Wert in der Nähe von <span class="math inline">\(1\)</span> daraufhin, das das reduzierte Modell adäquat ist um die Daten zu beschreiben und die Hinzunahme des Parameters im vollen Modell keine Verbesserung liefert.</p>
-<p>Sobald nun aber wieder eine bekannte, theoretische Verteilung unter einer <span class="math inline">\(H_0\)</span> vorhanden ist, kann wieder das bereits bekannte Instrumentarium zur Hypothesentestung angewendet werden. Fällt der beobachtete Wert <span class="math inline">\(F\)</span>-Wert für ein gegebenes <span class="math inline">\(\alpha\)</span> in einen kritischen Bereich (siehe <a href="#fig-mlm-hier-fcrit" class="quarto-xref">Abbildung&nbsp;<span>22.3</span></a> für ein Beispiel), dann kann dies als Evidenz gegen die <span class="math inline">\(H_0\)</span> interpretiert werden. Wir sind überrascht diesen Wert unter der <span class="math inline">\(H_0\)</span> zu beobachten und lehnen die <span class="math inline">\(H_0\)</span>, das das einfachere Modell korrekt ist ab. Der beobachtete <span class="math inline">\(F\)</span>-Wert wird als Evidenz dafür gewertet, das das komplexere, volle Modell die Daten besser abbildet und <em>statistisch signifikant</em> mehr Varianz der abhängigen Variable modellieren kann.</p>
+<p>Da beide Terme in <a href="#eq-mlm-hier-Ftest" class="quarto-xref">Gleichung&nbsp;<span>22.5</span></a> die Varianz abschätzen deutet ein Wert in der Nähe von <span class="math inline">\(1\)</span> daraufhin, das das reduzierte Modell adäquat ist um die Daten zu beschreiben und die Hinzunahme des Parameters im vollen Modell keine Verbesserung liefert.</p>
+<p>Sobald nun aber wieder eine bekannte, theoretische Verteilung unter einer <span class="math inline">\(H_0\)</span> vorhanden ist, kann wieder das bereits bekannte Instrumentarium zur Hypothesentestung angewendet werden. Fällt der beobachtete Wert <span class="math inline">\(F\)</span>-Wert für ein gegebenes <span class="math inline">\(\alpha\)</span> in einen kritischen Bereich (siehe <a href="#fig-mlm-hier-fcrit" class="quarto-xref">Abbildung&nbsp;<span>22.3</span></a> für ein Beispiel), dann kann dies als Evidenz gegen die <span class="math inline">\(H_0\)</span> interpretiert werden. <em>Wir sind überrascht diesen Wert unter der <span class="math inline">\(H_0\)</span> zu beobachten und lehnen die <span class="math inline">\(H_0\)</span>, das das einfachere Modell korrekt ist ab.</em> Der beobachtete <span class="math inline">\(F\)</span>-Wert wird als Evidenz dafür gewertet, das das komplexere, volle Modell die Daten besser abbildet und <em>statistisch signifikant</em> mehr Varianz der abhängigen Variable modellieren kann.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-mlm-hier-fcrit" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -777,16 +812,17 @@ Abbildung&nbsp;22.3: F-Verteilung mit <span class="math inline">\(df_1 = 5, df_2
 </div>
 </div>
 <p>Um diesen letzten Schritt noch einmal besser zu verstehen sei im Folgenden eine weitere Simulation in Anlehnung an Beispiel <a href="#exm-hierarchy-1" class="quarto-xref">Beispiel&nbsp;<span>22.1</span></a> betrachtet. Gegeben sei ein DGP mit der folgenden Form:</p>
-<p><span class="math display">\[\begin{equation}
+<p><span id="eq-mlm-hier-mstest-sim"><span class="math display">\[
 y_i = 3 + 2 \cdot x_i + \epsilon_i \quad \epsilon_i \sim \mathcal{N}(0,1)
-\label{eq-mlm-hier-mstest-sim}
-\end{equation}\]</span></p>
-<p>Der DGP ist demnach wieder ein einaches lineares Regressionsmodell mit den Modellparametern <span class="math inline">\(\beta_0 = 3\)</span>, <span class="math inline">\(\beta_1 = 2\)</span> und normalverteilten Residuen mit <span class="math inline">\(\sigma = 1\)</span>. Dieser DGP wird nun mit <span class="math inline">\(N = 30\)</span> Datenpunkten mit entsprechenden Datenpaare <span class="math inline">\((y_i,x_i)\)</span> insgesamt <span class="math inline">\(N_{sim} = 1000\)</span> mal simuliert. In jedem der <span class="math inline">\(1000\)</span> Durchgänge werden drei verschiedene Modelle an die Daten angepasst. Einmal ein reduziertes Modell ohne <span class="math inline">\(\beta_1\)</span>, ein korrektes Modell mit <span class="math inline">\(\beta_0\)</span> und <span class="math inline">\(\beta_1\)</span> und wieder ein überparameterisiertes Modell mit <span class="math inline">\(\beta_0\)</span>, <span class="math inline">\(\beta_1\)</span> und <span class="math inline">\(\beta_2\)</span>. Als <span class="math inline">\(X_2\)</span> wird eine Zufallsvariable erzeugt, die der Standardnormalverteilung folgt (D.h. <span class="math inline">\(X_2 \sim \mathcal{N}(0,1)\)</span>. Zwischen <span class="math inline">\(X_2\)</span> und <span class="math inline">\(Y\)</span> besteht somit kein Zusammenhang. Daher sollte die Hinzunahme von <span class="math inline">\(X_2\)</span> zu keiner Verbesserung des Modells führen. Formal werden also die folgenden drei Modell verwendet.</p>
-<p><span class="math display">\[\begin{align*}
+\tag{22.6}\]</span></span></p>
+<p>Der DGP ist demnach wieder ein einaches lineares Regressionsmodell mit den Modellparametern <span class="math inline">\(\beta_0 = 3\)</span>, <span class="math inline">\(\beta_1 = 2\)</span> und normalverteilten Residuen mit <span class="math inline">\(\sigma = 1\)</span>. Dieser DGP wird nun mit <span class="math inline">\(N = 30\)</span> Datenpunkten mit entsprechenden Datenpaare <span class="math inline">\((y_i,x_i)\)</span> insgesamt <span class="math inline">\(N_{sim} = 1000\)</span> mal simuliert. In jedem der <span class="math inline">\(1000\)</span> Durchgänge werden drei verschiedene Modelle an die Daten angepasst. Einmal ein reduziertes Modell ohne <span class="math inline">\(\beta_1\)</span>, ein korrektes Modell mit <span class="math inline">\(\beta_0\)</span> und <span class="math inline">\(\beta_1\)</span> und wieder ein überparameterisiertes Modell mit <span class="math inline">\(\beta_0\)</span>, <span class="math inline">\(\beta_1\)</span> und <span class="math inline">\(\beta_2\)</span>. Als <span class="math inline">\(X_2\)</span> wird eine Zufallsvariable erzeugt, die der Standardnormalverteilung folgt (D.h. <span class="math inline">\(X_2 \sim \mathcal{N}(0,1)\)</span>. Zwischen <span class="math inline">\(X_2\)</span> und <span class="math inline">\(Y\)</span> besteht somit <strong>kein Zusammenhang</strong>. Daher sollte die Hinzunahme von <span class="math inline">\(X_2\)</span> zu keiner Verbesserung des Modells führen. Formal werden also die folgenden drei Modell verwendet.</p>
+<p><span class="math display">\[
+\begin{aligned}
 \text{under} &amp;: y_i = \beta_0 + \epsilon_i \\
 \text{correct} &amp;: y_i = \beta_0 + \beta_1 \cdot x_i + \epsilon_i \\
 \text{over} &amp;: y_i = \beta_0 + \beta_1 \cdot x_{1i} + \beta_2 \cdot x_{2i} + \epsilon_i
-\end{align*}\]</span></p>
+\end{aligned}
+\]</span></p>
 <p>In <a href="#fig-mlm-hier-msetest-sim-01" class="quarto-xref">Abbildung&nbsp;<span>22.4</span></a> ist das Ergebnis der Simulation zu sehen. Die Verteilung der <span class="math inline">\(1000\)</span> berechneten <span class="math inline">\(MSE\)</span> für die drei an die jeweils generierten Daten angepassten Modelle sind als Histogramme dargestellt. Zusätzlich, da der <em>wahren</em> Wert <span class="math inline">\(\sigma^2 = 1\)</span> bekannt, ist <span class="math inline">\(\sigma^2\)</span> rot in die Histogramme eingezeichnet.</p>
 <div class="cell">
 <div class="cell-output-display">
@@ -802,8 +838,8 @@ Abbildung&nbsp;22.4: Verteilung von <span class="math inline">\(\hat{\sigma}^2 =
 </div>
 </div>
 </div>
-<p>Im reduzierten Modell (under) wird die Residualvarianz klar in allen Durchgängen überschätzt. Da der Modellparameter für <span class="math inline">\(X\)</span> fehlt, wird diejenige Varianz von <span class="math inline">\(Y\)</span> die auf <span class="math inline">\(X\)</span> zurückgeht in die Residualvarianz mit aufgenommen. Dies führt dazu, dass die Residualvarianz deutlich zu groß ist und somit <span class="math inline">\(MSE\)</span> groß wird. Im mittleren Graphen, beim korrekten Modell, sind die abgeschätzten Residualvarianzen um den tatsächlichen Wert herum verteilt. Im einzelnen Fall kommt es natürlich auf Grund der Stichprobenvariabilität zur Überschätzung bzw. Unterschätzung von <span class="math inline">\(\sigma^2\)</span>. Im Mittel sind die Werte jedoch trotzdem korrekt und der Schätzer <span class="math inline">\(MSE\)</span> ist Erwartungstreu für <span class="math inline">\(\sigma^2\)</span>. Im letzten Fall, für das überparameterisierte Modell (over) wird die Residualvarianz ebenfalls korrekt abgeschätzt. Die Hinzunahme der zufälligen Variable <span class="math inline">\(X_2\)</span> führt wie erwartet zu keiner Verschlechterung von <span class="math inline">\(\hat{\sigma}^2\)</span> aber eben auch zu keiner relevanten Verbesserung.</p>
-<p>Als nächstes wird nun die Verteilung der beobachteten <span class="math inline">\(F\)</span>-Werte abgetragen. D.h. für jeden der <span class="math inline">\(1000\)</span> simulierten Durchgänge, wird ein <span class="math inline">\(F\)</span>-Wert berechnet. Einmal für den Vergleich des reduzierten zum vollen Modell und ein weiterer <span class="math inline">\(F\)</span>-Wert für den Vergleich vom vollen zum überparametrisierten Modell. Der <span class="math inline">\(F\)</span>-Wert wird in beiden Fällen mittels der Formel<span class="math inline">\(\eqref{eq-mlm-hier-Ftest}\)</span> berechnet, allerdings entsprechend eben mit zwei unterschiedlichen Modellpaaren.</p>
+<p>Im reduzierten Modell (under) wird die Residualvarianz klar in allen Durchgängen überschätzt. Da der Modellparameter für <span class="math inline">\(X\)</span> fehlt, wird diejenige Varianz von <span class="math inline">\(Y\)</span> die auf <span class="math inline">\(X\)</span> zurückgeht in die Residualvarianz mit aufgenommen. Dies führt dazu, dass die Residualvarianz deutlich zu groß ist und somit <span class="math inline">\(MSE\)</span> groß wird. Im mittleren Graphen, beim korrekten Modell, sind die abgeschätzten Residualvarianzen um den tatsächlichen Wert herum verteilt. Im einzelnen Fall kommt es natürlich auf Grund der Stichprobenvariabilität zur Über- bzw. Unterschätzung von <span class="math inline">\(\sigma^2\)</span>. Im Mittel sind die Werte jedoch trotzdem korrekt und der Schätzer <span class="math inline">\(MSE\)</span> ist Erwartungstreu für <span class="math inline">\(\sigma^2\)</span>. Im letzten Fall, für das überparameterisierte Modell (over) wird die Residualvarianz ebenfalls korrekt abgeschätzt. Die Hinzunahme der zufälligen Variable <span class="math inline">\(X_2\)</span> führt wie erwartet zu keiner Verschlechterung von <span class="math inline">\(\hat{\sigma}^2\)</span> aber eben auch zu keiner relevanten Verbesserung.</p>
+<p>Als nächstes wird nun die Verteilung der beobachteten <span class="math inline">\(F\)</span>-Werte abgetragen. D.h. für jeden der <span class="math inline">\(1000\)</span> simulierten Durchgänge, wird ein <span class="math inline">\(F\)</span>-Wert berechnet. Einmal für den Vergleich des reduzierten zum vollen Modell und ein weiterer <span class="math inline">\(F\)</span>-Wert für den Vergleich vom vollen zum überparametrisierten Modell. Der <span class="math inline">\(F\)</span>-Wert wird in beiden Fällen mittels der <a href="#eq-mlm-hier-Ftest" class="quarto-xref">Gleichung&nbsp;<span>22.5</span></a> berechnet, allerdings entsprechend eben mit zwei unterschiedlichen Modellpaaren.</p>
 <div id="fig-mlm-hier-f-comparisons" class="quarto-layout-panel">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-mlm-hier-f-comparisons-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -840,10 +876,9 @@ Abbildung&nbsp;22.5: F-Werte der Modellvergleiche. Die theoretische Verteilung u
 </figure>
 </div>
 <p>In <a href="#fig-mlm-hier-f-comparisons" class="quarto-xref">Abbildung&nbsp;<span>22.5</span></a> sind die Verteilungen der <span class="math inline">\(F\)</span>-Werte für die <span class="math inline">\(1000\)</span> Simulationen einmal für den Vergleich correct vs.&nbsp;under (a) und over vs.&nbsp;correct (b) abgetragen. Zunächst wird <a href="#fig-mlm-hier-f-comparisons-2" class="quarto-xref">Abbildung&nbsp;<span>22.5 (b)</span></a> betrachtet. Ein Vergleich der beobachtete Verteilung (Balken) mit der theoretischen Verteilung unter der <span class="math inline">\(H_0\)</span> (rot), zeigt, dass die beobachteten Werte sehr gut denjenigen folgen die unter der <span class="math inline">\(H_0\)</span> zu erwarten wären. Das Histogramm folgt relativ gut dem roten Graphen. Der Großteil der Werte liegt in der Umgebung von <span class="math inline">\(1\)</span>, was auch der Erwartung entspricht. Die Hinzunahme der Variable <span class="math inline">\(X_2\)</span>, die keinen Zusammenhang mit <span class="math inline">\(Y\)</span> hat, führt zu keiner Verbesserung des Modells. Die bedeutet nun, dass in <span class="math inline">\(\alpha\)</span>-Prozent der Fälle die <span class="math inline">\(H_0\)</span> ablehnt würde. Im Gegensatz dazu folgt die Verteilung der beobachteten <span class="math inline">\(F\)</span>-Wert in <a href="#fig-mlm-hier-f-comparisons-1" class="quarto-xref">Abbildung&nbsp;<span>22.5 (a)</span></a> nicht einmal annähernd der erwarteten Verteilung unter der <span class="math inline">\(H_0\)</span>. Es sind praktisch keine Werte in der Umgebung von <span class="math inline">\(1\)</span>. Die <span class="math inline">\(H_0\)</span> Annahme bedeutet in diesem Fall ist, dass die Hinzunahme von <span class="math inline">\(X_1\)</span> zu keiner Verbesserung führt. Dementsprechend würde in praktisch allen Fällen die <span class="math inline">\(H_0\)</span> abgelehnt werden, da der beobachtete <span class="math inline">\(F\)</span>-Wert deutlich größer als der kritische Wert der <span class="math inline">\(F\)</span>-Verteilung ist. Insgesamt kommt es daher zu einer Modellauswahl anhand der Vergleiche. Die Anpassung des reduzierten Modells ist deutlich, sprich <em>signifikant</em>, schlechter als diejenige des vollen Modells, während die Hinzunahme der Variablen <span class="math inline">\(X_2\)</span> zu keiner <em>signifikanten</em> Verbesserung der Modellanpassung führt.</p>
-<section id="zusammenfassung" class="level4" data-number="22.1.1.1">
-<h4 data-number="22.1.1.1" class="anchored" data-anchor-id="zusammenfassung"><span class="header-section-number">22.1.1.1</span> Zusammenfassung</h4>
-<p>Der Vergleich von Modellen miteinander, erlaubt es Verbesserung/Verschlechterung der Modellvorhersage statistisch zu überprüfen. Über die Statistik <span class="math inline">\(\eqref{eq-mlm-hier-Ftest}\)</span> wurde eine Teststatistik hergeleitet, die einer bekannten theoretischen Verteilung folgt. Wenn dieser <span class="math inline">\(F\)</span>-Test statistisch signifikant wird, dann wird dies als Evidenz dafür gewertet, das das volle Modell die Daten so viel besser modelliert, das dieses Modell dem reduzierten Modell vorgezogen werden sollte.</p>
-</section>
+<section id="zusammenfassung" class="level4" data-number="22.1.0.1">
+<h4 data-number="22.1.0.1" class="anchored" data-anchor-id="zusammenfassung"><span class="header-section-number">22.1.0.1</span> Zusammenfassung</h4>
+<p>Der Vergleich von Modellen miteinander, erlaubt es Verbesserung/Verschlechterung der Modellvorhersage statistisch zu überprüfen. Über die Statistik <a href="#eq-mlm-hier-Ftest" class="quarto-xref">Gleichung&nbsp;<span>22.5</span></a> wurde eine Teststatistik hergeleitet, die einer bekannten theoretischen Verteilung folgt. Wenn dieser <span class="math inline">\(F\)</span>-Test statistisch signifikant wird, dann wird dies als Evidenz dafür gewertet, das das volle Modell die Daten so viel besser modelliert und das dieses Modell dem reduzierten Modell vorgezogen werden sollte.</p>
 </section>
 </section>
 <section id="modellvergleich-in-r" class="level2" data-number="22.2">
@@ -885,24 +920,26 @@ Abbildung&nbsp;22.6: Zusammenhang zwischen der Präferenz für ein Bonbon und de
 <section id="modellvergleiche-mit-delta-p-1" class="level3" data-number="22.3.1">
 <h3 data-number="22.3.1" class="anchored" data-anchor-id="modellvergleiche-mit-delta-p-1"><span class="header-section-number">22.3.1</span> Modellvergleiche mit <span class="math inline">\(\Delta p = 1\)</span></h3>
 <p>Entsprechend des Eindrucks aus <a href="#fig-mlm-hier-candy-example" class="quarto-xref">Abbildung&nbsp;<span>22.6</span></a> kann das volle Modell dementsprechend mit <span class="math inline">\(X_1\)</span> = <code>sweetness</code> und <span class="math inline">\(X_2\)</span> = <code>moisture</code> folgendermaßen modelliert werden.</p>
-<p><span class="math display">\[\begin{equation*}
+<p><span class="math display">\[
 y_i = \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \beta_3 x_{1i}x_{2i} + \epsilon_i
-\end{equation*}\]</span></p>
+\]</span></p>
 <p>Das volle Modell besitzt daher <span class="math inline">\(p = 4\)</span> Modellparameter und es können drei verschiedene reduzierte Modelle betrachtet werden. Das einfachste Modell sei <span class="math inline">\(m_0\)</span> und dementsprechend ansteigend bis zum vollen Modell <span class="math inline">\(m_3\)</span>.</p>
-<p><span class="math display">\[\begin{align*}
+<p><span class="math display">\[
+\begin{aligned}
 m_0&amp;: y_i = \beta_0 + \epsilon_i \\
 m_1&amp;: y_i = \beta_0 + \beta_1 x_{1i} + \epsilon_i \\
 m_2&amp;: y_i = \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \epsilon_i \\
 m_3&amp;: y_i = \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \beta_3 x_{1i}x_{2i} + \epsilon_i
-\end{align*}\]</span></p>
+\end{aligned}
+\]</span></p>
 <p>Das Modell <span class="math inline">\(m_0\)</span> besitzt nur einen <span class="math inline">\(y\)</span>-Achsenabschnitt <span class="math inline">\(\beta_0\)</span>, der, wie oben gezeigt wurde, zu <span class="math inline">\(\bar{y}\)</span> wird. Modell <span class="math inline">\(m_1\)</span> hat einen zusätzlichen Parameter mit einem Steigungskoeffizienten <span class="math inline">\(\beta_1\)</span> für den Zuckeranteil, <span class="math inline">\(m_1\)</span> hat zusätzlich noch einen Parameter <span class="math inline">\(\beta_2\)</span> für den Saftanteil. <span class="math inline">\(m_3\)</span> ist dagegen das volle Modell mit den beiden additiven Haupteffekten und einem Interaktionseffekt. Diese Modell können nun in einer Hierarchie angeordnet werden.</p>
-<p><span class="math display">\[\begin{equation*}
+<p><span class="math display">\[
 m_0 \subseteq m_1 \subseteq m_2 \subseteq m_3
-\end{equation*}\]</span></p>
+\]</span></p>
 <p>Das Modell <span class="math inline">\(m_3\)</span> ist ganz oben in der Hierarchie. Untergeordnete Modelle können nun immer erhalten werden, indem Modellparameter in einem übergeordneten Modell gleich Null gesetzt werden. Genauso, wie in dem Beispiel oben schon besprochen. Beispielsweise ist das Modell <span class="math inline">\(m_1\)</span> äquivalent zu dem Modell <span class="math inline">\(m_2\)</span> mit der Randbedingung das <span class="math inline">\(\beta_2 = 0\)</span> gilt. In Bezug auf die Freiheitsgrade der Modelle ergibt sich ebenfalls die gleiche hierarchische Anordnung.</p>
-<p><span class="math display">\[\begin{equation*}
+<p><span class="math display">\[
 p_{m_0} = 1 &lt; p_{m_1} = 2&lt; p_{m_2}=3&lt; p_{m_3}=4
-\end{equation*}\]</span></p>
+\]</span></p>
 <p>In <code>R</code> können die entsprechenden Modelle wie üblich mit <code>lm()</code> gefittet werden.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>mod_0 <span class="ot">&lt;-</span> <span class="fu">lm</span>(like <span class="sc">~</span> <span class="dv">1</span>, candy)</span>
@@ -911,10 +948,12 @@ p_{m_0} = 1 &lt; p_{m_1} = 2&lt; p_{m_2}=3&lt; p_{m_3}=4
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>mod_3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(like <span class="sc">~</span> sweetness <span class="sc">*</span> moisture, candy)</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Sei zunächst der Vergleich zwischen <span class="math inline">\(m_0\)</span> gegen <span class="math inline">\(m_1\)</span> betrachtet. D.h. es soll <span class="math inline">\(MS_{\text{test}}\)</span> berechnet werden, bei dem <span class="math inline">\(m_0\)</span> das reduzierte Modell und <span class="math inline">\(m_1\)</span> das volle Modell darstellt.</p>
-<p><span class="math display">\[\begin{align*}
+<p><span class="math display">\[
+\begin{aligned}
 m_0: y_i &amp;= \beta_0 + \epsilon_i \\
 m_1: y_i &amp;= \beta_0 + \beta_1 x_{1i} + \epsilon_i
-\end{align*}\]</span></p>
+\end{aligned}
+\]</span></p>
 <p>Wie bereits gezeigt, kann dazu die <code>anova()</code>-Funktion in <code>R</code> verwendet werden, indem die beiden gefitteten Modelle (tatsächlich können auch mehr Modelle übergeben werden) als Parameter an <code>anova()</code> übergeben werden.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(mod_0, mod_1)</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
@@ -946,19 +985,19 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <pre><code>[1] 19541.46</code></pre>
 </div>
 </div>
-<p>Der resultierende <span class="math inline">\(F\)</span>-Wert nach Formel <span class="math inline">\(\eqref{eq-mlm-hier-Ftest}\)</span> folgt in der nächsten Spalte zusammen mit dem p-Wert unter der <span class="math inline">\(H_0\)</span>.</p>
+<p>Der resultierende <span class="math inline">\(F\)</span>-Wert nach Formel <a href="#eq-mlm-hier-Ftest" class="quarto-xref">Gleichung&nbsp;<span>22.5</span></a> folgt in der nächsten Spalte zusammen mit dem p-Wert unter der <span class="math inline">\(H_0\)</span>.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>F <span class="ot">&lt;-</span> (SSE_R <span class="sc">-</span> SSE_F)<span class="sc">/</span>(<span class="dv">77-76</span>)<span class="sc">/</span>(SSE_F<span class="sc">/</span><span class="dv">76</span>)</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>F</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 42.80543</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">-</span> <span class="fu">pf</span>(F, <span class="dv">77-76</span>, <span class="dv">76</span>)</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">-</span> <span class="fu">pf</span>(F, <span class="dv">77-76</span>, <span class="dv">76</span>) <span class="co"># p-Wert</span></span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 6.302609e-09</code></pre>
 </div>
 </div>
-<p>In <a href="#fig-mlm-hier-m0m1" class="quarto-xref">Abbildung&nbsp;<span>22.7</span></a> ist die Verteilung der F-Werte unter der <span class="math inline">\(H_0\)</span> eingezeichnet zusammen mit dem beobachteten Werte von <span class="math inline">\(F = 42.805\)</span>. Es ist zu erkennen das der beobachtete Werte so weit rechts in der Verteilung ist, dass unter der <span class="math inline">\(H_0\)</span> es extrem unwahrscheinlich ist einen solchen Wert zu beobachten.</p>
+<p>Es wird der der gleiche p-Wert wie in der Tabelle berechnet. In <a href="#fig-mlm-hier-m0m1" class="quarto-xref">Abbildung&nbsp;<span>22.7</span></a> ist die Verteilung der F-Werte unter der <span class="math inline">\(H_0\)</span> eingezeichnet zusammen mit dem beobachteten Werte von <span class="math inline">\(F = 42.805\)</span>. Es ist zu erkennen das der beobachtete Werte so weit rechts in der Verteilung ist, dass unter der <span class="math inline">\(H_0\)</span> es extrem unwahrscheinlich ist einen solchen Wert zu beobachten.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-mlm-hier-m0m1" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -974,10 +1013,12 @@ Abbildung&nbsp;22.7: Verteilung der F-Werte unter der <span class="math inline">
 </div>
 </div>
 <p>Dementsprechend kann von einem statistisch signifikanten Effekt gesprochen werden und die <span class="math inline">\(H_0\)</span>, das das einfachere Modell <span class="math inline">\(m_0\)</span> ausreicht wird zugunsten des komplexeren Modells abgelehnt. Dieser Ansatz kann nun für die anderen Modell weitergeführt werden. Als nächstes der Vergleich zwischen <span class="math inline">\(m_1\)</span> und <span class="math inline">\(m_2\)</span>.</p>
-<p><span class="math display">\[\begin{align*}
+<p><span class="math display">\[
+\begin{aligned}
 m_1: y_i &amp;= \beta_0 + \beta_1 x_{1i} + \epsilon_i \\
 m_2: y_i &amp;= \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \epsilon_i
-\end{align*}\]</span></p>
+\end{aligned}
+\]</span></p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(mod_1, mod_2)</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -993,10 +1034,12 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
 </div>
 <p>Wiederum deutet der Test einen darauf, das das komplexere Modell welches beide Variablen enthält zu einer Verbesserung der Modellvorhersage führt. Abschließend dann der letzte Vergleich <span class="math inline">\(m_3\)</span> gegen <span class="math inline">\(m_2\)</span>.</p>
-<p><span class="math display">\[\begin{align*}
+<p><span class="math display">\[
+\begin{aligned}
 m_2: y_i &amp;= \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \epsilon_i  \\
 m_3: y_i &amp;= \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \beta_3 x_{1i} x_{2i} + \epsilon_i
-\end{align*}\]</span></p>
+\end{aligned}
+\]</span></p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(mod_2, mod_3)</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -1058,10 +1101,12 @@ F-statistic:  4867 on 3 and 74 DF,  p-value: &lt; 2.2e-16</code></pre>
 <section id="modellvergleiche-mit-delta-p-1-1" class="level3" data-number="22.3.2">
 <h3 data-number="22.3.2" class="anchored" data-anchor-id="modellvergleiche-mit-delta-p-1-1"><span class="header-section-number">22.3.2</span> Modellvergleiche mit <span class="math inline">\(\Delta p &gt; 1\)</span></h3>
 <p>Der Vergleich zwischen hierarchisch miteinander in Beziehung stehenden Modell ist nicht darauf beschränkt das die Modelle sich immer nur um einen zusätzlichen Parameter unterscheiden. Es ist auch möglich beispielsweise Modell <span class="math inline">\(m_3\)</span> mit <span class="math inline">\(p = 4\)</span> Parametern mit dem <span class="math inline">\(m_0\)</span> Modell mit <span class="math inline">\(p = 1\)</span> Parametern zu vergleichen.</p>
-<p><span class="math display">\[\begin{align*}
+<p><span class="math display">\[
+\begin{aligned}
 m_0: y_i &amp;= \beta_0 + \epsilon_i  \\
 m_3: y_i &amp;= \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \beta_3 x_{1i} x_{2i} + \epsilon_i
-\end{align*}\]</span></p>
+\end{aligned}
+\]</span></p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(mod_0, mod_3)</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -1076,8 +1121,8 @@ Model 2: like ~ sweetness * moisture
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
 </div>
-<p>In diesem Fall wird getestet ob die Hinzunahme der Parameter <span class="math inline">\(\beta_1, \beta_2\)</span> und <span class="math inline">\(\beta_3\)</span> eine statistisch signifikante Verbesserung des Modellfit bedeutet. Entsprechend ist nun in der Spalte <code>DF</code> drei Parameterunterschiede dokumentiert. Das Prinzip ist aber immer noch das Gleiche. Die Fehlerquadratsummen werden voneinander abgezogen durch den Unterschied in der Parameteranzahl geteilt und mittels der <span class="math inline">\(MSE(F)\)</span> normiert.</p>
-<p>Auf der Basis dieses Tests ist nun auch die letzte Zeile im Output von <code>summary()</code> zu verstehen. Tatsächlich wird dieser Test in der Ausgabe von <code>summary()</code> dokumentiert.</p>
+<p>In diesem Fall wird getestet ob die Hinzunahme der Parameter <span class="math inline">\(\beta_1, \beta_2\)</span> und <span class="math inline">\(\beta_3\)</span> eine statistisch signifikante Verbesserung des Modellfit bedeutet. Entsprechend sind nun in der Spalte <code>DF</code> drei Parameterunterschiede dokumentiert. Das Prinzip ist aber immer noch das Gleiche. Die Fehlerquadratsummen werden voneinander abgezogen durch den Unterschied in der Parameteranzahl geteilt und mittels der <span class="math inline">\(MSE(F)\)</span> normiert.</p>
+<p>Auf der Basis dieses Tests ist nun auch die letzte Zeile im Output von <code>summary()</code> für ein <code>lm()</code>-Objekt zu verstehen. Tatsächlich wird dieser Test in der Ausgabe von <code>summary()</code> dokumentiert.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mod_3)</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -1104,7 +1149,7 @@ F-statistic:  4867 on 3 and 74 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 <p>Der Test überprüft ob das jeweils spezifizierte Modell (das an <code>lm()</code> übergebene) im Gegensatz zum einfachsten Modell mit nur einem Parameter, dem Parameter <span class="math inline">\(\beta_0\)</span>, eine Verbesserung der Modellanpassung ergibt.</p>
-<p>Insgesamt ist durch die Modellvergleiche ein flexiblen Ansatz gewonnen um Modellparameter zu testen. Bisher wurde immer nur ein einzelner Parameter anhand des zum jeweiligen Koeffizienten <span class="math inline">\(\beta_i\)</span> gehörenden <span class="math inline">\(t\)</span>-Werts getestet. Die Interpretation war hier die resultierende Steigung der zum Koeffizienten gehörenden Grade. Mittels der Modellvergleiche, ergibt sich nun eine zweite Interpretation in Form der Reduktion der Fehlerquadrate. Der Modellvergleich erlaubt darüber hinaus dasjenige Modell zu bestimmen, welches die Daten am <em>Besten</em> bzw. am einfachsten (mit den wenigstenen Parametern) modelliert.</p>
+<p>Insgesamt ist durch die Modellvergleiche ein flexiblen Ansatz gewonnen um Modellparameter zu testen. Bisher wurde immer nur ein einzelner Parameter anhand des zum jeweiligen Koeffizienten <span class="math inline">\(\beta_i\)</span> gehörenden <span class="math inline">\(t\)</span>-Werts getestet. Die Interpretation war hier die resultierende Steigung der zum Koeffizienten gehörenden Grade. Mittels der Modellvergleiche, ergibt sich nun eine zweite Interpretation in Form der Reduktion der Fehlerquadrate. Der Modellvergleich erlaubt darüber hinaus dasjenige Modell zu bestimmen, welches die Daten am <em>Besten</em> bzw. am einfachsten (mit den wenigsten Parametern) modelliert.</p>
 </section>
 </section>
 <section id="modellvergleiche-und-nominale-variablen" class="level2" data-number="22.4">
@@ -1125,17 +1170,19 @@ Abbildung&nbsp;22.8: Ein Reaktionszeitexperiment mit vier Stufen A, B, C und D
 </div>
 </div>
 <p>Klassischerweise würde diese Art von Daten mittels einer Varianzanalyse (ANOVA) untersuchen. In der Varianzanalyse wird die Varianz in die drei Komponenten <span class="math inline">\(SS_{total}, SS_{between}\)</span> und <span class="math inline">\(SS_{within}\)</span> unterteilt.</p>
-<p><span class="math display">\[\begin{equation*}
+<p><span class="math display">\[
 SS_{total} = SS_{between} + SS_{within}
-\end{equation*}\]</span></p>
+\]</span></p>
 <p>Mit etwas motiviertem <em>auf die Gleichung starren</em> fällt möglicherweise auf, das diese Gleichungen ähnlich zu derjenigen formuliert ist die im Rahmen der Regressionszerlegung in <span class="math inline">\(SSR\)</span> und <span class="math inline">\(SSE\)</span> bei der einfachen linearen Regression und Vorhersagen durchgeführt wurde. Dort wurde die Zerlegung verwendet um <span class="math inline">\(R^2\)</span> zu berechnen.</p>
 <p>Im Allgemeinen wird bei der Herleitung der Varianzanalyse üblicherweise die folgenden Formeln zur Berechnung der <span class="math inline">\(F\)</span>-Statistik verwendet (<span class="math inline">\(K\)</span> = Anzahl der Faktorstufen).</p>
-<p><span class="math display">\[\begin{align*}
+<p><span class="math display">\[
+\begin{aligned}
 \hat{\sigma}^2_{within} = s_{within}^2 &amp;= \frac{1}{N-K}\sum_{j=1}^K\sum_{i=1}^{N_j}(y_{ji}-\bar{y}_{j.})^2 \\
 &amp;= \frac{1}{N-K}\sum_{j=1}^K(N_j-1)s_j^2 \\
 \hat{\sigma}^2_{between} = s_{between}^2 &amp;= \frac{1}{K-1}\sum_{j=1}^K N_j (\bar{y}_{j.}-\bar{y})^2 \\
 F &amp;= \frac{\hat{\sigma}_{between}^2} {\hat{\sigma}_{within}^2} \sim F(K-1,N-K)
-\end{align*}\]</span></p>
+\end{aligned}
+\]</span></p>
 <p>Seien <span class="math inline">\(s_{between}^2\)</span> etwas genauer betrachtet. Vom beobachteten Wert <span class="math inline">\(y_{ij}\)</span> wird der jeweilige Gruppenmittelwert <span class="math inline">\(\bar{y}_{j.}\)</span> abgezogen, quadriert, aufsummiert und durch <span class="math inline">\(N-K\)</span> geteilt. Wenn die Daten mittels eines linearen Modells modellieren werden, dann bildet der <span class="math inline">\(y\)</span>-Achsenabschnitt den Mittelwert der Referenzgruppe ab und die anderen Koeffizienten <span class="math inline">\(\beta_i\)</span> den Unterschied zu den anderen Mittelwerten. Wenn die Residuen berechnet werden, dann berechnen sich diese ebenfalls als die Abweichungen der beobachteten Werte <span class="math inline">\(y_{ij}\)</span> von den vorhergesagten Werten <span class="math inline">\(\hat{y}_{ij}\)</span> die in diesem Fall eben genau die Gruppenmittelwerte <span class="math inline">\(\bar{y}_{j.}\)</span> sind. Im linearen Modell sind in diesem Fall dann vier Modellparameter <span class="math inline">\(p = 4\)</span> verwendet worden, dementsprechend ist <span class="math inline">\(N-K = N-p\)</span> und <span class="math inline">\(s_{within}^2\)</span> ist nichts anderes als <span class="math inline">\(SSE(F)\)</span>. Wenig überraschend lässt sich nun auch noch zeigen, dass der Term <span class="math inline">\(s_{between}^2\)</span> auch nichts anderes als <span class="math inline">\(MS(test)\)</span> ist. Daraus folgt, dass die Varianzanalyse nichts anderes als einen Modellvergleich darstellt. Daher geht die ANOVA vollständig im Regressionansatz und letztendlich in der Punkt-Steigungsform aus der 7. Klasse auf.</p>
 <p>In <code>R</code> kann eine ANOVA mit der <code>aov()</code>-Funktion berechnen werden. Die Modellformulierung ist gleich derjenigen wie sie bei <code>lm()</code> verwendet wird.</p>
 <div class="cell">
@@ -1152,15 +1199,15 @@ Residuals   76 159221    2095
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
 </div>
-<p>Wie sieht das Ganz aus, wenn wir den Ansatz mit Modellhierarchien anwenden? Das vollständige Modell ist dasjenige, bei dem beispielsweise die Faktorstufe <code>A</code> als Referenz definiert wird und mittels dreier Dummy-Variablen (<span class="math inline">\(K-1\)</span>) die Abweichungen der Stufen <code>B</code>-<code>D</code> von <code>A</code> modelliert werden. Daraus folgt, dass <span class="math inline">\(p = 4\)</span> gilt.</p>
-<p><span class="math display">\[\begin{equation*}
+<p>Als Modellhierarchien interpretiert wird das vollständige Modell ist dasjenige, bei dem beispielsweise die Faktorstufe <code>A</code> als Referenz definiert wird und mittels dreier Dummy-Variablen (<span class="math inline">\(K-1\)</span>) die Abweichungen der Stufen <code>B</code>-<code>D</code> von <code>A</code> modelliert werden. Daraus folgt, dass <span class="math inline">\(p = 4\)</span> gilt.</p>
+<p><span class="math display">\[
 y_i = \beta_0 + \beta_{\Delta_{B-A}} x_1 + \beta_{\Delta_{C-A}} x_2 + \beta_{\Delta_{D-A}} x_3 + \epsilon_i
-\end{equation*}\]</span></p>
+\]</span></p>
 <p>Als reduziertes Modell sein nun das Modell mit nur einem <span class="math inline">\(y\)</span>-Achsenabschnitt und dementsprechend nur einem Parameter <span class="math inline">\(\beta_0\)</span> und somit <span class="math inline">\(p = 1\)</span>. Das reduziert Modell hat daher die Formulierung:</p>
-<p><span class="math display">\[\begin{equation*}
+<p><span class="math display">\[
 y_i = \beta_0 + \epsilon_i
-\end{equation*}\]</span></p>
-<p>Wenn das reduzierte Modell die Daten gleich gut fittet wie das vollständige Modell dann bedeutet dies, dass die zusätzliche Information über die verschiedenen Konditionstufen die Vorhersage von <span class="math inline">\(y_i\)</span> nicht verbessert. D.h. ein einzelner Parameter reicht aus um die Daten zu fitten. Das gefittet Model mit <code>lm()</code> sieht nun folgendermaßen aus:</p>
+\]</span></p>
+<p>Wenn das reduzierte Modell die Daten gleich gut fittet wie das vollständige Modell dann bedeutet dies, dass die zusätzliche Information über die verschiedenen Konditionstufen die Vorhersage von <span class="math inline">\(y_i\)</span> nicht verbessert. D.h. ein einzelner Parameter reicht aus um die Daten zu fitten. Letztendlich bedeutet dies nichts anderes als <span class="math inline">\(\beta_{\Delta_{B-A}} = \beta_{\Delta_{C-A}} = \beta_{\Delta_{D-A}} =0\)</span>, also dass die Koeffizienten, welche die Abweichungen der Faktorstufen von der Referenzstufen bedeuten alle gleich Null sind. Das gefittet Model mit <code>lm()</code> sieht nun folgendermaßen aus:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(rt <span class="sc">~</span> group, rt_tbl)</span>
 <span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mod)</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1204,22 +1251,23 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <p>Tatsächlich verwendet <code>aov()</code> im Hintergrund ebenfalls die <code>lm()</code> Funktion. Insgesamt bedeutet das nun, das die ANOVA und Regression letztendlich auf das gleiche Modell zurück gehen, nämlich auf das <strong>Allgemeine Lineare Modell</strong>. Unter dem allgemeinen linearen Modell sind die ANOVA und die Regression beides spezielle Fälle desselben grundlegenden statistischen Modells. Wie bisher immer wieder wiederholt beruht das Modell auf einer Beschreibung eines Zusammenhangs zwischen einer abhängigen Variable und einer oder mehreren unabhängigen Variablen durch eine lineare Gleichung. Bei der Regression sind die unabhängigen Variablen meist kontinuierlich und werden oft genutzt, um Vorhersagen zu treffen. Bei der ANOVA hingegen sind die unabhängigen Variablen kategorial und dienen dazu, Mittelwertsunterschiede zwischen Gruppen zu analysieren. Trotz dieser unterschiedlichen Anwendungsbereiche beruhen beide Verfahren auf denselben mathematischen Prinzipien zur Schätzung von Effekten und zur Überprüfung von Hypothesen.</p>
 <div id="def-general-linear-model" class="theorem definition">
 <p><span class="theorem-title"><strong>Definition 22.2 (Allgemeine Lineare Modell )</strong></span> Das allgemeine lineare Modell (ALM) ist ein statistisches Verfahren, das den Zusammenhang zwischen <strong>einer</strong> abhängigen Variable und einer oder mehreren unabhängigen Variablen durch eine <strong>lineare Gleichung</strong> beschreibt. Dem ALM liegt die Annahme zugrunde, dass der Wert der abhängigen Variable durch eine lineare Kombination der <span class="math inline">\(p\)</span> unabhängigen Variablen und ihrer jeweiligen Gewichte (Modellkoeffizienten) vorhergesagt werden kann. In der Modellformulierung ist zusätzlich eine additive, zufällige Fehlerkomponente enthalten. Die Formulierung hat daher die folgende Form:</p>
-<p><span class="math display">\[\begin{equation}
+<p><span id="eq-general-linear-model"><span class="math display">\[
 Y_i = \beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + \cdots + \beta_p X_{pi} + \epsilon_i
-\end{equation}\]</span></p>
+\tag{22.7}\]</span></span></p>
 </div>
 </section>
 <section id="modellvergleiche-und-maximum-likelihood" class="level2" data-number="22.5">
 <h2 data-number="22.5" class="anchored" data-anchor-id="modellvergleiche-und-maximum-likelihood"><span class="header-section-number">22.5</span> Modellvergleiche und Maximum-Likelihood</h2>
-<p>In <a href="likelihood.html" class="quarto-xref"><span>Kapitel 17</span></a> wurde die Methode der Maximum-Likelihood behandelt um Schätzer für die Modellparameter zu erhalten. Es wurde gezeigt, dass für den Fall der linearen Regression die Schätzer <span class="math inline">\(\hat{beta}_i\)</span> gleich denjenigen sind, die über die Methoden der kleinsten Quadrate erhalten werden. Die Maximum-Likelihood kann ebenfalls zu Modellvergleichen verwendet werden.</p>
-<p>Die Idee für Modellvergleiche mittels Maximum-Likelihood ist eigentlich relativ geradlinig, es werden die Werte für das Maximum-Likelihood <span class="math inline">\(\mathcal{L}(\text{volles Modell})\)</span> für das volle Modell mit <span class="math inline">\(\mathcal{L}(\text{reduziertes Modell})\)</span> verglichen. Alles was dafür dann weiter notwendig ist, ist eine Verteilung die unter einer <span class="math inline">\(H_0\)</span>-Hypothese die Stichprobenverteilung dieser Differenz beschreibt. Tatsächlich werden nicht die Maximum-Likelihood-Werte miteinander verglichen, sondern, wie auch bei der Bestimmung des Maximums, der Logarithmus des Maximum-Likelihoods, der log-likelihood <span class="math inline">\(\ell\)</span>. Die Teststatistik hat dann die folgende Form:</p>
+<p>In <a href="likelihood.html" class="quarto-xref"><span>Kapitel 17</span></a> wurde die Methode der Maximum-Likelihood behandelt um Schätzer für die Modellparameter zu erhalten. Es wurde gezeigt, dass für den Fall der linearen Regression die Schätzer <span class="math inline">\(\hat{\beta}_i\)</span> gleich denjenigen sind, die über die Methoden der kleinsten Quadrate erhalten werden. Allgemein, kann die Maximum-Likelihood ebenfalls für Modellvergleichen verwendet werden.</p>
+<p>Die Idee für Modellvergleiche mittels Maximum-Likelihood ist eigentlich relativ direkt. Es werden die Werte für das Maximum-Likelihood <span class="math inline">\(\mathcal{L}(\text{volles Modell})\)</span> für das volle Modell mit dem Maximum-Likelihood Wert <span class="math inline">\(\mathcal{L}(\text{reduziertes Modell})\)</span> für das reduzierte Modell verglichen. Alles was dafür dann weiter notwendig ist, ist eine Verteilung die unter einer <span class="math inline">\(H_0\)</span>-Hypothese die Stichprobenverteilung dieser Differenz beschreibt. Tatsächlich werden nicht die Maximum-Likelihood-Werte miteinander verglichen, sondern, wie auch bei der Bestimmung des Maximums, der Logarithmus des Maximum-Likelihoods, der log-likelihood <span class="math inline">\(\ell\)</span>. Die Teststatistik hat dann die folgende Form:</p>
 <p><span class="math display">\[
 2[\text{max}~\ell(\text{volles Modell}) - \text{max}~\ell(\text{reduziertes Modell})]
 \]</span></p>
-<p>Wenn wieder die Eigenschaften des Logarithmus und der Subtraktion beachtet werden für dies zu folgendem Ausdruck, der als <strong>Likelihood Ratio Test (LRT)</strong> bezeichnet wird.</p>
-<p><span class="math display">\[
+<p>Wenn wieder die Eigenschaften des Logarithmus und der Subtraktion beachtet werden, führt dies zu folgendem Ausdruck, der als <strong>Likelihood Ratio Test (LRT)</strong> bezeichnet wird.</p>
+<p><span id="eq-LRT"><span class="math display">\[
 \text{LRT} = 2\log\left(\frac{\text{max}~\mathcal{L}(\text{volles Modell})}{\text{max}~\mathcal{L}(\text{reduziertes Modell})]}\right)
-\]</span></p>
+\tag{22.8}\]</span></span></p>
+<p>Der LRT-Wert folgt unter den üblichen Annahmen asymptotisch einer <span class="math inline">\(\chi^2\)</span>-Verteilung mit <span class="math inline">\(p_f - p_r\)</span> Freiheitsgraden.</p>
 <p><span class="math display">\[
 \text{LRT} \sim \chi^2(df_{\text{reduziertes Modell}} - df_{\text{volles Modell}}) = \chi^2(p_F - p_R)
 \]</span></p>
