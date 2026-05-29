@@ -843,7 +843,7 @@ $$
 \mathcal{L}_i = p_i^{1} \cdot (1 - p_i)^{1 - 1} = p_i
 $$
 
-bzw. wenn $y_i = 0$ vorliegt:
+bzw. kein Treffer beobachtet wird $y_i = 0$ dann folgt:
 
 
 $$
@@ -862,17 +862,69 @@ $$
 \mathcal{L}(\boldsymbol{\beta}) = \prod_{i=1}^n\left(\frac{1}{1+e^{-(\beta_0 + \beta_1x_i)}}\right)^{y_i}\left(1-\frac{1}{1+e^{-(\beta_0 + \beta_1x_i}}\right)^{1-y_i}
 $$
 
-Mittels des Übergangs von der Likelihood $\mathcal{L}\boldsymbol{\beta}$ zur log-Likelihood $\ell$ folgt dann wieder mit den Eigenschaften des Logarithmus.
+Mittels des Übergangs von der Likelihood $\mathcal{L}(\boldsymbol{\beta})$ zur log-Likelihood $\ell(\boldsymbol{\beta})$ folgt dann wieder mit den Eigenschaften des Logarithmus.
 
 $$
 \ell(\boldsymbol{\beta}) = \sum_{i=1}^ny_i\log\left(\frac{1}{1+e^{-(\beta_0 + \beta_1x_i)}}\right)(1-y_i)\log\left(1-\frac{1}{1+e^{-(\beta_0 + \beta_1x_i)}}\right)
 $$
 
-Hier wird dann wieder der übliche Ansatz mit Ableitung nach $\beta_0$ und $\beta_1$ und Nullsetzung um die Lösungsgleichung zu erhalten. Diese können allerdings nicht einfach algebraisch gelöst werden, sondern müssen über ein numerisches Nährungsverfahren gelöst werden. Letztendlich werden dann Maximum-Likelihood Schätzer $\hat{\beta}_0$ und $\hat{\beta}_1$ für die beiden Modellparameter $\beta_0$ und $\beta_1$ erhalten. Mittels dieser können dann Schäzter für die Wahrscheinlichkeiten $\hat{p}_i$ berechnet werden.
+Hier wird dann wieder der übliche Ansatz mit Ableitung nach $\beta_0$ und $\beta_1$ und Nullsetzung um die Lösungsgleichung zu erhalten. Diese können allerdings nicht einfach algebraisch gelöst werden, sondern müssen über ein numerisches Nährungsverfahren gelöst werden. Letztendlich werden dann Maximum-Likelihood Schätzer $\hat{\beta}_0$ und $\hat{\beta}_1$ für die beiden Modellparameter $\beta_0$ und $\beta_1$ erhalten. Mittels dieser können dann Schätzer für die Wahrscheinlichkeiten $\hat{p}_i$ berechnet werden.
 
 ## Multivariate Logistische Regression
 
+Der Übergang von der einfachen logistischen Regression zur multiplen logistischen Regression vollzieht sich parallel zum einfachen linearen Regressionsmodell. Die formale Darstellung auf der Logit-Skala wird zu:
 
+$$
+\text{logit}(p) = \text{logit}(\beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + \cdots +\beta_k X_{ki})
+$$
+
+D.h. die Formel für die logistische Regression wird lediglich um weiter Variablen $X_i$ erweitert. Die einzelnen Prädiktorvariablen $X_i$ können dabei die gleiche Form wie bei der linearen Regression annehmen. D.h. es können genauso kontinuierliche Prädiktorvariablen oder über den Umweg von Indikatorvariablen nominale Faktoren in das Modell integriert werden.
+
+Auf der Wahrscheinlichkeitsskala folgt analog:
+
+$$
+P(\boldsymbol{X}) = \frac{1}{1 + e^{-(\beta_0+\sum_{i=1}^k\beta_iX_i)}}
+$$
+
+Die Interpretation der einzelnen Modellparameter $\beta_i$ ist analog derjenigen bei der einfachen logistischen Regression. Wenn alle anderen Variablen $\boldsymbol{X}_j, j\neq i$ konstant gehalten werden, dann kann der Modellparameter $\beta_i$ als die Veränderung in den log-odds zwischen zwei Objekten die sich in $X_i$ um eine Einheit voneinander unterschieden werden interpretiert werden.
+
+::: {#exm-mlm-multi-log}
+
+## Zwei Variablen
+
+Sei ein Modell mit zwei Variablen gegeben: $X_1=$Alter und $X_2$=EKG-Status. EKG-Status ist dabei eine nominale Variable, die lediglich zwei Werte annehmen kann.
+
+$$
+X_2 = \begin{cases}
+0: \text{unauffällig} \\
+1: \text{auffällig}
+\end{cases}
+$$
+
+Es wurde entsprechend das einfache folgende Modell ohne Interaktionseffekte gefittet.
+
+$$
+\text{logit}P(\boldsymbol{X}) = \beta_0 + \beta_1 \text{Alter} + \beta_2 \text{EKG}
+$$
+
+Um zu verstehen was der Koeffizient $\beta_2$ bedeutet, sei nun eine Person mit Alter$=40$ gegeben und es soll betrachtet werden, wenn der EKG-Status von $0$ auf $1$ *springt*, d.h. der Wert $X_2$ ändert sich um eine *Einheit*. Eingesetzt in die Formel folgt:
+
+$$
+\begin{aligned}
+\text{logit}P(\text{EKG}=1) &= \beta_0 + \beta_1 \cdot 40 + \beta_2 \cdot 1 \\
+\text{logit}P(\text{EKG}=0) &= \beta_0 + \beta_1 \cdot 40 + \beta_2 \cdot 0 \\
+\end{aligned}
+$$
+
+Werden nun diese beiden Formel voneinander abgezogen, sprich zwei Personen miteinander verglichen, die das gleiche Alter haben und sich um eine *Einheit* für die Variable EKG unterscheiden, dann folgt:
+
+$$
+\text{logit}P(\text{EKG}=1) - \text{logit}P(\text{EKG}=0) = \beta_0 + \beta_1 \cdot 40 + \beta_2 - (\beta_0 + \beta_1 \cdot 40) = \beta_2
+$$
+
+Nach der Subtraktion bleibt der Koeffizient $\beta_2$ übrig. D.h. $\beta_2$ repräsentiert die **Änderung** in den **log-odds** zwischen den beiden Personen. Wird $\beta_2$ in Exponenten $e$ gestellt, repräsentiert $e^{\beta_2}$ entsprechend die Änderung in den Odds zwischen den beiden Personen.
+
+:::
 
 ## Den Modellfit bewerten
 
@@ -884,6 +936,7 @@ Hier wird dann wieder der übliche Ansatz mit Ableitung nach $\beta_0$ und $\bet
 
 ```
 
+<!--#
 ## Vorhersagen
 
 ```{r}
@@ -1055,6 +1108,7 @@ print(cc$ggPlot)
 | **Focus**         | Ability to distinguish classes          | Accuracy of predicted probabilities  |
 | **Measurement**   | AUC, ROC curves                         | Calibration curves                   |
 | **Key Question**  | "How well does the model rank cases?"   | "Are the probabilities realistic?"   |
+-->
 
-### Zusammenfassung 
+## Zusammenfassung 
 

@@ -451,18 +451,7 @@ window.Quarto = {
   <li><a href="#multivariate-logistische-regression" id="toc-multivariate-logistische-regression" class="nav-link" data-scroll-target="#multivariate-logistische-regression"><span class="header-section-number">24.5</span> Multivariate Logistische Regression</a></li>
   <li><a href="#den-modellfit-bewerten" id="toc-den-modellfit-bewerten" class="nav-link" data-scroll-target="#den-modellfit-bewerten"><span class="header-section-number">24.6</span> Den Modellfit bewerten</a></li>
   <li><a href="#logistische-regression-in-r" id="toc-logistische-regression-in-r" class="nav-link" data-scroll-target="#logistische-regression-in-r"><span class="header-section-number">24.7</span> Logistische Regression in <code>R</code></a></li>
-  <li><a href="#vorhersagen" id="toc-vorhersagen" class="nav-link" data-scroll-target="#vorhersagen"><span class="header-section-number">24.8</span> Vorhersagen</a></li>
-  <li><a href="#die-logistische-regression-als-klassifikationsalgorithmus" id="toc-die-logistische-regression-als-klassifikationsalgorithmus" class="nav-link" data-scroll-target="#die-logistische-regression-als-klassifikationsalgorithmus"><span class="header-section-number">24.9</span> Die logistische Regression als Klassifikationsalgorithmus</a>
-  <ul class="collapse">
-  <li><a href="#diskriminierung" id="toc-diskriminierung" class="nav-link" data-scroll-target="#diskriminierung"><span class="header-section-number">24.9.1</span> Diskriminierung</a></li>
-  <li><a href="#kalibrierung" id="toc-kalibrierung" class="nav-link" data-scroll-target="#kalibrierung"><span class="header-section-number">24.9.2</span> Kalibrierung</a></li>
-  <li><a href="#receiver-operator-characteristic-roc" id="toc-receiver-operator-characteristic-roc" class="nav-link" data-scroll-target="#receiver-operator-characteristic-roc"><span class="header-section-number">24.9.3</span> Receiver Operator Characteristic (ROC)</a></li>
-  <li><a href="#calibration-curve" id="toc-calibration-curve" class="nav-link" data-scroll-target="#calibration-curve"><span class="header-section-number">24.9.4</span> Calibration curve</a></li>
-  <li><a href="#calculating-a-prediction-curve" id="toc-calculating-a-prediction-curve" class="nav-link" data-scroll-target="#calculating-a-prediction-curve"><span class="header-section-number">24.9.5</span> Calculating a prediction curve</a></li>
-  <li><a href="#kalibrierungskurven-in-r" id="toc-kalibrierungskurven-in-r" class="nav-link" data-scroll-target="#kalibrierungskurven-in-r"><span class="header-section-number">24.9.6</span> Kalibrierungskurven in <code>R</code></a></li>
-  <li><a href="#take-aways-diskriminierung-vs.-kalibrierung" id="toc-take-aways-diskriminierung-vs.-kalibrierung" class="nav-link" data-scroll-target="#take-aways-diskriminierung-vs.-kalibrierung"><span class="header-section-number">24.9.7</span> Take-aways Diskriminierung vs.&nbsp;Kalibrierung</a></li>
-  <li><a href="#zusammenfassung" id="toc-zusammenfassung" class="nav-link" data-scroll-target="#zusammenfassung"><span class="header-section-number">24.9.8</span> Zusammenfassung</a></li>
-  </ul></li>
+  <li><a href="#zusammenfassung" id="toc-zusammenfassung" class="nav-link" data-scroll-target="#zusammenfassung"><span class="header-section-number">24.8</span> Zusammenfassung</a></li>
   </ul>
 </nav>
     </div>
@@ -1341,7 +1330,7 @@ p_i = \frac{1}{1 + e^{-(\beta_0 + \beta_1x_i})}
 <p><span class="math display">\[
 \mathcal{L}_i = p_i^{1} \cdot (1 - p_i)^{1 - 1} = p_i
 \]</span></p>
-<p>bzw. wenn <span class="math inline">\(y_i = 0\)</span> vorliegt:</p>
+<p>bzw. kein Treffer beobachtet wird <span class="math inline">\(y_i = 0\)</span> dann folgt:</p>
 <p><span class="math display">\[
 \mathcal{L}_i = p_i^{0} \cdot (1 - p_i)^{1 - 0} = (1-p_i)
 \]</span></p>
@@ -1353,234 +1342,200 @@ p_i = \frac{1}{1 + e^{-(\beta_0 + \beta_1x_i})}
 <p><span class="math display">\[
 \mathcal{L}(\boldsymbol{\beta}) = \prod_{i=1}^n\left(\frac{1}{1+e^{-(\beta_0 + \beta_1x_i)}}\right)^{y_i}\left(1-\frac{1}{1+e^{-(\beta_0 + \beta_1x_i}}\right)^{1-y_i}
 \]</span></p>
-<p>Mittels des Übergangs von der Likelihood <span class="math inline">\(\mathcal{L}\boldsymbol{\beta}\)</span> zur log-Likelihood <span class="math inline">\(\ell\)</span> folgt dann wieder mit den Eigenschaften des Logarithmus.</p>
+<p>Mittels des Übergangs von der Likelihood <span class="math inline">\(\mathcal{L}(\boldsymbol{\beta})\)</span> zur log-Likelihood <span class="math inline">\(\ell(\boldsymbol{\beta})\)</span> folgt dann wieder mit den Eigenschaften des Logarithmus.</p>
 <p><span class="math display">\[
 \ell(\boldsymbol{\beta}) = \sum_{i=1}^ny_i\log\left(\frac{1}{1+e^{-(\beta_0 + \beta_1x_i)}}\right)(1-y_i)\log\left(1-\frac{1}{1+e^{-(\beta_0 + \beta_1x_i)}}\right)
 \]</span></p>
-<p>Hier wird dann wieder der übliche Ansatz mit Ableitung nach <span class="math inline">\(\beta_0\)</span> und <span class="math inline">\(\beta_1\)</span> und Nullsetzung um die Lösungsgleichung zu erhalten. Diese können allerdings nicht einfach algebraisch gelöst werden, sondern müssen über ein numerisches Nährungsverfahren gelöst werden. Letztendlich werden dann Maximum-Likelihood Schätzer <span class="math inline">\(\hat{\beta}_0\)</span> und <span class="math inline">\(\hat{\beta}_1\)</span> für die beiden Modellparameter <span class="math inline">\(\beta_0\)</span> und <span class="math inline">\(\beta_1\)</span> erhalten. Mittels dieser können dann Schäzter für die Wahrscheinlichkeiten <span class="math inline">\(\hat{p}_i\)</span> berechnet werden.</p>
+<p>Hier wird dann wieder der übliche Ansatz mit Ableitung nach <span class="math inline">\(\beta_0\)</span> und <span class="math inline">\(\beta_1\)</span> und Nullsetzung um die Lösungsgleichung zu erhalten. Diese können allerdings nicht einfach algebraisch gelöst werden, sondern müssen über ein numerisches Nährungsverfahren gelöst werden. Letztendlich werden dann Maximum-Likelihood Schätzer <span class="math inline">\(\hat{\beta}_0\)</span> und <span class="math inline">\(\hat{\beta}_1\)</span> für die beiden Modellparameter <span class="math inline">\(\beta_0\)</span> und <span class="math inline">\(\beta_1\)</span> erhalten. Mittels dieser können dann Schätzer für die Wahrscheinlichkeiten <span class="math inline">\(\hat{p}_i\)</span> berechnet werden.</p>
 </section>
 <section id="multivariate-logistische-regression" class="level2" data-number="24.5">
 <h2 data-number="24.5" class="anchored" data-anchor-id="multivariate-logistische-regression"><span class="header-section-number">24.5</span> Multivariate Logistische Regression</h2>
+<p>Der Übergang von der einfachen logistischen Regression zur multiplen logistischen Regression vollzieht sich parallel zum einfachen linearen Regressionsmodell. Die formale Darstellung auf der Logit-Skala wird zu:</p>
+<p><span class="math display">\[
+\text{logit}(p) = \text{logit}(\beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + \cdots +\beta_k X_{ki})
+\]</span></p>
+<p>D.h. die Formel für die logistische Regression wird lediglich um weiter Variablen <span class="math inline">\(X_i\)</span> erweitert. Die einzelnen Prädiktorvariablen <span class="math inline">\(X_i\)</span> können dabei die gleiche Form wie bei der linearen Regression annehmen. D.h. es können genauso kontinuierliche Prädiktorvariablen oder über den Umweg von Indikatorvariablen nominale Faktoren in das Modell integriert werden.</p>
+<p>Auf der Wahrscheinlichkeitsskala folgt analog:</p>
+<p><span class="math display">\[
+P(\boldsymbol{X}) = \frac{1}{1 + e^{-(\beta_0+\sum_{i=1}^k\beta_iX_i)}}
+\]</span></p>
+<p>Die Interpretation der einzelnen Modellparameter <span class="math inline">\(\beta_i\)</span> ist analog derjenigen bei der einfachen logistischen Regression. Wenn alle anderen Variablen <span class="math inline">\(\boldsymbol{X}_j, j\neq i\)</span> konstant gehalten werden, dann kann der Modellparameter <span class="math inline">\(\beta_i\)</span> als die Veränderung in den log-odds zwischen zwei Objekten die sich in <span class="math inline">\(X_i\)</span> um eine Einheit voneinander unterschieden werden interpretiert werden.</p>
+<div id="exm-mlm-multi-log" class="theorem example">
+<p><span class="theorem-title"><strong>Beispiel 24.5 (Zwei Variablen)</strong></span> Sei ein Modell mit zwei Variablen gegeben: <span class="math inline">\(X_1=\)</span>Alter und <span class="math inline">\(X_2\)</span>=EKG-Status. EKG-Status ist dabei eine nominale Variable, die lediglich zwei Werte annehmen kann.</p>
+<p><span class="math display">\[
+X_2 = \begin{cases}
+0: \text{unauffällig} \\
+1: \text{auffällig}
+\end{cases}
+\]</span></p>
+<p>Es wurde entsprechend das einfache folgende Modell ohne Interaktionseffekte gefittet.</p>
+<p><span class="math display">\[
+\text{logit}P(\boldsymbol{X}) = \beta_0 + \beta_1 \text{Alter} + \beta_2 \text{EKG}
+\]</span></p>
+<p>Um zu verstehen was der Koeffizient <span class="math inline">\(\beta_2\)</span> bedeutet, sei nun eine Person mit Alter<span class="math inline">\(=40\)</span> gegeben und es soll betrachtet werden, wenn der EKG-Status von <span class="math inline">\(0\)</span> auf <span class="math inline">\(1\)</span> <em>springt</em>, d.h. der Wert <span class="math inline">\(X_2\)</span> ändert sich um eine <em>Einheit</em>. Eingesetzt in die Formel folgt:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\text{logit}P(\text{EKG}=1) &amp;= \beta_0 + \beta_1 \cdot 40 + \beta_2 \cdot 1 \\
+\text{logit}P(\text{EKG}=0) &amp;= \beta_0 + \beta_1 \cdot 40 + \beta_2 \cdot 0 \\
+\end{aligned}
+\]</span></p>
+<p>Werden nun diese beiden Formel voneinander abgezogen, sprich zwei Personen miteinander verglichen, die das gleiche Alter haben und sich um eine <em>Einheit</em> für die Variable EKG unterscheiden, dann folgt:</p>
+<p><span class="math display">\[
+\text{logit}P(\text{EKG}=1) - \text{logit}P(\text{EKG}=0) = \beta_0 + \beta_1 \cdot 40 + \beta_2 - (\beta_0 + \beta_1 \cdot 40) = \beta_2
+\]</span></p>
+<p>Nach der Subtraktion bleibt der Koeffizient <span class="math inline">\(\beta_2\)</span> übrig. D.h. <span class="math inline">\(\beta_2\)</span> repräsentiert die <strong>Änderung</strong> in den <strong>log-odds</strong> zwischen den beiden Personen. Wird <span class="math inline">\(\beta_2\)</span> in Exponenten <span class="math inline">\(e\)</span> gestellt, repräsentiert <span class="math inline">\(e^{\beta_2}\)</span> entsprechend die Änderung in den Odds zwischen den beiden Personen.</p>
+</div>
 </section>
 <section id="den-modellfit-bewerten" class="level2" data-number="24.6">
 <h2 data-number="24.6" class="anchored" data-anchor-id="den-modellfit-bewerten"><span class="header-section-number">24.6</span> Den Modellfit bewerten</h2>
 </section>
 <section id="logistische-regression-in-r" class="level2" data-number="24.7">
 <h2 data-number="24.7" class="anchored" data-anchor-id="logistische-regression-in-r"><span class="header-section-number">24.7</span> Logistische Regression in <code>R</code></h2>
-</section>
-<section id="vorhersagen" class="level2" data-number="24.8">
-<h2 data-number="24.8" class="anchored" data-anchor-id="vorhersagen"><span class="header-section-number">24.8</span> Vorhersagen</h2>
-</section>
-<section id="die-logistische-regression-als-klassifikationsalgorithmus" class="level2" data-number="24.9">
-<h2 data-number="24.9" class="anchored" data-anchor-id="die-logistische-regression-als-klassifikationsalgorithmus"><span class="header-section-number">24.9</span> Die logistische Regression als Klassifikationsalgorithmus</h2>
-<div id="tbl-mlm-log-confusion-matrix" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mlm-log-confusion-matrix-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Tabelle&nbsp;24.7: Konfusionsmatrix
-</figcaption>
-<div aria-describedby="tbl-mlm-log-confusion-matrix-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<table class="caption-top table">
-<colgroup>
-<col style="width: 36%">
-<col style="width: 31%">
-<col style="width: 31%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Tatsächlich</th>
-<th>Vorhergesagt: Positive</th>
-<th>Vorhergesagt: Negative</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>Positive</strong></td>
-<td>True Positive (TP)</td>
-<td>False Negative (FN)</td>
-</tr>
-<tr class="even">
-<td><strong>Negative</strong></td>
-<td>False Positive (FP)</td>
-<td>True Negative (TN)</td>
-</tr>
-</tbody>
-</table>
-</div>
-</figure>
-</div>
-<div id="tbl-mlm-log-classification-metric" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mlm-log-classification-metric-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Tabelle&nbsp;24.8: Klassifikationsmetriken
-</figcaption>
-<div aria-describedby="tbl-mlm-log-classification-metric-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<table class="caption-top table">
-<colgroup>
-<col style="width: 42%">
-<col style="width: 57%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Metrik</th>
-<th>Berechnung</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>Accuracy</strong></td>
-<td><span class="math inline">\((TP + TN) / \text{Total Samples}\)</span></td>
-</tr>
-<tr class="even">
-<td><strong>Precision</strong>, <strong>(Positive Predictive Value)</strong></td>
-<td><span class="math inline">\(TP / (TP + FP)\)</span></td>
-</tr>
-<tr class="odd">
-<td><strong>Recall (Sensitivity)</strong></td>
-<td><span class="math inline">\(TP / (TP + FN)\)</span></td>
-</tr>
-<tr class="even">
-<td><strong>F1 Score</strong></td>
-<td><span class="math inline">\(\frac{2}{\frac{1}{\text{Precision}} + \frac{1}{\text{Sensitivity}}}\)</span></td>
-</tr>
-</tbody>
-</table>
-</div>
-</figure>
-</div>
-<p>Welche Eigenschaften sind wichtig für einen Klassifikationsalgorithmus?</p>
-<ul>
-<li>Discrimination</li>
-<li>Calibration</li>
-</ul>
-<section id="diskriminierung" class="level3" data-number="24.9.1">
-<h3 data-number="24.9.1" class="anchored" data-anchor-id="diskriminierung"><span class="header-section-number">24.9.1</span> Diskriminierung</h3>
-<div id="def-discrimination" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 24.5 (Diskriminierung)</strong></span> Discrimination refers to a model’s ability to distinguish between positive and negative cases. Discrimination assesses how well a model separates different outcome classes.</p>
-</div>
-<p><strong>Intuition</strong>:</p>
-<p>Discrimination tells us <em>how well</em> the model differentiates between classes, regardless of the predicted probability values being perfectly aligned with real-world outcomes.</p>
-</section>
-<section id="kalibrierung" class="level3" data-number="24.9.2">
-<h3 data-number="24.9.2" class="anchored" data-anchor-id="kalibrierung"><span class="header-section-number">24.9.2</span> Kalibrierung</h3>
-<div id="def-calibration" class="theorem definition">
-<p><span class="theorem-title"><strong>Definition 24.6 (Kalibrierung)</strong></span> Calibration refers to the agreement between predicted probabilities and the observed proportions of outcomes. A well-calibrated model outputs probabilities that reflect the true likelihood of an event.</p>
-</div>
-<p><strong>Intuition</strong>: Calibration ensures that the model’s predictions are not just <em>accurate</em> in classification but also <em>reliable</em> as probability estimates.</p>
-</section>
-<section id="receiver-operator-characteristic-roc" class="level3" data-number="24.9.3">
-<h3 data-number="24.9.3" class="anchored" data-anchor-id="receiver-operator-characteristic-roc"><span class="header-section-number">24.9.3</span> Receiver Operator Characteristic (ROC)</h3>
-<p><span class="math display">\[
+<!--#
+## Vorhersagen
+
+
+::: {.cell}
+
+:::
+
+
+## Die logistische Regression als Klassifikationsalgorithmus
+
+
+|   Tatsächlich          | Vorhergesagt: Positive | Vorhergesagt: Negative |
+|------------------------|---------------------|---------------------|
+| **Positive**   | True Positive (TP)  | False Negative (FN) |
+| **Negative**   | False Positive (FP) | True Negative (TN)  |
+
+: Konfusionsmatrix {#tbl-mlm-log-confusion-matrix}
+
+
+| Metrik | Berechnung |
+| --- | ---- |
+| **Accuracy** | $(TP + TN) / \text{Total Samples}$ |
+| **Precision**, **(Positive Predictive Value)** | $TP / (TP + FP)$ |
+| **Recall (Sensitivity)** | $TP / (TP + FN)$ |
+| **F1 Score** | $\frac{2}{\frac{1}{\text{Precision}} + \frac{1}{\text{Sensitivity}}}$ |
+
+: Klassifikationsmetriken {#tbl-mlm-log-classification-metric}
+
+Welche Eigenschaften sind wichtig für einen Klassifikationsalgorithmus?
+
+- Discrimination
+- Calibration
+
+### Diskriminierung 
+
+::: {#def-discrimination}
+### Diskriminierung 
+Discrimination refers to a model's ability to distinguish between positive and negative cases. Discrimination assesses how well a model separates different outcome classes.  
+
+:::
+
+**Intuition**:
+
+Discrimination tells us *how well* the model differentiates between classes, regardless of the predicted probability values being perfectly aligned with real-world outcomes.  
+
+
+### Kalibrierung 
+
+::: {#def-calibration}
+###  Kalibrierung
+
+Calibration refers to the agreement between predicted probabilities and the observed proportions of outcomes. A well-calibrated model outputs probabilities that reflect the true likelihood of an event.  
+
+:::
+**Intuition**:
+Calibration ensures that the model's predictions are not just *accurate* in classification but also *reliable* as probability estimates.  
+
+
+### Receiver Operator Characteristic (ROC) 
+
+$$
 \text{True Positive Rate (TPR, Sensitivity)} = \frac{\text{True Positives}}{\text{True Positives + False Negatives}}
-\]</span></p>
-<p><span class="math display">\[
+$$
+
+$$
 \text{False Positive Rate (FPR)} = \frac{\text{False Positives}}{\text{False Positives + True Negatives}}
-\]</span></p>
-<p><span class="math display">\[
+$$
+
+$$
 \text{Specificity} = \frac{\text{True Negatives}}{\text{True Negatives + False Positives}}
-\]</span></p>
-<p><span class="math display">\[
+$$
+
+$$
 \text{FPR} = 1 - \text{Specificity}
-\]</span></p>
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="mlm_logistic_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>ROC curve</p>
-<div class="cell">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="mlm_logistic_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption>Example of a ROC curve</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<p>Area under the curve (AUC)</p>
-<div class="cell">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="mlm_logistic_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption>Example of AUC</figcaption>
-</figure>
-</div>
-</div>
-</div>
-</section>
-<section id="calibration-curve" class="level3" data-number="24.9.4">
-<h3 data-number="24.9.4" class="anchored" data-anchor-id="calibration-curve"><span class="header-section-number">24.9.4</span> Calibration curve</h3>
-<div class="cell">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="mlm_logistic_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption>Example of a calibration curve (red) and perfect calibration (black)</figcaption>
-</figure>
-</div>
-</div>
-</div>
-</section>
-<section id="calculating-a-prediction-curve" class="level3" data-number="24.9.5">
-<h3 data-number="24.9.5" class="anchored" data-anchor-id="calculating-a-prediction-curve"><span class="header-section-number">24.9.5</span> Calculating a prediction curve</h3>
-</section>
-<section id="kalibrierungskurven-in-r" class="level3" data-number="24.9.6">
-<h3 data-number="24.9.6" class="anchored" data-anchor-id="kalibrierungskurven-in-r"><span class="header-section-number">24.9.6</span> Kalibrierungskurven in <code>R</code></h3>
-<p><code>CalibrationCurves</code></p>
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="mlm_logistic_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-</section>
-<section id="take-aways-diskriminierung-vs.-kalibrierung" class="level3" data-number="24.9.7">
-<h3 data-number="24.9.7" class="anchored" data-anchor-id="take-aways-diskriminierung-vs.-kalibrierung"><span class="header-section-number">24.9.7</span> Take-aways Diskriminierung vs.&nbsp;Kalibrierung</h3>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 19%">
-<col style="width: 41%">
-<col style="width: 38%">
-</colgroup>
-<thead>
-<tr class="header">
-<th><strong>Aspect</strong></th>
-<th><strong>Discrimination</strong></th>
-<th><strong>Calibration</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>Focus</strong></td>
-<td>Ability to distinguish classes</td>
-<td>Accuracy of predicted probabilities</td>
-</tr>
-<tr class="even">
-<td><strong>Measurement</strong></td>
-<td>AUC, ROC curves</td>
-<td>Calibration curves</td>
-</tr>
-<tr class="odd">
-<td><strong>Key Question</strong></td>
-<td>“How well does the model rank cases?”</td>
-<td>“Are the probabilities realistic?”</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="zusammenfassung" class="level3" data-number="24.9.8">
-<h3 data-number="24.9.8" class="anchored" data-anchor-id="zusammenfassung"><span class="header-section-number">24.9.8</span> Zusammenfassung</h3>
+$$
 
 
+
+::: {.cell}
+::: {.cell-output-display}
+![](mlm_logistic_files/figure-html/unnamed-chunk-21-1.png){width=672}
+:::
+:::
+
+
+
+ROC curve
+
+::: {.cell}
+::: {.cell-output-display}
+![Example of a ROC curve](mlm_logistic_files/figure-html/unnamed-chunk-22-1.png){width=672}
+:::
+:::
+
+
+Area under the curve (AUC) 
+
+
+::: {.cell}
+::: {.cell-output-display}
+![Example of AUC](mlm_logistic_files/figure-html/unnamed-chunk-23-1.png){width=672}
+:::
+:::
+
+
+### Calibration curve
+
+
+::: {.cell}
+::: {.cell-output-display}
+![Example of a calibration curve (red) and perfect calibration (black)](mlm_logistic_files/figure-html/unnamed-chunk-24-1.png){width=672}
+:::
+:::
+
+
+### Calculating a prediction curve
+
+
+### Kalibrierungskurven in `R`
+
+`CalibrationCurves`
+
+
+::: {.cell}
+::: {.cell-output-display}
+![](mlm_logistic_files/figure-html/unnamed-chunk-25-1.png){width=672}
+:::
+:::
+
+
+
+### Take-aways Diskriminierung vs. Kalibrierung 
+
+| **Aspect**        | **Discrimination**                      | **Calibration**                      |
+|-------------------|-----------------------------------------|--------------------------------------|
+| **Focus**         | Ability to distinguish classes          | Accuracy of predicted probabilities  |
+| **Measurement**   | AUC, ROC curves                         | Calibration curves                   |
+| **Key Question**  | "How well does the model rank cases?"   | "Are the probabilities realistic?"   |
+-->
 </section>
+<section id="zusammenfassung" class="level2" data-number="24.8">
+<h2 data-number="24.8" class="anchored" data-anchor-id="zusammenfassung"><span class="header-section-number">24.8</span> Zusammenfassung</h2>
+
+
 </section>
 
 </main> <!-- /main -->
